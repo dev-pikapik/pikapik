@@ -4,7 +4,7 @@ cask "pikapik" do
 
   url "https://github.com/dev-pikapik/pikapik/releases/download/v#{version}/pikapik.zip"
   name "pikapik"
-  desc "Menu bar tools: Ctrl+click works as a plain click"
+  desc "Menu bar tools: plain clicks and blocked Ctrl shortcuts for games"
   homepage "https://github.com/dev-pikapik/pikapik"
 
   auto_updates true
