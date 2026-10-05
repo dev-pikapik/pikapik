@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>ru</string>
+	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>pikapik</string>
 	<key>CFBundleExecutable</key>
@@ -14,6 +14,20 @@
 	<string>com.pikapik.app.direct</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>ru</string>
+		<string>uk</string>
+		<string>de</string>
+		<string>fr</string>
+		<string>es</string>
+		<string>it</string>
+		<string>pt-BR</string>
+		<string>ja</string>
+		<string>zh-Hans</string>
+		<string>ko</string>
+	</array>
 	<key>CFBundleName</key>
 	<string>pikapik</string>
 	<key>CFBundlePackageType</key>

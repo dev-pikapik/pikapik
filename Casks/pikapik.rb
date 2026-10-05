@@ -4,7 +4,7 @@ cask "pikapik" do
 
   url "https://github.com/dev-pikapik/pikapik/releases/download/v#{version}/pikapik.zip"
   name "pikapik"
-  desc "Menu bar gaming tools: plain clicks, blocked Ctrl shortcuts and double-space"
+  desc "Menu bar keyboard tools: block Ctrl shortcuts, stop double spaces, Option+Shift language switch"
   homepage "https://github.com/dev-pikapik/pikapik"
 
   auto_updates true
@@ -25,8 +25,8 @@ cask "pikapik" do
   zap trash: "~/Library/Preferences/com.pikapik.app.direct.plist"
 
   caveats <<~EOS
-    Дай pikapik два доступа в System Settings › Privacy & Security:
-      Accessibility и Input Monitoring
-    Окно с подсказкой откроется само.
+    pikapik needs two permissions in System Settings › Privacy & Security:
+      Accessibility and Input Monitoring
+    The app opens a window that walks you through them.
   EOS
 end
