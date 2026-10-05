@@ -15,7 +15,7 @@
 Через Homebrew:
 
 ```bash
-brew tap dev-pikapik/pikapik https://github.com/dev-pikapik/pikapik && brew install --cask pikapik
+brew tap dev-pikapik/pikapik https://github.com/dev-pikapik/pikapik && brew trust dev-pikapik/pikapik && brew install --cask pikapik && open -a pikapik
 ```
 
 Или без Homebrew, одной командой в Терминале:

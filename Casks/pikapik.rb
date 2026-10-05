@@ -8,19 +8,16 @@ cask "pikapik" do
   homepage "https://github.com/dev-pikapik/pikapik"
 
   auto_updates true
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "pikapik.app"
 
-  postflight do
-    system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{appdir}/pikapik.app"]
-    system_command "/usr/bin/tccutil", args: ["reset", "Accessibility", "com.pikapik.app.direct"], must_succeed: false
-    system_command "/usr/bin/tccutil", args: ["reset", "ListenEvent", "com.pikapik.app.direct"], must_succeed: false
-    system_command "/usr/bin/open", args: ["#{appdir}/pikapik.app"]
+  postflight_steps do
+    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/pikapik.app"], must_succeed: false
   end
 
-  uninstall_preflight do
-    system_command "#{appdir}/pikapik.app/Contents/MacOS/pikapik", args: ["--uninstall"], must_succeed: false
+  uninstall_preflight_steps do
+    run "{{appdir}}/pikapik.app/Contents/MacOS/pikapik", args: ["--uninstall"], must_succeed: false
   end
 
   uninstall quit: "com.pikapik.app.direct"
