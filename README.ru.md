@@ -11,23 +11,21 @@
 
 ## Установка
 
-Откройте Терминал, вставьте эту строку и нажмите Return:
+Через [Homebrew](https://brew.sh):
+
+```bash
+brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
+```
+
+Без Homebrew: откройте Терминал, вставьте эту строку и нажмите Return:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"
 ```
 
-Больше ничего не нужно, Homebrew тоже.
+Или скачайте [pikapik.dmg](https://github.com/dev-pikapik/pikapik/releases/latest/download/pikapik.dmg), откройте его и перетащите приложение в «Программы».
 
-Или через Homebrew:
-
-```bash
-brew tap dev-pikapik/pikapik https://github.com/dev-pikapik/pikapik && brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
-```
-
-Или скачайте `pikapik.dmg` из [Releases](https://github.com/dev-pikapik/pikapik/releases/latest) и перетащите приложение в «Программы».
-
-Homebrew и скрипт сами кладут приложение в `/Applications`, запускают его, просят доступы и включают автозапуск.
+Homebrew и скрипт сами кладут приложение в `/Applications`, запускают его, просят доступы и включают автозапуск. Дальше приложение обновляется само, см. [Обновления](#обновления). Как удалить — в разделе [Удаление](#удаление).
 
 ## Первый запуск
 
