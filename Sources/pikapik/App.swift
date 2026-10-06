@@ -17,6 +17,7 @@ struct PikapikApp: App {
                 Button("Settings…") { SettingsWindow.show() }
                     .keyboardShortcut(",")
             }
+            CommandGroup(replacing: .help) {}
         }
     }
 }

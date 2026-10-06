@@ -8,7 +8,8 @@ MIN_OS="14.0"
 SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 
 rm -rf build
-mkdir -p "$APP/Contents/MacOS" "$APPEX/Contents/MacOS"
+mkdir -p "$APP/Contents/MacOS" "$APPEX/Contents/MacOS" build/strings
+EMIT=(-Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend build/strings)
 
 SOURCES=()
 while IFS= read -r -d '' f; do SOURCES+=("$f"); done < <(find Sources -name '*.swift' -print0)
@@ -26,16 +27,21 @@ for ARCH in arm64 x86_64; do
         -module-name Pikapik \
         -target "$ARCH-apple-macos$MIN_OS" \
         ${FLAGS[@]+"${FLAGS[@]}"} \
+        "${EMIT[@]}" \
         "${SOURCES[@]}" \
         -o "build/pikapik-$ARCH"
     swiftc -O -whole-module-optimization \
         -module-name NewFile \
         -target "$ARCH-apple-macos$MIN_OS" \
         -application-extension \
+        "${EMIT[@]}" \
         -Xlinker -e -Xlinker _NSExtensionMain \
         Extensions/NewFile/*.swift \
         -o "build/NewFile-$ARCH"
 done
+
+./scripts/check-strings.sh build/strings
+rm -rf build/strings
 
 lipo -create build/pikapik-arm64 build/pikapik-x86_64 -output "$APP/Contents/MacOS/pikapik"
 lipo -create build/NewFile-arm64 build/NewFile-x86_64 -output "$APPEX/Contents/MacOS/NewFile"
