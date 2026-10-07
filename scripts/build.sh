@@ -3,12 +3,13 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 APP="build/pikapik.app"
-APPEX="$APP/Contents/PlugIns/NewFile.appex"
+EXTENSIONS="NewFile Compress"
 MIN_OS="14.0"
 SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 
 rm -rf build
-mkdir -p "$APP/Contents/MacOS" "$APPEX/Contents/MacOS" build/strings
+mkdir -p "$APP/Contents/MacOS" build/strings
+for EXT in $EXTENSIONS; do mkdir -p "$APP/Contents/PlugIns/$EXT.appex/Contents/MacOS"; done
 EMIT=(-Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend build/strings)
 
 SOURCES=()
@@ -30,30 +31,42 @@ for ARCH in arm64 x86_64; do
         "${EMIT[@]}" \
         "${SOURCES[@]}" \
         -o "build/pikapik-$ARCH"
-    swiftc -O -whole-module-optimization \
-        -module-name NewFile \
-        -target "$ARCH-apple-macos$MIN_OS" \
-        -application-extension \
-        "${EMIT[@]}" \
-        -Xlinker -e -Xlinker _NSExtensionMain \
-        Extensions/NewFile/*.swift \
-        -o "build/NewFile-$ARCH"
+    for EXT in $EXTENSIONS; do
+        swiftc -O -whole-module-optimization \
+            -module-name "$EXT" \
+            -target "$ARCH-apple-macos$MIN_OS" \
+            -application-extension \
+            "${EMIT[@]}" \
+            -Xlinker -e -Xlinker _NSExtensionMain \
+            Extensions/"$EXT"/*.swift \
+            -o "build/$EXT-$ARCH"
+    done
 done
 
 ./scripts/check-strings.sh build/strings
 rm -rf build/strings
 
 lipo -create build/pikapik-arm64 build/pikapik-x86_64 -output "$APP/Contents/MacOS/pikapik"
-lipo -create build/NewFile-arm64 build/NewFile-x86_64 -output "$APPEX/Contents/MacOS/NewFile"
-rm build/pikapik-arm64 build/pikapik-x86_64 build/NewFile-arm64 build/NewFile-x86_64
+rm build/pikapik-arm64 build/pikapik-x86_64
 cp Sources/pikapik/Info.plist "$APP/Contents/Info.plist"
-cp Extensions/NewFile/Info.plist "$APPEX/Contents/Info.plist"
-for KEY in CFBundleShortVersionString CFBundleVersion; do
-    /usr/libexec/PlistBuddy -c "Set :$KEY $(/usr/libexec/PlistBuddy -c "Print :$KEY" "$APP/Contents/Info.plist")" "$APPEX/Contents/Info.plist"
-done
-for LPROJ in Resources/*.lproj; do
-    mkdir -p "$APPEX/Contents/Resources/$(basename "$LPROJ")"
-    grep '^"New File" = ' "$LPROJ/Localizable.strings" > "$APPEX/Contents/Resources/$(basename "$LPROJ")/Localizable.strings"
+for EXT in $EXTENSIONS; do
+    APPEX="$APP/Contents/PlugIns/$EXT.appex"
+    lipo -create "build/$EXT-arm64" "build/$EXT-x86_64" -output "$APPEX/Contents/MacOS/$EXT"
+    rm "build/$EXT-arm64" "build/$EXT-x86_64"
+    cp "Extensions/$EXT/Info.plist" "$APPEX/Contents/Info.plist"
+    for KEY in CFBundleShortVersionString CFBundleVersion; do
+        /usr/libexec/PlistBuddy -c "Set :$KEY $(/usr/libexec/PlistBuddy -c "Print :$KEY" "$APP/Contents/Info.plist")" "$APPEX/Contents/Info.plist"
+    done
+    for LPROJ in Resources/*.lproj; do
+        OUT="$APPEX/Contents/Resources/$(basename "$LPROJ")"
+        mkdir -p "$OUT"
+        if [ "$EXT" = NewFile ]; then
+            grep '^"New File" = ' "$LPROJ/Localizable.strings" > "$OUT/Localizable.strings"
+        else
+            grep -E '^"(Make a Smaller Copy|Convert To|M4A \(Audio Only\))" = ' "$LPROJ/Localizable.strings" > "$OUT/Localizable.strings"
+            grep '^"Smaller Copy and Convert in Finder" = ' "$LPROJ/Localizable.strings" | sed 's/^"[^"]*"/"CFBundleDisplayName"/' > "$OUT/InfoPlist.strings"
+        fi
+    done
 done
 
 RES="$APP/Contents/Resources"
@@ -93,10 +106,16 @@ if [ "$SIGN_IDENTITY" = "-" ]; then
     /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.pikapik.app.dev" "$APP/Contents/Info.plist"
     /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLName com.pikapik.app.dev" "$APP/Contents/Info.plist"
     /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 pikapik-dev" "$APP/Contents/Info.plist"
-    /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.pikapik.app.dev.new-file" "$APPEX/Contents/Info.plist"
-    /usr/libexec/PlistBuddy -c "Set :PikapikURLScheme pikapik-dev" "$APPEX/Contents/Info.plist"
+    for EXT in $EXTENSIONS; do
+        PLIST="$APP/Contents/PlugIns/$EXT.appex/Contents/Info.plist"
+        ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$PLIST")"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ${ID/pikapik./pikapik.dev.}" "$PLIST"
+        /usr/libexec/PlistBuddy -c "Set :PikapikURLScheme pikapik-dev" "$PLIST"
+    done
 fi
-sign --entitlements Extensions/NewFile/NewFile.entitlements "$APPEX"
+for EXT in $EXTENSIONS; do
+    sign --entitlements "Extensions/$EXT/$EXT.entitlements" "$APP/Contents/PlugIns/$EXT.appex"
+done
 sign "$APP"
 
 echo "Done: $APP ($(lipo -archs "$APP/Contents/MacOS/pikapik"))"
