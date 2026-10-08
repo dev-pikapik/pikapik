@@ -320,4 +320,6 @@ xattr -dr com.apple.quarantine /Applications/pikapik.app
 
 </details>
 
+<p align="center">☕ Якщо pikapik вам подобається, можете <a href="https://buymeacoffee.com/pikapik">пригостити мене кавою</a> — усе піде на розвиток і підтримку застосунку.</p>
+
 <p align="center"><sub><a href="../whats-new/README.uk.md">Що нового</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Тап Homebrew</a> · <a href="../../CONTRIBUTING.md">Збирання з вихідного коду</a> · <a href="../../LICENSE">Ліцензія MIT</a> · © 2026 pikapik</sub></p>

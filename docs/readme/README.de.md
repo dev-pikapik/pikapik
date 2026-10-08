@@ -320,4 +320,6 @@ Entferne pikapik unter **Systemeinstellungen › Datenschutz & Sicherheit** mit 
 
 </details>
 
+<p align="center">☕ Wenn dir pikapik gefällt, kannst du mir <a href="https://buymeacoffee.com/pikapik">einen Kaffee spendieren</a> – alles fließt in die Entwicklung und Pflege der App.</p>
+
 <p align="center"><sub><a href="../whats-new/README.de.md">Neuigkeiten</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Homebrew-Tap</a> · <a href="../../CONTRIBUTING.md">Selbst bauen</a> · <a href="../../LICENSE">MIT-Lizenz</a> · © 2026 pikapik</sub></p>
