@@ -5,8 +5,8 @@
 
 <p align="center">
 <picture>
-<source media="(prefers-color-scheme: dark)" srcset="../media/settings-en-dark.png">
-<img src="../media/settings-en-light.png" alt="Inställningar i pikapik">
+<source media="(prefers-color-scheme: dark)" srcset="../media/settings-sv-dark.png">
+<img src="../media/settings-sv-light.png" alt="Inställningar i pikapik">
 </picture>
 </p>
 
@@ -320,4 +320,4 @@ Ta bort pikapik från båda listorna i **Systeminställningar › Integritet och
 
 </details>
 
-<p align="center"><sub><a href="../../CHANGELOG.md">Nyheter</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Homebrew-tap</a> · <a href="../../CONTRIBUTING.md">Bygg själv</a> · <a href="../../LICENSE">MIT-licens</a> · © 2026 pikapik</sub></p>
+<p align="center"><sub><a href="../whats-new/README.sv.md">Nyheter</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Homebrew-tap</a> · <a href="../../CONTRIBUTING.md">Bygg själv</a> · <a href="../../LICENSE">MIT-licens</a> · © 2026 pikapik</sub></p>

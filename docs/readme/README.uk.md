@@ -5,8 +5,8 @@
 
 <p align="center">
 <picture>
-<source media="(prefers-color-scheme: dark)" srcset="../media/settings-en-dark.png">
-<img src="../media/settings-en-light.png" alt="Налаштування pikapik">
+<source media="(prefers-color-scheme: dark)" srcset="../media/settings-uk-dark.png">
+<img src="../media/settings-uk-light.png" alt="Налаштування pikapik">
 </picture>
 </p>
 
@@ -320,4 +320,4 @@ xattr -dr com.apple.quarantine /Applications/pikapik.app
 
 </details>
 
-<p align="center"><sub><a href="../../CHANGELOG.md">Що нового</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Тап Homebrew</a> · <a href="../../CONTRIBUTING.md">Збирання з вихідного коду</a> · <a href="../../LICENSE">Ліцензія MIT</a> · © 2026 pikapik</sub></p>
+<p align="center"><sub><a href="../whats-new/README.uk.md">Що нового</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Тап Homebrew</a> · <a href="../../CONTRIBUTING.md">Збирання з вихідного коду</a> · <a href="../../LICENSE">Ліцензія MIT</a> · © 2026 pikapik</sub></p>

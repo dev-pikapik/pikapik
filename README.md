@@ -320,4 +320,4 @@ In **System Settings › Privacy & Security**, remove pikapik from both lists wi
 
 </details>
 
-<p align="center"><sub><a href="CHANGELOG.md">What’s new</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Homebrew tap</a> · <a href="CONTRIBUTING.md">Build from source</a> · <a href="LICENSE">MIT License</a> · © 2026 pikapik</sub></p>
+<p align="center"><sub><a href="docs/whats-new/README.md">What’s new</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Homebrew tap</a> · <a href="CONTRIBUTING.md">Build from source</a> · <a href="LICENSE">MIT License</a> · © 2026 pikapik</sub></p>

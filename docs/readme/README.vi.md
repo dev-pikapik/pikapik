@@ -5,8 +5,8 @@
 
 <p align="center">
 <picture>
-<source media="(prefers-color-scheme: dark)" srcset="../media/settings-en-dark.png">
-<img src="../media/settings-en-light.png" alt="Cài đặt pikapik">
+<source media="(prefers-color-scheme: dark)" srcset="../media/settings-vi-dark.png">
+<img src="../media/settings-vi-light.png" alt="Cài đặt pikapik">
 </picture>
 </p>
 
@@ -320,4 +320,4 @@ Trong **Cài đặt hệ thống › Quyền riêng tư & Bảo mật**, xóa pi
 
 </details>
 
-<p align="center"><sub><a href="../../CHANGELOG.md">Có gì mới</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Tap Homebrew</a> · <a href="../../CONTRIBUTING.md">Tự biên dịch</a> · <a href="../../LICENSE">Giấy phép MIT</a> · © 2026 pikapik</sub></p>
+<p align="center"><sub><a href="../whats-new/README.vi.md">Có gì mới</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Tap Homebrew</a> · <a href="../../CONTRIBUTING.md">Tự biên dịch</a> · <a href="../../LICENSE">Giấy phép MIT</a> · © 2026 pikapik</sub></p>
