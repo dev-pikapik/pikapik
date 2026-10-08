@@ -175,7 +175,7 @@ Homebrew de betik de uygulamayı `/Applications` klasörüne koyar, açar, izinl
 <details>
 <summary>İlk açılış</summary>
 
-pikapik’un iki izne ihtiyacı vardır. İlk açılışta ayarlar, sizi adım adım yönlendiren İzinler sayfasında açılır ve macOS kendi uyarılarını gösterir. **Sistem Ayarları › Gizlilik ve Güvenlik** bölümüne gidin ve şu listelerde pikapik’u açın:
+pikapik’in iki izne ihtiyacı vardır. İlk açılışta ayarlar, sizi adım adım yönlendiren İzinler sayfasında açılır ve macOS kendi uyarılarını gösterir. **Sistem Ayarları › Gizlilik ve Güvenlik** bölümüne gidin ve şu listelerde pikapik’i açın:
 
 - **Erişilebilirlik**: Uygulama bir tuş basışını veya tıklamayı diğer uygulamalara ulaşmadan önce değiştirebilsin diye.
 - **Girdi İzleme**: Uygulama tuş basışlarını ve tıklamaları görebilsin diye.
@@ -240,7 +240,7 @@ Uygulama sistem dilini ya da ayarlarda seçtiğiniz dili kullanır. Bu sayfanın
 <details>
 <summary>Uyanık Tut</summary>
 
-Siz klavyenin başında değilken Mac’inizin uyku moduna geçmesini engeller: 1 saniyeden 365 güne kadar istediğiniz süre boyunca ya da siz kapatana kadar. Menüden açın, süreyi ayarlarda belirleyin: gün, saat, dakika ve saniyeyi yazın, ↑ ve ↓ tuşlarını kullanın ya da 15 dakikadan 8 saate kadar hazır bir seçeneğe tıklayın. Menü ne kadar süre kaldığını ve ne zaman biteceğini gösterir. **Ekran** için iki seçenek var. **Her zaman açık**: kapanmaz, ekran koruyucu ya da kilit ekranı çıkmaz. **Her zamanki gibi kapanır**: kendi zamanlayıcısıyla kapanır, Mac’iniz çalışmaya devam eder. **Ekranı şimdi kapat** (menüde de var) ekranı hemen kapatır, Mac çalışmaya devam eder: geri getirmek için fareyi oynatın ya da bir tuşa basın. pikapik’tan çıkınca Uyanık Tut da sona erer.
+Siz klavyenin başında değilken Mac’inizin uyku moduna geçmesini engeller: 1 saniyeden 365 güne kadar istediğiniz süre boyunca ya da siz kapatana kadar. Menüden açın, süreyi ayarlarda belirleyin: gün, saat, dakika ve saniyeyi yazın, ↑ ve ↓ tuşlarını kullanın ya da 15 dakikadan 8 saate kadar hazır bir seçeneğe tıklayın. Menü ne kadar süre kaldığını ve ne zaman biteceğini gösterir. **Ekran** için iki seçenek var. **Her zaman açık**: kapanmaz, ekran koruyucu ya da kilit ekranı çıkmaz. **Her zamanki gibi kapanır**: kendi zamanlayıcısıyla kapanır, Mac’iniz çalışmaya devam eder. **Ekranı şimdi kapat** (menüde de var) ekranı hemen kapatır, Mac çalışmaya devam eder: geri getirmek için fareyi oynatın ya da bir tuşa basın. pikapik’ten çıkınca Uyanık Tut da sona erer.
 
 MacBook’ta **Kapak kapalıyken çalış** seçeneğini de açabilirsiniz. macOS’te bunun için bir ayar yoktur, bu yüzden pikapik `pmset -a disablesleep 1` komutunu çalıştırır ve yönetici parolası ister: Mac’in nasıl uyuyacağını yalnızca bir yönetici değiştirebilir. Ayar; Uyanık Tut bittiğinde, uygulamadan çıktığınızda ya da uygulama çöktüğünde kendiliğinden normale döner. Parolayı girmezseniz hiçbir şey değişmez. Kapak kapalıyken Mac’in iyi havalandığından emin olun. **Pil %20’nin altına düşünce durdur** seçeneği oturumu pil bitmeden sonlandırır.
 
@@ -258,7 +258,7 @@ Keep Awake, ekran ve kapak kapalı modları, Kestirmeler uygulamasıyla Denetim 
 <details>
 <summary>Ayarlar</summary>
 
-Ayarları menüden **Ayarlar…** ile ya da ⌘, ile açın veya pikapik’u Finder, Launchpad ya da Spotlight’tan yeniden başlatın. Pencere açıkken uygulama Dock’ta ve ⌘Tab’de görünür.
+Ayarları menüden **Ayarlar…** ile ya da ⌘, ile açın veya pikapik’i Finder, Launchpad ya da Spotlight’tan yeniden başlatın. Pencere açıkken uygulama Dock’ta ve ⌘Tab’de görünür.
 
 - **Genel**: girişte açma, görünüm (Sistem, Açık veya Koyu), dil, güncellemeler ve yedekleme: ayarları dosya olarak dışa ve içe aktarma ya da iCloud Drive ile eşzamanlama.
 - **Uyanık Tut**: süre, ekran ve kapak seçenekleri.
@@ -275,7 +275,7 @@ Birçok ayarın, ne yaptığını gösteren küçük bir resmi vardır; örneği
 
 Her sayfanın altında bir **Saptanmışlara Dön…** düğmesi vardır. Önce onay ister, ardından o sayfadaki araçları kapatır ve seçeneklerini geri alır; sanki pikapik onlara hiç dokunmamış gibi.
 
-**Ayarları iCloud ile eşzamanla** pikapik’u tüm Mac’lerinizde aynı tutar. Ayarlar iCloud Drive’daki pikapik klasöründe durur ve en son değişiklik geçerli olur. Varsayılan olarak kapalıdır ve iCloud Drive’ın açık olması gerekir. İzinler eşzamanlanmaz: her Mac kendi izinlerini kendisi ister.
+**Ayarları iCloud ile eşzamanla** pikapik’i tüm Mac’lerinizde aynı tutar. Ayarlar iCloud Drive’daki pikapik klasöründe durur ve en son değişiklik geçerli olur. Varsayılan olarak kapalıdır ve iCloud Drive’ın açık olması gerekir. İzinler eşzamanlanmaz: her Mac kendi izinlerini kendisi ister.
 
 </details>
 
@@ -320,10 +320,10 @@ xattr -dr com.apple.quarantine /Applications/pikapik.app
 Evet. Apple Silicon ve Intel için evrensel bir uygulamadır, macOS 14 Sonoma veya sonrası gerekir.
 
 **İzin açık ama hiçbir şey çalışmıyor.**
-**Sistem Ayarları › Gizlilik ve Güvenlik** bölümünde pikapik’u − düğmesiyle iki listeden de kaldırın, sonra yeniden ekleyin. pikapik ayarlarındaki İzinler sayfasında doğru yeri açan düğmeler vardır.
+**Sistem Ayarları › Gizlilik ve Güvenlik** bölümünde pikapik’i − düğmesiyle iki listeden de kaldırın, sonra yeniden ekleyin. pikapik ayarlarındaki İzinler sayfasında doğru yeri açan düğmeler vardır.
 
 </details>
 
-<p align="center">☕ pikapik’u seviyorsanız bana <a href="https://buymeacoffee.com/pikapik">bir kahve ısmarlayabilirsiniz</a>; hepsi uygulamanın geliştirilmesine ve desteğine gider.</p>
+<p align="center">☕ pikapik’i seviyorsanız bana <a href="https://buymeacoffee.com/pikapik">bir kahve ısmarlayabilirsiniz</a>; hepsi uygulamanın geliştirilmesine ve desteğine gider.</p>
 
 <p align="center"><sub><a href="../whats-new/README.tr.md">Yenilikler</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Homebrew tap’i</a> · <a href="../../CONTRIBUTING.md">Kendiniz derleyin</a> · <a href="../../LICENSE">MIT Lisansı</a> · © 2026 pikapik</sub></p>

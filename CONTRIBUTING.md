@@ -10,7 +10,7 @@ All you need is the Xcode Command Line Tools. Xcode itself isn't required: the a
 git clone https://github.com/dev-pikapik/pikapik.git
 cd pikapik
 ./scripts/build.sh      # build/pikapik.app
-./scripts/package.sh    # build/pikapik.dmg and build/pikapik.zip
+./scripts/package.sh    # build/pikapik.dmg and build/pikapik.zip, plus build/pikapik.zip for older versions
 ```
 
 `install.sh` can also build from source: add `-- --source` after the install command from the README.
@@ -70,6 +70,12 @@ Permissions left by deleted apps are read from the system TCC database (`/Librar
 
 ```bash
 swiftc -parse-as-library Sources/pikapik/Common/LeftoverPermissions.swift scripts/test-leftover-permissions.swift -o build/test-leftover-permissions && build/test-leftover-permissions
+```
+
+The app used to be called pikapik. A copy named `pikapik.app` that wasn't installed with Homebrew renames itself to `pikapik.app` on launch and opens again; the updater does the same when it installs a new version. Homebrew copies stay where they are until `brew upgrade` moves them. Every release also carries `pikapik.zip` with the app under its old name, because older versions download that file. The path logic lives in `Updater`:
+
+```bash
+swiftc -parse-as-library Sources/pikapik/Common/Updater.swift Sources/pikapik/Common/LoginItem.swift scripts/test-rename.swift -o build/test-rename && build/test-rename
 ```
 
 ### Adding a tool

@@ -107,7 +107,7 @@ sign() {
 if [ "$SIGN_IDENTITY" = "-" ]; then
     /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.pikapik.app.dev" "$APP/Contents/Info.plist"
     /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLName com.pikapik.app.dev" "$APP/Contents/Info.plist"
-    /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 pikapik-dev" "$APP/Contents/Info.plist"
+    /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 pikapik-dev" -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:1 pikapik-dev" "$APP/Contents/Info.plist"
     for EXT in $EXTENSIONS; do
         PLIST="$APP/Contents/PlugIns/$EXT.appex/Contents/Info.plist"
         ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$PLIST")"

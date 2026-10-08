@@ -54,6 +54,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>pikapik</string>
+				<string>pikapik</string>
 			</array>
 		</dict>
 	</array>

@@ -7,9 +7,10 @@ cd "$(dirname "$0")/.."
 APP="build/pikapik.app"
 DMG="build/pikapik.dmg"
 ZIP="build/pikapik.zip"
+OLD_ZIP="build/pikapik.zip"
 STAGE="build/dmg"
 
-rm -rf "$STAGE" "$DMG" "$ZIP"
+rm -rf "$STAGE" "$DMG" "$ZIP" "$OLD_ZIP"
 mkdir -p "$STAGE"
 cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
@@ -24,6 +25,9 @@ if [ -n "${NOTARY_PROFILE:-}" ]; then
 fi
 
 ditto -c -k --keepParent "$APP" "$ZIP"
+ditto "$APP" "$STAGE/pikapik.app"
+ditto -c -k --keepParent "$STAGE/pikapik.app" "$OLD_ZIP"
+rm -rf "$STAGE"
 
-shasum -a 256 "$DMG" "$ZIP"
-echo "Done: $DMG and $ZIP"
+shasum -a 256 "$DMG" "$ZIP" "$OLD_ZIP"
+echo "Done: $DMG, $ZIP and $OLD_ZIP for older versions that update themselves"

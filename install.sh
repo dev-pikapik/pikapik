@@ -6,6 +6,7 @@ GITHUB_USER="dev-pikapik"
 REPO="https://github.com/$GITHUB_USER/pikapik"
 APP_NAME="pikapik.app"
 DEST="/Applications/$APP_NAME"
+OLD="/Applications/pikapik.app"
 
 say() { printf '\033[1m→ %s\033[0m\n' "$1"; }
 fail() { printf '\033[31m✗ %s\033[0m\n' "$1" >&2; exit 1; }
@@ -60,7 +61,7 @@ fi
 say "Copying to /Applications"
 SUDO=""
 [ -w /Applications ] || SUDO="sudo"
-$SUDO rm -rf "$DEST"
+$SUDO rm -rf "$DEST" "$OLD"
 $SUDO ditto "$NEW_APP" "$DEST"
 $SUDO xattr -dr com.apple.quarantine "$DEST" 2>/dev/null || true
 

@@ -2,24 +2,27 @@
 set -euo pipefail
 
 DEST="/Applications/pikapik.app"
+OLD="/Applications/pikapik.app"
 BUNDLE_ID="com.pikapik.app.direct"
 
 say() { printf '\033[1m→ %s\033[0m\n' "$1"; }
 
-if [ -d "$DEST" ]; then
+for app in "$DEST" "$OLD"; do
+    [ -d "$app" ] || continue
     say "Removing from login items"
     pkill -x pikapik 2>/dev/null || true
     sleep 1
-    open -W -n "$DEST" --args --uninstall 2>/dev/null || true
-fi
+    open -W -n "$app" --args --uninstall 2>/dev/null || true
+    break
+done
 
 pkill -x pikapik 2>/dev/null || true
 
 say "Deleting the app"
-if [ -d "$DEST" ]; then
+if [ -d "$DEST" ] || [ -d "$OLD" ]; then
     SUDO=""
     [ -w /Applications ] || SUDO="sudo"
-    $SUDO rm -rf "$DEST"
+    $SUDO rm -rf "$DEST" "$OLD"
 fi
 
 say "Resetting permissions and settings"
