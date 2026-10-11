@@ -34,7 +34,12 @@ cask "pikapik" do
 
   uninstall quit: "com.pikapik.app.direct"
 
-  zap trash: [
+  zap launchctl: "com.pikapik.app.direct.fans",
+      delete:    [
+        "/Library/LaunchDaemons/com.pikapik.app.direct.fans.plist",
+        "/Library/PrivilegedHelperTools/com.pikapik.app.direct.fans",
+      ],
+      trash:     [
     "~/Library/Application Scripts/com.pikapik.app.direct.compress",
     "~/Library/Application Scripts/com.pikapik.app.direct.convert",
     "~/Library/Application Scripts/com.pikapik.app.direct.new-file",
