@@ -7,3 +7,23 @@ xcuserdata/
 *.dmg
 *.zip
 /Private/
+
+# AI assistant rules, memory and chats stay local
+helper.local.md
+AGENTS.md
+.mcp.json
+.cursor/
+.opencode/
+.vscode/
+memory/
+chats/
+
+# Signing keys, certificates and local secrets
+*.p12
+*.p8
+*.cer
+*.mobileprovision
+*.provisionprofile
+*.keychain-db
+.env
+.env.*
