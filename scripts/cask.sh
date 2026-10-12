@@ -45,6 +45,7 @@ cask "pikapik" do
     "~/Library/Application Scripts/com.pikapik.app.direct.convert",
     "~/Library/Application Scripts/com.pikapik.app.direct.new-file",
     "~/Library/Application Scripts/com.pikapik.app.direct.preview",
+    "~/Library/Application Support/pikapik",
     "~/Library/Caches/com.pikapik.app.direct",
     "~/Library/Containers/com.pikapik.app.direct.archive",
     "~/Library/Containers/com.pikapik.app.direct.compress",
