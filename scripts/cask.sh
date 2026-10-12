@@ -40,10 +40,12 @@ cask "pikapik" do
         "/Library/PrivilegedHelperTools/com.pikapik.app.direct.fans",
       ],
       trash:     [
+    "~/Library/Application Scripts/com.pikapik.app.direct.archive",
     "~/Library/Application Scripts/com.pikapik.app.direct.compress",
     "~/Library/Application Scripts/com.pikapik.app.direct.convert",
     "~/Library/Application Scripts/com.pikapik.app.direct.new-file",
     "~/Library/Caches/com.pikapik.app.direct",
+    "~/Library/Containers/com.pikapik.app.direct.archive",
     "~/Library/Containers/com.pikapik.app.direct.compress",
     "~/Library/Containers/com.pikapik.app.direct.convert",
     "~/Library/Containers/com.pikapik.app.direct.new-file",
