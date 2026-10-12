@@ -8,7 +8,7 @@ final class TipJar {
 
     enum State { case loading, ready, unavailable }
 
-    static let ids = ["small", "medium", "large"].map { "com.pikapik.app.direct.appstore.tip.\($0)" }
+    static let ids = ["small", "medium", "large"].map { "com.pikapik.app.tip.\($0)" }
 
     private(set) var state = State.loading
     private(set) var products: [Product] = []
