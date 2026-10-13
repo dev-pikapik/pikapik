@@ -24,15 +24,16 @@ cask "pikapik" do
     remove "{{appdir}}/pikapik.app", recursive: true
   end
 
-  uninstall_preflight_steps do
-    run "{{appdir}}/pikapik.app/Contents/MacOS/pikapik", args: ["--uninstall"], must_succeed: false
-  end
-
   uninstall_postflight_steps do
     remove "{{appdir}}/pikapik.app", recursive: true
   end
 
-  uninstall quit: "com.pikapik.app.direct"
+  uninstall quit:   "com.pikapik.app.direct",
+            script: {
+              executable:   "/usr/bin/env",
+              args:         ["#{appdir}/pikapik.app/Contents/MacOS/pikapik", "--uninstall"],
+              must_succeed: false,
+            }
 
   zap launchctl: "com.pikapik.app.direct.fans",
       delete:    [
