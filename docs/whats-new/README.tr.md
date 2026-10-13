@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.39.2"></a>Eşzamanlanan ayarlar artık pikapik klasöründe
+
+<sub>1.39.2 · 13 Ekim 2026</sub>
+
+Ayarlarınızı iCloud ile eşzamanlıyorsanız, artık iCloud Drive’da pikapik yerine pikapik adlı klasörde duruyorlar ve pikapik onları oraya kendisi taşıyor.
+
+<img src="../media/icon.png" width="128" height="128" alt="">
+
+Hiçbir şey yapmanıza gerek yok: ayarlarınız olduğu gibi kalır ve taşındıktan sonra eski klasör kaybolur. İçine kendi dosyalarınızı koyduysanız klasör yerinde kalır. Birden fazla Mac’i eşzamanlıyorsanız, ayarları paylaşmaya devam etmeleri için her birinde pikapik’i güncelleyin.
+
+**Düzeltilenler**
+
+- pikapik’i Homebrew ile tamamen kaldırmak (brew uninstall --zap) artık son kaldırılan uygulamaların listesini de siliyor.
+- Bu sayfadaki eski yazılar artık uygulamayı pikapik olarak anıyor.
+
+---
+
 ## <a id="v1.39.1"></a>Arşiv pencerelerinde alışık olduğunuz başlık çubuğu
 
 <sub>1.39.1 · 13 Ekim 2026</sub>
@@ -816,7 +833,7 @@ Ayarlar › Hakkında’yı açıp “Yenilikler”e tıklayın. Doğrudan buray
 
 Değişikliklerin tam listesi de daha düzenli. Her sürüm çıktığı günü gösteriyor, her sürüm numarası da kendi indirme sayfasını açıyor.
 
-pikapik’un çalışma şeklinde hiçbir şey değişmiyor. Güncellemeler eskisi gibi kendiliğinden ya da Homebrew ile geliyor.
+pikapik’in çalışma şeklinde hiçbir şey değişmiyor. Güncellemeler eskisi gibi kendiliğinden ya da Homebrew ile geliyor.
 
 **Deneyin:** Ayarlar › Hakkında › Yenilikler
 
@@ -853,7 +870,7 @@ Uygulamadaki tüm resimlerde imleç artık bir el gibi hareket ediyor: uzak yerl
 
 <sub>1.26.0 · 8 Ekim 2026</sub>
 
-pikapik’un yüzü yenilendi ve artık silinen uygulamaların geride bıraktığı izinleri temizliyor.
+pikapik’in yüzü yenilendi ve artık silinen uygulamaların geride bıraktığı izinleri temizliyor.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -861,7 +878,7 @@ Yeni simge, koyu bir karo üzerinde mavi, mor ve mercan renginde pikapik işaret
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/leftover-permissions-dark.png"><img src="../media/leftover-permissions-light.png" width="340" alt=""></picture>
 
-Bir uygulamayı sildiğinizde macOS ona verdiğiniz izinleri saklar ve Sistem Ayarları’nda bunları kaldırmanın bir yolu yoktur. Artık “İzinler” sayfasında “Silinen uygulamalardan kalanlar” adlı bir liste var: her uygulama simgesiyle, neye izni olduğu ve ne zaman. “Kaldır” bir uygulamayı temizler, “Tümünü Kaldır” hepsini, yeniden yüklediğiniz bir uygulama ise yalnızca tekrar sorar. Listeyi görmek için pikapik’a Tam Disk Erişimi verin: “Kaldır”a basana kadar yalnızca bakar ve hiçbir şeyi değiştirmez.
+Bir uygulamayı sildiğinizde macOS ona verdiğiniz izinleri saklar ve Sistem Ayarları’nda bunları kaldırmanın bir yolu yoktur. Artık “İzinler” sayfasında “Silinen uygulamalardan kalanlar” adlı bir liste var: her uygulama simgesiyle, neye izni olduğu ve ne zaman. “Kaldır” bir uygulamayı temizler, “Tümünü Kaldır” hepsini, yeniden yüklediğiniz bir uygulama ise yalnızca tekrar sorar. Listeyi görmek için pikapik’e Tam Disk Erişimi verin: “Kaldır”a basana kadar yalnızca bakar ve hiçbir şeyi değiştirmez.
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
 
@@ -955,7 +972,7 @@ Dock yalnızca gizlendiğinde daha hızlı kayabilir. Sizinki hep yerinde duruyo
 
 Bir değişiklikten sonra sayfanın altındaki bir satır, uygulamaları yeniden açtığınızda değişikliğin geçerli olacağını söyler. Finder, Hızlı Bakış ve sütunların yeni hızını ancak yeniden başlatıldıktan sonra gösterir; bu yüzden satırda bir “Finder’ı yeniden başlat” düğmesi var.
 
-Sürgü, örneğin Terminal komutlarıyla zaten hızlandırdığınız bir şeyi asla yavaşlatmaz. “Saptanmışlara Dön” ya da pikapik’u kaldırmak da değerlerinizi silmek yerine önceki hâllerine geri getirir.
+Sürgü, örneğin Terminal komutlarıyla zaten hızlandırdığınız bir şeyi asla yavaşlatmaz. “Saptanmışlara Dön” ya da pikapik’i kaldırmak da değerlerinizi silmek yerine önceki hâllerine geri getirir.
 
 **Deneyin:** Ayarlar › Animasyonlar
 
@@ -977,7 +994,7 @@ Tek bir sürgü yeter. Onu kaydırdığınızda gizli Dock, yeni pencereler, Kay
 
 Yalnızca bir şeyi mi ayarlamak istiyorsunuz? Her efektin kendi ayarı var; küçültme efekti, Dock’ta zıplayan simgeler ve Finder animasyonları için de öyle. Her ayarın yanında küçük bir resim tam seçtiğiniz hızda hareket eder.
 
-“Saptanmışlara Dön” yalnızca pikapik’un değiştirdiklerini geri alır; uygulamayı kaldırmak da aynısını yapar. Bu değerlerden birini bir zamanlar Terminal’de kendiniz ayarladıysanız, pikapik onu olduğu gibi gösterir.
+“Saptanmışlara Dön” yalnızca pikapik’in değiştirdiklerini geri alır; uygulamayı kaldırmak da aynısını yapar. Bu değerlerden birini bir zamanlar Terminal’de kendiniz ayarladıysanız, pikapik onu olduğu gibi gösterir.
 
 **Deneyin:** Ayarlar › Animasyonlar
 
