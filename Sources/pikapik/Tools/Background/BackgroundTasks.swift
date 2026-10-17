@@ -1,6 +1,9 @@
 import AppKit
 import ServiceManagement
 
+private let launchctlPath = "/bin/launchctl"
+private let systemSettingsAppURL = URL(fileURLWithPath: "/System/Applications/System Settings.app")
+
 struct LaunchState {
     var pids: [String: Int] = [:]
     var disabled: [String: Bool] = [:]
@@ -38,7 +41,7 @@ struct Launchd {
 
     static func read() -> Launchd {
         var launchd = Launchd()
-        let state = { (domain: String) in LaunchState(AppRoots.run("/bin/launchctl", ["print", domain]) ?? "") }
+        let state = { (domain: String) in LaunchState(AppRoots.run(launchctlPath, ["print", domain]) ?? "") }
         launchd.gui = state("gui/\(launchd.uid)")
         launchd.user = state("user/\(launchd.uid)")
         launchd.system = state("system")
@@ -264,7 +267,7 @@ enum BackgroundTasks {
         #if !APPSTORE
         for label in turnedOffServices {
             guard let path = HelperServices.sharing[label] else { continue }
-            var task = BackgroundTask(file: URL(fileURLWithPath: path), label: label, title: sharingTitle(label), icon: URL(fileURLWithPath: "/System/Applications/System Settings.app"))
+            var task = BackgroundTask(file: URL(fileURLWithPath: path), label: label, title: sharingTitle(label), icon: systemSettingsAppURL)
             task.developer = "Apple"
             task.scope = .wholeMac
             task.state = .off
@@ -321,7 +324,7 @@ enum BackgroundTasks {
         defaults.set(labels, forKey: turnedOffServicesKey)
     }
 
-    private static func launchctl(_ arguments: [String]) -> String? { AppRoots.run("/bin/launchctl", arguments) }
+    private static func launchctl(_ arguments: [String]) -> String? { AppRoots.run(launchctlPath, arguments) }
 
     static func turnOff(_ task: BackgroundTask, launchctl: ([String]) -> String? = BackgroundTasks.launchctl,
                         list: LoginItemsList = SessionLoginItems(), defaults: UserDefaults = .standard) -> Bool {

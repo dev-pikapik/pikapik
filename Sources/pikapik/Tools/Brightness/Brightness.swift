@@ -1,6 +1,9 @@
 import AppKit
 #if !APPSTORE
 import IOKit
+
+private let displayServicesFrameworkPath = SystemPath.displayServicesFramework
+private let ioKitFrameworkPath = SystemPath.ioKitFramework
 #endif
 
 @MainActor @Observable final class Brightness {
@@ -174,7 +177,7 @@ import IOKit
     }
     #else
     private static let canChangeBrightness: (@convention(c) (CGDirectDisplayID) -> Bool)? = {
-        guard let library = dlopen("/System/Library/PrivateFrameworks/DisplayServices.framework/DisplayServices", RTLD_LAZY),
+        guard let library = dlopen(displayServicesFrameworkPath, RTLD_LAZY),
               let symbol = dlsym(library, "DisplayServicesCanChangeBrightness") else { return nil }
         return unsafeBitCast(symbol, to: (@convention(c) (CGDirectDisplayID) -> Bool).self)
     }()
@@ -289,7 +292,7 @@ private final class MonitorLink: @unchecked Sendable {
     private var quiet = 0
 
     init() {
-        let kit = dlopen("/System/Library/Frameworks/IOKit.framework/IOKit", RTLD_LAZY)
+        let kit = dlopen(ioKitFrameworkPath, RTLD_LAZY)
         create = dlsym(kit, "IOAVServiceCreateWithService").map { unsafeBitCast($0, to: Create.self) }
         copyEDID = dlsym(kit, "IOAVServiceCopyEDID").map { unsafeBitCast($0, to: CopyEDID.self) }
         writeI2C = dlsym(kit, "IOAVServiceWriteI2C").map { unsafeBitCast($0, to: I2C.self) }

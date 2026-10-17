@@ -4,9 +4,9 @@ import SwiftUI
 #if APPSTORE
 @Observable
 final class DesktopIconsTool: Tool {
-    let id = "desktop-icons"
+    let id = ToolID.desktopIcons
     let icon = "menubar.dock.rectangle"
-    var title: String { String(localized: "Hide desktop icons") }
+    var title: String { SettingTitle.hideDesktopIcons }
     let tab = SettingsTab.finder
     let needs: [Permission] = []
     var isActive: Bool { isEnabled }
@@ -30,9 +30,9 @@ final class DesktopIconsTool: Tool {
 #else
 @Observable
 final class DesktopIconsTool: Tool {
-    let id = "desktop-icons"
+    let id = ToolID.desktopIcons
     let icon = "menubar.dock.rectangle"
-    var title: String { String(localized: "Hide desktop icons") }
+    var title: String { SettingTitle.hideDesktopIcons }
     let tab = SettingsTab.finder
     let needs: [Permission] = []
     let isActive = false
@@ -57,7 +57,7 @@ final class DesktopIconsTool: Tool {
     }
 
     private func restartFinder() {
-        guard let pid = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first?.processIdentifier,
+        guard let pid = NSRunningApplication.runningApplications(withBundleIdentifier: AppConstants.finderBundleID).first?.processIdentifier,
               let before = HiddenFilesTool.activity(pid)
         else { finderBusy = false; return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
@@ -72,9 +72,13 @@ final class DesktopIconsTool: Tool {
 
 @Observable
 final class HiddenFilesTool: Tool {
-    let id = "hidden-files"
+    private static let journal = "hidden-files-original"
+    private static let domain = AppConstants.finderBundleID as CFString
+    private static let key = "AppleShowAllFiles" as CFString
+
+    let id = ToolID.hiddenFiles
     let icon = "eye"
-    var title: String { String(localized: "Show hidden files") }
+    var title: String { SettingTitle.showHiddenFiles }
     let tab = SettingsTab.finder
     let needs: [Permission] = []
     let isActive = false
@@ -108,7 +112,7 @@ final class HiddenFilesTool: Tool {
         CFPreferencesSetAppValue(key, value as CFBoolean, domain)
         CFPreferencesAppSynchronize(domain)
         OriginalValue.save(nil, journal)
-        guard let pid = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first?.processIdentifier,
+        guard let pid = NSRunningApplication.runningApplications(withBundleIdentifier: AppConstants.finderBundleID).first?.processIdentifier,
               let before = activity(pid)
         else { return }
         Thread.sleep(forTimeInterval: 0.5)
@@ -120,7 +124,7 @@ final class HiddenFilesTool: Tool {
     }
 
     private func restartFinder() {
-        guard let pid = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first?.processIdentifier,
+        guard let pid = NSRunningApplication.runningApplications(withBundleIdentifier: AppConstants.finderBundleID).first?.processIdentifier,
               let before = Self.activity(pid) else { return finish() }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
             guard let after = Self.activity(pid) else { return finish() }
@@ -151,10 +155,6 @@ final class HiddenFilesTool: Tool {
         mach_timebase_info(&base)
         return Double(base.numer) / Double(base.denom) / 1e9
     }()
-
-    private static let journal = "hidden-files-original"
-    private static let domain = "com.apple.finder" as CFString
-    private static let key = "AppleShowAllFiles" as CFString
 
     private static func read() -> Bool {
         CFPreferencesAppSynchronize(domain)
@@ -229,8 +229,8 @@ private struct DesktopIconsSettings: View {
 struct HiddenFilesHint: View {
     var body: some View {
         HiddenFilesArt()
-        KeyLabel(keys: ["⇧⌘."], title: Text("Show hidden files"), subtitle: Text("Press in Finder to show or hide"))
-            .settingAnchor(String(localized: "Show hidden files"))
+        KeyLabel(keys: ["⇧⌘."], title: Text(SettingTitle.showHiddenFiles), subtitle: Text("Press in Finder to show or hide"))
+            .settingAnchor(SettingTitle.showHiddenFiles)
     }
 }
 #endif

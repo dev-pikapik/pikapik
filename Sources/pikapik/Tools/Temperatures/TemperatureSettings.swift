@@ -9,7 +9,7 @@ struct TemperatureSettings: View {
             Section {
                 VStack(spacing: 14) {
                     ThermalScene(level: model.level)
-                        .settingAnchor(String(localized: "Temperature"))
+                        .settingAnchor(TabTitle.temperatures)
                     VStack(spacing: 4) {
                         Text(model.verdict)
                             .font(.system(size: 34, weight: .semibold, design: .rounded))

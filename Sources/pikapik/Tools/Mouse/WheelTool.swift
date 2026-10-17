@@ -2,14 +2,14 @@ import SwiftUI
 
 @Observable
 final class WheelTool: Tool {
-    let id = "wheel-lines"
+    let id = ToolID.wheelLines
     let icon = "computermouse"
-    var title: String { String(localized: "Scroll by lines") }
+    var title: String { SettingTitle.wheelLines }
     let tab = SettingsTab.mouse
 
-    private static let linesKey = "wheel-lines-count"
-    private static let modeKey = "wheel-lines-mode"
-    private static let pixelsKey = "wheel-lines-pixels"
+    private static let linesKey = PreferenceKey.wheelLinesCount
+    private static let modeKey = PreferenceKey.wheelLinesMode
+    private static let pixelsKey = PreferenceKey.wheelLinesPixels
 
     var isActive: Bool { isEnabled && ScrollTap.shared.isActive }
 
@@ -338,11 +338,11 @@ private struct WheelSettings: View {
                 } label: {
                     RowLabel(Text("Scroll by"), Text("Lines for apps, pixels for games"))
                 }
-                .settingAnchor(String(localized: "Scroll by"))
+                .settingAnchor(SettingTitle.scrollBy)
                 LabeledContent {
                     if tool.mode == .lines {
                         ValueSlider(
-                            title: String(localized: "Distance per click"),
+                            title: SettingTitle.distancePerClick,
                             value: Binding(get: { Double(tool.lines) }, set: { tool.lines = Int($0) }),
                             range: Double(WheelStep.range.lowerBound)...Double(WheelStep.range.upperBound),
                             step: 1,
@@ -351,7 +351,7 @@ private struct WheelSettings: View {
                         )
                     } else {
                         ValueSlider(
-                            title: String(localized: "Distance per click"),
+                            title: SettingTitle.distancePerClick,
                             value: Binding(get: { Double(tool.pixels) }, set: { tool.pixels = Int($0) }),
                             range: Double(WheelStep.pixelStep)...Double(WheelStep.pixelRange.upperBound),
                             step: Double(WheelStep.pixelStep),
@@ -366,7 +366,7 @@ private struct WheelSettings: View {
                     )
                 }
                 .help(Text("The dot marks the default"))
-                .settingAnchor(String(localized: "Distance per click"))
+                .settingAnchor(SettingTitle.distancePerClick)
             }
             .disabled(!tool.isEnabled)
         }

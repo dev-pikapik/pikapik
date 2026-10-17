@@ -3,11 +3,12 @@ import SwiftUI
 
 @Observable
 final class HideAppTool: Tool {
-    let id = "hide-app"
+    let id = ToolID.hideApp
     let icon = "eye.slash"
-    var title: String { String(localized: "Mouse button hides the current app") }
+    var title: String { SettingTitle.hideApp }
     let tab = SettingsTab.mouse
 
+    private static let buttonKey = PreferenceKey.hideAppButton
     static var taken: Int64?
     static var isRecording = false
 
@@ -22,7 +23,7 @@ final class HideAppTool: Tool {
 
     var button: Int {
         didSet {
-            UserDefaults.standard.set(button, forKey: "hide-app-button")
+            UserDefaults.standard.set(button, forKey: Self.buttonKey)
             refresh()
         }
     }
@@ -33,11 +34,11 @@ final class HideAppTool: Tool {
 
     init() {
         isEnabled = UserDefaults.standard.bool(forKey: id)
-        button = UserDefaults.standard.integer(forKey: "hide-app-button")
+        button = UserDefaults.standard.integer(forKey: Self.buttonKey)
     }
 
     func load() {
-        button = UserDefaults.standard.integer(forKey: "hide-app-button")
+        button = UserDefaults.standard.integer(forKey: Self.buttonKey)
         isEnabled = UserDefaults.standard.bool(forKey: id)
     }
 

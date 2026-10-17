@@ -351,7 +351,7 @@ struct PetWardrobeSection: View {
                 .disabled(progress.outfit.isEmpty)
             }
         }
-        .settingAnchor(String(localized: "Wardrobe"))
+        .settingAnchor(SettingTitle.petWardrobe)
     }
 }
 
@@ -372,6 +372,6 @@ struct PetLooksSection: View {
                 Text(petCount(looks.filter { $0.items.allSatisfy(progress.unlocked) }.count, looks.count)).foregroundStyle(.secondary)
             }
         }
-        .settingAnchor(String(localized: "Looks"))
+        .settingAnchor(SettingTitle.petLooks)
     }
 }

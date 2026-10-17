@@ -5,10 +5,10 @@ import UniformTypeIdentifiers
 struct PlayerPage: View {
     static let helper = Bundle.main.bundleURL.appending(path: "Contents/Helpers/pikapik Player.app")
     private static let license = Bundle.main.url(forResource: "Player Licenses", withExtension: "txt")
-    private static let source = URL(string: "https://github.com/dev-pikapik/pikapik/releases/latest")!
-    private static let videos = DefaultApps(types: PlayerFormats.videoTypes, target: helper, previousKey: "player-video-previous-apps")
-    private static let songs = DefaultApps(types: PlayerFormats.musicTypes, target: helper, previousKey: "player-music-previous-apps", fallback: "com.apple.Music")
-    private static let pictures = DefaultApps(types: ImageFormats.types, target: helper, previousKey: "player-image-previous-apps", fallback: ImageFormats.previewApp)
+    private static let source = AppConstants.githubReleasesURL
+    private static let videos = DefaultApps(types: PlayerFormats.videoTypes, target: helper, previousKey: PreferenceKey.playerVideoPreviousApps)
+    private static let songs = DefaultApps(types: PlayerFormats.musicTypes, target: helper, previousKey: PreferenceKey.playerMusicPreviousApps, fallback: "com.apple.Music")
+    private static let pictures = DefaultApps(types: ImageFormats.types, target: helper, previousKey: PreferenceKey.playerImagePreviousApps, fallback: ImageFormats.previewApp)
 
     var body: some View {
         Form {
@@ -19,18 +19,18 @@ struct PlayerPage: View {
                     .controlSize(.large)
                     .padding(.vertical, 12)
                     .frame(maxWidth: .infinity)
-                    .settingAnchor(String(localized: "Open Video…"))
+                    .settingAnchor(SettingTitle.openVideo)
             }
             Section {
-                DefaultAppToggle(title: String(localized: "Open videos in pikapik"), formats: Self.formats(PlayerFormats.video), apps: Self.videos)
-                DefaultAppToggle(title: String(localized: "Open music in pikapik"), formats: Self.formats(PlayerFormats.music), apps: Self.songs)
-                DefaultAppToggle(title: String(localized: "Open pictures in pikapik"), formats: Self.formats(ImageFormats.all), apps: Self.pictures)
+                DefaultAppToggle(title: SettingTitle.openVideosInPikapik, formats: Self.formats(PlayerFormats.video), apps: Self.videos)
+                DefaultAppToggle(title: SettingTitle.openMusicInPikapik, formats: Self.formats(PlayerFormats.music), apps: Self.songs)
+                DefaultAppToggle(title: SettingTitle.openPicturesInPikapik, formats: Self.formats(ImageFormats.all), apps: Self.pictures)
             }
             Section {
                 if let license = Self.license {
-                    row(String(localized: "Player Licenses"), symbol: "doc.text.fill", color: .green) { NSWorkspace.shared.open(license) }
+                    row(SettingTitle.playerLicenses, symbol: "doc.text.fill", color: .green) { NSWorkspace.shared.open(license) }
                 }
-                row(String(localized: "Source Code"), symbol: "chevron.left.forwardslash.chevron.right", color: .gray) { NSWorkspace.shared.open(Self.source) }
+                row(SettingTitle.sourceCode, symbol: "chevron.left.forwardslash.chevron.right", color: .gray) { NSWorkspace.shared.open(Self.source) }
             }
         }
         .formStyle(.grouped)

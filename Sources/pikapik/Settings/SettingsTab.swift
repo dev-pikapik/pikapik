@@ -8,28 +8,28 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .general: String(localized: "General")
-        case .battery: String(localized: "Battery")
-        case .keepAwake: String(localized: "Keep Awake")
-        case .brightness: String(localized: "Brightness")
-        case .fans: String(localized: "Fans")
-        case .temperatures: String(localized: "Temperature")
-        case .speedTest: String(localized: "Speed Test")
-        case .ports: String(localized: "Ports")
-        case .sound: String(localized: "Sound")
-        case .keyboard: String(localized: "Keyboard")
-        case .mouse: String(localized: "Mouse")
-        case .windows: String(localized: "Windows")
-        case .dock: String(localized: "Dock")
-        case .finder: String(localized: "Finder")
-        case .animations: String(localized: "Animations")
-        case .player: String(localized: "Player")
-        case .uninstaller: String(localized: "Uninstaller")
-        case .background: String(localized: "Background Tasks")
-        case .games: String(localized: "Games")
-        case .pet: String(localized: "Pet")
-        case .permissions: String(localized: "Permissions")
-        case .about: String(localized: "About")
+        case .general: TabTitle.general
+        case .battery: TabTitle.battery
+        case .keepAwake: TabTitle.keepAwake
+        case .brightness: TabTitle.brightness
+        case .fans: TabTitle.fans
+        case .temperatures: TabTitle.temperatures
+        case .speedTest: TabTitle.speedTest
+        case .ports: TabTitle.ports
+        case .sound: TabTitle.sound
+        case .keyboard: TabTitle.keyboard
+        case .mouse: TabTitle.mouse
+        case .windows: TabTitle.windows
+        case .dock: TabTitle.dock
+        case .finder: TabTitle.finder
+        case .animations: TabTitle.animations
+        case .player: TabTitle.player
+        case .uninstaller: TabTitle.uninstaller
+        case .background: TabTitle.background
+        case .games: TabTitle.games
+        case .pet: TabTitle.pet
+        case .permissions: TabTitle.permissions
+        case .about: TabTitle.about
         }
     }
 

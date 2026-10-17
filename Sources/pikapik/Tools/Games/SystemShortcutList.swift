@@ -43,7 +43,7 @@ struct SystemShortcutList: View {
             }
         } header: {
             HStack {
-                Text("System keyboard shortcuts")
+                Text(SettingTitle.systemKeyboardShortcuts)
                 Spacer(minLength: 0)
                 Text(verbatim: String(entries.count)).foregroundStyle(.secondary)
             }
@@ -51,7 +51,7 @@ struct SystemShortcutList: View {
             Text("Other apps may have their own shortcuts.")
                 .font(.footnote).foregroundStyle(.secondary)
         }
-        .settingAnchor(String(localized: "System keyboard shortcuts"))
+        .settingAnchor(SettingTitle.systemKeyboardShortcuts)
         .onAppear(perform: refresh)
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in refresh() }
         .onChange(of: SettingsWindow.model.highlight, initial: true) {

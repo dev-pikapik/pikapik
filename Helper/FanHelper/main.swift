@@ -13,6 +13,7 @@ if CommandLine.arguments.contains("--read") {
 }
 
 final class Service: NSObject, FanHelperProtocol, NSXPCListenerDelegate {
+    private static let launchctlExecutableURL = URL(fileURLWithPath: "/bin/launchctl")
     private let lock = NSLock()
     private let updates = NSLock()
     private let smc: SMC
@@ -106,7 +107,7 @@ final class Service: NSObject, FanHelperProtocol, NSXPCListenerDelegate {
 
     private static func launchctl(_ arguments: [String]) -> Bool {
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/bin/launchctl")
+        process.executableURL = launchctlExecutableURL
         process.arguments = arguments
         process.standardOutput = FileHandle.nullDevice
         process.standardError = FileHandle.nullDevice

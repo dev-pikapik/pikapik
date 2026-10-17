@@ -102,7 +102,7 @@ enum GameRules {
 
     static func shelf(_ keys: [String]) -> [String] {
         var seen = Set<String>()
-        return keys.filter { !$0.isEmpty && !$0.hasPrefix("com.pikapik.app.direct") && $0 != "com.apple.finder" && seen.insert($0).inserted }
+        return keys.filter { !$0.isEmpty && !$0.hasPrefix(AppConstants.bundleIDPrefix) && $0 != "com.apple.finder" && seen.insert($0).inserted }
     }
 
     static func processIDs(_ text: String, names: (Int32) -> [String]) -> [Int32] {
@@ -212,7 +212,7 @@ enum GameRule: String, CaseIterable {
 }
 
 struct HotKeyTrace {
-    static let key = "game-mode-hotkeys-off"
+    static let key = PreferenceKey.gameModeHotKeysOff
     var defaults = UserDefaults.standard
     var isEnabled: (Int32) -> Bool = SymbolicHotKeys.isEnabled
     var setEnabled: (Int32, Bool) -> Void = SymbolicHotKeys.set
@@ -265,7 +265,7 @@ enum SymbolicHotKeys {
     }
 
     static func appleDefaults() -> [Int32: Default] {
-        let items = Bundle(path: "/System/Library/ExtensionKit/Extensions/KeyboardSettings.appex")?
+        let items = Bundle(path: SystemPath.keyboardSettingsExtension)?
             .url(forResource: "DefaultShortcutsTable", withExtension: "xml").flatMap { NSArray(contentsOf: $0) as? [[String: Any]] } ?? []
         var result: [Int32: Default] = [:]
         func walk(_ item: [String: Any]) {
@@ -294,7 +294,7 @@ enum SymbolicHotKeys {
     #if APPSTORE
     private static var swallowed: [Int32: UInt64] = [:]
     private static let defaults = appleDefaults()
-    // ponytail: callers loop over up to 65_536 IDs, so the list is read once a second; a shortcut changed within that second shows on the next read
+    // Callers loop over up to 65_536 IDs, so the list is read once a second; a shortcut changed within that second shows on the next read.
     private static var snapshot: (time: TimeInterval, table: [Int32: Entry]) = (-.infinity, [:])
 
     private static func configured(_ id: Int32) -> Entry? {
@@ -334,7 +334,7 @@ enum SymbolicHotKeys {
     private typealias IsEnabled = @convention(c) (Int32) -> Bool
     private typealias Value = @convention(c) (Int32, UnsafeMutablePointer<UInt16>, UnsafeMutablePointer<UInt16>, UnsafeMutablePointer<UInt64>) -> Int32
 
-    private static let library = dlopen("/System/Library/PrivateFrameworks/SkyLight.framework/SkyLight", RTLD_LAZY)
+    private static let library = dlopen(SystemPath.skyLightFramework, RTLD_LAZY)
     private static let setter = dlsym(library, "CGSSetSymbolicHotKeyEnabled").map { unsafeBitCast($0, to: SetEnabled.self) }
     private static let getter = dlsym(library, "CGSIsSymbolicHotKeyEnabled").map { unsafeBitCast($0, to: IsEnabled.self) }
     private static let reader = dlsym(library, "CGSGetSymbolicHotKeyValue").map { unsafeBitCast($0, to: Value.self) }

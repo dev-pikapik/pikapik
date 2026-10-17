@@ -5,9 +5,9 @@ import SwiftUI
 final class BrightnessKeysTool: Tool {
     static let shared = BrightnessKeysTool()
 
-    let id = "brightness-keys"
+    let id = ToolID.brightnessKeys
     let icon = "sun.max"
-    var title: String { String(localized: "Brightness keys") }
+    var title: String { SettingTitle.brightnessKeys }
     let tab = SettingsTab.brightness
     var needs: [Permission] { [.accessibility] }
 

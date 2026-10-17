@@ -5,28 +5,28 @@ struct SettingsFile {
         case apply, upload, none
     }
 
-    static let app = "pikapik"
+    static let app = AppConstants.legacyAppName
     static let name = "settings.json"
     static let maxSize = 2_000_000
     static let keys = Set([
-        "appearance", "AppleLanguages", "open-at-login", "keep-running", "check-updates",
-        "command-keys-quit", "command-keys-close", "command-keys-quit-shortcut", "command-keys-close-shortcut",
-        "input-switch", "key-repeat", "home-end", "home-end-excluded",
-        "layout-fix", "layout-fix-auto", "layout-fix-shortcut", "layout-fix-excluded",
-        "linear-pointer", "linear-pointer-speed", "wheel-lines", "wheel-lines-count", "wheel-lines-mode", "wheel-lines-pixels",
-        "wheel-direction", "wheel-direction-natural", "wheel-direction-trackpad-natural",
-        "side-buttons", "side-buttons-swap", "hide-app", "hide-app-button", "middle-click", "middle-click-fingers",
-        "quit-on-close", "quit-on-close-excluded", "dock-hide", "dock-hide-action", "dock-display", "window-zoom", "window-zoom-excluded", "new-file", "compress", "convert",
-        "archive", "archive-format", "archive-split",
-        "finder-open", "finder-cut", "finder-delete",
-        "game-mode", "game-mode-games", "game-mode-not-games", "game-mode-system-shortcuts", "game-mode-fps", "game-mode-fps-corner",
-        "keep-awake-mode", "keep-awake-duration",
-        "keep-awake-display", "keep-awake-lid", "keep-awake-battery",
-        "fans-rpm", "brightness-keys",
-        "animations-speed", "animations-dock-delay", "animations-dock-speed", "animations-minimize", "animations-bounce",
-        "animations-window-open", "animations-resize", "animations-quick-look", "animations-finder-columns", "animations-finder",
-        "pet", "pet-talks", "pet-rhythm", "pet-ball", "uninstaller-trash-watch",
-        "app-volume", "app-volume-levels", "app-volume-muted", "app-volume-names",
+        PreferenceKey.appearance, PreferenceKey.appleLanguages, PreferenceKey.openAtLogin, PreferenceKey.keepRunning, PreferenceKey.checkUpdates,
+        PreferenceKey.commandKeysQuit, PreferenceKey.commandKeysClose, PreferenceKey.commandKeysQuitShortcut, PreferenceKey.commandKeysCloseShortcut,
+        ToolID.inputSwitch, ToolID.keyRepeat, ToolID.homeEnd, PreferenceKey.homeEndExcluded,
+        ToolID.layoutFix, PreferenceKey.layoutFixAuto, PreferenceKey.layoutFixShortcut, PreferenceKey.layoutFixExcluded,
+        ToolID.linearPointer, PreferenceKey.linearPointerSpeed, ToolID.wheelLines, PreferenceKey.wheelLinesCount, PreferenceKey.wheelLinesMode, PreferenceKey.wheelLinesPixels,
+        ToolID.wheelDirection, PreferenceKey.wheelDirectionNatural, PreferenceKey.wheelDirectionTrackpadNatural,
+        ToolID.sideButtons, PreferenceKey.sideButtonsSwap, ToolID.hideApp, PreferenceKey.hideAppButton, ToolID.middleClick, PreferenceKey.middleClickFingers,
+        ToolID.quitOnClose, PreferenceKey.quitOnCloseExcluded, ToolID.dockHide, PreferenceKey.dockHideAction, ToolID.dockDisplay, ToolID.windowZoom, PreferenceKey.windowZoomExcluded, ToolID.newFile, ToolID.compress, ToolID.convert,
+        ToolID.archive, PreferenceKey.archiveFormat, PreferenceKey.archiveSplit,
+        ToolID.finderOpen, ToolID.finderCut, ToolID.finderDelete,
+        ToolID.gameMode, PreferenceKey.gameModeGames, PreferenceKey.gameModeNotGames, PreferenceKey.gameModeSystemShortcuts, PreferenceKey.gameModeFPS, PreferenceKey.gameModeFPSCorner,
+        PreferenceKey.keepAwakeMode, PreferenceKey.keepAwakeDuration,
+        PreferenceKey.keepAwakeDisplay, PreferenceKey.keepAwakeLid, PreferenceKey.keepAwakeBattery,
+        PreferenceKey.fansRPM, ToolID.brightnessKeys,
+        PreferenceKey.animationsSpeed, PreferenceKey.animationsDockDelay, PreferenceKey.animationsDockSpeed, PreferenceKey.animationsMinimize, PreferenceKey.animationsBounce,
+        PreferenceKey.animationsWindowOpen, PreferenceKey.animationsResize, PreferenceKey.animationsQuickLook, PreferenceKey.animationsFinderColumns, PreferenceKey.animationsFinder,
+        ToolID.pet, PreferenceKey.petTalks, PreferenceKey.petRhythm, PreferenceKey.petBall, ToolID.uninstallerTrashWatch,
+        ToolID.appVolume, PreferenceKey.appVolumeLevels, PreferenceKey.appVolumeMuted, PreferenceKey.appVolumeNames,
     ] + GameRule.allCases.map(\.key))
 
     var settings: [String: Any]

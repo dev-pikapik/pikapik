@@ -202,25 +202,25 @@ enum SystemShortcutCatalog {
         guard let rule = SystemGameShortcut.controller(id) else { return nil }
         switch rule {
         case .commandQ, .commandW, .controlClick, .shiftWheel, .cursor, .display, .swipes: return nil
-        case .appSwitcher: return String(localized: "Apps and windows don’t switch")
-        case .hide: return String(localized: "The game doesn’t hide")
+        case .appSwitcher: return SettingTitle.gameAppSwitcher
+        case .hide: return SettingTitle.gameHide
         case .spotlight: return String(localized: "Spotlight")
-        case .siri: return String(localized: "Siri and voice typing don’t start")
+        case .siri: return SettingTitle.gameSiri
         case .launchpad: return String(localized: "Launchpad")
         case .missionControl: return String(localized: "Mission Control")
         case .appWindows: return String(localized: "App Exposé")
         case .showDesktop: return String(localized: "Show Desktop")
-        case .desktops: return String(localized: "Desktops don’t switch")
-        case .desktopNumbers: return String(localized: "Desktops don’t switch by number")
-        case .emoji: return String(localized: "Emoji don’t open")
+        case .desktops: return SettingTitle.gameDesktops
+        case .desktopNumbers: return SettingTitle.gameDesktopNumbers
+        case .emoji: return SettingTitle.gameEmoji
         case .lookUp: return String(localized: "Look Up")
-        case .focusKeys: return String(localized: "The keyboard stays in the game")
-        case .globe: return String(localized: "🌐 shortcuts are paused")
+        case .focusKeys: return SettingTitle.gameFocusKeys
+        case .globe: return SettingTitle.gameGlobe
         }
     }
 
     private static func metadata() -> [Int32: Metadata] {
-        guard let bundle = Bundle(path: "/System/Library/ExtensionKit/Extensions/KeyboardSettings.appex") else { return [:] }
+        guard let bundle = Bundle(path: SystemPath.keyboardSettingsExtension) else { return [:] }
         let localized = strings(bundle, "DefaultShortcutsTable")
         let items = bundle.url(forResource: "DefaultShortcutsTable", withExtension: "xml")
             .flatMap { NSArray(contentsOf: $0) as? [[String: Any]] } ?? []
@@ -245,7 +245,7 @@ enum SystemShortcutCatalog {
         for (twin, id) in [16: 15, 18: 17, 20: 19, 22: 21, 154: 53, 166: 53, 170: 53, 155: 54, 165: 54, 169: 54] as [Int32: Int32] where result[twin] == nil {
             result[twin] = result[id]
         }
-        if let reader = Bundle(path: "/System/Library/ExtensionKit/Extensions/AccessibilitySettingsExtension.appex"),
+        if let reader = Bundle(path: SystemPath.accessibilitySettingsExtension),
            let id = reader.url(forResource: "DefaultAccessibilityReaderShortcutsTable", withExtension: "xml").flatMap({ NSArray(contentsOf: $0) as? [[String: Any]] })?.first?["sybmolichotkey"] as? Int32,
            let name = nonempty(strings(reader, "Localizable")["accessibilityReader.title"]),
            let accessibility = result.values.first(where: { $0.section == "universalaccess" }) {

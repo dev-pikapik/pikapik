@@ -10,7 +10,8 @@ enum DockEdges {
 }
 #else
 enum DockEdges {
-    private static let key = "game-mode-dock", dock = "com.apple.dock" as CFString
+    private static let key = PreferenceKey.gameModeDock, dock = "com.apple.dock" as CFString
+    private static let killallURL = URL(fileURLWithPath: SystemPath.killall)
     private static let corners = ["wvous-tl-corner", "wvous-tr-corner", "wvous-bl-corner", "wvous-br-corner"], delay = "autohide-delay"
     private static var pending: DispatchWorkItem?
 
@@ -80,7 +81,7 @@ enum DockEdges {
 
     private static func relaunch() {
         CFPreferencesAppSynchronize(dock)
-        _ = try? Process.run(URL(fileURLWithPath: "/usr/bin/killall"), arguments: ["Dock"])
+        _ = try? Process.run(killallURL, arguments: ["Dock"])
     }
 }
 #endif
@@ -91,7 +92,7 @@ enum CursorLock {
     private typealias Connection = @convention(c) () -> Int32
     private typealias Region = @convention(c) (UnsafePointer<CGRect>, Int) -> Unmanaged<AnyObject>?
 
-    private static let library = dlopen("/System/Library/PrivateFrameworks/SkyLight.framework/SkyLight", RTLD_LAZY)
+    private static let library = dlopen(SystemPath.skyLightFramework, RTLD_LAZY)
     private static let lock = dlsym(library, "SLSSetCursorRegionLock").map { unsafeBitCast($0, to: Lock.self) }
     private static let connection = dlsym(library, "SLSMainConnectionID").map { unsafeBitCast($0, to: Connection.self) }
     private static let region = dlsym(UnsafeMutableRawPointer(bitPattern: -2), "CGRegionCreateWithRects").map { unsafeBitCast($0, to: Region.self) }

@@ -40,7 +40,7 @@ actor UninstallerEngine {
 
     func identify(_ url: URL) -> Dropped? {
         guard let app = AppIdentity.read(at: url) else { return nil }
-        let protected = app.bundleID.hasPrefix("com.pikapik.app.direct") || ready().footprint.isSystem(app)
+        let protected = app.bundleID.hasPrefix(AppConstants.bundleIDPrefix) || ready().footprint.isSystem(app)
         return protected ? .refused(app.displayName) : .app(app)
     }
 

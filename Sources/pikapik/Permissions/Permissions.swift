@@ -26,30 +26,30 @@ enum Permission: CaseIterable {
             #endif
         case .inputMonitoring:
             ("com.apple.graphic-icon.input-monitoring", "keyboard.badge.eye",
-             String(localized: "Input Monitoring"), String(localized: "Lets the app see clicks and keys"))
+             SettingTitle.inputMonitoring, String(localized: "Lets the app see clicks and keys"))
         case .screenRecording:
             ("com.apple.graphic-icon.screen-recording", "rectangle.dashed.badge.record",
-             String(localized: "Screen Recording"),
+             SettingTitle.screenRecording,
              FrameRateMeter.hasTrace ? String(localized: "Needed for some games") : String(localized: "Needed to count frames"))
         case .systemAudio:
-            ("", "waveform", String(localized: "System Audio Recording"), String(localized: "To change each app’s volume"))
+            ("", "waveform", SettingTitle.systemAudioRecording, String(localized: "To change each app’s volume"))
         #if !APPSTORE
         case .fans:
-            ("", "lock.shield", String(localized: "Administrator access"), String(localized: "Lets the app change the fan speed and turn off services for the whole Mac"))
+            ("", "lock.shield", SettingTitle.adminAccess, String(localized: "Lets the app change the fan speed and turn off services for the whole Mac"))
         #endif
         case .finder:
             ("", "puzzlepiece.extension",
-             String(localized: "Finder Extensions"), String(localized: "Lets the app add items to the right-click menu in Finder"))
+             SettingTitle.finderExtensions, String(localized: "Lets the app add items to the right-click menu in Finder"))
         #if APPSTORE
         case .folders:
-            ("", "folder.fill", String(localized: "Folders"), String(localized: "Lets the app save new files next to yours and see your background tasks"))
+            ("", "folder.fill", SettingTitle.foldersPermission, String(localized: "Lets the app save new files next to yours and see your background tasks"))
         #else
         case .iCloud:
             ("", "icloud.fill",
-             String(localized: "iCloud Drive"), String(localized: "Lets the app keep your settings in iCloud Drive to sync them"))
+             SettingTitle.iCloudDrive, String(localized: "Lets the app keep your settings in iCloud Drive to sync them"))
         case .fullDisk:
             ("com.apple.graphic-icon.privacy", "hand.raised.fill",
-             String(localized: "Full Disk Access"), String(localized: "Lets the app find permissions left by deleted apps"))
+             SettingTitle.fullDiskAccess, String(localized: "Lets the app find permissions left by deleted apps"))
         #endif
         }
     }
@@ -229,17 +229,18 @@ enum Permission: CaseIterable {
 @Observable
 final class Permissions {
     static let shared = Permissions()
+    private static let tccutilExecutableURL = URL(fileURLWithPath: SystemPath.tccutil)
 
     private(set) var accessibility = AXIsProcessTrusted()
     private(set) var inputMonitoring = CGPreflightListenEventAccess()
     private(set) var fileAccess = Permissions.hasFileAccess
     private(set) var screenRecording = CGPreflightScreenCaptureAccess()
-    private(set) var systemAudio = UserDefaults.standard.bool(forKey: "system-audio-granted") {
-        didSet { UserDefaults.standard.set(systemAudio, forKey: "system-audio-granted") }
+    private(set) var systemAudio = UserDefaults.standard.bool(forKey: PreferenceKey.systemAudioGranted) {
+        didSet { UserDefaults.standard.set(systemAudio, forKey: PreferenceKey.systemAudioGranted) }
     }
     private(set) var systemAudioRequested = false
-    var systemAudioAsked = UserDefaults.standard.bool(forKey: "system-audio-asked") {
-        didSet { UserDefaults.standard.set(systemAudioAsked, forKey: "system-audio-asked") }
+    var systemAudioAsked = UserDefaults.standard.bool(forKey: PreferenceKey.systemAudioAsked) {
+        didSet { UserDefaults.standard.set(systemAudioAsked, forKey: PreferenceKey.systemAudioAsked) }
     }
 
     var allGranted: Bool { accessibility && inputMonitoring }
@@ -292,7 +293,7 @@ final class Permissions {
     func reset(_ service: String) {
         guard let id = Bundle.main.bundleIdentifier else { return }
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/tccutil")
+        process.executableURL = Self.tccutilExecutableURL
         process.arguments = ["reset", service, id]
         try? process.run()
         process.waitUntilExit()

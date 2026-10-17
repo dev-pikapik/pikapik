@@ -8,7 +8,8 @@ final class SpeedTest {
     }
 
     static let shared = SpeedTest()
-    private static let key = "speed-test-result"
+    private static let key = PreferenceKey.speedTestResult
+    private static let networkQualityExecutableURL = URL(fileURLWithPath: SystemPath.networkQuality)
 
     private(set) var result: SpeedResult?
     private(set) var phase: Phase?
@@ -64,7 +65,7 @@ final class SpeedTest {
         let output = FileHandle(fileDescriptor: primary, closeOnDealloc: true)
         let terminal = FileHandle(fileDescriptor: secondary, closeOnDealloc: false)
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/networkQuality")
+        process.executableURL = Self.networkQualityExecutableURL
         process.arguments = ["-s", "-c" + file.path]
         process.standardOutput = terminal
         process.standardError = terminal
@@ -212,7 +213,7 @@ struct SpeedTestSettings: View {
                 }
                 .padding(.vertical, 12)
                 .frame(maxWidth: .infinity)
-                .settingAnchor(String(localized: "Check Speed"))
+                .settingAnchor(SettingTitle.checkSpeed)
             } footer: {
                 #if APPSTORE
                 Text("Takes about 15 seconds. The check uses speed.cloudflare.com.")
@@ -248,12 +249,12 @@ struct SpeedTestSettings: View {
                     } header: {
                         Text("What it’s good for")
                     }
-                    .settingAnchor(String(localized: "What it’s good for"))
+                    .settingAnchor(SettingTitle.whatItsGoodFor)
                 }
                 .opacity(test.isRunning ? 0.4 : 1)
             }
             Section {
-                ShortcutLink(title: String(localized: "Speed Test"), path: "speed-test")
+                ShortcutLink(title: TabTitle.speedTest, path: "speed-test")
             } header: {
                 Text("Buttons in Control Center and widgets")
             } footer: {

@@ -13,7 +13,7 @@ struct LayoutFixServiceSettings: View {
             LayoutFixArt(on: true, service: tool.fixesAsYouType ? nil : LayoutFixService.title)
             RowLabel(Text(tool.title), Text(LayoutFixService.hint))
                 .settingAnchor(tool.title)
-            let selectedTitle = String(localized: "Fix the selected text")
+            let selectedTitle = SettingTitle.fixSelectedText
             let selectedSub = String(localized: "Select the text, then press these keys")
             Toggle(isOn: $tool.isEnabled) {
                 Group {
@@ -33,9 +33,9 @@ struct LayoutFixServiceSettings: View {
             }
             .needs([.accessibility])
             Toggle(isOn: $tool.fixesAsYouType) {
-                KeyLabel(keys: [String(localized: "Space")], title: Text("Fix words as you type"), subtitle: Text("When you press Space or Return"))
+                KeyLabel(keys: [String(localized: "Space")], title: Text(SettingTitle.fixWordsAsYouType), subtitle: Text("When you press Space or Return"))
             }
-            .settingAnchor(String(localized: "Fix words as you type"))
+            .settingAnchor(SettingTitle.fixWordsAsYouType)
             .help(Text("Press \(tool.shortcut.text) right after a fix to undo it. That word won’t be fixed again."))
             .needs([.accessibility])
             if tool.fixesAsYouType {
@@ -98,19 +98,19 @@ struct LayoutFixSettings: View {
         )
         if inSettings {
             Toggle(isOn: $tool.fixesAsYouType) {
-                KeyLabel(keys: [String(localized: "Space")], title: Text("Fix words as you type"), subtitle: Text("When you press Space or Return"))
+                KeyLabel(keys: [String(localized: "Space")], title: Text(SettingTitle.fixWordsAsYouType), subtitle: Text("When you press Space or Return"))
             }
             .disabled(!tool.isEnabled)
-            .settingAnchor(String(localized: "Fix words as you type"))
+            .settingAnchor(SettingTitle.fixWordsAsYouType)
             ShortcutLabel(
                 shortcut: $tool.shortcut,
                 standard: LayoutFixTool.standard,
-                title: Text("Fix the last word or selected text"),
+                title: Text(SettingTitle.fixLastWordOrSelectedText),
                 subtitle: Text("Press again for other layouts. Right after a fix, it undoes it."),
                 others: []
             )
             .disabled(!tool.isEnabled)
-            .settingAnchor(String(localized: "Fix the last word or selected text"))
+            .settingAnchor(SettingTitle.fixLastWordOrSelectedText)
             LayoutFixNotes(tool: tool)
         }
         AppExclusions(title: String(localized: "Don’t fix text in these apps"), apps: $tool.excluded, isEnabled: tool.isEnabled)

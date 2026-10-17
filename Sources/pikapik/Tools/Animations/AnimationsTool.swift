@@ -3,10 +3,11 @@ import SwiftUI
 
 final class AnimationsTool: AnimationsEngine, Tool {
     static let shared = AnimationsTool()
+    private static let killallExecutableURL = URL(fileURLWithPath: SystemPath.killall)
 
-    let id = "animations"
+    let id = ToolID.animations
     let icon = "hare"
-    var title: String { String(localized: "Animations") }
+    var title: String { TabTitle.animations }
     var tab: SettingsTab { .animations }
     var isActive: Bool { isEnabled }
     var needs: [Permission] { [] }
@@ -71,7 +72,7 @@ final class AnimationsTool: AnimationsEngine, Tool {
 
     static func killall(_ name: String, wait: Bool = false) {
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/killall")
+        process.executableURL = killallExecutableURL
         process.arguments = [name]
         guard (try? process.run()) != nil else { return }
         if wait { process.waitUntilExit() }
@@ -102,15 +103,15 @@ extension AnimationLabel {
 extension AnimationSetting {
     var title: String {
         switch self {
-        case .dockDelay: String(localized: "Delay before the Dock appears")
-        case .dockSpeed: String(localized: "How fast the Dock slides out")
-        case .minimize: String(localized: "Minimize effect")
-        case .bounce: String(localized: "Bouncing icons")
-        case .windowOpen: String(localized: "Opening windows")
-        case .resize: String(localized: "Save dialogs and resizing")
-        case .quickLook: String(localized: "Quick Look")
-        case .finderColumns: String(localized: "Columns in Finder")
-        case .finder: String(localized: "Finder animations")
+        case .dockDelay: SettingTitle.dockDelay
+        case .dockSpeed: SettingTitle.dockSpeed
+        case .minimize: SettingTitle.minimizeEffect
+        case .bounce: SettingTitle.bouncingIcons
+        case .windowOpen: SettingTitle.openingWindows
+        case .resize: SettingTitle.saveDialogsAndResizing
+        case .quickLook: SettingTitle.quickLook
+        case .finderColumns: SettingTitle.finderColumns
+        case .finder: SettingTitle.finderAnimations
         }
     }
 
@@ -226,7 +227,7 @@ private struct SpeedRow: View {
     @State private var drag: Double?
 
     var body: some View {
-        let title = String(localized: "Animation speed")
+        let title = SettingTitle.animationSpeed
         let shown = drag ?? tool.speed
         let value = AnimationSpeed.label(shown).text
         VStack(alignment: .leading, spacing: 8) {

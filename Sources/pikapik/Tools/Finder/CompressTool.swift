@@ -2,11 +2,11 @@ import AppKit
 import SwiftUI
 
 final class CompressTool: Tool {
-    let id = "compress"
+    let id = ToolID.compress
     let icon = "arrow.down.right.and.arrow.up.left"
-    var title: String { String(localized: "Smaller Copy in Finder") }
+    var title: String { SettingTitle.smallerCopyInFinder }
     let tab = SettingsTab.finder
-    private let finder = FinderExtension(bundle: "Compress", key: "compress")
+    private let finder = FinderExtension(bundle: "Compress", key: ToolID.compress)
 
     var isActive: Bool { finder.isActive }
     var needs: [Permission] { finder.needsSettings ? [.finder] : [] }

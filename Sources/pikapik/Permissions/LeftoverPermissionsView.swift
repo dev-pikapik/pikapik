@@ -2,10 +2,12 @@ import AppKit
 import SwiftUI
 
 extension LeftoverPermissions.Lookup {
+    private static let systemExtensionsDirectory = "/Library/SystemExtensions"
+
     static var live: Self {
         let files = FileManager.default
         let volumes = Set((files.mountedVolumeURLs(includingResourceValuesForKeys: nil) ?? []).map(\.path))
-        let root = "/Library/SystemExtensions"
+        let root = systemExtensionsDirectory
         let extensions = ((try? files.contentsOfDirectory(atPath: root)) ?? []).flatMap { folder in
             ((try? files.contentsOfDirectory(atPath: "\(root)/\(folder)")) ?? []).map { "\(root)/\(folder)/\($0)" }
         }
@@ -30,7 +32,9 @@ final class LeftoverModel {
     @ObservationIgnored private let system: String
     @ObservationIgnored private let user: String
 
-    private static let lsregister = "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
+    private static let lsregisterPath = SystemPath.lsregister
+    private static let tccutilPath = SystemPath.tccutil
+    private static let trueBinaryPath = "/usr/bin/true"
 
     init(system: String = LeftoverPermissions.systemDatabase, user: String = LeftoverPermissions.userDatabase) {
         self.system = system
@@ -76,7 +80,7 @@ final class LeftoverModel {
         let executable = stub.appendingPathComponent("Contents/MacOS/Leftover")
         let info: NSDictionary = ["CFBundleIdentifier": id, "CFBundlePackageType": "APPL", "CFBundleExecutable": "Leftover"]
         func clear() {
-            run(lsregister, "-u", stub.path)
+            run(lsregisterPath, "-u", stub.path)
             try? files.removeItem(at: stub)
         }
         clear()
@@ -84,11 +88,11 @@ final class LeftoverModel {
         guard !LeftoverPermissions.isSystem(id, isPath: false),
               LeftoverPermissions.place(id, isPath: false, .live) == .gone,
               (try? files.createDirectory(at: executable.deletingLastPathComponent(), withIntermediateDirectories: true)) != nil,
-              (try? files.copyItem(atPath: "/usr/bin/true", toPath: executable.path)) != nil,
+              (try? files.copyItem(atPath: trueBinaryPath, toPath: executable.path)) != nil,
               (try? info.write(to: stub.appendingPathComponent("Contents/Info.plist"))) != nil
         else { return }
-        run(lsregister, "-f", stub.path)
-        run("/usr/bin/tccutil", "reset", "All", id)
+        run(lsregisterPath, "-f", stub.path)
+        run(tccutilPath, "reset", "All", id)
     }
 
     private static func run(_ path: String, _ arguments: String...) {
@@ -110,7 +114,7 @@ struct LeftoverPermissionsSection: View {
         Section {
             Group {
                 LeftoversArt()
-                    .settingAnchor(String(localized: "Left by deleted apps"))
+                    .settingAnchor(SettingTitle.leftoverPermissions)
                 switch model.state {
                 case .loading:
                     EmptyView()

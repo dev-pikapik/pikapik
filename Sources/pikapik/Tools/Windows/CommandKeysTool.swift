@@ -3,37 +3,42 @@ import SwiftUI
 
 @Observable
 final class CommandKeysTool: Tool {
-    let id = "command-keys"
+    let id = ToolID.commandKeys
     let icon = "command"
-    var title: String { String(localized: "Protect quitting and closing") }
+    var title: String { SettingTitle.commandKeys }
     let tab = SettingsTab.windows
+
+    private static let quitKey = PreferenceKey.commandKeysQuit
+    private static let closeKey = PreferenceKey.commandKeysClose
+    private static let quitShortcutKey = PreferenceKey.commandKeysQuitShortcut
+    private static let closeShortcutKey = PreferenceKey.commandKeysCloseShortcut
 
     private(set) var isActive = false
 
     var protectsQuit: Bool {
         didSet {
-            UserDefaults.standard.set(protectsQuit, forKey: "command-keys-quit")
+            UserDefaults.standard.set(protectsQuit, forKey: Self.quitKey)
             refresh()
         }
     }
 
     var protectsClose: Bool {
         didSet {
-            UserDefaults.standard.set(protectsClose, forKey: "command-keys-close")
+            UserDefaults.standard.set(protectsClose, forKey: Self.closeKey)
             refresh()
         }
     }
 
     var quitKeys: Shortcut {
         didSet {
-            Self.save(quitKeys, .quit, "command-keys-quit-shortcut")
+            Self.save(quitKeys, .quit, Self.quitShortcutKey)
             refresh()
         }
     }
 
     var closeKeys: Shortcut {
         didSet {
-            Self.save(closeKeys, .close, "command-keys-close-shortcut")
+            Self.save(closeKeys, .close, Self.closeShortcutKey)
             refresh()
         }
     }
@@ -60,17 +65,17 @@ final class CommandKeysTool: Tool {
     @ObservationIgnored var held: (key: Int64, target: Int64)?
 
     init() {
-        protectsQuit = UserDefaults.standard.bool(forKey: "command-keys-quit")
-        protectsClose = UserDefaults.standard.bool(forKey: "command-keys-close")
-        quitKeys = Shortcut(stored: UserDefaults.standard.object(forKey: "command-keys-quit-shortcut")) ?? .quit
-        closeKeys = Shortcut(stored: UserDefaults.standard.object(forKey: "command-keys-close-shortcut")) ?? .close
+        protectsQuit = UserDefaults.standard.bool(forKey: Self.quitKey)
+        protectsClose = UserDefaults.standard.bool(forKey: Self.closeKey)
+        quitKeys = Shortcut(stored: UserDefaults.standard.object(forKey: Self.quitShortcutKey)) ?? .quit
+        closeKeys = Shortcut(stored: UserDefaults.standard.object(forKey: Self.closeShortcutKey)) ?? .close
     }
 
     func load() {
-        protectsQuit = UserDefaults.standard.bool(forKey: "command-keys-quit")
-        protectsClose = UserDefaults.standard.bool(forKey: "command-keys-close")
-        quitKeys = Shortcut(stored: UserDefaults.standard.object(forKey: "command-keys-quit-shortcut")) ?? .quit
-        closeKeys = Shortcut(stored: UserDefaults.standard.object(forKey: "command-keys-close-shortcut")) ?? .close
+        protectsQuit = UserDefaults.standard.bool(forKey: Self.quitKey)
+        protectsClose = UserDefaults.standard.bool(forKey: Self.closeKey)
+        quitKeys = Shortcut(stored: UserDefaults.standard.object(forKey: Self.quitShortcutKey)) ?? .quit
+        closeKeys = Shortcut(stored: UserDefaults.standard.object(forKey: Self.closeShortcutKey)) ?? .close
     }
 
     func reset() {
@@ -188,10 +193,10 @@ private struct CommandKeysSettings: View {
     var body: some View {
         if inSettings {
             QuitCloseArt(action: .quit, keys: tool.quitKeys, on: tool.protectsQuit)
-            row("Q", String(localized: "Quit app"), isOn: $tool.protectsQuit, keys: $tool.quitKeys, standard: .quit, other: (String(localized: "Close window"), tool.closeKeys))
-                .settingAnchor(String(localized: "Protect quitting and closing"))
+            row("Q", SettingTitle.quitApp, isOn: $tool.protectsQuit, keys: $tool.quitKeys, standard: .quit, other: (SettingTitle.closeWindow, tool.closeKeys))
+                .settingAnchor(SettingTitle.commandKeys)
             QuitCloseArt(action: .close, keys: tool.closeKeys, on: tool.protectsClose)
-            row("W", String(localized: "Close window"), isOn: $tool.protectsClose, keys: $tool.closeKeys, standard: .close, other: (String(localized: "Quit app"), tool.quitKeys))
+            row("W", SettingTitle.closeWindow, isOn: $tool.protectsClose, keys: $tool.closeKeys, standard: .close, other: (SettingTitle.quitApp, tool.quitKeys))
         } else {
             ToggleRow(
                 icon: tool.icon,

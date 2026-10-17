@@ -376,7 +376,10 @@ final class PetStage: NSObject {
             guard AXUIElementCopyAttributeValue(child, kAXRoleAttribute as CFString, &role) == .success, role as? String == kAXListRole,
                   AXUIElementCopyAttributeValue(child, kAXPositionAttribute as CFString, &position) == .success,
                   AXUIElementCopyAttributeValue(child, kAXSizeAttribute as CFString, &size) == .success,
-                  let position, let size, AXValueGetValue(position as! AXValue, .cgPoint, &point), AXValueGetValue(size as! AXValue, .cgSize, &extent),
+                  let position, CFGetTypeID(position) == AXValueGetTypeID(),
+                  let size, CFGetTypeID(size) == AXValueGetTypeID(),
+                  AXValueGetValue(unsafeBitCast(position, to: AXValue.self), .cgPoint, &point),
+                  AXValueGetValue(unsafeBitCast(size, to: AXValue.self), .cgSize, &extent),
                   extent.width > 0 else { continue }
             return CGRect(origin: point, size: extent)
         }

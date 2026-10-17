@@ -172,7 +172,7 @@ private enum AXSearch {
 
     private static func element(_ parent: AXUIElement, _ attribute: String) -> AXUIElement? {
         guard let value = value(parent, attribute), CFGetTypeID(value) == AXUIElementGetTypeID() else { return nil }
-        return (value as! AXUIElement)
+        return unsafeBitCast(value, to: AXUIElement.self)
     }
 
     private static func children(_ parent: AXUIElement) -> [AXUIElement] {

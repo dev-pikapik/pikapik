@@ -3,6 +3,8 @@ import AVKit
 import AppKit
 
 final class AirPlayLink: NSObject, AVRoutePickerViewDelegate {
+    private static let firewallExecutableURL = URL(fileURLWithPath: "/usr/libexec/ApplicationFirewall/socketfilterfw")
+
     enum Event {
         case entered
         case left(CMTime, resume: Bool)
@@ -151,9 +153,9 @@ final class AirPlayLink: NSObject, AVRoutePickerViewDelegate {
         guard isActive, let session else { return teardown() }
         let asked = session.hasBeenAsked
         leave(resume: true)
-        DispatchQueue.global().async {
+        DispatchQueue.global().async { [weak self] in
             let blocked = asked ? nil : Self.firewallBlocksAll()
-            DispatchQueue.main.async { [weak self] in self?.onEvent(.problem(AirPlayAdvice.text(blockAll: blocked, asked: asked))) }
+            DispatchQueue.main.async { self?.onEvent(.problem(AirPlayAdvice.text(blockAll: blocked, asked: asked))) }
         }
     }
 
@@ -182,7 +184,7 @@ final class AirPlayLink: NSObject, AVRoutePickerViewDelegate {
 
     private static func firewallBlocksAll() -> Bool? {
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/libexec/ApplicationFirewall/socketfilterfw")
+        process.executableURL = firewallExecutableURL
         process.arguments = ["--getblockall"]
         let pipe = Pipe()
         process.standardOutput = pipe

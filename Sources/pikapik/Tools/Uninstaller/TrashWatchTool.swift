@@ -5,9 +5,9 @@ import SwiftUI
 final class TrashWatchTool: Tool {
     static let shared = TrashWatchTool()
 
-    let id = "uninstaller-trash-watch"
+    let id = ToolID.trashWatch
     let icon = "trash"
-    var title: String { String(localized: "Offer to clean up when an app goes to the Trash") }
+    var title: String { SettingTitle.trashWatch }
     var tab: SettingsTab { .uninstaller }
     var needs: [Permission] { [.fullDisk] }
     private(set) var isActive = false

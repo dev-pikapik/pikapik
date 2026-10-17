@@ -33,7 +33,7 @@ struct PortsPage: View {
                         .accessibilityLabel(Text("Clear"))
                     }
                 }
-                .settingAnchor(String(localized: "Free a port"))
+                .settingAnchor(SettingTitle.freeAPort)
                 if shown.isEmpty, let port = model.freePort {
                     if PortScanner.isFree(port) {
                         Label {

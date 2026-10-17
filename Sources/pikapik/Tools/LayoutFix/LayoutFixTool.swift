@@ -22,15 +22,15 @@ func replace(_ old: String, with new: String, _ proxy: CGEventTapProxy) {
 
 @Observable
 final class LayoutFixTool: Tool {
-    let id = "layout-fix"
+    let id = ToolID.layoutFix
     let icon = "character.cursor.ibeam"
-    var title: String { String(localized: "Retype words you typed in the wrong language") }
+    var title: String { SettingTitle.layoutFix }
 
     static let standard = Shortcut(key: 49, modifiers: 0x60000)
-    private static let autoKey = "layout-fix-auto"
-    private static let shortcutKey = "layout-fix-shortcut"
-    private static let excludedKey = "layout-fix-excluded"
-    private static let ignoredKey = "layout-fix-ignored"
+    private static let autoKey = PreferenceKey.layoutFixAuto
+    private static let shortcutKey = PreferenceKey.layoutFixShortcut
+    private static let excludedKey = PreferenceKey.layoutFixExcluded
+    private static let ignoredKey = PreferenceKey.layoutFixIgnored
     #if APPSTORE
     private static let defaultAuto = false
     #else
@@ -177,7 +177,7 @@ final class LayoutFixTool: Tool {
         last = nil
     }
 
-    // ponytail: no Accessibility check on the field (the sandbox has none for other apps), so text is replaced
+    // No Accessibility check on the field (the sandbox has none for other apps), so text is replaced
     // blindly. Wrong in a browser address bar with inline autocomplete (Backspace first removes the selected
     // suggestion), in design apps where Backspace deletes a selected object, and after a click into the middle
     // of a word. Held back by KeyboardLayouts.fix (4+ letters, unknown in the source language), the buffer
@@ -483,7 +483,7 @@ final class LayoutFixTool: Tool {
     private static func before(_ element: AXUIElement, _ length: Int) -> String? {
         guard let value = TextFocus.value(element, kAXSelectedTextRangeAttribute).0, CFGetTypeID(value) == AXValueGetTypeID() else { return nil }
         var range = CFRange()
-        guard AXValueGetValue(value as! AXValue, .cfRange, &range) else { return nil }
+        guard AXValueGetValue(unsafeBitCast(value, to: AXValue.self), .cfRange, &range) else { return nil }
         guard range.length == 0 else { return "" }
         var wanted = CFRange(location: max(0, range.location - length), length: min(length, range.location))
         guard let parameter = AXValueCreate(.cfRange, &wanted) else { return nil }

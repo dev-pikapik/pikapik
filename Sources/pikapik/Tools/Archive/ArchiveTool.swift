@@ -3,11 +3,11 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 final class ArchiveTool: Tool {
-    let id = "archive"
+    let id = ToolID.archive
     let icon = "doc.zipper"
-    var title: String { String(localized: "Archives in Finder") }
+    var title: String { SettingTitle.archivesInFinder }
     let tab = SettingsTab.finder
-    private let finder = FinderExtension(bundle: "Archive", key: "archive", preview: true)
+    private let finder = FinderExtension(bundle: "Archive", key: ToolID.archive, preview: true)
     static let formats: [(name: String, types: [UTType])] = [("ZIP", [.zip]), ("7Z", [UTType("org.7-zip.7-zip-archive")].compactMap { $0 })]
     private let defaultApp = DefaultApps(
         types: ArchiveTool.formats.flatMap(\.types),
@@ -60,7 +60,7 @@ private struct ArchiveSettings: View {
         ) { AnyView(ArchiveArt(on: $0)) }
         #if !APPSTORE
         if inSettings {
-            DefaultAppToggle(title: String(localized: "Open archives in pikapik"), formats: ArchiveTool.formats, apps: defaultApp)
+            DefaultAppToggle(title: SettingTitle.openArchivesInPikapik, formats: ArchiveTool.formats, apps: defaultApp)
         }
         #endif
     }
@@ -68,7 +68,7 @@ private struct ArchiveSettings: View {
 
 enum ArchiveHandoff {
     static func handle(_ url: URL) {
-        guard url.host == "archive",
+        guard url.host == ToolID.archive,
               ToolRegistry.shared.tools.contains(where: { $0 is ArchiveTool && $0.isActive })
         else { return }
         let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []

@@ -11,6 +11,8 @@ final class KeepAwake {
 
     static let shared = KeepAwake()
     static let maxDuration = 365 * 86400
+    private static let caffeinatePath = SystemPath.caffeinate
+    private static let pmsetPath = SystemPath.pmset
     private static let lidFlagKey = "keep-awake-lid-sleep-disabled"
     private static let legacyUnits = ["minutes": 60, "hours": 3600, "days": 86400, "weeks": 7 * 86400, "months": 30 * 86400]
     private static let sessionKey = "keep-awake-session"
@@ -43,19 +45,19 @@ final class KeepAwake {
     private(set) var lidError: String?
 
     private(set) var lastMode: Mode {
-        didSet { UserDefaults.standard.set(lastMode.rawValue, forKey: "keep-awake-mode") }
+        didSet { UserDefaults.standard.set(lastMode.rawValue, forKey: PreferenceKey.keepAwakeMode) }
     }
 
     var duration: Int {
         didSet {
-            UserDefaults.standard.set(duration, forKey: "keep-awake-duration")
+            UserDefaults.standard.set(duration, forKey: PreferenceKey.keepAwakeDuration)
             if mode == .timed, duration != oldValue { set(.timed) }
         }
     }
 
     var keepsDisplayOn: Bool {
         didSet {
-            UserDefaults.standard.set(keepsDisplayOn, forKey: "keep-awake-display")
+            UserDefaults.standard.set(keepsDisplayOn, forKey: PreferenceKey.keepAwakeDisplay)
             update()
         }
     }
@@ -64,14 +66,14 @@ final class KeepAwake {
         get { lidOption }
         set {
             lidOption = newValue
-            UserDefaults.standard.set(newValue, forKey: "keep-awake-lid")
+            UserDefaults.standard.set(newValue, forKey: PreferenceKey.keepAwakeLid)
             lidError = nil
             update()
         }
     }
 
     var stopsOnLowBattery: Bool {
-        didSet { UserDefaults.standard.set(stopsOnLowBattery, forKey: "keep-awake-battery") }
+        didSet { UserDefaults.standard.set(stopsOnLowBattery, forKey: PreferenceKey.keepAwakeBattery) }
     }
 
     private var lidOption: Bool
@@ -82,29 +84,29 @@ final class KeepAwake {
 
     private init() {
         let defaults = UserDefaults.standard
-        lastMode = Mode(rawValue: defaults.string(forKey: "keep-awake-mode") ?? "") ?? .timed
+        lastMode = Mode(rawValue: defaults.string(forKey: PreferenceKey.keepAwakeMode) ?? "") ?? .timed
         duration = Self.storedDuration()
-        keepsDisplayOn = defaults.bool(forKey: "keep-awake-display")
-        lidOption = defaults.bool(forKey: "keep-awake-lid")
-        stopsOnLowBattery = defaults.object(forKey: "keep-awake-battery") as? Bool ?? true
+        keepsDisplayOn = defaults.bool(forKey: PreferenceKey.keepAwakeDisplay)
+        lidOption = defaults.bool(forKey: PreferenceKey.keepAwakeLid)
+        stopsOnLowBattery = defaults.object(forKey: PreferenceKey.keepAwakeBattery) as? Bool ?? true
     }
 
     func load() {
         let defaults = UserDefaults.standard
-        lastMode = Mode(rawValue: defaults.string(forKey: "keep-awake-mode") ?? "") ?? .timed
+        lastMode = Mode(rawValue: defaults.string(forKey: PreferenceKey.keepAwakeMode) ?? "") ?? .timed
         duration = Self.storedDuration()
-        lidOption = defaults.bool(forKey: "keep-awake-lid")
-        keepsDisplayOn = defaults.bool(forKey: "keep-awake-display")
-        stopsOnLowBattery = defaults.object(forKey: "keep-awake-battery") as? Bool ?? true
+        lidOption = defaults.bool(forKey: PreferenceKey.keepAwakeLid)
+        keepsDisplayOn = defaults.bool(forKey: PreferenceKey.keepAwakeDisplay)
+        stopsOnLowBattery = defaults.object(forKey: PreferenceKey.keepAwakeBattery) as? Bool ?? true
     }
 
     private static func storedDuration() -> Int {
         let defaults = UserDefaults.standard
         if let unit = defaults.string(forKey: "keep-awake-duration-unit").flatMap({ legacyUnits[$0] }) {
-            defaults.set(max(defaults.integer(forKey: "keep-awake-duration-value"), 1) * unit, forKey: "keep-awake-duration")
+            defaults.set(max(defaults.integer(forKey: "keep-awake-duration-value"), 1) * unit, forKey: PreferenceKey.keepAwakeDuration)
         }
         ["keep-awake-duration-unit", "keep-awake-duration-value"].forEach(defaults.removeObject)
-        let seconds = (defaults.object(forKey: "keep-awake-duration") as? NSNumber)?.intValue ?? 3600
+        let seconds = (defaults.object(forKey: PreferenceKey.keepAwakeDuration) as? NSNumber)?.intValue ?? 3600
         return min(max(seconds, 1), maxDuration)
     }
 
@@ -196,7 +198,7 @@ final class KeepAwake {
         #else
         guard mode != .off, MainCopy.canAct else { return }
         let bridge = Process()
-        bridge.executableURL = URL(fileURLWithPath: "/usr/bin/caffeinate")
+        bridge.executableURL = URL(fileURLWithPath: Self.caffeinatePath)
         let seconds = min(120, max(1, Int(endDate?.timeIntervalSinceNow ?? 120)))
         bridge.arguments = [keepsDisplayOn ? "-di" : "-i", "-t", String(seconds)]
         guard (try? bridge.run()) != nil else { return }
@@ -211,7 +213,7 @@ final class KeepAwake {
             defer { IOObjectRelease(wrangler) }
             IORegistryEntrySetCFProperty(wrangler, "IORequestIdle" as CFString, kCFBooleanTrue)
             #else
-            _ = try? Process.run(URL(fileURLWithPath: "/usr/bin/pmset"), arguments: ["displaysleepnow"])
+            _ = try? Process.run(URL(fileURLWithPath: Self.pmsetPath), arguments: ["displaysleepnow"])
             #endif
         }
     }
@@ -279,14 +281,14 @@ final class KeepAwake {
             return
         }
         let flag = "'" + lidFlag.path.replacingOccurrences(of: "'", with: "'\\''") + "'"
-        let command = "/usr/bin/pmset -a disablesleep 1 || exit 1; (g=0; while [ -e \(flag) ]; do if /bin/kill -0 \"$(/bin/cat \(flag))\"; then g=0; else g=$((g+2)); [ $g -ge 60 ] && break; fi; /bin/sleep 2; done; /usr/bin/pmset -a disablesleep 0; /bin/rm -f \(flag)) >/dev/null 2>&1 &"
+        let command = "\(Self.pmsetPath) -a disablesleep 1 || exit 1; (g=0; while [ -e \(flag) ]; do if /bin/kill -0 \"$(/bin/cat \(flag))\"; then g=0; else g=$((g+2)); [ $g -ge 60 ] && break; fi; /bin/sleep 2; done; \(Self.pmsetPath) -a disablesleep 0; /bin/rm -f \(flag)) >/dev/null 2>&1 &"
         if Self.runAsAdmin(command, prompt: String(localized: "pikapik wants to keep your Mac awake with the lid closed.")) {
             lidActive = true
             UserDefaults.standard.set(true, forKey: Self.lidFlagKey)
         } else {
             try? FileManager.default.removeItem(at: lidFlag)
             lidOption = false
-            UserDefaults.standard.set(false, forKey: "keep-awake-lid")
+            UserDefaults.standard.set(false, forKey: PreferenceKey.keepAwakeLid)
             lidError = String(localized: "Not turned on: no administrator password")
         }
     }
@@ -296,7 +298,7 @@ final class KeepAwake {
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
             guard !self.lidActive else { return }
             if Self.sleepDisabled {
-                _ = Self.runAsAdmin("/usr/bin/pmset -a disablesleep 0", prompt: String(localized: "pikapik wants to let your Mac sleep with the lid closed again."))
+                _ = Self.runAsAdmin("\(Self.pmsetPath) -a disablesleep 0", prompt: String(localized: "pikapik wants to let your Mac sleep with the lid closed again."))
             }
             UserDefaults.standard.set(false, forKey: Self.lidFlagKey)
         }
@@ -305,7 +307,7 @@ final class KeepAwake {
     private static var sleepDisabled: Bool {
         let process = Process()
         let pipe = Pipe()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/pmset")
+        process.executableURL = URL(fileURLWithPath: Self.pmsetPath)
         process.arguments = ["-g"]
         process.standardOutput = pipe
         guard (try? process.run()) != nil else { return false }

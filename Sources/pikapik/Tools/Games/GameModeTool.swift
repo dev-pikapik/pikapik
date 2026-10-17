@@ -7,17 +7,20 @@ import SwiftUI
 final class GameModeTool: Tool {
     static let shared = GameModeTool()
 
-    let id = "game-mode"
+    let id = ToolID.gameMode
     let icon = "gamecontroller"
-    var title: String { String(localized: "Game Mode") }
+    var title: String { SettingTitle.gameMode }
     let tab = SettingsTab.games
 
-    private static let gamesKey = "game-mode-games"
-    private static let notGamesKey = "game-mode-not-games"
-    private static let systemShortcutsKey = "game-mode-system-shortcuts"
-    private static let frameRateKey = "game-mode-fps"
-    private static let frameRateCornerKey = "game-mode-fps-corner"
-    private static let frameRateRecordingKey = "game-mode-fps-recording"
+    private static let gamesKey = PreferenceKey.gameModeGames
+    private static let notGamesKey = PreferenceKey.gameModeNotGames
+    private static let systemShortcutsKey = PreferenceKey.gameModeSystemShortcuts
+    private static let frameRateKey = PreferenceKey.gameModeFrameRate
+    private static let frameRateCornerKey = PreferenceKey.gameModeFrameRateCorner
+    private static let frameRateRecordingKey = PreferenceKey.gameModeFrameRateRecording
+    private static let applicationsFolder = URL(fileURLWithPath: SystemPath.applications)
+    private static let systemApplicationsFolder = URL(fileURLWithPath: SystemPath.systemApplications)
+    private static let steamLibrarySubpath = "Library/Application Support/Steam/steamapps/common"
 
     private(set) var isActive = false
     private(set) var game: NSRunningApplication?
@@ -110,7 +113,7 @@ final class GameModeTool: Tool {
         let defaults = UserDefaults.standard
         GameRules.migrateControl(defaults)
         GameRules.migrateGroups(defaults)
-        isEnabled = defaults.bool(forKey: "game-mode")
+        isEnabled = defaults.bool(forKey: ToolID.gameMode)
         rules = Self.savedRules
         games = defaults.stringArray(forKey: Self.gamesKey) ?? []
         notGames = defaults.stringArray(forKey: Self.notGamesKey) ?? []
@@ -185,7 +188,7 @@ final class GameModeTool: Tool {
 
     static func choose() -> [URL] {
         let panel = NSOpenPanel()
-        panel.directoryURL = URL(fileURLWithPath: "/Applications")
+        panel.directoryURL = applicationsFolder
         panel.allowsMultipleSelection = true
         panel.prompt = String(localized: "Add")
         NSApp.bringForward()
@@ -205,9 +208,9 @@ final class GameModeTool: Tool {
         let files = FileManager.default
         let home = files.homeDirectoryForCurrentUser
         let folders = [
-            URL(fileURLWithPath: "/Applications"), URL(fileURLWithPath: "/System/Applications"),
+            Self.applicationsFolder, Self.systemApplicationsFolder,
             home.appendingPathComponent("Applications"),
-            home.appendingPathComponent("Library/Application Support/Steam/steamapps/common"),
+            home.appendingPathComponent(Self.steamLibrarySubpath),
         ]
         let contents = { (url: URL) in (try? files.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)) ?? [] }
         let bundles = folders.flatMap(contents).flatMap { $0.pathExtension == "app" ? [$0] : contents($0).filter { $0.pathExtension == "app" } }
@@ -252,15 +255,16 @@ final class GameModeTool: Tool {
         let paused = PointerShortcuts.paused(catalog, rules: rules, values: systemShortcuts)
         swipes = (paused.blocksAll, paused.except, Set(PointerShortcuts.sides.indices).subtracting(paused.corners))
         #if APPSTORE
-        let holdsCursor = false
+        if paused.blocksAll || !paused.except.isEmpty { moveFence() }
+        DockEdges.calm(corners: paused.corners, hidesDock: false)
         #else
         let holdsCursor = rules.contains(.cursor)
-        #endif
         if holdsCursor || paused.blocksAll || !paused.except.isEmpty { moveFence() }
         DockEdges.calm(corners: paused.corners, hidesDock: holdsCursor)
         if holdsCursor {
             fenceTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in GameModeTool.shared.moveFence() }
         }
+        #endif
         if rules.contains(.display) {
             var id = IOPMAssertionID(0)
             let result = IOPMAssertionCreateWithName(

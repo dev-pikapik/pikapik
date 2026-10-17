@@ -4,9 +4,9 @@ import SwiftUI
 /// Stops the Dock from following the pointer to another display with the Dock's own switch, which the Dock reads only when it starts.
 @Observable
 final class DockDisplayTool: Tool {
-    let id = "dock-display"
+    let id = ToolID.dockDisplay
     let icon = "display.2"
-    var title: String { String(localized: "Keep the Dock on one display") }
+    var title: String { SettingTitle.dockDisplay }
     let tab = SettingsTab.dock
     let needs: [Permission] = []
 
@@ -116,7 +116,7 @@ private struct MainDisplayRow: View {
                 } label: {
                     RowLabel(Text("Main display"), Text("The Dock goes with it. Turning the switch off puts the displays back as they were"))
                 }
-                .settingAnchor(String(localized: "Main display"))
+                .settingAnchor(SettingTitle.mainDisplay)
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didChangeScreenParametersNotification)) { _ in screens = MainDisplayControl.screens }

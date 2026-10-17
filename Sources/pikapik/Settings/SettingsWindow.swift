@@ -2,6 +2,9 @@ import AppKit
 import SwiftUI
 
 enum SettingsWindow {
+    private static let bashExecutableURL = URL(fileURLWithPath: SystemPath.bash)
+    private static let tccutilPath = SystemPath.tccutil
+
     @Observable
     final class Model {
         var selection: SettingsTab? = .general {
@@ -114,8 +117,8 @@ enum SettingsWindow {
         }
         #else
         let helper = Process()
-        helper.executableURL = URL(fileURLWithPath: "/bin/bash")
-        helper.arguments = ["-c", "while kill -0 \"$1\" 2>/dev/null; do sleep 0.2; done; [ -z \"$4\" ] || /usr/bin/tccutil reset \"$4\" \"$3\"; open \"$2\" --args \"$5\"",
+        helper.executableURL = bashExecutableURL
+        helper.arguments = ["-c", "while kill -0 \"$1\" 2>/dev/null; do sleep 0.2; done; [ -z \"$4\" ] || \(tccutilPath) reset \"$4\" \"$3\"; open \"$2\" --args \"$5\"",
                             "pika-restart", String(ProcessInfo.processInfo.processIdentifier), Bundle.main.bundleURL.path,
                             Bundle.main.bundleIdentifier ?? "", service ?? "", argument]
         try? helper.run()

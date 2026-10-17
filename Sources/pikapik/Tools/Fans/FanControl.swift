@@ -3,12 +3,21 @@ import SwiftUI
 @Observable
 final class FanControl {
     static let shared = FanControl()
-    private static let rpmKey = "fans-rpm"
+    private static let rpmKey = PreferenceKey.fansRPM
     private static let app = Bundle.main.bundleIdentifier ?? FanHelperInfo.appIdentifier
     private static let label = app + FanHelperInfo.suffix
-    private static let binary = "/Library/PrivilegedHelperTools/" + label
+    private static let helperDir = "/Library/PrivilegedHelperTools"
+    private static let binary = helperDir + "/" + label
     private static let plist = "/Library/LaunchDaemons/" + label + ".plist"
     private static let bundled = Bundle.main.bundleURL.appendingPathComponent("Contents/Library/LaunchServices/fan-helper")
+    private static let launchctlPath = SystemPath.launchctl
+    private static let mkdirPath = SystemPath.mkdir
+    private static let rmPath = SystemPath.rm
+    private static let cpPath = SystemPath.cp
+    private static let chownPath = SystemPath.chown
+    private static let chmodPath = SystemPath.chmod
+    private static let codesignPath = SystemPath.codesign
+    private static let printfPath = SystemPath.printf
 
     @ObservationIgnored private let smc = SMC()
     @ObservationIgnored private var timer: Timer?
@@ -116,17 +125,17 @@ final class FanControl {
         else { busy = false; return fail() }
         let q = Self.quoted
         let steps = [
-            "(/bin/launchctl bootout system/\(Self.label) >/dev/null 2>&1 || true)",
-            "/bin/mkdir -p /Library/PrivilegedHelperTools",
-            "/bin/rm -f \(q(Self.binary)) \(q(Self.binary + ".new"))",
-            "/bin/cp \(q(Self.bundled.path)) \(q(Self.binary))",
-            "/usr/sbin/chown root:wheel \(q(Self.binary))",
-            "/bin/chmod 755 \(q(Self.binary))",
-            "/usr/bin/codesign --verify \(q("-R=" + requirement)) \(q(Self.binary)) || { /bin/rm -f \(q(Self.binary)); exit 1; }",
-            "/usr/bin/printf %s \(q(String(decoding: xml, as: UTF8.self).replacingOccurrences(of: "\n", with: ""))) > \(q(Self.plist))",
-            "/usr/sbin/chown root:wheel \(q(Self.plist))",
-            "/bin/chmod 644 \(q(Self.plist))",
-            "/bin/launchctl bootstrap system \(q(Self.plist))",
+            "(\(Self.launchctlPath) bootout system/\(Self.label) >/dev/null 2>&1 || true)",
+            "\(Self.mkdirPath) -p \(Self.helperDir)",
+            "\(Self.rmPath) -f \(q(Self.binary)) \(q(Self.binary + ".new"))",
+            "\(Self.cpPath) \(q(Self.bundled.path)) \(q(Self.binary))",
+            "\(Self.chownPath) root:wheel \(q(Self.binary))",
+            "\(Self.chmodPath) 755 \(q(Self.binary))",
+            "\(Self.codesignPath) --verify \(q("-R=" + requirement)) \(q(Self.binary)) || { \(Self.rmPath) -f \(q(Self.binary)); exit 1; }",
+            "\(Self.printfPath) %s \(q(String(decoding: xml, as: UTF8.self).replacingOccurrences(of: "\n", with: ""))) > \(q(Self.plist))",
+            "\(Self.chownPath) root:wheel \(q(Self.plist))",
+            "\(Self.chmodPath) 644 \(q(Self.plist))",
+            "\(Self.launchctlPath) bootstrap system \(q(Self.plist))",
         ]
         let prompt = String(localized: "pikapik wants to change the fan speed and turn services off and on.")
         DispatchQueue.global().async {
@@ -145,7 +154,7 @@ final class FanControl {
         wanted = [:]
         connection?.invalidate()
         let q = Self.quoted
-        let command = "/bin/launchctl bootout system/\(Self.label) >/dev/null 2>&1; /bin/rm -f \(q(Self.binary)) \(q(Self.binary + ".new")) \(q(Self.plist))"
+        let command = "\(Self.launchctlPath) bootout system/\(Self.label) >/dev/null 2>&1; \(Self.rmPath) -f \(q(Self.binary)) \(q(Self.binary + ".new")) \(q(Self.plist))"
         let prompt = String(localized: "pikapik wants to remove administrator access.")
         DispatchQueue.global().async {
             let ok = KeepAwake.runAsAdmin(command, prompt: prompt)

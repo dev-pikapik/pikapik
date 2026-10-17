@@ -12,15 +12,15 @@ struct BrightnessSettings: View {
                     Text("No monitor needs pikapik right now. macOS adjusts the built-in screen and Apple displays itself, with the brightness keys and in Control Center. Connect another monitor and it will appear here.")
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
-                        .settingAnchor(String(localized: "Brightness"))
+                        .settingAnchor(SettingTitle.brightness)
                 }
             } else {
                 let firstControlled = model.monitors.first { $0.hasControl }?.id
                 ForEach(model.monitors) { monitor in
                     MonitorSection(
                         monitor: monitor,
-                        anchor: monitor.id == model.monitors.first?.id ? String(localized: "Brightness") : "brightness-\(monitor.id)",
-                        toggleAnchor: monitor.id == firstControlled ? String(localized: "Dim the picture instead") : "dim-picture-\(monitor.id)"
+                        anchor: monitor.id == model.monitors.first?.id ? SettingTitle.brightness : "brightness-\(monitor.id)",
+                        toggleAnchor: monitor.id == firstControlled ? SettingTitle.dimPictureInstead : "dim-picture-\(monitor.id)"
                     )
                 }
             }
@@ -75,7 +75,7 @@ private struct MonitorSection: View {
             #if !APPSTORE
             if monitor.hasControl {
                 Toggle(isOn: Binding(get: { monitor.dimsPicture }, set: { Brightness.shared.setDimsPicture($0, for: monitor.id) })) {
-                    RowLabel(Text("Dim the picture instead"), Text("Turn on if the monitor doesn’t respond to the slider."))
+                    RowLabel(Text(SettingTitle.dimPictureInstead), Text("Turn on if the monitor doesn’t respond to the slider."))
                 }
                 .settingAnchor(toggleAnchor)
             }

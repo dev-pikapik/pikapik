@@ -297,14 +297,14 @@ struct PetAwardsSection: View {
                 }
             }
         }
-        .settingAnchor(String(localized: "Awards"))
+        .settingAnchor(SettingTitle.petAwards)
     }
 
     private var erase: some View {
         Button("Erase Progress…", systemImage: "trash") { erasing = true }
             .lineLimit(1)
             .fixedSize()
-            .settingAnchor(String(localized: "Erase Progress…"))
+            .settingAnchor(SettingTitle.eraseProgress)
             .confirmationDialog("Erase all progress?", isPresented: $erasing, titleVisibility: .visible) {
                 Button("Erase Progress", role: .destructive) { progress.erase() }
             } message: {

@@ -31,13 +31,14 @@ SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" NOTARY_PROFILE=pika
 ```
 Sources/pikapik/
   main.swift, App.swift, MenuView.swift
+  Core/                              constants, strings, event tags, shortcuts, focus, updater
+  UI/                                shared controls, row styles, icons, new marks
+  Settings/                          settings window, tabs, search, iCloud sync
+  Permissions/                       permissions checks, UI, leftover permissions
   Tools/Tool.swift                   Tool protocol and ToolRegistry
-  Tools/CtrlKeys/CtrlKeysTool.swift
-  Tools/Windows/CommandKeysTool.swift
-  Tools/InputSwitch/InputSwitchTool.swift, InputSwitchGesture.swift
-  Tools/Windows/QuitOnCloseTool.swift, DockHideTool.swift
-  Tools/Pet/PetTool.swift, PetStage.swift, PetPhysics.swift, PetFigure.swift, PetPhrases.swift
-  Common/                            shared UI, permissions, login item, updater
+  Tools/<Feature>/                   one folder per feature (Games, Mouse, Finder, Pet, …)
+Helper/                              privileged fan helper and sandboxed media player
+Extensions/                          Finder Sync, Quick Look, Action and Share extensions
 Resources/Localizable.xcstrings      String Catalog (23 languages)
 Resources/AppIcon.icon               app icon, AppIcon.icns is the fallback
 scripts/                             build, package, release, icon, tests
@@ -113,13 +114,13 @@ swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift scripts/test-
 In the website build, Retype words you typed in the wrong language and Home/End switch on `AXManualAccessibility` (or `AXEnhancedUserInterface`) in Chromium apps so their text fields become visible. `TextFocus` writes each switched app (bundle id, pid, attribute, original value) to a journal before the switch and removes it when it puts the app back. After a crash the main copy reads the journal at start and, off the main thread, puts back every app that still runs with the same pid and bundle id, trying again every second for up to 10 tries while the app still runs and does not answer. Switching off works the same way, off the main thread, and on quit the main copy waits up to 2 seconds for it. Each app stays in the journal until it is put back, and new switches wait until this is done. It does not read the attribute first: Electron answers `false` even while the switch is on.
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Core/TextFocus.swift scripts/test-chromium-ax-journal.swift -o build/test-chromium-ax-journal && build/test-chromium-ax-journal
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/TextFocus.swift scripts/test-chromium-ax-journal.swift -o build/test-chromium-ax-journal && build/test-chromium-ax-journal
 ```
 
 Changing a hot corner from the Games page remembers the first action and puts it back on request, and a change to the same action writes nothing, so the Dock restarts only on a real change.
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Tools/Games/HotCorners.swift scripts/test-hot-corners.swift -o build/test-hot-corners && build/test-hot-corners
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Tools/Games/HotCorners.swift scripts/test-hot-corners.swift -o build/test-hot-corners && build/test-hot-corners
 ```
 
 In the website build, Hide desktop icons shows as on whenever the desktop is hidden: by the System Settings switch (`StandardHideDesktopIcons`, or `HideDesktop` with Stage Manager) or because Finder has no desktop window, as after `defaults write com.apple.finder CreateDesktop -bool false`, which also takes away the selection rectangle. Switching it off always brings the desktop back: it shows the icons, forgets the journal and, when Finder has no desktop window, removes `CreateDesktop` and restarts Finder once it has finished copying. Switching it on hides the icons only on a visible desktop and notes that pikapik hid them. Putting back, on quit and whenever a copy becomes the main one, only ever shows the icons, and only while the note says pikapik hid them and they are still hidden, so icons hidden in System Settings stay hidden and a journal from an older version never hides them again. The logic lives in `DesktopIcons`, which reaches the Mac only through `DesktopIconsHost`, so the test runs it on a simulated Mac.
@@ -239,7 +240,7 @@ swiftc -parse-as-library Sources/pikapik/Core/Version.swift scripts/test-updater
 After an update the app points at what is new: a dot after the tab’s name until the tab is opened, a New tag beside the row until the tab is left, nothing on a fresh install and nothing 21 days after the update. `NewMarks` holds the table of what is new and the version logic, and the test checks fresh installs, upgrades from 1.49.x, seen items that stay seen after a relaunch, a downgrade or a second running copy, expiry and that every tab in the table exists:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Core/Version.swift Sources/pikapik/UI/NewMarks.swift scripts/test-new-marks.swift -o build/test-new-marks && build/test-new-marks
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/Version.swift Sources/pikapik/UI/NewMarks.swift scripts/test-new-marks.swift -o build/test-new-marks && build/test-new-marks
 ```
 
 Before Homebrew removes the app, it runs `pikapik --uninstall`, which turns off launch at login and puts back the system settings the app changed, such as the Dock and key repeat. Homebrew runs the same step when it upgrades or reinstalls the app, so the app first looks for the `brew` command that started it and does nothing for `upgrade`, `reinstall` and `install`. The check lives in `Brew`:
@@ -275,7 +276,7 @@ swiftc -parse-as-library Sources/pikapik/Tools/Fans/FanHelperProtocol.swift scri
 iCloud sync keeps `settings.json` in the pikapik folder in iCloud Drive, or pikapik-dev for local builds. Earlier versions used a pikapik folder. When sync starts, that folder is renamed. If both folders exist, the file with the later time saved inside it ends up in pikapik, and the old folder is deleted once nothing else is left in it. The move lives in `SettingsFile.moveFolder`, and the test works on temporary folders:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Settings/SettingsFile.swift Sources/pikapik/Tools/Games/GameRules.swift scripts/test-settings-folder.swift -o build/test-settings-folder && build/test-settings-folder
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Settings/SettingsFile.swift Sources/pikapik/Tools/Games/GameRules.swift scripts/test-settings-folder.swift -o build/test-settings-folder && build/test-settings-folder
 ```
 
 The search field in Settings matches words in any order, ignores accents and understands shortcuts typed as words, so Ctrl+Space finds ⌃Space. The rules live in `SettingsSearch`:
@@ -293,19 +294,19 @@ The app also reads the file whenever it comes to the front, so a change that arr
 Sync hears about every saved setting through `SettingsFile.onSave`, including the ones saved off the main thread, for example the list of Chromium apps that `TextFocus` keeps while it holds its lock. Such a save must not wait for the main thread: on quit the main thread waits for `TextFocus`, so a waiting save would freeze pikapik. A setting saved on the main thread is still heard at once, so sync can tell its own changes apart. The test checks both, with the main thread busy for the second, and fails if anything else in `Sources` listens for saved settings:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Settings/SettingsFile.swift Sources/pikapik/Tools/Games/GameRules.swift scripts/test-settings-sync-thread.swift -o build/test-settings-sync-thread && build/test-settings-sync-thread
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Settings/SettingsFile.swift Sources/pikapik/Tools/Games/GameRules.swift scripts/test-settings-sync-thread.swift -o build/test-settings-sync-thread && build/test-settings-sync-thread
 ```
 
 Removing an app completely starts with `AppFootprint`, which finds everything an app keeps on the Mac and decides which app each file belongs to, without changing anything. The App Store build uses it only to list background tasks. The test builds a made-up home folder in a temporary directory, so nothing real is read or touched:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift scripts/test-uninstaller.swift -o build/test-uninstaller && build/test-uninstaller
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift scripts/test-uninstaller.swift -o build/test-uninstaller && build/test-uninstaller
 ```
 
 `AppRemover` moves what `AppFootprint` found to the Trash, asks for the administrator password once for the files only an administrator can move, and keeps a record so everything can be put back. Quitting apps, `launchctl`, the password prompt and Finder are all passed in as closures, so the test runs the real logic against a made-up home folder with fakes. Only a few tiny `pika-uninstall-test-*` files go through your real Trash, and the test puts them back. The Finder fallback needs the Automation permission, which the direct build declares in `Resources/Direct.entitlements`:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Uninstaller/AppRemover.swift scripts/test-app-remover.swift -o build/test-app-remover && build/test-app-remover
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Uninstaller/AppRemover.swift scripts/test-app-remover.swift -o build/test-app-remover && build/test-app-remover
 ```
 
 `AppShelf` reads apps dragged onto a page from the pasteboard and ignores other files and folders. Game Mode also accepts a bare program and a process row dragged from Activity Monitor:
@@ -317,13 +318,13 @@ swiftc -parse-as-library $(find Sources -name '*.swift' ! -name main.swift ! -na
 The Uninstaller page keeps its choices in `UninstallerLogic`: how the app list is sorted, what is ticked and what is not, the total on the **Move to Trash** button, how apps in the Trash and leftovers of removed apps are shown, and the wording of sizes and dates. The test gives it made-up apps and files, so nothing real is read or touched:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Uninstaller/UninstallerLogic.swift scripts/test-uninstaller-ui.swift -o build/test-uninstaller-ui && build/test-uninstaller-ui
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Uninstaller/UninstallerLogic.swift scripts/test-uninstaller-ui.swift -o build/test-uninstaller-ui && build/test-uninstaller-ui
 ```
 
 The **Background Tasks** page shows everything that starts by itself: apps that open at login, launch agents and daemons, helpers inside apps, and tasks left behind by deleted apps. `BackgroundTasks` reads what `launchctl print` reports and uses `AppFootprint` to find the app that added each task, whether it runs now, how it starts and whether its program is gone. The test gives it made-up `launchctl` output and a made-up Mac in a temporary directory, so nothing real is read, turned off or touched:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Fans/FanHelperProtocol.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Background/BackgroundTasks.swift scripts/test-background.swift -o build/test-background && build/test-background
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Fans/FanHelperProtocol.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Background/BackgroundTasks.swift scripts/test-background.swift -o build/test-background && build/test-background
 ```
 
 `TrashWatcher` is what makes **Offer to clean up when an app goes to the Trash** work: it watches the Trash, ignores the apps that are already there when it starts, reports only the ones that arrive later, and stays quiet once stopped or when the folder cannot be read. The test watches a folder of its own in the temporary directory, never your real Trash, and takes about eight seconds. The folder stays in the temporary directory, which macOS clears itself:
@@ -335,7 +336,7 @@ swiftc -parse-as-library Sources/pikapik/Tools/Uninstaller/TrashWatcher.swift sc
 The archive engine in `Tools/Archive/` opens and creates ZIP, 7Z, TAR.GZ and TAR.XZ files and opens RAR and many more. It runs the bundled `7zz`, plus `ditto` and `bsdtar` for ZIP names in older encodings, as separate programs, and checks every result before it is shown: nothing lands outside the output folder, links that point out are removed, setuid bits are stripped, the archive's quarantine flag is copied onto everything extracted, and an unpacking that writes far more than the archive announced is stopped. The test makes its own archives, including broken and hostile ones, in a temporary folder, mounts a 16 MB scratch disk image to run out of space on purpose, and takes about ten seconds. Run it from the repository root: it uses `Vendor/7zip/7zz` (`scripts/fetch-7zip.sh` puts it there) or the tool named in `PIKA_7ZZ`. For RAR, set `PIKA_RAR_SAMPLES` to a folder of your own `.rar` files, otherwise that part is skipped:
 
 ```bash
-swiftc -parse-as-library scripts/test-archive.swift Sources/pikapik/Tools/Archive/Archive{,Create,Extract,Probe,Run,Sanitize}.swift Extensions/Preview/ZipNames.swift Sources/pikapik/Core/UniqueURL.swift -o build/test-archive && build/test-archive
+swiftc -parse-as-library scripts/test-archive.swift Sources/pikapik/Core/Constants.swift Sources/pikapik/Tools/Archive/Archive{,Create,Extract,Probe,Run,Sanitize}.swift Extensions/Preview/ZipNames.swift Sources/pikapik/Core/UniqueURL.swift -o build/test-archive && build/test-archive
 ```
 
 The archive windows are an `ArchivePanel`: the red button, a VoiceOver press and closing twice all answer the question only once:
@@ -347,8 +348,8 @@ swiftc -parse-as-library $(find Sources -name '*.swift' ! -name main.swift ! -na
 `Battery.swift` turns the readings from IOKit into a `BatteryState` and a `BatteryHealth`, and `BatterySettings.swift` shows them on the read-only Battery page. The battery condition comes from `system_profiler` in the direct version and straight from IOKit in the App Store version, which starts no other program. The test feeds them made-up readings, so it runs on a Mac without a battery; the second line checks the App Store version:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Tools/Battery/Battery.swift scripts/test-battery.swift -o build/test-battery && build/test-battery
-swiftc -parse-as-library -D APPSTORE Sources/pikapik/Tools/Battery/Battery.swift scripts/test-battery.swift -o build/test-battery-appstore && build/test-battery-appstore
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Tools/Battery/Battery.swift scripts/test-battery.swift -o build/test-battery && build/test-battery
+swiftc -parse-as-library -D APPSTORE Sources/pikapik/Core/Constants.swift Sources/pikapik/Tools/Battery/Battery.swift scripts/test-battery.swift -o build/test-battery-appstore && build/test-battery-appstore
 ```
 
 The **Ports** page learns which programs listen on which ports from the same kernel list `netstat` reads (`net.inet.tcp.pcblist_n` and `net.inet.udp.pcblist_n`), so it needs no extra tools. macOS 27 gives the whole list only to programs signed without a team, like local builds and this test, so the command signs the test before running it. A signed release sees only its own sockets: it finds the user's programs through libproc, and a port it can't see is checked with a test bind, so the page never calls a taken port free. In the App Store version the sandbox blocks libproc too, so the page is hidden there. The test opens a few sockets of its own on ports the system picks, checks that the list finds each one with the right program, address and protocol and that a plain connection is not counted as listening, that a taken port is never called free, then groups made-up processes the way the page does. It only reads the list and never touches other programs:

@@ -13,9 +13,9 @@ struct GameList: View {
                 Button("Add a Game…") { adding = true }
             }
         } label: {
-            RowLabel(Text("Your games"), tool.games.isEmpty ? Text("Add a game, and Game Mode turns on by itself while you play it") : nil)
+            RowLabel(Text(SettingTitle.yourGames), tool.games.isEmpty ? Text("Add a game, and Game Mode turns on by itself while you play it") : nil)
         }
-        .settingAnchor(String(localized: "Your games"))
+        .settingAnchor(SettingTitle.yourGames)
         if adding { GameShelf(tool: tool) }
         ForEach(tool.games, id: \.self) { key in
             AppRow(bundleID: key) { tool.games.removeAll { $0 == key } }

@@ -2,10 +2,13 @@ import AppKit
 import SwiftUI
 
 struct KeepAwakeSettings: View {
+    private static let shortcutsBundleID = "com.apple.shortcuts"
+    private static let shortcutsAppPath = SystemPath.shortcutsApp
+
     @Bindable private var keepAwake = KeepAwake.shared
 
     private static var shortcutsIcon: NSImage {
-        NSWorkspace.shared.urlForApplication(withBundleIdentifier: "com.apple.shortcuts")
+        NSWorkspace.shared.urlForApplication(withBundleIdentifier: shortcutsBundleID)
             .map { NSWorkspace.shared.icon(forFile: $0.path) } ?? NSImage()
     }
 
@@ -21,7 +24,7 @@ struct KeepAwakeSettings: View {
             Section {
                 KeepAwakeArt()
                 LabeledContent {
-                    Picker("Keep your Mac awake", selection: Binding(get: { keepAwake.mode }, set: { keepAwake.set($0) })) {
+                    Picker(SettingTitle.keepMacAwake, selection: Binding(get: { keepAwake.mode }, set: { keepAwake.set($0) })) {
                         Text("Off").tag(KeepAwake.Mode.off)
                         Text("For a while").tag(KeepAwake.Mode.timed)
                         Text("Indefinitely").tag(KeepAwake.Mode.indefinitely)
@@ -29,12 +32,12 @@ struct KeepAwakeSettings: View {
                     .labelsHidden()
                     .fixedSize()
                 } label: {
-                    RowLabel(Text("Keep your Mac awake"), keepAwake.statusText)
+                    RowLabel(Text(SettingTitle.keepMacAwake), keepAwake.statusText)
                 }
-                .settingAnchor(String(localized: "Keep your Mac awake"))
+                .settingAnchor(SettingTitle.keepMacAwake)
                 VStack(alignment: .leading, spacing: 14) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Duration")
+                        Text(SettingTitle.duration)
                         if keepAwake.mode == .off {
                             TimelineView(.everyMinute) { context in
                                 until(context.date)
@@ -48,10 +51,10 @@ struct KeepAwakeSettings: View {
                 }
                 .padding(.vertical, 4)
                 .disabled(keepAwake.mode == .indefinitely)
-                .settingAnchor(String(localized: "Duration"))
+                .settingAnchor(SettingTitle.duration)
                 VStack(alignment: .leading, spacing: 10) {
-                    RowLabel(Text("Display"), keepAwake.keepsDisplayOn ? Text("No dimming, screen saver or lock screen") : Text("Turns off on its own timer, your Mac keeps working"))
-                    Picker("Display", selection: $keepAwake.keepsDisplayOn) {
+                    RowLabel(Text(SettingTitle.display), keepAwake.keepsDisplayOn ? Text("No dimming, screen saver or lock screen") : Text("Turns off on its own timer, your Mac keeps working"))
+                    Picker(SettingTitle.display, selection: $keepAwake.keepsDisplayOn) {
                         Text("Always on").tag(true)
                         Text("Turns off as usual").tag(false)
                     }
@@ -60,27 +63,27 @@ struct KeepAwakeSettings: View {
                     .frame(maxWidth: .infinity)
                 }
                 .padding(.vertical, 4)
-                .settingAnchor(String(localized: "Display"))
+                .settingAnchor(SettingTitle.display)
                 LabeledContent {
                     Button("Turn Off") { KeepAwake.turnOffDisplay() }
                 } label: {
-                    RowLabel(Text("Turn off the display now"), Text("Your Mac keeps working. To bring the display back, move the mouse or press a key."), row: "display-off")
+                    RowLabel(Text(SettingTitle.turnOffDisplayNow), Text("Your Mac keeps working. To bring the display back, move the mouse or press a key."), row: ToolID.displayOff)
                 }
-                .settingAnchor(String(localized: "Turn off the display now"))
+                .settingAnchor(SettingTitle.turnOffDisplayNow)
             }
 
             if keepAwake.hasLid {
                 Section {
                     Toggle(isOn: $keepAwake.worksWithLidClosed) {
-                        RowLabel(Text("Work with the lid closed"), Text("Mac stays awake with the lid closed"))
+                        RowLabel(Text(SettingTitle.workWithLidClosed), Text("Mac stays awake with the lid closed"))
                     }
                     .help(Text("Mac won’t sleep when you close the lid. Keep it ventilated."))
-                    .settingAnchor(String(localized: "Work with the lid closed"))
+                    .settingAnchor(SettingTitle.workWithLidClosed)
                     Toggle(isOn: $keepAwake.stopsOnLowBattery) {
-                        RowLabel(Text("Stop when battery is below \(0.2.formatted(.percent))"), Text("Lets the Mac sleep before the battery runs out"))
+                        RowLabel(Text(SettingTitle.stopOnLowBattery), Text("Lets the Mac sleep before the battery runs out"))
                     }
                     .disabled(!keepAwake.worksWithLidClosed)
-                    .settingAnchor(String(localized: "Stop when battery is below \(0.2.formatted(.percent))"))
+                    .settingAnchor(SettingTitle.stopOnLowBattery)
                     if let error = keepAwake.lidError {
                         Label(error, systemImage: "exclamationmark.triangle.fill")
                             .foregroundStyle(.orange)
@@ -93,14 +96,14 @@ struct KeepAwakeSettings: View {
                 }
             }
             Section {
-                ShortcutLink(title: String(localized: "Keep Awake"), path: "keep-awake")
+                ShortcutLink(title: TabTitle.keepAwake, path: ToolID.keepAwake)
                 ShortcutLink(title: String(localized: "Keep the display on"), path: "display")
                 if keepAwake.hasLid {
-                    ShortcutLink(title: String(localized: "Work with the lid closed"), path: "lid-closed")
+                    ShortcutLink(title: SettingTitle.workWithLidClosed, path: "lid-closed")
                 }
                 LabeledContent {
                     Button("Open Shortcuts", systemImage: "arrow.up.forward.app") {
-                        NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Applications/Shortcuts.app"))
+                        NSWorkspace.shared.open(URL(fileURLWithPath: Self.shortcutsAppPath))
                     }
                 } label: {
                     HStack(spacing: 10) {
@@ -112,14 +115,14 @@ struct KeepAwakeSettings: View {
                     }
                 }
             } header: {
-                Text("Buttons in Control Center and widgets")
+                Text(SettingTitle.controlCenterButtons)
             } footer: {
                 Text("Add the Open URLs action in Shortcuts, with a link.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .settingAnchor(String(localized: "Buttons in Control Center and widgets"))
+            .settingAnchor(SettingTitle.controlCenterButtons)
             RestoreDefaultsSection(
                 message: String(localized: "Keep Awake will turn off, and the duration and options will go back to how they were."),
                 isDefault: keepAwake.isDefault

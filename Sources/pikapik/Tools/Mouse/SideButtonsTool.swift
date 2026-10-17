@@ -3,11 +3,12 @@ import SwiftUI
 
 @Observable
 final class SideButtonsTool: Tool {
-    let id = "side-buttons"
+    let id = ToolID.sideButtons
     let icon = "arrow.left.arrow.right"
-    var title: String { String(localized: "Side buttons go back and forward") }
+    var title: String { SettingTitle.sideButtons }
     let tab = SettingsTab.mouse
 
+    private static let swapKey = PreferenceKey.sideButtonsSwap
     private(set) var isActive = false
 
     var isEnabled: Bool {
@@ -18,7 +19,7 @@ final class SideButtonsTool: Tool {
     }
 
     var swapsButtons: Bool {
-        didSet { UserDefaults.standard.set(swapsButtons, forKey: "side-buttons-swap") }
+        didSet { UserDefaults.standard.set(swapsButtons, forKey: Self.swapKey) }
     }
 
     @ObservationIgnored private var tap: CFMachPort?
@@ -26,11 +27,11 @@ final class SideButtonsTool: Tool {
 
     init() {
         isEnabled = UserDefaults.standard.bool(forKey: id)
-        swapsButtons = UserDefaults.standard.bool(forKey: "side-buttons-swap")
+        swapsButtons = UserDefaults.standard.bool(forKey: Self.swapKey)
     }
 
     func load() {
-        swapsButtons = UserDefaults.standard.bool(forKey: "side-buttons-swap")
+        swapsButtons = UserDefaults.standard.bool(forKey: Self.swapKey)
         isEnabled = UserDefaults.standard.bool(forKey: id)
     }
 
@@ -206,7 +207,7 @@ private struct SideButtonsSettings: View {
                 RowLabel(Text("Swap the side buttons"), Text(tool.swapsButtons ? "Rear button goes forward, front button goes back" : "Rear button goes back, front button goes forward"))
             }
             .disabled(!tool.isEnabled)
-            .settingAnchor(String(localized: "Swap the side buttons"))
+            .settingAnchor(SettingTitle.swapSideButtons)
         }
     }
 }

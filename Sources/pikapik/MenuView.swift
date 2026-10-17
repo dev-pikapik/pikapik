@@ -1,12 +1,18 @@
 import SwiftUI
 
 struct MenuView: View {
-    static let defaultHidden = "app-volume,archive,brightness,command-keys,compress,convert,desktop-icons,dock-display,dock-hide,fans,finder-cut,finder-delete,finder-open,game-mode,hidden-files,hide-app,home-end,key-repeat,layout-fix,middle-click,new-file,quit-on-close,side-buttons,speed-test,temperatures,wheel-direction,wheel-lines,window-zoom"
+    static let defaultHidden = [
+        ToolID.appVolume, ToolID.archive, ToolID.brightness, ToolID.commandKeys, ToolID.compress, ToolID.convert,
+        ToolID.desktopIcons, ToolID.dockDisplay, ToolID.dockHide, ToolID.fans, ToolID.finderCut, ToolID.finderDelete,
+        ToolID.finderOpen, ToolID.gameMode, ToolID.hiddenFiles, ToolID.hideApp, ToolID.homeEnd, ToolID.keyRepeat,
+        ToolID.layoutFix, ToolID.middleClick, ToolID.newFile, ToolID.quitOnClose, ToolID.sideButtons, ToolID.speedTest,
+        ToolID.temperatures, ToolID.wheelDirection, ToolID.wheelLines, ToolID.windowZoom,
+    ].joined(separator: ",")
 
     let registry: ToolRegistry
     private let permissions = Permissions.shared
     @Bindable private var keepAwake = KeepAwake.shared
-    @AppStorage("quick-hidden") private var hiddenList = MenuView.defaultHidden
+    @AppStorage(PreferenceKey.quickHidden) private var hiddenList = MenuView.defaultHidden
     @State private var customizing = false
     @State private var keepAwakeOpen = false
     @State private var contentHeight: CGFloat = 0
@@ -25,10 +31,10 @@ struct MenuView: View {
     #if APPSTORE
     private var showsFans: Bool { false }
     #else
-    private var showsFans: Bool { FanControl.shared.hasFans && isShown("fans") }
+    private var showsFans: Bool { FanControl.shared.hasFans && isShown(ToolID.fans) }
     #endif
 
-    private var showsBrightness: Bool { isShown("brightness") && !Brightness.shared.monitors.isEmpty }
+    private var showsBrightness: Bool { isShown(ToolID.brightness) && !Brightness.shared.monitors.isEmpty }
 
     private var hasNew: Bool {
         !NewMarks.shared.settingsOpened && NewMarks.shared.unseenTabs.contains { SettingsTab(rawValue: $0)?.isAvailable == true }
@@ -75,16 +81,16 @@ struct MenuView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    if !visibleTabs.isEmpty || isShown("keep-awake") || showsBrightness || isShown("speed-test") || showsFans || isShown("temperatures") {
+                    if !visibleTabs.isEmpty || isShown(ToolID.keepAwake) || showsBrightness || isShown(ToolID.speedTest) || showsFans || isShown(ToolID.temperatures) {
                         VStack(spacing: 0) {
-                            if isShown("keep-awake") {
+                            if isShown(ToolID.keepAwake) {
                                 if customizing {
-                                    customizeRow(icon: "cup.and.saucer", title: String(localized: "Keep Awake"), id: "keep-awake")
+                                    customizeRow(icon: "cup.and.saucer", title: TabTitle.keepAwake, id: ToolID.keepAwake)
                                 } else {
                                     HStack(spacing: 0) {
                                         ToggleRow(
                                             icon: "cup.and.saucer",
-                                            title: String(localized: "Keep Awake"),
+                                            title: TabTitle.keepAwake,
                                             subtitle: keepAwake.statusText,
                                             hint: keepAwake.statusText,
                                             isOn: $keepAwake.isOn
@@ -112,15 +118,15 @@ struct MenuView: View {
 
                             if showsBrightness {
                                 if customizing {
-                                    customizeRow(icon: "sun.max", title: String(localized: "Brightness"), id: "brightness")
+                                    customizeRow(icon: "sun.max", title: TabTitle.brightness, id: ToolID.brightness)
                                 } else {
                                     BrightnessRow()
                                 }
                             }
 
-                            if isShown("speed-test") {
+                            if isShown(ToolID.speedTest) {
                                 if customizing {
-                                    customizeRow(icon: "speedometer", title: String(localized: "Speed Test"), id: "speed-test")
+                                    customizeRow(icon: "speedometer", title: TabTitle.speedTest, id: ToolID.speedTest)
                                 } else {
                                     SpeedTestRow()
                                 }
@@ -129,23 +135,23 @@ struct MenuView: View {
                             #if !APPSTORE
                             if showsFans {
                                 if customizing {
-                                    customizeRow(icon: "fan", title: String(localized: "Fans"), id: "fans")
+                                    customizeRow(icon: "fan", title: TabTitle.fans, id: ToolID.fans)
                                 } else {
                                     FanRow()
                                 }
                             }
                             #endif
 
-                            if isShown("temperatures") {
+                            if isShown(ToolID.temperatures) {
                                 if customizing {
-                                    customizeRow(icon: "thermometer.medium", title: String(localized: "Temperature"), id: "temperatures")
+                                    customizeRow(icon: "thermometer.medium", title: TabTitle.temperatures, id: ToolID.temperatures)
                                 } else {
                                     TemperatureRow()
                                 }
                             }
 
                             ForEach(Array(visibleTabs.enumerated()), id: \.element) { index, tab in
-                                if index > 0 || isShown("keep-awake") || showsBrightness || isShown("speed-test") || showsFans || isShown("temperatures") { groupDivider }
+                                if index > 0 || isShown(ToolID.keepAwake) || showsBrightness || isShown(ToolID.speedTest) || showsFans || isShown(ToolID.temperatures) { groupDivider }
                                 ForEach(registry.tools.filter { $0.tab == tab && isShown($0.id) }, id: \.id) { tool in
                                     if customizing {
                                         customizeRow(icon: tool.icon, title: tool.title, id: tool.id)

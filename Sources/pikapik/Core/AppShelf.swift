@@ -120,7 +120,7 @@ private struct AppDropZone {
     let textFiles: ((String) -> [URL])?
 }
 
-private struct AppDropZones: PreferenceKey {
+private struct AppDropZones: SwiftUI.PreferenceKey {
     static let defaultValue: [AppDropZone] = []
 
     static func reduce(value: inout [AppDropZone], nextValue: () -> [AppDropZone]) {

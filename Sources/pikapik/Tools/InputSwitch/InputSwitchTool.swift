@@ -3,9 +3,9 @@ import SwiftUI
 
 @Observable
 final class InputSwitchTool: Tool {
-    let id = "input-switch"
+    let id = ToolID.inputSwitch
     let icon = "globe"
-    var title: String { String(localized: "Switch language") }
+    var title: String { SettingTitle.inputSwitch }
     var needs: [Permission] { [.inputMonitoring] }
 
     private(set) var isActive = false

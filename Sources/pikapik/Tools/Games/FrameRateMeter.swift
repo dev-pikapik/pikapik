@@ -3,6 +3,9 @@ import os
 import ScreenCaptureKit
 import SwiftUI
 
+private let metalPerfTracePath = SystemPath.metalPerfTrace
+private let shellExecutableURL = URL(fileURLWithPath: SystemPath.sh)
+
 @Observable
 final class FrameRateModel {
     var shown = FrameRateShown.measuring
@@ -259,7 +262,7 @@ final class FrameRateMeter: NSObject {
 
 #if !APPSTORE
 final class PerfTrace {
-    static let path = "/usr/bin/metalperftrace"
+    static let path = metalPerfTracePath
     static var exists: Bool { FileManager.default.isExecutableFile(atPath: path) }
 
     private let process = Process()
@@ -271,7 +274,7 @@ final class PerfTrace {
         var secondary: Int32 = 0
         guard Self.exists, openpty(&primary, &secondary, nil, nil, nil) == 0 else { return nil }
         output = FileHandle(fileDescriptor: primary, closeOnDealloc: true)
-        process.executableURL = URL(fileURLWithPath: "/bin/sh")
+        process.executableURL = shellExecutableURL
         process.arguments = ["-c", "\(Self.path) listen --json --pid \"$1\" --interval 1 & c=$!; read x; kill $c", "sh", String(pid)]
         process.standardInput = lifeline
         process.standardOutput = FileHandle(fileDescriptor: secondary, closeOnDealloc: false)

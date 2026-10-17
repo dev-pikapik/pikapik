@@ -38,6 +38,8 @@ struct PortProgram: Identifiable, Equatable {
 enum PortScanner {
     static let applePaths = ["/System/", "/usr/libexec/", "/usr/sbin/", "/sbin/", "/Library/Apple/"]
     static let ephemeral: UInt16 = 49152
+    private static let tcpSysctl = "net.inet.tcp.pcblist_n"
+    private static let udpSysctl = "net.inet.udp.pcblist_n"
 
     static func listeners() -> [PortListener] {
         var found: [String: PortListener] = [:]
@@ -59,19 +61,33 @@ enum PortScanner {
 
     /// macOS 27 hides the sockets of macOS and other users from a signed app, so a port missing from
     /// `listeners()` may still be taken: only a test bind tells.
-    /// ponytail: checks 127.0.0.1, which also hits wildcard listeners; one bound to a single LAN or IPv6 address slips through.
     static func isFree(_ port: UInt16) -> Bool {
         [SOCK_STREAM, SOCK_DGRAM].allSatisfy { type in
-            let fd = socket(AF_INET, type, 0)
-            guard fd >= 0 else { return false }
-            defer { close(fd) }
-            var address = sockaddr_in()
-            address.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
-            address.sin_family = sa_family_t(AF_INET)
-            address.sin_port = port.bigEndian
-            address.sin_addr.s_addr = inet_addr("127.0.0.1")
-            return withUnsafePointer(to: address) {
-                $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { bind(fd, $0, socklen_t(MemoryLayout<sockaddr_in>.size)) == 0 }
+            let fd4 = socket(AF_INET, type, 0)
+            guard fd4 >= 0 else { return false }
+            defer { close(fd4) }
+            var address4 = sockaddr_in()
+            address4.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+            address4.sin_family = sa_family_t(AF_INET)
+            address4.sin_port = port.bigEndian
+            address4.sin_addr.s_addr = inet_addr("127.0.0.1")
+            let v4Free = withUnsafePointer(to: address4) {
+                $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { bind(fd4, $0, socklen_t(MemoryLayout<sockaddr_in>.size)) == 0 }
+            }
+            guard v4Free else { return false }
+
+            let fd6 = socket(AF_INET6, type, 0)
+            guard fd6 >= 0 else { return true }
+            defer { close(fd6) }
+            var one: Int32 = 1
+            setsockopt(fd6, IPPROTO_IPV6, IPV6_V6ONLY, &one, socklen_t(MemoryLayout<Int32>.size))
+            var address6 = sockaddr_in6()
+            address6.sin6_len = UInt8(MemoryLayout<sockaddr_in6>.size)
+            address6.sin6_family = sa_family_t(AF_INET6)
+            address6.sin6_port = port.bigEndian
+            address6.sin6_addr = in6addr_loopback
+            return withUnsafePointer(to: address6) {
+                $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { bind(fd6, $0, socklen_t(MemoryLayout<sockaddr_in6>.size)) == 0 }
             }
         }
     }
@@ -113,7 +129,7 @@ enum PortScanner {
     }
 
     static func kernel(tcp: Bool) -> [(port: UInt16, pid: pid_t, uid: uid_t, host: String)] {
-        let name = tcp ? "net.inet.tcp.pcblist_n" : "net.inet.udp.pcblist_n"
+        let name = tcp ? tcpSysctl : udpSysctl
         var size = 0
         guard sysctlbyname(name, nil, &size, nil, 0) == 0, size > 0 else { return [] }
         var bytes = [UInt8](repeating: 0, count: size + size / 4)

@@ -1,6 +1,10 @@
 import Foundation
 
 extension Archive {
+    static let ditto = URL(fileURLWithPath: "/usr/bin/ditto")
+    static let bsdtar = URL(fileURLWithPath: "/usr/bin/tar")
+    private static let processEnvironment = ["LC_ALL": "en_US.UTF-8", "PATH": "/usr/bin:/bin"]
+
     struct Stage {
         var executable: URL
         var arguments: [String]
@@ -98,9 +102,6 @@ extension Archive {
         }
     }
 
-    static let ditto = URL(fileURLWithPath: "/usr/bin/ditto")
-    static let bsdtar = URL(fileURLWithPath: "/usr/bin/tar")
-
     private static let ignoreBrokenPipes: Void = { _ = signal(SIGPIPE, SIG_IGN) }()
 
     #if !APPSTORE
@@ -131,7 +132,7 @@ extension Archive {
             process.executableURL = stage.executable
             process.arguments = stage.arguments
             process.currentDirectoryURL = stage.directory
-            process.environment = ["LC_ALL": "en_US.UTF-8", "PATH": "/usr/bin:/bin"]
+            process.environment = processEnvironment
             let input = stage.input == nil ? nil : Pipe()
             if index > 0 {
                 process.standardInput = links[index - 1]

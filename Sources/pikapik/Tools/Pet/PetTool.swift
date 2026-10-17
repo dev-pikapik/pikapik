@@ -4,13 +4,17 @@ import SwiftUI
 final class PetTool: Tool {
     static let shared = PetTool()
 
-    let id = "pet"
+    let id = ToolID.pet
     let icon = "pawprint"
-    var title: String { String(localized: "Pet") }
+    var title: String { TabTitle.pet }
     var tab: SettingsTab { .pet }
     var isActive: Bool { isEnabled }
     var needs: [Permission] { [] }
     private(set) var listening = false
+
+    private static let talksKey = PreferenceKey.petTalks
+    private static let rhythmKey = PreferenceKey.petRhythm
+    private static let ballKey = PreferenceKey.petBall
 
     var isEnabled: Bool {
         didSet {
@@ -20,16 +24,16 @@ final class PetTool: Tool {
     }
 
     var talks: Bool {
-        didSet { UserDefaults.standard.set(talks, forKey: "pet-talks") }
+        didSet { UserDefaults.standard.set(talks, forKey: Self.talksKey) }
     }
 
     var rhythm: Bool {
-        didSet { UserDefaults.standard.set(rhythm, forKey: "pet-rhythm") }
+        didSet { UserDefaults.standard.set(rhythm, forKey: Self.rhythmKey) }
     }
 
     var ball: Bool {
         didSet {
-            UserDefaults.standard.set(ball, forKey: "pet-ball")
+            UserDefaults.standard.set(ball, forKey: Self.ballKey)
             PetStage.shared.update()
         }
     }
@@ -38,10 +42,10 @@ final class PetTool: Tool {
     @ObservationIgnored private var source: CFRunLoopSource?
 
     private init() {
-        isEnabled = UserDefaults.standard.object(forKey: "pet") as? Bool ?? true
-        talks = UserDefaults.standard.object(forKey: "pet-talks") as? Bool ?? true
-        rhythm = UserDefaults.standard.object(forKey: "pet-rhythm") as? Bool ?? true
-        ball = UserDefaults.standard.object(forKey: "pet-ball") as? Bool ?? true
+        isEnabled = UserDefaults.standard.object(forKey: ToolID.pet) as? Bool ?? true
+        talks = UserDefaults.standard.object(forKey: Self.talksKey) as? Bool ?? true
+        rhythm = UserDefaults.standard.object(forKey: Self.rhythmKey) as? Bool ?? true
+        ball = UserDefaults.standard.object(forKey: Self.ballKey) as? Bool ?? true
     }
 
     var isDefault: Bool { isEnabled && talks && rhythm && ball }
@@ -54,10 +58,10 @@ final class PetTool: Tool {
     }
 
     func load() {
-        isEnabled = UserDefaults.standard.object(forKey: "pet") as? Bool ?? true
-        talks = UserDefaults.standard.object(forKey: "pet-talks") as? Bool ?? true
-        rhythm = UserDefaults.standard.object(forKey: "pet-rhythm") as? Bool ?? true
-        ball = UserDefaults.standard.object(forKey: "pet-ball") as? Bool ?? true
+        isEnabled = UserDefaults.standard.object(forKey: ToolID.pet) as? Bool ?? true
+        talks = UserDefaults.standard.object(forKey: Self.talksKey) as? Bool ?? true
+        rhythm = UserDefaults.standard.object(forKey: Self.rhythmKey) as? Bool ?? true
+        ball = UserDefaults.standard.object(forKey: Self.ballKey) as? Bool ?? true
     }
 
     var settingsView: AnyView {
@@ -158,7 +162,7 @@ private struct PetSettings: View {
     var body: some View {
         ToggleRow(
             icon: tool.icon,
-            title: String(localized: "Pet on the desktop"),
+            title: SettingTitle.petOnDesktop,
             subtitle: Text("Walks along the bottom of the screen, behind your windows and the Dock. Try picking it up!"),
             hint: Text("Walks behind your windows"),
             help: tool.listening ? Text("Press Space and it jumps. Put the pointer in its way and it jumps over it") : Text("Put the pointer in its way and it jumps over it"),
@@ -167,21 +171,21 @@ private struct PetSettings: View {
         if inSettings {
             ToggleRow(
                 icon: "text.bubble",
-                title: String(localized: "Talks sometimes"),
+                title: SettingTitle.petTalks,
                 subtitle: talksSubtitle,
                 isOn: $tool.talks
             )
             .disabled(!tool.isEnabled)
             ToggleRow(
                 icon: "zzz",
-                title: String(localized: "Follows your rhythm"),
+                title: SettingTitle.petRhythm,
                 subtitle: Text("Perks up while you type and dozes off when you step away"),
                 isOn: $tool.rhythm
             )
             .disabled(!tool.isEnabled)
             ToggleRow(
                 icon: "soccerball",
-                title: String(localized: "Ball"),
+                title: SettingTitle.petBall,
                 subtitle: Text("A ball rolls along the bottom of the screen. Your pet kicks it, and you can kick it with the pointer or pick it up and throw it"),
                 isOn: $tool.ball
             )

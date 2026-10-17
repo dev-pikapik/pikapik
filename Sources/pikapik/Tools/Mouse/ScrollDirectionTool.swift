@@ -2,13 +2,13 @@ import SwiftUI
 
 @Observable
 final class ScrollDirectionTool: Tool {
-    let id = "wheel-direction"
+    let id = ToolID.wheelDirection
     let icon = "arrow.up.arrow.down"
-    var title: String { String(localized: "Scroll direction for trackpad and mouse") }
+    var title: String { SettingTitle.wheelDirection }
     let tab = SettingsTab.mouse
 
-    private static let trackpadKey = "wheel-direction-trackpad-natural"
-    private static let mouseKey = "wheel-direction-natural"
+    private static let trackpadKey = PreferenceKey.wheelDirectionTrackpad
+    private static let mouseKey = PreferenceKey.wheelDirectionMouse
 
     var isActive: Bool { isEnabled && ScrollTap.shared.isActive }
 
@@ -115,13 +115,13 @@ private struct ScrollDirectionSettings: View {
             Group {
                 choice(
                     Text("Trackpad direction"),
-                    String(localized: "Trackpad direction"),
+                    SettingTitle.trackpadDirection,
                     $tool.trackpadNatural,
                     tool.trackpadNatural ? Text("Move two fingers up to go down the page") : Text("Move two fingers down to go down the page")
                 )
                 choice(
                     Text("Mouse wheel direction"),
-                    String(localized: "Mouse wheel direction"),
+                    SettingTitle.mouseWheelDirection,
                     $tool.mouseNatural,
                     tool.mouseNatural ? Text("Roll the wheel toward you to go up the page") : Text("Roll the wheel toward you to go down the page")
                 )

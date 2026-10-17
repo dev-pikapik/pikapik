@@ -6,9 +6,9 @@ import SwiftUI
 final class AppVolumeTool: Tool {
     static let shared = AppVolumeTool()
 
-    let id = "app-volume"
+    let id = ToolID.appVolume
     let icon = "speaker.wave.2"
-    var title: String { String(localized: "App Volume") }
+    var title: String { SettingTitle.appVolume }
     var tab: SettingsTab { .sound }
     var needs: [Permission] { [.systemAudio] }
     var isActive: Bool { isEnabled && Permissions.shared.systemAudio }
@@ -69,8 +69,8 @@ final class AppVolumeTool: Tool {
     func setEnabled(_ on: Bool) {
         if on, !isEnabled {
             let defaults = UserDefaults.standard
-            let hidden = (defaults.string(forKey: "quick-hidden") ?? MenuView.defaultHidden).split(separator: ",")
-            defaults.set(hidden.filter { $0 != id }.joined(separator: ","), forKey: "quick-hidden")
+            let hidden = (defaults.string(forKey: PreferenceKey.quickHidden) ?? MenuView.defaultHidden).split(separator: ",")
+            defaults.set(hidden.filter { $0 != id }.joined(separator: ","), forKey: PreferenceKey.quickHidden)
         }
         isEnabled = on
         if on { Permissions.shared.checkSystemAudio() }

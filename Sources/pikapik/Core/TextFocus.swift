@@ -132,10 +132,11 @@ enum TextFocus {
         var element = value(app, kAXFocusedUIElementAttribute).0
         for _ in 0..<64 {
             guard let current = element, CFGetTypeID(current) == AXUIElementGetTypeID(), !CFEqual(current, app) else { return false }
-            let role = value(current as! AXUIElement, kAXRoleAttribute).0 as? String
+            let axCurrent = unsafeBitCast(current, to: AXUIElement.self)
+            let role = value(axCurrent, kAXRoleAttribute).0 as? String
             if role == "AXWebArea" { return true }
             if role == nil || role == kAXWindowRole { return false }
-            element = value(current as! AXUIElement, kAXParentAttribute).0
+            element = value(axCurrent, kAXParentAttribute).0
         }
         return false
     }
@@ -159,7 +160,7 @@ enum TextFocus {
             self = .unknown
             return
         }
-        let element = focused as! AXUIElement
+        let element = unsafeBitCast(focused, to: AXUIElement.self)
 
         let (role, roleError) = Self.value(element, kAXRoleAttribute)
         guard roleError == .success, let role = role as? String else {

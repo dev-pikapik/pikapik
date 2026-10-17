@@ -31,6 +31,11 @@ enum PointerShortcuts {
     static let mice = ["com.apple.AppleMultitouchMouse", "com.apple.driver.AppleBluetoothMultitouch.mouse"]
     static let sides = ["tl", "tr", "bl", "br"]
     static let cornerNames = ["Top Left Hot Corner", "Top Right Hot Corner", "Bottom Left Hot Corner", "Bottom Right Hot Corner"]
+    private static let extensionBundles = [
+        "desk": SystemPath.desktopSettingsExtension,
+        "trk": SystemPath.trackpadExtension,
+        "mou": SystemPath.mouseExtension,
+    ]
     static let actions: [Int: (name: String, symbol: String)] = [
         2: ("Mission Control", "rectangle.3.group"), 3: ("Application Windows", "macwindow.on.rectangle"), 4: ("Desktop", "desktopcomputer"),
         5: ("Start Screen Saver", "sparkles"), 6: ("Disable Screen Saver", "display"), 10: ("Put Display to Sleep", "moon.zzz.fill"),
@@ -168,8 +173,7 @@ enum PointerShortcuts {
 
     static func appleNames(_ table: String, _ key: String) -> String? {
         if tables[table] == nil {
-            let bundles = ["desk": "DesktopSettings", "trk": "TrackpadExtension", "mou": "MouseExtension"]
-            tables[table] = bundles[table].flatMap { Bundle(path: "/System/Library/ExtensionKit/Extensions/\($0).appex") }
+            tables[table] = extensionBundles[table].flatMap(Bundle.init(path:))
                 .map { SystemShortcutCatalog.strings($0, "Localizable") } ?? [:]
         }
         return SystemShortcutCatalog.nonempty(tables[table]?[key])

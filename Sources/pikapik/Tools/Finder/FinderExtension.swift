@@ -4,6 +4,12 @@ import SwiftUI
 @Observable
 final class FinderExtension {
     static var all: [FinderExtension] = []
+    private static let pluginkitPath = SystemPath.pluginkit
+    fileprivate static let launchctlPath = SystemPath.launchctl
+    fileprivate static let finderBundleID = AppConstants.finderBundleID
+    private static let finderSyncExtensionPoint = "com.apple.FinderSync"
+    private static let syncExtensionsDefaultsKey = "com.apple.finder.SyncExtensions"
+    private static let previewID = (Bundle.main.bundleIdentifier ?? AppConstants.directBundleID) + ".preview"
 
     private(set) var isActive = false
     private(set) var needsSettings = false
@@ -17,7 +23,7 @@ final class FinderExtension {
         self.bundle = bundle
         self.key = key
         self.preview = preview
-        id = (Bundle.main.bundleIdentifier ?? "com.pikapik.app.direct") + "." + key
+        id = (Bundle.main.bundleIdentifier ?? AppConstants.directBundleID) + "." + key
         refresh()
         #if APPSTORE
         _ = Self.launches
@@ -100,7 +106,7 @@ final class FinderExtension {
     #else
     private func ignoreOtherCopies() {
         guard MainCopy.canAct, Bundle.main.bundleIdentifier == MainCopyChoice.websiteID else { return }
-        for line in Self.pluginkit("-m", "-p", "com.apple.FinderSync").split(separator: "\n") where line.hasPrefix("+") {
+        for line in Self.pluginkit("-m", "-p", Self.finderSyncExtensionPoint).split(separator: "\n") where line.hasPrefix("+") {
             let other = String(line.split(whereSeparator: \.isWhitespace).last?.prefix { $0 != "(" } ?? "")
             if other.hasPrefix(MainCopyChoice.websiteID) || other.hasPrefix("com.pikapik."), other.hasSuffix("." + key), ![id, MainCopyChoice.appStoreID + "." + key].contains(other) {
                 Self.pluginkit("-e", "ignore", "-i", other)
@@ -116,7 +122,7 @@ final class FinderExtension {
 
     static func refreshFinderRecord() {
         DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 20) {
-            let map = UserDefaults.standard.dictionary(forKey: "com.apple.finder.SyncExtensions")?["dirMap"] as? [String: [String]] ?? [:]
+            let map = UserDefaults.standard.dictionary(forKey: Self.syncExtensionsDefaultsKey)?["dirMap"] as? [String: [String]] ?? [:]
             guard let id = finderPlugIns.compactMap(\.bundleIdentifier).first(where: { (map[$0]?.isEmpty ?? true) && pluginkit("-m", "-i", $0).hasPrefix("+") }) else { return }
             pluginkit("-e", "use", "-i", id)
         }
@@ -130,10 +136,8 @@ final class FinderExtension {
     }
 
     fileprivate static var finderPlugIns: [Bundle] {
-        plugIns.filter { ($0.infoDictionary?["NSExtension"] as? [String: Any])?["NSExtensionPointIdentifier"] as? String == "com.apple.FinderSync" }
+        plugIns.filter { ($0.infoDictionary?["NSExtension"] as? [String: Any])?["NSExtensionPointIdentifier"] as? String == finderSyncExtensionPoint }
     }
-
-    private static let previewID = (Bundle.main.bundleIdentifier ?? "com.pikapik.app.direct") + ".preview"
 
     private static func elect(_ on: Bool, bundle: String, id: String) {
         if on, let plugIns = Bundle.main.builtInPlugInsURL {
@@ -144,7 +148,7 @@ final class FinderExtension {
 
     @discardableResult
     private static func pluginkit(_ arguments: String...) -> String {
-        run("/usr/bin/pluginkit", arguments)
+        run(pluginkitPath, arguments)
     }
 
     fileprivate static func run(_ tool: String, _ arguments: [String]) -> String {
@@ -179,7 +183,7 @@ final class FinderRestart {
 
     func check() {
         DispatchQueue.global(qos: .utility).async {
-            guard let finder = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first,
+            guard let finder = NSRunningApplication.runningApplications(withBundleIdentifier: FinderExtension.finderBundleID).first,
                   Self.isStale(finder.processIdentifier)
             else { return }
             let safe = Self.isSafe(finder)
@@ -194,7 +198,7 @@ final class FinderRestart {
 
     private static func isStale(_ finder: pid_t) -> Bool {
         FinderExtension.finderPlugIns.compactMap(\.bundleIdentifier).contains { id in
-            FinderExtension.run("/bin/launchctl", ["print", "pid/\(finder)/\(id)"])
+            FinderExtension.run(FinderExtension.launchctlPath, ["print", "pid/\(finder)/\(id)"])
                 .split(separator: "\n")
                 .map { $0.trimmingCharacters(in: .whitespaces) }
                 .first { $0.hasPrefix("program = ") }

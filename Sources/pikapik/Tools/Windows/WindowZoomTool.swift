@@ -4,12 +4,12 @@ import SwiftUI
 
 @Observable
 final class WindowZoomTool: Tool {
-    let id = "window-zoom"
+    let id = ToolID.windowZoom
     let icon = "arrow.up.left.and.arrow.down.right"
-    var title: String { String(localized: "Green button enlarges the window") }
+    var title: String { SettingTitle.windowZoom }
     let tab = SettingsTab.windows
 
-    private static let excludedKey = "window-zoom-excluded"
+    private static let excludedKey = PreferenceKey.windowZoomExcluded
 
     private(set) var isActive = false
 
@@ -103,9 +103,10 @@ final class WindowZoomTool: Tool {
         guard AXUIElementCopyElementAtPosition(app, Float(point.x), Float(point.y), &hit) == .success, let hit,
               !CFEqual(hit, app),
               Self.value(hit, kAXSubroleAttribute) as? String == kAXFullScreenButtonSubrole as String,
-              let window = Self.value(hit, kAXWindowAttribute), CFGetTypeID(window) == AXUIElementGetTypeID(),
-              case let window = window as! AXUIElement,
-              Self.isSettable(window, kAXSizeAttribute),
+              let windowRef = Self.value(hit, kAXWindowAttribute), CFGetTypeID(windowRef) == AXUIElementGetTypeID()
+        else { return false }
+        let window = unsafeBitCast(windowRef, to: AXUIElement.self)
+        guard Self.isSettable(window, kAXSizeAttribute),
               let button = Self.frame(of: hit)
         else { return false }
         pending = (window, button)
@@ -170,8 +171,8 @@ final class WindowZoomTool: Tool {
         var size = CGSize.zero
         guard let position = value(element, kAXPositionAttribute), CFGetTypeID(position) == AXValueGetTypeID(),
               let dimensions = value(element, kAXSizeAttribute), CFGetTypeID(dimensions) == AXValueGetTypeID(),
-              AXValueGetValue(position as! AXValue, .cgPoint, &origin),
-              AXValueGetValue(dimensions as! AXValue, .cgSize, &size)
+              AXValueGetValue(unsafeBitCast(position, to: AXValue.self), .cgPoint, &origin),
+              AXValueGetValue(unsafeBitCast(dimensions, to: AXValue.self), .cgSize, &size)
         else { return nil }
         return CGRect(origin: origin, size: size)
     }

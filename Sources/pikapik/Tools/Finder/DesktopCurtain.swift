@@ -77,7 +77,6 @@ final class DesktopCurtain {
         ] as CFDictionary)
     }
 
-    // ponytail: Tile isn't in desktopImageOptions, it shows as Fill.
     private static func gravity(_ options: [NSWorkspace.DesktopImageOptionKey: Any]) -> CALayerContentsGravity {
         switch (options[.imageScaling] as? UInt).flatMap(NSImageScaling.init) {
         case .scaleAxesIndependently: .resize

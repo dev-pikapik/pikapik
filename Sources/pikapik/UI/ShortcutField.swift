@@ -4,6 +4,9 @@ import SwiftUI
 @Observable
 final class SystemShortcuts {
     static let shared = SystemShortcuts()
+    private static let finderAppPath = SystemPath.finderApp
+    private static let keyboardSettingsAppexPath = SystemPath.keyboardSettingsAppex
+    private static let systemPreferencesBundleID = "com.apple.systempreferences"
 
     struct Place {
         let url: URL
@@ -71,7 +74,7 @@ final class SystemShortcuts {
 
     private static var cutTitle: String {
         let languages = CFPreferencesCopyAppValue("AppleLanguages" as CFString, "com.apple.finder" as CFString) as? [String]
-        guard let finder = Bundle(path: "/System/Library/CoreServices/Finder.app"),
+        guard let finder = Bundle(path: finderAppPath),
               let language = Bundle.preferredLocalizations(from: finder.localizations, forPreferences: languages).first,
               let path = finder.path(forResource: "MenuBar", ofType: "strings", inDirectory: nil, forLocalization: language),
               let title = NSDictionary(contentsOfFile: path)?["160.title"] as? String
@@ -137,7 +140,7 @@ final class SystemShortcuts {
         var stable = 0
         while Date() < deadline {
             Thread.sleep(forTimeInterval: 0.15)
-            guard let app = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.systempreferences").first else { continue }
+            guard let app = NSRunningApplication.runningApplications(withBundleIdentifier: systemPreferencesBundleID).first else { continue }
             let windows: [AXUIElement] = value(AXUIElementCreateApplication(app.processIdentifier), kAXWindowsAttribute) ?? []
             let found = windows.flatMap(children).filter { value($0, kAXRoleAttribute) == kAXSheetRole }.flatMap { tables($0, 10) }
             let rows = found.map { (value($0, kAXRowsAttribute) ?? []) as [AXUIElement] }
@@ -165,10 +168,10 @@ final class SystemShortcuts {
 
     private static let table: (names: [Int: String], sections: [Int: String], titles: [String: String], keys: [String: String], button: String, anchors: Set<String>) = {
         let button = "Keyboard Shortcuts…"
-        guard let bundle = Bundle(path: "/System/Library/ExtensionKit/Extensions/KeyboardSettings.appex") else { return ([:], [:], [:], [:], button, []) }
+        guard let bundle = Bundle(path: keyboardSettingsAppexPath) else { return ([:], [:], [:], [:], button, []) }
         func strings(_ name: String) -> [String: String] {
             let table = bundle.url(forResource: name, withExtension: "loctable").flatMap { NSDictionary(contentsOf: $0) as? [String: Any] } ?? [:]
-            let language = Bundle.preferredLocalizations(from: Array(table.keys), forPreferences: CFPreferencesCopyAppValue("AppleLanguages" as CFString, "com.apple.systempreferences" as CFString) as? [String]).first ?? "en"
+            let language = Bundle.preferredLocalizations(from: Array(table.keys), forPreferences: CFPreferencesCopyAppValue("AppleLanguages" as CFString, systemPreferencesBundleID as CFString) as? [String]).first ?? "en"
             return table[language] as? [String: String] ?? [:]
         }
         func list(_ name: String) -> [[String: Any]] {

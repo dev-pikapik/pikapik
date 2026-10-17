@@ -48,6 +48,15 @@ struct OrphanGroup: Identifiable, Equatable {
 }
 
 enum AppNames {
+    static let caskroomPaths = ["/opt/homebrew/Caskroom", "/usr/local/Caskroom"]
+    static let pkgutilPath = "/usr/sbin/pkgutil"
+    static let selfBundleIDPrefix = "com.pikapik.app.direct"
+    static let appleBundleIDPrefix = "com.apple."
+    static let systemAppFolders = [
+        "System/Applications", "System/Applications/Utilities", "System/Library/CoreServices",
+        "System/Library/CoreServices/Applications", "System/Cryptexes/App/System/Applications",
+        "Applications", "Applications/Utilities",
+    ]
     static let generic: Set<String> = [
         "helper", "helpers", "updater", "update", "agent", "agents", "support", "data", "common", "shared", "app", "apps", "application",
         "applications", "plugin", "plugins", "extension", "extensions", "cache", "caches", "log", "logs", "backup", "backups", "service",
@@ -331,7 +340,7 @@ struct AppRoots {
             root: URL(fileURLWithPath: "/"),
             userCache: darwinDirectory(_CS_DARWIN_USER_CACHE_DIR),
             userTemp: darwinDirectory(_CS_DARWIN_USER_TEMP_DIR),
-            caskrooms: ["/opt/homebrew/Caskroom", "/usr/local/Caskroom"].map { URL(fileURLWithPath: $0) },
+            caskrooms: AppNames.caskroomPaths.map { URL(fileURLWithPath: $0) },
             pkgutil: runPkgutil,
             isKnownApp: launchServicesKnows)
     }
@@ -347,7 +356,7 @@ struct AppRoots {
         return urls.contains { !AppInventory.isInTrash($0) && FileManager.default.fileExists(atPath: $0.path) }
     }
 
-    static func runPkgutil(_ arguments: [String]) -> String? { run("/usr/sbin/pkgutil", arguments) }
+    static func runPkgutil(_ arguments: [String]) -> String? { run(AppNames.pkgutilPath, arguments) }
 
     static func run(_ tool: String, _ arguments: [String]) -> String? {
         let process = Process()
@@ -417,7 +426,7 @@ enum AppInventory {
             var info = stat()
             guard lstat(real.path, &info) == 0, info.st_flags & UInt32(SF_RESTRICTED) == 0, let app = AppIdentity.read(at: candidate.url) else { return nil }
             let id = app.bundleID.lowercased()
-            if id.hasPrefix("com.pikapik.app.direct") || (id.hasPrefix("com.apple.") && !candidate.direct) { return nil }
+            if id.hasPrefix(AppNames.selfBundleIDPrefix) || (id.hasPrefix(AppNames.appleBundleIDPrefix) && !candidate.direct) { return nil }
             return (app, real.path)
         }
         var seen = Set<String>()
@@ -426,14 +435,12 @@ enum AppInventory {
     }
 
     static func system(_ roots: AppRoots) -> [AppIdentity] {
-        let folders = ["System/Applications", "System/Applications/Utilities", "System/Library/CoreServices", "System/Library/CoreServices/Applications",
-                       "System/Cryptexes/App/System/Applications", "Applications", "Applications/Utilities"]
-        let urls = folders.flatMap { bundles(in: roots.atRoot($0), deep: false).map { $0.url } }
+        let urls = AppNames.systemAppFolders.flatMap { bundles(in: roots.atRoot($0), deep: false).map { $0.url } }
         var seen = Set<String>()
         let apps: [AppIdentity] = parallelMap(urls) { AppIdentity.read(at: $0, signed: false) }
         return apps.filter { app in
             let inApplications = app.url.path.hasPrefix(roots.atRoot("Applications").path + "/")
-            return (!inApplications || app.bundleID.lowercased().hasPrefix("com.apple.")) && seen.insert(app.url.resolvingSymlinksInPath().path).inserted
+            return (!inApplications || app.bundleID.lowercased().hasPrefix(AppNames.appleBundleIDPrefix)) && seen.insert(app.url.resolvingSymlinksInPath().path).inserted
         }
     }
 

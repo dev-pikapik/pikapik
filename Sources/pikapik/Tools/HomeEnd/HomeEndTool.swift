@@ -4,9 +4,9 @@ import SwiftUI
 
 @Observable
 final class HomeEndTool: Tool {
-    let id = "home-end"
+    let id = ToolID.homeEnd
     let icon = "arrow.left.to.line"
-    var title: String { String(localized: "Home and End go to the start and end of a line") }
+    var title: String { SettingTitle.homeEnd }
 
     static let consoles = [
         "com.apple.Terminal", "com.googlecode.iterm2", "com.mitchellh.ghostty", "dev.warp.", "net.kovidgoyal.kitty",
@@ -33,7 +33,7 @@ final class HomeEndTool: Tool {
     private static let storeExcluded: [String] = []
     #endif
 
-    private static let excludedKey = "home-end-excluded"
+    private static let excludedKey = PreferenceKey.homeEndExcluded
 
     private(set) var isActive = false
 

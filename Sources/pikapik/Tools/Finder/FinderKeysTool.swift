@@ -84,7 +84,7 @@ final class FinderKeys {
         let deleting = deletes && flags.isEmpty && [kVK_Delete, kVK_ForwardDelete].contains(key)
         guard opening || cutting || moving || deleting,
               let finder = NSWorkspace.shared.frontmostApplication,
-              finder.bundleIdentifier == "com.apple.finder",
+              finder.bundleIdentifier == AppConstants.finderBundleID,
               Self.isBrowsing(finder.processIdentifier)
         else { return false }
 
@@ -147,7 +147,8 @@ final class FinderKeys {
             return false
         case .other(let element):
             guard let window = TextFocus.value(element, kAXWindowAttribute).0, CFGetTypeID(window) == AXUIElementGetTypeID() else { return true }
-            let windowSubrole = TextFocus.value(window as! AXUIElement, kAXSubroleAttribute).0 as? String
+            let windowElement = unsafeBitCast(window, to: AXUIElement.self)
+            let windowSubrole = TextFocus.value(windowElement, kAXSubroleAttribute).0 as? String
             return windowSubrole == kAXStandardWindowSubrole || windowSubrole == "AXDesktop"
         }
         #endif
@@ -175,9 +176,9 @@ func finderKeysCallback(
 
 @Observable
 final class FinderOpenTool: Tool {
-    let id = "finder-open"
+    let id = ToolID.finderOpen
     let icon = "return"
-    var title: String { String(localized: "Enter opens files in Finder") }
+    var title: String { SettingTitle.enterOpensFiles }
     let tab = SettingsTab.finder
 
     var isActive: Bool { isEnabled && FinderKeys.shared.isActive }
@@ -205,9 +206,9 @@ final class FinderOpenTool: Tool {
 
 @Observable
 final class FinderCutTool: Tool {
-    let id = "finder-cut"
+    let id = ToolID.finderCut
     let icon = "scissors"
-    var title: String { String(localized: "Cut files in Finder") }
+    var title: String { SettingTitle.cutFilesInFinder }
     let tab = SettingsTab.finder
 
     var isActive: Bool { isEnabled && FinderKeys.shared.isActive }
@@ -235,9 +236,9 @@ final class FinderCutTool: Tool {
 
 @Observable
 final class FinderDeleteTool: Tool {
-    let id = "finder-delete"
+    let id = ToolID.finderDelete
     let icon = "delete.left"
-    var title: String { String(localized: "Delete removes files in Finder") }
+    var title: String { SettingTitle.deleteRemovesFiles }
     let tab = SettingsTab.finder
 
     var isActive: Bool { isEnabled && FinderKeys.shared.isActive }

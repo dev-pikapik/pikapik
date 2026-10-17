@@ -5,7 +5,7 @@ enum Appearance: String, CaseIterable {
     case system, light, dark
 
     static var saved: Appearance {
-        Appearance(rawValue: UserDefaults.standard.string(forKey: "appearance") ?? "") ?? .system
+        Appearance(rawValue: UserDefaults.standard.string(forKey: PreferenceKey.appearance) ?? "") ?? .system
     }
 
     var title: String {
@@ -34,9 +34,9 @@ final class Language {
     var selected: String {
         didSet {
             if selected.isEmpty {
-                UserDefaults.standard.removeObject(forKey: "AppleLanguages")
+                UserDefaults.standard.removeObject(forKey: PreferenceKey.appleLanguages)
             } else {
-                UserDefaults.standard.set([selected], forKey: "AppleLanguages")
+                UserDefaults.standard.set([selected], forKey: PreferenceKey.appleLanguages)
             }
         }
     }
@@ -48,7 +48,7 @@ final class Language {
 
     private static var saved: String {
         let domain = UserDefaults.standard.persistentDomain(forName: Bundle.main.bundleIdentifier ?? "")
-        return (domain?["AppleLanguages"] as? [String])?.first ?? ""
+        return (domain?[PreferenceKey.appleLanguages] as? [String])?.first ?? ""
     }
 
     func load() {
@@ -63,7 +63,7 @@ final class Language {
 
 struct GeneralSettings: View {
     @Bindable private var loginItem = LoginItem.shared
-    @AppStorage("appearance") private var appearance = Appearance.system
+    @AppStorage(PreferenceKey.appearance) private var appearance = Appearance.system
     @AppStorage(Background.key) private var keepRunning = true
     @Bindable private var language = Language.shared
     @Bindable private var sync = SettingsSync.shared
@@ -80,7 +80,7 @@ struct GeneralSettings: View {
                 if loginItem.needsApproval { SettingsGuide.loginItems }
                 Toggle(isOn: $loginItem.isOn) {
                     HStack {
-                        RowLabel(Text("Open at Login"), Text(loginItem.needsApproval
+                        RowLabel(Text(SettingTitle.openAtLogin), Text(loginItem.needsApproval
                              ? String(localized: "Allow it in System Settings › General › Login Items")
                              : String(localized: "Starts on its own when you log in")))
                         if loginItem.needsApproval {
@@ -89,25 +89,24 @@ struct GeneralSettings: View {
                         }
                     }
                 }
-                .settingAnchor(String(localized: "Open at Login"))
+                .settingAnchor(SettingTitle.openAtLogin)
                 #if !APPSTORE
-                let stayTitle = String(localized: "Stay in the background after Quit")
                 Toggle(isOn: $keepRunning) {
-                    RowLabel(Text(stayTitle), Text("Shortcuts and Keep Awake keep working. Hold Option to quit completely"))
+                    RowLabel(Text(SettingTitle.stayInBackground), Text("Shortcuts and Keep Awake keep working. Hold Option to quit completely"))
                 }
-                .settingAnchor(stayTitle)
+                .settingAnchor(SettingTitle.stayInBackground)
                 #endif
-                LabeledContent("Appearance") {
+                LabeledContent(SettingTitle.appearance) {
                     AppearancePicker(selection: Binding(get: { appearance }, set: { appearance = $0; $0.apply() }))
                         .fixedSize()
                 }
-                .settingAnchor(String(localized: "Appearance"))
-                Picker("Language", selection: $language.selected) {
+                .settingAnchor(SettingTitle.appearance)
+                Picker(SettingTitle.language, selection: $language.selected) {
                     Text("System").tag("")
                     Divider()
                     ForEach(Language.codes, id: \.self) { Text(verbatim: Language.name($0)).tag($0) }
                 }
-                .settingAnchor(String(localized: "Language"))
+                .settingAnchor(SettingTitle.language)
                 if language.selected != language.atLaunch {
                     LabeledContent("Restart pikapik to apply") {
                         Button("Restart", systemImage: "arrow.clockwise") { SettingsWindow.restart() }
@@ -117,20 +116,19 @@ struct GeneralSettings: View {
             }
             Section("Backup") {
                 VStack(alignment: .leading, spacing: 10) {
-                    RowLabel(Text("Settings file"), Text("Save all settings to a file, or load them from one"))
+                    RowLabel(Text(SettingTitle.settingsFile), Text("Save all settings to a file, or load them from one"))
                     ViewThatFits(in: .horizontal) {
                         HStack { backupButtons }
                         VStack(alignment: .leading) { backupButtons }
                     }
                 }
                 .padding(.vertical, 2)
-                .settingAnchor(String(localized: "Settings file"))
+                .settingAnchor(SettingTitle.settingsFile)
                 if SettingsSync.isAvailable {
-                    let syncTitle = String(localized: "Sync settings with iCloud")
                     Toggle(isOn: $sync.isEnabled) {
-                        RowLabel(Text(syncTitle), Text(syncStatus))
+                        RowLabel(Text(SettingTitle.syncWithICloud), Text(syncStatus))
                     }
-                    .settingAnchor(syncTitle)
+                    .settingAnchor(SettingTitle.syncWithICloud)
                 }
                 #if !APPSTORE
                 if sync.state == .noDrive {

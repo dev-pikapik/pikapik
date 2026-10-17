@@ -88,6 +88,9 @@ final class Battery {
     static let shared = Battery()
     static let isPresent = read() != nil
     static let ratedCycles = 1000
+    #if !APPSTORE
+    private static let systemProfilerExecutableURL = URL(fileURLWithPath: "/usr/sbin/system_profiler")
+    #endif
 
     private(set) var state: BatteryState?
     private(set) var health: BatteryHealth?
@@ -123,7 +126,7 @@ final class Battery {
         #else
         DispatchQueue.global(qos: .utility).async {
             let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/usr/sbin/system_profiler")
+            process.executableURL = Self.systemProfilerExecutableURL
             process.arguments = ["SPPowerDataType", "-json"]
             let pipe = Pipe()
             process.standardOutput = pipe

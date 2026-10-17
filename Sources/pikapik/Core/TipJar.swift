@@ -69,7 +69,7 @@ struct TipJarSection: View {
                 } label: {
                     RowLabel(Text("Say thanks"), Text("Optional tip. It unlocks nothing."))
                 }
-                .settingAnchor(String(localized: "Say thanks"))
+                .settingAnchor(SettingTitle.sayThanks)
                 if jar.thanked {
                     Label("Thank you! It means a lot.", systemImage: "heart.fill")
                         .foregroundStyle(.pink)

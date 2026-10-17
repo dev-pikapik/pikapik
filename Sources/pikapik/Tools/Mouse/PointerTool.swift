@@ -4,16 +4,16 @@ import SwiftUI
 
 @Observable
 final class PointerTool: Tool {
-    let id = "linear-pointer"
+    let id = ToolID.linearPointer
     let icon = "cursorarrow.motionlines"
-    var title: String { String(localized: "Turn off pointer acceleration") }
+    var title: String { SettingTitle.linearPointer }
     var needs: [Permission] { [] }
     let tab = SettingsTab.mouse
 
     static let speedRange = 0.2...3.0
-    private static let speedKey = "linear-pointer-speed"
-    private static let savedKey = "linear-pointer-saved"
-    private static let oursKey = "linear-pointer-ours"
+    private static let speedKey = PreferenceKey.linearPointerSpeed
+    private static let savedKey = PreferenceKey.linearPointerSaved
+    private static let oursKey = PreferenceKey.linearPointerOurs
     private static let linearKey = "HIDUseLinearScalingMouseAcceleration"
     private static let resolutionKey = "HIDPointerResolution"
 
@@ -250,7 +250,7 @@ private struct PointerSettings: View {
         if inSettings {
             LabeledContent {
                 ValueSlider(
-                    title: String(localized: "Tracking speed"),
+                    title: SettingTitle.trackingSpeed,
                     value: $tool.speed,
                     range: PointerTool.speedRange,
                     step: 0.1,
@@ -262,13 +262,13 @@ private struct PointerSettings: View {
                 RowLabel(Text("Tracking speed"), Text("The dot marks your Mac’s normal speed"))
             }
             .disabled(!tool.isEnabled)
-            .settingAnchor(String(localized: "Tracking speed"))
+            .settingAnchor(SettingTitle.trackingSpeed)
         }
         if inSettings, PointerTool.systemIsLinear {
             SystemSettingsRow(
                 title: String(localized: "Pointer acceleration is already off in System Settings"),
                 subtitle: Text("So this switch only changes the speed. To bring acceleration back, turn it on there"),
-                url: URL(string: "x-apple.systempreferences:com.apple.Mouse-Settings.extension")!,
+                url: URL(string: SystemPane.mouse)!,
                 guide: SettingsGuide(pane: .mouse, steps: [.button("Advanced…"), .toggle("Pointer acceleration", on: true)])
             )
         }

@@ -2,9 +2,9 @@ import SwiftUI
 
 @Observable
 final class KeyRepeatTool: Tool {
-    let id = "key-repeat"
+    let id = ToolID.keyRepeat
     let icon = "repeat"
-    var title: String { String(localized: "Repeat a held key") }
+    var title: String { SettingTitle.keyRepeat }
 
     var isActive: Bool { isEnabled }
     var needs: [Permission] { [] }
@@ -39,7 +39,7 @@ final class KeyRepeatTool: Tool {
         restore()
     }
 
-    private static let savedKey = "key-repeat-saved"
+    private static let savedKey = PreferenceKey.keyRepeatSaved
     private static let key = "ApplePressAndHoldEnabled" as CFString
 
     private static func enable() {

@@ -1,6 +1,9 @@
 import Foundation
 
 #if !APPSTORE
+private let killallURL = URL(fileURLWithPath: "/usr/bin/killall")
+private let applicationServicesPath = "/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices"
+
 enum HotCorners {
     private static let journalKey = "hot-corners-before", oursKey = "hot-corners-ours", dock = "com.apple.dock" as CFString
 
@@ -42,7 +45,7 @@ enum HotCorners {
         }
         if !wrote.isEmpty {
             CFPreferencesAppSynchronize(dock)
-            if !DockCorners.set(wrote) { _ = try? Process.run(URL(fileURLWithPath: "/usr/bin/killall"), arguments: ["Dock"]) }
+            if !DockCorners.set(wrote) { _ = try? Process.run(killallURL, arguments: ["Dock"]) }
         }
         remember(saved, [:])
     }
@@ -67,7 +70,7 @@ enum HotCorners {
     private static func put(_ value: Int, side: String) {
         CFPreferencesSetAppValue(key(side) as CFString, value as CFNumber, dock)
         CFPreferencesAppSynchronize(dock)
-        if !DockCorners.set([key(side): value]) { _ = try? Process.run(URL(fileURLWithPath: "/usr/bin/killall"), arguments: ["Dock"]) }
+        if !DockCorners.set([key(side): value]) { _ = try? Process.run(killallURL, arguments: ["Dock"]) }
     }
 
     private static func remember(_ saved: [String: Int], _ ours: [String: Int]) {
@@ -80,7 +83,7 @@ enum DockCorners {
     private typealias Read = @convention(c) (UnsafeMutablePointer<Int32>, UnsafeMutablePointer<Int32>) -> Int32
     private typealias Write = @convention(c) (Int32, Int32, Int32) -> Int32
 
-    private static let library = dlopen("/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices", RTLD_LAZY)
+    private static let library = dlopen(applicationServicesPath, RTLD_LAZY)
     private static let read = dlsym(library, "CoreDockGetExposeCornerActionsWithModifiers").map { unsafeBitCast($0, to: Read.self) }
     private static let write = dlsym(library, "CoreDockSetExposeCornerActionWithModifier").map { unsafeBitCast($0, to: Write.self) }
     static let names = ["tl", "tr", "bl", "br"].map(HotCorners.key)

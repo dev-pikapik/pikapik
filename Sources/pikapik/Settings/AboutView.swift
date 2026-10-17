@@ -4,17 +4,17 @@ import SwiftUI
 struct AboutView: View {
     private static let github = Bundle.main.url(forResource: "github", withExtension: "svg").flatMap { NSImage(contentsOf: $0) }
     #if APPSTORE
-    private static let source = "https://github.com/dev-pikapik/pikapik/tree/main/Sources/pikapik"
+    private static let source = "\(AppConstants.githubRepoURL)/tree/main/Sources/pikapik"
     private static let edition = "Mac%20App%20Store"
     #else
-    private static let source = "https://github.com/dev-pikapik/pikapik"
+    private static let source = AppConstants.githubRepoURL
     private static let edition = "Website%20%2F%20GitHub%20%2F%20Homebrew"
     #endif
 
     private static var whatsNew: String {
         let code = Bundle.main.preferredLocalizations.first ?? "en"
         let page = code != "en" && Language.codes.contains(code) ? "README.\(code).md" : "README.md"
-        return "https://github.com/dev-pikapik/pikapik/blob/main/docs/whats-new/\(page)"
+        return "\(AppConstants.githubRepoURL)/blob/main/docs/whats-new/\(page)"
     }
 
     #if !APPSTORE
@@ -31,15 +31,14 @@ struct AboutView: View {
 
     var body: some View {
         Form {
-            SettingsHeader(tab: .about, title: "pikapik", text: String(localized: "Small tools that make your Mac nicer to use"), appIcon: icon)
+            SettingsHeader(tab: .about, title: AppConstants.appName, text: String(localized: "Small tools that make your Mac nicer to use"), appIcon: icon)
 
             #if APPSTORE
             Section { LabeledContent { EmptyView() } label: { RowLabel(Text("Version \(version)")) } }
             #else
             Section("Updates") {
-                let autoTitle = String(localized: "Check for updates automatically")
-                Toggle(autoTitle, isOn: $updater.checksAutomatically)
-                    .settingAnchor(autoTitle)
+                Toggle(SettingTitle.checkForUpdatesAutomatically, isOn: $updater.checksAutomatically)
+                    .settingAnchor(SettingTitle.checkForUpdatesAutomatically)
                 LabeledContent {
                     if case .available(let version) = updater.state {
                         Button("Update to \(version)", systemImage: "arrow.down.circle") { Task { await updater.install() } }
@@ -63,9 +62,9 @@ struct AboutView: View {
 
             Section {
                 link("GitHub", Self.source, symbol: "chevron.left.forwardslash.chevron.right", color: .gray, template: Self.github)
-                link(String(localized: "What’s New"), Self.whatsNew, symbol: "newspaper.fill", color: .blue)
-                link(String(localized: "Report a Problem"), "https://github.com/dev-pikapik/pikapik/issues/new?template=bug_report.yml&edition=\(Self.edition)&version=\(version)", symbol: "ladybug.fill", color: .red)
-                link(String(localized: "License (MIT)"), "https://github.com/dev-pikapik/pikapik/blob/main/LICENSE", symbol: "doc.text.fill", color: .green)
+                link(SettingTitle.whatsNew, Self.whatsNew, symbol: "newspaper.fill", color: .blue)
+                link(SettingTitle.reportAProblem, "\(AppConstants.githubRepoURL)/issues/new?template=bug_report.yml&edition=\(Self.edition)&version=\(version)", symbol: "ladybug.fill", color: .red)
+                link(SettingTitle.licenseMIT, "\(AppConstants.githubRepoURL)/blob/main/LICENSE", symbol: "doc.text.fill", color: .green)
             } footer: {
                 VStack(spacing: 4) {
                     Text(verbatim: info["NSHumanReadableCopyright"] as? String ?? "")
@@ -111,7 +110,6 @@ struct AboutView: View {
 
 #if !APPSTORE
 private struct CoffeeLine: View {
-    static let coffeeTitle = String(localized: "Buy me a coffee")
     @State private var hovering = false
 
     var body: some View {
@@ -119,12 +117,12 @@ private struct CoffeeLine: View {
             Text("Made with care")
             Text(verbatim: "·")
                 .accessibilityHidden(true)
-            Link(destination: URL(string: "https://buymeacoffee.com/pikapik")!) {
+            Link(destination: URL(string: AppConstants.buyMeACoffeeURL)!) {
                 HStack(spacing: 4) {
                     Image(systemName: "cup.and.saucer.fill")
                         .imageScale(.small)
                         .accessibilityHidden(true)
-                    Text("Buy me a coffee")
+                    Text(SettingTitle.buyMeACoffee)
                 }
                 .foregroundStyle(hovering ? HierarchicalShapeStyle.primary : HierarchicalShapeStyle.secondary)
                 .contentShape(Rectangle())
@@ -137,7 +135,7 @@ private struct CoffeeLine: View {
             .onDisappear {
                 if hovering { NSCursor.pop() }
             }
-            .settingAnchor(Self.coffeeTitle)
+            .settingAnchor(SettingTitle.buyMeACoffee)
         }
     }
 }

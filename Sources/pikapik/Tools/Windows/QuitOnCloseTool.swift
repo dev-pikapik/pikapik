@@ -5,13 +5,13 @@ import SwiftUI
 
 @Observable
 final class QuitOnCloseTool: Tool {
-    let id = "quit-on-close"
+    let id = ToolID.quitOnClose
     let icon = "xmark.app"
-    var title: String { String(localized: "Quit when the last window closes") }
+    var title: String { SettingTitle.quitOnClose }
     var needs: [Permission] { [.accessibility, .inputMonitoring] }
     let tab = SettingsTab.windows
 
-    private static let excludedKey = "quit-on-close-excluded"
+    private static let excludedKey = PreferenceKey.quitOnCloseExcluded
     fileprivate static let alwaysExcluded: Set<String> = ["com.apple.finder", Bundle.main.bundleIdentifier ?? ""]
 
     private(set) var isActive = false

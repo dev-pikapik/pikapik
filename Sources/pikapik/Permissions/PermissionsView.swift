@@ -132,7 +132,7 @@ struct PermissionsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            .settingAnchor(String(localized: "Left by deleted apps"))
+            .settingAnchor(SettingTitle.leftoverPermissions)
             .onAppear { asks.refresh() }
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in asks.refresh() }
             #else

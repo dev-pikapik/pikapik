@@ -3,13 +3,13 @@ import SwiftUI
 
 @Observable
 final class MiddleClickTool: Tool {
-    let id = "middle-click"
+    let id = ToolID.middleClick
     let icon = "hand.tap"
-    var title: String { String(localized: "Middle click on the trackpad") }
+    var title: String { SettingTitle.middleClick }
     var needs: [Permission] { [.accessibility, .inputMonitoring] }
     let tab = SettingsTab.mouse
 
-    private static let fingersKey = "middle-click-fingers"
+    private static let fingersKey = PreferenceKey.middleClickFingers
     private static let gestureKind = CGEventField(rawValue: 110)!
 
     private(set) var isActive = false
@@ -294,7 +294,7 @@ private struct MiddleClickSettings: View {
                 RowLabel(Text("Fingers"), status)
             }
             .disabled(!tool.isEnabled)
-            .settingAnchor(String(localized: "Fingers"))
+            .settingAnchor(SettingTitle.fingers)
             .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in system = TrackpadSystem.read() }
         }
     }

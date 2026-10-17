@@ -14,11 +14,11 @@ final class DockHideTool: Tool {
         let move: Move
     }
 
-    let id = "dock-hide"
+    let id = ToolID.dockHide
     let icon = "dock.rectangle"
-    var title: String { String(localized: "Minimize or hide with a click in the Dock") }
+    var title: String { SettingTitle.dockHide }
     let tab = SettingsTab.dock
-    private static let actionKey = "dock-hide-action"
+    private static let actionKey = PreferenceKey.dockHideAction
 
     private(set) var isActive = false
 
@@ -393,7 +393,7 @@ private struct DockHideSettings: View {
                     minimize ? Text("The windows go down to the Dock, like with the yellow button") : Text("The app hides with all its windows, like with ⌘H")
                 )
             }
-            .settingAnchor(String(localized: "A click on the icon"))
+            .settingAnchor(SettingTitle.dockClickAction)
             .disabled(!tool.isEnabled)
         }
     }

@@ -1,6 +1,11 @@
 import Foundation
 
 final class AppRemover {
+    private static let launchctlPath = "/bin/launchctl"
+    private static let statPath = "/usr/bin/stat"
+    private static let mvPath = "/bin/mv"
+    private static let pkgutilPath = "/usr/sbin/pkgutil"
+
     enum Outcome: Equatable {
         case done(String?)
         case cancelled
@@ -188,7 +193,7 @@ final class AppRemover {
     }
 
     static func guardedMove(_ source: String, to destination: String, device: Int32, inode: UInt64) -> String {
-        "[ ! -e \(quoted(destination)) ] && [ \"$(/usr/bin/stat -f '%d:%i' \(quoted(source)))\" = '\(device):\(inode)' ] && /bin/mv -n \(quoted(source)) \(quoted(destination))"
+        "[ ! -e \(quoted(destination)) ] && [ \"$(\(statPath) -f '%d:%i' \(quoted(source)))\" = '\(device):\(inode)' ] && \(mvPath) -n \(quoted(source)) \(quoted(destination))"
     }
 
     func remove(_ app: AppIdentity, items: [Leftover]) async -> Report {
@@ -288,7 +293,7 @@ final class AppRemover {
             let steps = rooted.map { move in
                 let step = Self.guardedMove(move.trash, to: move.original, device: move.device, inode: move.inode)
                 let daemon = record.jobs.contains { $0.domain == "system" && $0.plist == move.original }
-                return daemon ? step + " && /bin/launchctl bootstrap system \(Self.quoted(move.original))" : step
+                return daemon ? step + " && \(Self.launchctlPath) bootstrap system \(Self.quoted(move.original))" : step
             }
             let outcome = await hooks.admin((steps + ["exit 0"]).joined(separator: "; "), String(localized: "pikapik wants to put back what it removed."))
             result.cancelled = outcome == .cancelled
@@ -430,7 +435,7 @@ final class AppRemover {
                     work.why[item.id] = .failed
                     continue
                 }
-                forgets.append("/usr/sbin/pkgutil --forget \(Self.quoted(id))")
+                forgets.append("\(Self.pkgutilPath) --forget \(Self.quoted(id))")
                 receipts.append(id)
                 continue
             }
@@ -441,7 +446,7 @@ final class AppRemover {
             taken.insert(destination)
             var step = Self.guardedMove(item.url.path, to: destination, device: item.device, inode: item.inode)
             if let label = item.jobLabel, item.isDaemon, hooks.launchctl(["print", "system/\(label)"]) == 0 {
-                step += " && /bin/launchctl bootout \(Self.quoted("system/\(label)"))"
+                step += " && \(Self.launchctlPath) bootout \(Self.quoted("system/\(label)"))"
                 daemons.append(Job(label: label, domain: "system", plist: item.url.path))
             }
             moves.append(step)

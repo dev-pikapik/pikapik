@@ -2,8 +2,8 @@ import SwiftUI
 
 struct BatterySettings: View {
     private let battery = Battery.shared
-    private static let batterySettings = URL(string: "x-apple.systempreferences:com.apple.Battery-Settings.extension")!
-    private static let service = URL(string: "https://support.apple.com/mac/repair")!
+    private static let batterySettings = SystemPane.battery
+    private static let service = AppConstants.appleMacRepairURL
 
     var body: some View {
         Form {
@@ -86,8 +86,8 @@ struct BatterySettings: View {
                 }
             }
         } header: {
-            Text("Battery Health")
-                .settingAnchor(String(localized: "Battery Health"))
+            Text(SettingTitle.batteryHealth)
+                .settingAnchor(SettingTitle.batteryHealth)
         }
     }
 
@@ -104,7 +104,7 @@ struct BatterySettings: View {
                         }
                     } label: {
                         Label {
-                            RowLabel(Text("Power Adapter"), state.adapter.map { Text(verbatim: $0) })
+                            RowLabel(Text(SettingTitle.powerAdapter), state.adapter.map { Text(verbatim: $0) })
                         } icon: { Image(systemName: "powerplug").frame(width: 24) }
                     }
                 }
@@ -128,7 +128,7 @@ struct BatterySettings: View {
                 }
             } header: {
                 Text("Power")
-                    .settingAnchor(String(localized: "Power Adapter"))
+                    .settingAnchor(SettingTitle.powerAdapter)
             }
         }
     }
@@ -147,8 +147,8 @@ struct BatterySettings: View {
                 RowLabel(Text("Storing Your Mac"), Text("Charge it to about \(0.5.formatted(.percent)) and shut it down"))
             } icon: { Image(systemName: "archivebox").frame(width: 24) }
         } header: {
-            Text("Keep It Healthy")
-                .settingAnchor(String(localized: "Keep It Healthy"))
+            Text(SettingTitle.keepItHealthy)
+                .settingAnchor(SettingTitle.keepItHealthy)
         }
     }
 

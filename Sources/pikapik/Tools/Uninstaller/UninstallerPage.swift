@@ -79,7 +79,7 @@ struct UninstallerPage: View {
             .labelsHidden()
             .fixedSize()
         }
-        .settingAnchor(String(localized: "Remove an app"))
+        .settingAnchor(SettingTitle.removeApp)
     }
 }
 

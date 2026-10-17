@@ -51,7 +51,7 @@ private struct FanCard: View {
         Section {
             VStack(spacing: 14) {
                 FanScene(rpm: fan.current, maximum: fan.maximum, manual: fan.manual)
-                    .settingAnchor(String(localized: "Fan speed"))
+                    .settingAnchor(SettingTitle.fanSpeed)
                 VStack(spacing: 0) {
                     Text(Int(fan.current.rounded()), format: .number.grouping(.never))
                         .font(.system(size: 44, weight: .semibold, design: .rounded))

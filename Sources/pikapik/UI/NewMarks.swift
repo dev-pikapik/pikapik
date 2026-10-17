@@ -18,13 +18,13 @@ final class NewMarks {
 
     // To mark something new, add one line here with the version that ships it.
     static let items = [
-        NewItem(version: "1.50.0", tab: "keepAwake", row: "display-off", build: .appStore),
-        NewItem(version: "1.50.0", tab: "keyboard", row: "home-end", build: .appStore),
-        NewItem(version: "1.50.0", tab: "keyboard", row: "layout-fix", build: .appStore),
-        NewItem(version: "1.50.0", tab: "finder", row: "archive", build: .appStore),
-        NewItem(version: "1.50.0", tab: "finder", row: "desktop-icons", build: .appStore),
-        NewItem(version: "1.50.0", tab: "permissions", row: "apps-can-ask", build: .appStore),
-        NewItem(version: "1.50.0", tab: "sound", row: "app-volume"),
+        NewItem(version: "1.50.0", tab: "keepAwake", row: ToolID.displayOff, build: .appStore),
+        NewItem(version: "1.50.0", tab: "keyboard", row: ToolID.homeEnd, build: .appStore),
+        NewItem(version: "1.50.0", tab: "keyboard", row: ToolID.layoutFix, build: .appStore),
+        NewItem(version: "1.50.0", tab: "finder", row: ToolID.archive, build: .appStore),
+        NewItem(version: "1.50.0", tab: "finder", row: ToolID.desktopIcons, build: .appStore),
+        NewItem(version: "1.50.0", tab: "permissions", row: ToolID.appsCanAsk, build: .appStore),
+        NewItem(version: "1.50.0", tab: "sound", row: ToolID.appVolume),
         NewItem(version: "1.50.0", tab: "ports", build: .direct),
     ]
 
@@ -32,8 +32,8 @@ final class NewMarks {
     // A copy that never ran this feature has no stored version: it came from the last release without it.
     static let lastWithout = "1.49.0"
 
-    private static let versionKey = "new-marks-version", fromKey = "new-marks-from"
-    private static let sinceKey = "new-marks-since", seenKey = "new-marks-seen"
+    private static let versionKey = PreferenceKey.newMarksVersion, fromKey = PreferenceKey.newMarksFrom
+    private static let sinceKey = PreferenceKey.newMarksSince, seenKey = PreferenceKey.newMarksSeen
 
     private let items: [NewItem]
     private let defaults: UserDefaults

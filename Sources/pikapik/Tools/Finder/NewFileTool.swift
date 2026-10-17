@@ -2,11 +2,11 @@ import AppKit
 import SwiftUI
 
 final class NewFileTool: Tool {
-    let id = "new-file"
+    let id = ToolID.newFile
     let icon = "doc.badge.plus"
-    var title: String { String(localized: "New File in Finder") }
+    var title: String { SettingTitle.newFileInFinder }
     let tab = SettingsTab.finder
-    private let finder = FinderExtension(bundle: "NewFile", key: "new-file")
+    private let finder = FinderExtension(bundle: "NewFile", key: ToolID.newFile)
 
     var isActive: Bool { finder.isActive }
     var needs: [Permission] { finder.needsSettings ? [.finder] : [] }

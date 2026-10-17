@@ -55,45 +55,45 @@ struct GameModePage: View {
                     DisclosureGroup(isExpanded: $safeguards) {
                         Text("To leave a game, press \(CommandKeysTool.quit.text); to close its window, \(CommandKeysTool.close.text). ⌥⌘Esc always works.").font(.subheadline).foregroundStyle(.secondary)
                     } label: {
-                        GameDisclosureLabel(title: String(localized: "Game safeguards"), detail: String(localized: "Closing the game, the pointer and display."), symbol: "shield", count: GameRule.allCases.count)
+                        GameDisclosureLabel(title: SettingTitle.gameSafeguards, detail: String(localized: "Closing the game, the pointer and display."), symbol: "shield", count: GameRule.allCases.count)
                     }
                     .disclosureGroupStyle(GameDisclosureStyle())
-                    .settingAnchor(String(localized: "Game safeguards"))
+                    .settingAnchor(SettingTitle.gameSafeguards)
                 }
                 if safeguards {
                     rules(Text("Closing the game"), [
-                        Rule(.commandQ, String(localized: "The game doesn’t close"), ["⌘Q"]),
-                        Rule(.commandW, String(localized: "The game window doesn’t close"), ["⌘W"]),
+                        Rule(.commandQ, SettingTitle.gameCommandQ, ["⌘Q"]),
+                        Rule(.commandW, SettingTitle.gameCommandW, ["⌘W"]),
                     ], footer: Text("To leave a game, press \(CommandKeysTool.quit.text); to close its window, \(CommandKeysTool.close.text). ⌥⌘Esc always works."))
                     rules(Text("Apps"), [
-                        Rule(.appSwitcher, String(localized: "Apps and windows don’t switch"), ["⌘Tab", key(27, "⌘`")]),
-                        Rule(.hide, String(localized: "The game doesn’t hide"), ["⌘H", key(233, "⌘M")]),
-                        Rule(.spotlight, String(localized: "Search doesn’t pop up"), [key(64, "⌘" + String(localized: "Space"))], subtitle: Text("Spotlight")),
-                        Rule(.siri, String(localized: "Siri and voice typing don’t start"), [key(186, "🎤")]),
-                        Rule(.launchpad, String(localized: "The app grid doesn’t open"), [key(173, "F4")], subtitle: Text("Launchpad")),
+                        Rule(.appSwitcher, SettingTitle.gameAppSwitcher, ["⌘Tab", key(27, "⌘`")]),
+                        Rule(.hide, SettingTitle.gameHide, ["⌘H", key(233, "⌘M")]),
+                        Rule(.spotlight, SettingTitle.gameSpotlight, [key(64, "⌘" + String(localized: "Space"))], subtitle: Text("Spotlight")),
+                        Rule(.siri, SettingTitle.gameSiri, [key(186, "🎤")]),
+                        Rule(.launchpad, SettingTitle.gameLaunchpad, [key(173, "F4")], subtitle: Text("Launchpad")),
                     ])
                     rules(Text("Desktops"), [
-                        Rule(.missionControl, String(localized: "The view of all windows doesn’t open"), [key(32, "⌃↑")], subtitle: Text("Mission Control")),
-                        Rule(.appWindows, String(localized: "The view of the game’s windows doesn’t open"), [key(33, "⌃↓")], subtitle: Text("App Exposé")),
-                        Rule(.showDesktop, String(localized: "The game doesn’t slide off the screen"), [key(36, "F11")], subtitle: Text("Show Desktop")),
-                        Rule(.desktops, String(localized: "Desktops don’t switch"), [key(79, "⌃←"), key(81, "⌃→")]),
-                        Rule(.desktopNumbers, String(localized: "Desktops don’t switch by number"), [key(118, "⌃1"), "…"]),
+                        Rule(.missionControl, SettingTitle.gameMissionControl, [key(32, "⌃↑")], subtitle: Text("Mission Control")),
+                        Rule(.appWindows, SettingTitle.gameAppWindows, [key(33, "⌃↓")], subtitle: Text("App Exposé")),
+                        Rule(.showDesktop, SettingTitle.gameShowDesktop, [key(36, "F11")], subtitle: Text("Show Desktop")),
+                        Rule(.desktops, SettingTitle.gameDesktops, [key(79, "⌃←"), key(81, "⌃→")]),
+                        Rule(.desktopNumbers, SettingTitle.gameDesktopNumbers, [key(118, "⌃1"), "…"]),
                     ])
                     rules(Text("Keyboard"), [
-                        Rule(.emoji, String(localized: "Emoji don’t open"), [key(50, "⌃⌘" + String(localized: "Space"))]),
-                        Rule(.lookUp, String(localized: "The dictionary doesn’t pop up"), [key(70, "⌃⌘D")], subtitle: Text("Look Up")),
-                        Rule(.focusKeys, String(localized: "The keyboard stays in the game"), [key(60, "⌃" + String(localized: "Space")), key(12, "⌃F1"), "…"]),
-                        Rule(.globe, String(localized: "🌐 shortcuts are paused"), ["🌐"]),
+                        Rule(.emoji, SettingTitle.gameEmoji, [key(50, "⌃⌘" + String(localized: "Space"))]),
+                        Rule(.lookUp, SettingTitle.gameLookUp, [key(70, "⌃⌘D")], subtitle: Text("Look Up")),
+                        Rule(.focusKeys, SettingTitle.gameFocusKeys, [key(60, "⌃" + String(localized: "Space")), key(12, "⌃F1"), "…"]),
+                        Rule(.globe, SettingTitle.gameGlobe, ["🌐"]),
                     ])
                     rules(Text("Mouse and screen"), [
-                        Rule(.controlClick, String(localized: "⌃-click works as a plain click"), ["⌃"]),
-                        Rule(.shiftWheel, String(localized: "The wheel switches slots while you hold ⇧"), ["⇧"]),
-                        Rule(.swipes, String(localized: "Gestures don’t leave the game")),
+                        Rule(.controlClick, SettingTitle.gameControlClick, ["⌃"]),
+                        Rule(.shiftWheel, SettingTitle.gameShiftWheel, ["⇧"]),
+                        Rule(.swipes, SettingTitle.gameSwipes),
                         Rule(
-                            .cursor, String(localized: "The pointer stays in the game"),
+                            .cursor, SettingTitle.gameCursor,
                             subtitle: Text("The Dock, menu bar and hot corners don’t pop up, and the pointer doesn’t slip onto another screen")
                         ),
-                        Rule(.display, String(localized: "The screen stays on"), subtitle: Text("The display doesn’t dim or sleep while you play")),
+                        Rule(.display, SettingTitle.gameDisplay, subtitle: Text("The display doesn’t dim or sleep while you play")),
                     ])
                 }
             }
@@ -108,10 +108,10 @@ struct GameModePage: View {
         .settingsPage()
         .environment(\.inSettings, true)
         .onChange(of: SettingsWindow.model.highlight, initial: true) {
-            let simple = [tool.title, String(localized: "Your games"), String(localized: "Show FPS"), String(localized: "Corner for FPS")]
+            let simple = [tool.title, SettingTitle.yourGames, SettingTitle.showFPS, SettingTitle.cornerForFPS]
             if let title = SettingsWindow.model.highlight, !simple.contains(title) {
                 advanced = true
-                if title == String(localized: "Game safeguards") || SettingsWindow.model.highlightedShortcut == nil && !GameShortcutGroup.allCases.contains(where: { $0.title == title }) && title != String(localized: "System keyboard shortcuts") { safeguards = true }
+                if title == SettingTitle.gameSafeguards || SettingsWindow.model.highlightedShortcut == nil && !GameShortcutGroup.allCases.contains(where: { $0.title == title }) && title != SettingTitle.systemKeyboardShortcuts { safeguards = true }
             }
         }
     }
