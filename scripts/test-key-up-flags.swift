@@ -206,8 +206,8 @@ struct TestKeyUpFlags {
         let files = FileManager.default.enumerator(atPath: "Sources")?.compactMap { $0 as? String }.filter { $0.hasSuffix(".swift") } ?? []
         precondition(files.count > 50)
         let banned = ["CGEvent(keyboardEventSource", ".post(tap", "tapPostEvent(", "postToPid", "CGEventPost", "postToPSN"]
-        let own = files.filter { file in file != "pikapik/Common/EventTag.swift" && banned.contains { read("Sources/" + file).contains($0) } }
-        precondition(own.isEmpty, "Only Common/EventTag.swift builds keyboard events and posts events, so every event is tagged and every key-up carries the real modifiers: \(own)")
-        print("no file in Sources but Common/EventTag.swift builds a keyboard event or posts an event (\(files.count) files): ok")
+        let own = files.filter { file in file != "pikapik/Core/EventTag.swift" && banned.contains { read("Sources/" + file).contains($0) } }
+        precondition(own.isEmpty, "Only Core/EventTag.swift builds keyboard events and posts events, so every event is tagged and every key-up carries the real modifiers: \(own)")
+        print("no file in Sources but Core/EventTag.swift builds a keyboard event or posts an event (\(files.count) files): ok")
     }
 }

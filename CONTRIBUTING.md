@@ -33,7 +33,7 @@ Sources/pikapik/
   main.swift, App.swift, MenuView.swift
   Tools/Tool.swift                   Tool protocol and ToolRegistry
   Tools/CtrlKeys/CtrlKeysTool.swift
-  Tools/CommandKeys/CommandKeysTool.swift
+  Tools/Windows/CommandKeysTool.swift
   Tools/InputSwitch/InputSwitchTool.swift, InputSwitchGesture.swift
   Tools/Windows/QuitOnCloseTool.swift, DockHideTool.swift
   Tools/Pet/PetTool.swift, PetStage.swift, PetPhysics.swift, PetFigure.swift, PetPhrases.swift
@@ -59,20 +59,20 @@ swiftc -parse-as-library $(find Sources -name '*.swift' ! -name main.swift ! -na
 
 The ⌘Q and ⌘W guard is a `CGEventTap` on `keyDown`/`keyUp`. A bare ⌘Q or ⌘W, with Cmd and without Ctrl, Option or Shift, is dropped. The quit and close shortcuts, ⇧⌘Q and ⇧⌘W unless you record your own, are swallowed and replaced with a fresh ⌘Q or ⌘W, so the app sees a normal quit or close. During Game Mode, shortcuts with Control or without Command pass through as game input, even if they were assigned to quitting or closing elsewhere.
 
-Every event pikapik posts (the keys it sends for you, the mouse clicks, the swipes, the replayed Dock clicks) goes through `CGEvent.postPikapik` in `Common/EventTag.swift`: it marks the event as pikapik's own and hands it to a sender that a test can replace. Keyboard events are built only by `CGEvent.pikapikKey` in the same file. A key-down carries the modifiers the replacement needs, and a key-up carries the modifiers the user really holds (`CGEvent.pikapikHeld`, by default `CGEventSource.flagsState(.hidSystemState)`). A key-up with the key-down's flags leaves ⌘ held in every other app until the next real keyboard or mouse event. The test replaces the sender (`CGEvent.pikapikSend`) with a recorder and the held modifiers with a fixed value, so the result doesn't depend on the keys held on the Mac that runs it. It then runs the real code of each place and compares the keys it would send, their order, their flags, their text, and the tag on every event itself: the Home and End key-down and key-up, the release in `stop()` of Home and End, the ⌘ keys, the Finder keys and the App Store layout-fix key, the Finder ⌘X after a copy (on a pasteboard of its own, never the general one), the layout-fix retype, and Back and Forward. It also reads the sources and fails if any file but `EventTag.swift` builds a keyboard event or posts an event. It posts nothing and needs no Accessibility. Run it for the website build and for the App Store build, which has its own layout-fix key:
+Every event pikapik posts (the keys it sends for you, the mouse clicks, the swipes, the replayed Dock clicks) goes through `CGEvent.postPikapik` in `Core/EventTag.swift`: it marks the event as pikapik's own and hands it to a sender that a test can replace. Keyboard events are built only by `CGEvent.pikapikKey` in the same file. A key-down carries the modifiers the replacement needs, and a key-up carries the modifiers the user really holds (`CGEvent.pikapikHeld`, by default `CGEventSource.flagsState(.hidSystemState)`). A key-up with the key-down's flags leaves ⌘ held in every other app until the next real keyboard or mouse event. The test replaces the sender (`CGEvent.pikapikSend`) with a recorder and the held modifiers with a fixed value, so the result doesn't depend on the keys held on the Mac that runs it. It then runs the real code of each place and compares the keys it would send, their order, their flags, their text, and the tag on every event itself: the Home and End key-down and key-up, the release in `stop()` of Home and End, the ⌘ keys, the Finder keys and the App Store layout-fix key, the Finder ⌘X after a copy (on a pasteboard of its own, never the general one), the layout-fix retype, and Back and Forward. It also reads the sources and fails if any file but `EventTag.swift` builds a keyboard event or posts an event. It posts nothing and needs no Accessibility. Run it for the website build and for the App Store build, which has its own layout-fix key:
 
 ```bash
 swiftc -parse-as-library $(find Sources -name '*.swift' ! -name main.swift ! -name App.swift) Extensions/Shared/*.swift Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift scripts/test-key-up-flags.swift -o build/test-key-up-flags && build/test-key-up-flags
 ```
 
 ```bash
-swiftc -parse-as-library -D APPSTORE $(find Sources -name '*.swift' ! -name main.swift ! -name App.swift ! -name Updater.swift ! -name 'LeftoverPermissions*.swift' ! -name SMC.swift ! -name FanHelperProtocol.swift ! -name FanControl.swift ! -name FanSettings.swift ! -name PointerTool.swift ! -name 'DockDisplay*' ! -path '*/Tools/Animations/*' ! -path '*/Tools/KeyRepeat/*' ! -path '*/Tools/Uninstaller/*') Sources/pikapik/Tools/Uninstaller/AppFootprint.swift Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift scripts/test-key-up-flags.swift -o build/test-key-up-flags-appstore && build/test-key-up-flags-appstore
+swiftc -parse-as-library -D APPSTORE $(find Sources -name '*.swift' ! -name main.swift ! -name App.swift ! -name Updater.swift ! -name 'LeftoverPermissions*.swift' ! -name SMC.swift ! -name FanHelperProtocol.swift ! -name FanControl.swift ! -name FanSettings.swift ! -name PointerTool.swift ! -name 'DockDisplay*' ! -path '*/Tools/Animations/*' ! -path '*/Tools/KeyRepeat/*' ! -path '*/Tools/Uninstaller/*') Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift scripts/test-key-up-flags.swift -o build/test-key-up-flags-appstore && build/test-key-up-flags-appstore
 ```
 
 Shortcuts in Settings are read live. macOS shortcuts come from `AppleSymbolicHotKeys` in `com.apple.symbolichotkeys`, and a missing entry means the macOS default, which SkyLight reports. Finder's Cut comes from `NSUserKeyEquivalents` for Finder and then for all apps, matched by the menu title in Finder's language. They are read again when pikapik becomes active or a window comes forward. The recorder catches keys with a session event tap and pauses the Mac's own shortcuts while you type, the same way Game Mode does, so it can tell you what already uses them. Parsing and the conflict check live in `Shortcuts`, which you can test without the app:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/Shortcuts.swift scripts/test-shortcuts.swift -o build/test-shortcuts && build/test-shortcuts
+swiftc -parse-as-library Sources/pikapik/Core/Shortcuts.swift scripts/test-shortcuts.swift -o build/test-shortcuts && build/test-shortcuts
 ```
 
 The FPS counter over a game (Settings > Games > Show FPS) is `Games/FrameRate.swift`, which has no AppKit, and `Games/FrameRateMeter.swift`, the overlay and the two counters. The direct build on macOS 27 and later asks `/usr/bin/metalperftrace listen --json --pid` for the presented frames per second of the largest layer that presented anything. The tool buffers its output unless it is a terminal, so it gets a pty, and a small shell reading from a pipe that pikapik holds open stops it when pikapik quits or crashes. Games it can't see (OpenGL, older macOS, the App Store build) are counted from a small ScreenCaptureKit stream of the display, which needs Screen Recording: a frame counts only when the changed area covers at least 30% of the game window, so the number can't go above the screen's refresh rate. The stream starts only after three seconds without a number from `metalperftrace`, only if the permission is already granted, and never for a game it has already measured. On macOS 27 a game that needs the stream while the permission is missing makes pikapik remember it (`game-mode-fps-recording`, never reset or exported), and only then does Settings show the Screen Recording row; older macOS and the App Store build show it whenever Show FPS is on. The row belongs to the Permissions page like every other permission: Settings > Games shows only the usual line under the switch ("Needs a permission. Click to allow it." with Allow), which opens that page on the row, and the switch itself never asks. The pill has room for two digits and grows to three, anchored in its corner, once a value of 100 or more arrives in a game. You can test the logic without the app:
@@ -84,7 +84,7 @@ swiftc -parse-as-library Sources/pikapik/Tools/Games/FrameRate.swift scripts/tes
 The Mac App Store copy can't switch hot corners off, so the cursor fence of Game Mode (`GameRules.fenceCorners`) keeps the pointer 16 points from every corner instead, except corners you allow. There the screen lock is also tracked from the `com.apple.screenIsLocked` and `screenIsUnlocked` notifications (`GameModeTool.received`), and the game is left at once. The test compiles the App Store source set, so its exclusions repeat the list in `scripts/build.sh`.
 
 ```bash
-swiftc -parse-as-library -D APPSTORE $(find Sources -name '*.swift' ! -name main.swift ! -name App.swift ! -name Updater.swift ! -name 'LeftoverPermissions*.swift' ! -name SMC.swift ! -name FanHelperProtocol.swift ! -name FanControl.swift ! -name FanSettings.swift ! -name PointerTool.swift ! -name 'DockDisplay*' ! -path '*/Tools/Animations/*' ! -path '*/Tools/KeyRepeat/*' ! -path '*/Tools/Uninstaller/*') Sources/pikapik/Tools/Uninstaller/AppFootprint.swift Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift scripts/test-game-appstore.swift -o build/test-game-appstore && build/test-game-appstore
+swiftc -parse-as-library -D APPSTORE $(find Sources -name '*.swift' ! -name main.swift ! -name App.swift ! -name Updater.swift ! -name 'LeftoverPermissions*.swift' ! -name SMC.swift ! -name FanHelperProtocol.swift ! -name FanControl.swift ! -name FanSettings.swift ! -name PointerTool.swift ! -name 'DockDisplay*' ! -path '*/Tools/Animations/*' ! -path '*/Tools/KeyRepeat/*' ! -path '*/Tools/Uninstaller/*') Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift scripts/test-game-appstore.swift -o build/test-game-appstore && build/test-game-appstore
 ```
 
 Quit on last window uses an `AXObserver` per regular app: it tracks standard windows and, half a second after one is destroyed, quits the app if it has no windows left, including minimized ones and ones on other desktops (checked with `CGWindowListCopyWindowInfo`). Finder, pikapik and the apps in the exceptions list are skipped.
@@ -94,26 +94,26 @@ Hide with a Dock click is a `CGEventTap` on the left mouse button. On a plain cl
 Keep the Dock on one display sets the Dock’s own `allow-display-switching` key in `com.apple.dock` to false, so the Dock stops following the pointer to another display. A missing key counts as true. The Dock reads the key only when it starts, so pikapik restarts the Dock, and only when the value really changes. pikapik remembers what the key was, so turning the switch off and `--uninstall` put back exactly that, or delete the key if there was none, and at launch the key is brought in line with the switch. The Mac App Store version can’t change the Dock’s settings and doesn’t have this switch. What to write and whether to restart is decided in `DockDisplaySwitch`, which you can test without the app:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Tools/Windows/DockDisplaySwitch.swift scripts/test-dock-display.swift -o build/test-dock-display && build/test-dock-display
-swiftc -parse-as-library Sources/pikapik/Tools/Windows/DockHideMigration.swift scripts/test-dock-hide-migration.swift -o build/test-dock-hide-migration && build/test-dock-hide-migration
+swiftc -parse-as-library Sources/pikapik/Tools/Dock/DockDisplaySwitch.swift scripts/test-dock-display.swift -o build/test-dock-display && build/test-dock-display
+swiftc -parse-as-library Sources/pikapik/Tools/Dock/DockHideMigration.swift scripts/test-dock-hide-migration.swift -o build/test-dock-hide-migration && build/test-dock-hide-migration
 ```
 
 Only one copy of pikapik acts on the Mac. Copies of the same family (the website and App Store builds) pick the one that started last as the main copy (every copy reads each launch date, its own included, from the kernel process start time, `MainCopyChoice.started`, so all of them see the same moment; a copy that cannot read its own start counts as the oldest, so any other copy leads): it is the only one that runs event taps and writes settings, and any other copy stays passive and shows a single screen with a button to take over. When the main copy quits or loses the lead, it puts back what it changed, and the previous copy takes over. Features that change a system switch keep the original in an `OriginalValue` entry that is written once and is put back only while the switch still holds our value. Animations keep their journal (`animations-own`, `animations-ours`, the Dock autohide entry) in one defaults domain per family. The logic lives in `AnimationsEngine` (`AnimationSetting.swift`), which reaches the Mac only through `AnimationsHost`, so the test below runs the real engine on a simulated Mac. When the main copy quits or loses the lead while another Animations-capable copy of the family runs, it hands over: it puts nothing back, the journal stays, the next main copy writes its own choices, and the Dock restarts at most once, and not at all when the choices are the same. The animations are put back instead when no other copy is left, when the copy that comes next is the App Store one (it has no Animations), or when the quit comes from logout, restart or shutdown (`Background.isLoggingOut`). A copy that is not the main one and quits last puts back what the journal still holds. Before it quits, each copy calls `willQuit()`, which sets its own journal key `animations-leaving-<pid>` to the copy's launch date (one key per copy, so two copies never overwrite each other's mark); a copy that leaves, or that hands over, counts a peer as leaving only when that key holds the peer's launch date (within a second), so a key left by an earlier process with the same pid never counts, even before the new copy has started, and each copy also clears its own key at start. So when two copies get the quit at the same moment each sees the other as leaving and the last one puts everything back, once. The put-back removes all these keys. A Dock restart is decided, and its flag `animations-dock-pending` is set, before the first write that needs it; the flag stays until the Dock has restarted, so the next copy finishes the restart if this one stops.
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/MainCopyChoice.swift Sources/pikapik/Common/MainCopy.swift Sources/pikapik/Tools/Animations/AnimationSetting.swift scripts/test-main-copy.swift -o build/test-main-copy && build/test-main-copy
+swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Core/MainCopy.swift Sources/pikapik/Tools/Animations/AnimationSetting.swift scripts/test-main-copy.swift -o build/test-main-copy && build/test-main-copy
 ```
 
 Every copy brings its own Finder extensions, and Finder asks every running one for its menu, so without a choice each copy adds its own New File, Make a Smaller Copy, Convert and Archive item. Before it adds an item, an extension asks `MainCopyChoice.showsMenu`: among the running extensions of the same kind (pikapik ids only), the item belongs to the one whose app is running, then to the website or App Store copy over dev and test copies, then to the app that started last (the main copy), so exactly one extension adds it, whatever copies are installed or running. When the main copy quits or is deleted, the item moves to a copy that is left. An extension that does not find itself in the list adds its item, so the item never disappears. The website copy, while it is the main one, also switches off the same extension of dev and test copies, which helps with copies built before this choice; it never switches off the App Store one, which only the user can turn back on.
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/MainCopyChoice.swift scripts/test-finder-menu.swift -o build/test-finder-menu && build/test-finder-menu
+swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift scripts/test-finder-menu.swift -o build/test-finder-menu && build/test-finder-menu
 ```
 
 In the website build, Retype words you typed in the wrong language and Home/End switch on `AXManualAccessibility` (or `AXEnhancedUserInterface`) in Chromium apps so their text fields become visible. `TextFocus` writes each switched app (bundle id, pid, attribute, original value) to a journal before the switch and removes it when it puts the app back. After a crash the main copy reads the journal at start and, off the main thread, puts back every app that still runs with the same pid and bundle id, trying again every second for up to 10 tries while the app still runs and does not answer. Switching off works the same way, off the main thread, and on quit the main copy waits up to 2 seconds for it. Each app stays in the journal until it is put back, and new switches wait until this is done. It does not read the attribute first: Electron answers `false` even while the switch is on.
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/TextFocus.swift scripts/test-chromium-ax-journal.swift -o build/test-chromium-ax-journal && build/test-chromium-ax-journal
+swiftc -parse-as-library Sources/pikapik/Core/TextFocus.swift scripts/test-chromium-ax-journal.swift -o build/test-chromium-ax-journal && build/test-chromium-ax-journal
 ```
 
 Changing a hot corner from the Games page remembers the first action and puts it back on request, and a change to the same action writes nothing, so the Dock restarts only on a real change.
@@ -125,7 +125,7 @@ swiftc -parse-as-library Sources/pikapik/Tools/Games/HotCorners.swift scripts/te
 In the website build, Hide desktop icons shows as on whenever the desktop is hidden: by the System Settings switch (`StandardHideDesktopIcons`, or `HideDesktop` with Stage Manager) or because Finder has no desktop window, as after `defaults write com.apple.finder CreateDesktop -bool false`, which also takes away the selection rectangle. Switching it off always brings the desktop back: it shows the icons, forgets the journal and, when Finder has no desktop window, removes `CreateDesktop` and restarts Finder once it has finished copying. Switching it on hides the icons only on a visible desktop and notes that pikapik hid them. Putting back, on quit and whenever a copy becomes the main one, only ever shows the icons, and only while the note says pikapik hid them and they are still hidden, so icons hidden in System Settings stay hidden and a journal from an older version never hides them again. The logic lives in `DesktopIcons`, which reaches the Mac only through `DesktopIconsHost`, so the test runs it on a simulated Mac.
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/MainCopyChoice.swift Sources/pikapik/Tools/Windows/DesktopIcons.swift scripts/test-desktop-icons.swift -o build/test-desktop-icons && build/test-desktop-icons
+swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Tools/Finder/DesktopIcons.swift scripts/test-desktop-icons.swift -o build/test-desktop-icons && build/test-desktop-icons
 ```
 
 A `Toggle` inside a `Menu` needs `.toggleStyle(.automatic)`: the switch style that Settings pages apply makes each item draw three rows that do nothing when chosen. The test reads every Swift file in `Sources` and fails on a `Toggle` in a `Menu` without it.
@@ -161,19 +161,19 @@ swiftc -parse-as-library $(find Sources -name '*.swift' ! -name main.swift ! -na
 Animations writes hidden macOS preferences with `CFPreferencesSetAppValue`: the Dock keys go to `com.apple.dock`, the Finder key to `com.apple.finder` and the rest to the global domain. pikapik remembers which keys it wrote, so Restore Defaults and `--uninstall` delete exactly those; a value set in Terminal is shown as it is and stays until you move its slider. A change to a Dock key restarts the Dock once, 0.6 seconds after the last change, and Finder restarts only from its button. The slider math and what gets written live in `AnimationSetting`, which you can test without the app:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/MainCopyChoice.swift Sources/pikapik/Tools/Animations/AnimationSetting.swift scripts/test-animation-tweaks.swift -o build/test-animation-tweaks && build/test-animation-tweaks
+swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Tools/Animations/AnimationSetting.swift scripts/test-animation-tweaks.swift -o build/test-animation-tweaks && build/test-animation-tweaks
 ```
 
 Permissions left by deleted apps are read from the system TCC database (`/Library/Application Support/com.apple.TCC/TCC.db`), which needs Full Disk Access. A client counts as deleted when LaunchServices has no copy of it outside the Trash, no helper, launch agent or system extension with its id is left, and it is not on a disk that is unplugged; Apple apps and system paths are skipped. Remove calls `tccutil reset All <id>`. tccutil only accepts ids that LaunchServices knows, so pikapik registers a tiny placeholder app with that id in its Caches folder for a moment and deletes it right after. Path clients can’t be reset this way, so their row opens the list in System Settings instead. The parsing and the deleted check live in `LeftoverPermissions`, which you can test without the app:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/LeftoverPermissions.swift scripts/test-leftover-permissions.swift -o build/test-leftover-permissions && build/test-leftover-permissions
+swiftc -parse-as-library Sources/pikapik/Permissions/LeftoverPermissions.swift scripts/test-leftover-permissions.swift -o build/test-leftover-permissions && build/test-leftover-permissions
 ```
 
 In the App Store version the sandbox and macOS hide who was allowed, so Settings › Permissions reads the usage keys in the `Info.plist` of the apps in `/Applications` (and one folder level below it) and says “can ask”, never “has”: Camera (`NSCameraUsageDescription`), Microphone, Automation (`NSAppleEventsUsageDescription`), Files and Folders (the folder and volume keys) and Bluetooth. Accessibility, Screen Recording, Input Monitoring, Full Disk Access, App Management and Developer Tools have no such key, so those rows only open System Settings. The scan lives in `PrivacyAsks`, which you can test without the app:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/PrivacyAsks.swift scripts/test-privacy-asks.swift -o build/test-privacy-asks && build/test-privacy-asks
+swiftc -parse-as-library Sources/pikapik/Permissions/PrivacyAsks.swift scripts/test-privacy-asks.swift -o build/test-privacy-asks && build/test-privacy-asks
 ```
 
 App Volume (macOS 14.2 and later) changes one app’s volume without a driver. For every app whose slider is below 100% or that is muted, pikapik creates a Core Audio process tap (`CATapDescription`) that mutes the app’s own output, read through a private aggregate device that holds only the tap. A HAL output unit with its input off, set to the output the app plays to (the current output if it uses several), takes the sound from a ring buffer, multiplies it by the app’s gain and plays it there, so the microphone is never opened; an app at 100% gets no tap and is never touched. Helper processes, such as a browser’s audio service, are listed under the app that contains or started them; system daemons are left out. The gain follows the slider squared and moves through a 30 ms ramp so nothing clicks. macOS has no call that says whether System Audio Recording is allowed, so pikapik plays a tone too quiet to hear through a tap on itself and takes any sound that comes back as “allowed”; it asks again when a running tap delivers only silence. The gain, the ramp, the mixing, the ring buffer, the grouping, the saved levels (`AppVolumeMemory`, kept under the app’s bundle ID) and the merge of running and remembered apps into the list live in `AppVolumeMath`, which you can test without the app:
@@ -215,73 +215,73 @@ swiftc -parse-as-library Sources/pikapik/Tools/Pet/{PetCues,PetMood,PetPhrases,P
 Each mark stays 0.4 units clear of the pet and of every hat and back item, in every pose and both facings, so the crown heights in `PetFigure.mark` can’t drift out of date:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Tools/Pet/{PetFigure,PetClothes,PetWardrobe,PetMood,PetPhysics,BallPhysics}.swift scripts/test-pet-marks.swift -o build/test-pet-marks && build/test-pet-marks
+swiftc -parse-as-library Sources/pikapik/Tools/Pet/{PetFigure,PetClothes,PetGeometry,PetWardrobe,PetMood,PetPhysics,BallPhysics}.swift scripts/test-pet-marks.swift -o build/test-pet-marks && build/test-pet-marks
 ```
 
 Every item and sign stands out at 3:1 or better on a white window and on a #1E1E1E window; a fill that falls below that gets a thin gray rim under it (about 0.8 pt on screen) at full strength. At most 10% of any outline may stay below 3:1 against white and against #1E1E1E (day and night colours on both), in walking, sitting and jumping poses and both facings, and where the rim is gray its first 2 render px (the test draws at scale 6) must keep the 3:1 too and the rim must stick out 2 to 3 render px, so a rim half or twice as wide fails:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Tools/Pet/{PetFigure,PetClothes,PetWardrobe,PetMood,PetPhysics,BallPhysics}.swift scripts/test-pet-contrast.swift -o build/test-pet-contrast && build/test-pet-contrast
+swiftc -parse-as-library Sources/pikapik/Tools/Pet/{PetFigure,PetClothes,PetGeometry,PetWardrobe,PetMood,PetPhysics,BallPhysics}.swift scripts/test-pet-contrast.swift -o build/test-pet-contrast && build/test-pet-contrast
 ```
 
 The outline must stay cheap: drawing any single item with it costs at most 0.3 ms more per frame than without it, and a whole look, which is 3 to 7 items whose outlines add up, at most 0.5 ms, under 2% of a frame at the pet’s 30 frames per second (release build on an idle Mac; add `raster` to also fill the paths). This check is manual: CI does not run it, because timings on shared runners are too noisy to hold such small limits:
 
 ```bash
-swiftc -O -parse-as-library Sources/pikapik/Tools/Pet/{PetFigure,PetClothes,PetWardrobe,PetMood,PetPhysics,BallPhysics}.swift scripts/bench-pet.swift -o build/bench-pet && build/bench-pet
+swiftc -O -parse-as-library Sources/pikapik/Tools/Pet/{PetFigure,PetClothes,PetGeometry,PetWardrobe,PetMood,PetPhysics,BallPhysics}.swift scripts/bench-pet.swift -o build/bench-pet && build/bench-pet
 ```
 
 The app and the pet tell you about an update only when the latest release is newer than the running version, compared number by number, so `1.26.10` is newer than `1.26.9` and `v1.27.0` equals `1.27.0`. The comparison lives in `Version`:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/Version.swift scripts/test-updater.swift -o build/test-updater && build/test-updater
+swiftc -parse-as-library Sources/pikapik/Core/Version.swift scripts/test-updater.swift -o build/test-updater && build/test-updater
 ```
 
 After an update the app points at what is new: a dot after the tab’s name until the tab is opened, a New tag beside the row until the tab is left, nothing on a fresh install and nothing 21 days after the update. `NewMarks` holds the table of what is new and the version logic, and the test checks fresh installs, upgrades from 1.49.x, seen items that stay seen after a relaunch, a downgrade or a second running copy, expiry and that every tab in the table exists:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/Version.swift Sources/pikapik/Common/NewMarks.swift scripts/test-new-marks.swift -o build/test-new-marks && build/test-new-marks
+swiftc -parse-as-library Sources/pikapik/Core/Version.swift Sources/pikapik/UI/NewMarks.swift scripts/test-new-marks.swift -o build/test-new-marks && build/test-new-marks
 ```
 
 Before Homebrew removes the app, it runs `pikapik --uninstall`, which turns off launch at login and puts back the system settings the app changed, such as the Dock and key repeat. Homebrew runs the same step when it upgrades or reinstalls the app, so the app first looks for the `brew` command that started it and does nothing for `upgrade`, `reinstall` and `install`. The check lives in `Brew`:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/Brew.swift scripts/test-brew.swift -o build/test-brew && build/test-brew
+swiftc -parse-as-library Sources/pikapik/Core/Brew.swift scripts/test-brew.swift -o build/test-brew && build/test-brew
 ```
 
 The helper that runs as root sets the fan speed and, in the website version, turns background services off and on. You install it once, with the administrator password, from Settings › Permissions (Administrator access). On every connection the app and the helper check each other’s signature: the same developer, and the helper’s name is the app’s name plus `.fans`. The helper carries the app’s build number inside its signature. When pikapik updates, it hands the new helper from its own bundle to the one already installed, and the helper updates itself without a password: it copies the file into its own folder, which only root can write to, and checks that copy’s signature and that its build number isn’t lower than its own. It swaps the files in one step only when it quits, after the last app disconnects, and checks the copy once more first: macOS compares a running program with its file on disk, so a helper swapped while running would fail every signature check until it restarts. If anything fails, the copy is deleted, the old helper stays and the fans keep working. The new code starts the next time the helper is launched. The test signs tiny programs with the local `pikapik Dev` certificate, or the one named in `SIGN_IDENTITY`, and stages and swaps them in a temporary folder:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/FanHelperProtocol.swift scripts/test-fan-helper.swift -o build/test-fan-helper && codesign -f -s "${SIGN_IDENTITY:-pikapik Dev}" build/test-fan-helper && build/test-fan-helper
+swiftc -parse-as-library Sources/pikapik/Tools/Fans/FanHelperProtocol.swift scripts/test-fan-helper.swift -o build/test-fan-helper && codesign -f -s "${SIGN_IDENTITY:-pikapik Dev}" build/test-fan-helper && build/test-fan-helper
 ```
 
 The fan speeds and temperatures come from the SMC. `SMCCodec` turns its bytes into numbers and back and keeps a requested fan speed between the fan's minimum and maximum:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/SMC.swift scripts/test-fans.swift -o build/test-fans && build/test-fans
+swiftc -parse-as-library Sources/pikapik/Tools/Fans/SMC.swift scripts/test-fans.swift -o build/test-fans && build/test-fans
 ```
 
 `ThermalSensors` picks which SMC sensors stand for the processor, graphics, memory, storage, battery and Wi-Fi on each chip family, from M1 to M5, and on Intel:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/SMC.swift Sources/pikapik/Common/Temperatures.swift scripts/test-temps.swift -o build/test-temps && build/test-temps
+swiftc -parse-as-library Sources/pikapik/Tools/Fans/SMC.swift Sources/pikapik/Tools/Temperatures/Temperatures.swift scripts/test-temps.swift -o build/test-temps && build/test-temps
 ```
 
 The same helper switches launch daemons off and on with `launchctl disable` and `bootout`, or `enable` and `bootstrap`, for `system/<label>`. It takes only a label and finds the file itself, so the app never hands it a path. A label must use letters, digits, dots, hyphens and underscores, must not start with `com.apple.` or be pikapik’s own, and must be the `Label` of a regular file (not a link) directly inside `/Library/LaunchDaemons`. The only exceptions are Remote Login (`com.openssh.sshd`) and Screen Sharing (`com.apple.screensharing`), which have fixed files in `/System/Library/LaunchDaemons`. File Sharing (`com.apple.smbd`) is left out: macOS 27 has no launchd on/off entry for it (the other two have one), so System Settings stays the way to change it. Change the allow-list only together with this test:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/FanHelperProtocol.swift scripts/test-service-guard.swift -o build/test-service-guard && build/test-service-guard
+swiftc -parse-as-library Sources/pikapik/Tools/Fans/FanHelperProtocol.swift scripts/test-service-guard.swift -o build/test-service-guard && build/test-service-guard
 ```
 
 iCloud sync keeps `settings.json` in the pikapik folder in iCloud Drive, or pikapik-dev for local builds. Earlier versions used a pikapik folder. When sync starts, that folder is renamed. If both folders exist, the file with the later time saved inside it ends up in pikapik, and the old folder is deleted once nothing else is left in it. The move lives in `SettingsFile.moveFolder`, and the test works on temporary folders:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/SettingsFile.swift Sources/pikapik/Tools/Games/GameRules.swift scripts/test-settings-folder.swift -o build/test-settings-folder && build/test-settings-folder
+swiftc -parse-as-library Sources/pikapik/Settings/SettingsFile.swift Sources/pikapik/Tools/Games/GameRules.swift scripts/test-settings-folder.swift -o build/test-settings-folder && build/test-settings-folder
 ```
 
 The search field in Settings matches words in any order, ignores accents and understands shortcuts typed as words, so Ctrl+Space finds ⌃Space. The rules live in `SettingsSearch`:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/SettingsSearch.swift scripts/test-settings-search.swift -o build/test-settings-search && build/test-settings-search
+swiftc -parse-as-library Sources/pikapik/Settings/SettingsSearch.swift scripts/test-settings-search.swift -o build/test-settings-search && build/test-settings-search
 ```
 
 The app also reads the file whenever it comes to the front, so a change that arrived while it sat in the background is picked up. This check writes newer settings from "another Mac" into the local build's folder and waits for them to be applied. It needs `./scripts/build.sh` first and switches between apps, so it refuses to run unless the keyboard and mouse have been idle for two minutes:
@@ -293,19 +293,19 @@ The app also reads the file whenever it comes to the front, so a change that arr
 Sync hears about every saved setting through `SettingsFile.onSave`, including the ones saved off the main thread, for example the list of Chromium apps that `TextFocus` keeps while it holds its lock. Such a save must not wait for the main thread: on quit the main thread waits for `TextFocus`, so a waiting save would freeze pikapik. A setting saved on the main thread is still heard at once, so sync can tell its own changes apart. The test checks both, with the main thread busy for the second, and fails if anything else in `Sources` listens for saved settings:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/SettingsFile.swift Sources/pikapik/Tools/Games/GameRules.swift scripts/test-settings-sync-thread.swift -o build/test-settings-sync-thread && build/test-settings-sync-thread
+swiftc -parse-as-library Sources/pikapik/Settings/SettingsFile.swift Sources/pikapik/Tools/Games/GameRules.swift scripts/test-settings-sync-thread.swift -o build/test-settings-sync-thread && build/test-settings-sync-thread
 ```
 
 Removing an app completely starts with `AppFootprint`, which finds everything an app keeps on the Mac and decides which app each file belongs to, without changing anything. The App Store build uses it only to list background tasks. The test builds a made-up home folder in a temporary directory, so nothing real is read or touched:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/AppFootprint.swift scripts/test-uninstaller.swift -o build/test-uninstaller && build/test-uninstaller
+swiftc -parse-as-library Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift scripts/test-uninstaller.swift -o build/test-uninstaller && build/test-uninstaller
 ```
 
 `AppRemover` moves what `AppFootprint` found to the Trash, asks for the administrator password once for the files only an administrator can move, and keeps a record so everything can be put back. Quitting apps, `launchctl`, the password prompt and Finder are all passed in as closures, so the test runs the real logic against a made-up home folder with fakes. Only a few tiny `pika-uninstall-test-*` files go through your real Trash, and the test puts them back. The Finder fallback needs the Automation permission, which the direct build declares in `Resources/Direct.entitlements`:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/AppFootprint.swift Sources/pikapik/Tools/Uninstaller/AppRemover.swift scripts/test-app-remover.swift -o build/test-app-remover && build/test-app-remover
+swiftc -parse-as-library Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Uninstaller/AppRemover.swift scripts/test-app-remover.swift -o build/test-app-remover && build/test-app-remover
 ```
 
 `AppShelf` reads apps dragged onto a page from the pasteboard and ignores other files and folders. Game Mode also accepts a bare program and a process row dragged from Activity Monitor:
@@ -317,13 +317,13 @@ swiftc -parse-as-library $(find Sources -name '*.swift' ! -name main.swift ! -na
 The Uninstaller page keeps its choices in `UninstallerLogic`: how the app list is sorted, what is ticked and what is not, the total on the **Move to Trash** button, how apps in the Trash and leftovers of removed apps are shown, and the wording of sizes and dates. The test gives it made-up apps and files, so nothing real is read or touched:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/AppFootprint.swift Sources/pikapik/Tools/Uninstaller/UninstallerLogic.swift scripts/test-uninstaller-ui.swift -o build/test-uninstaller-ui && build/test-uninstaller-ui
+swiftc -parse-as-library Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Uninstaller/UninstallerLogic.swift scripts/test-uninstaller-ui.swift -o build/test-uninstaller-ui && build/test-uninstaller-ui
 ```
 
 The **Background Tasks** page shows everything that starts by itself: apps that open at login, launch agents and daemons, helpers inside apps, and tasks left behind by deleted apps. `BackgroundTasks` reads what `launchctl print` reports and uses `AppFootprint` to find the app that added each task, whether it runs now, how it starts and whether its program is gone. The test gives it made-up `launchctl` output and a made-up Mac in a temporary directory, so nothing real is read, turned off or touched:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/SettingsSearch.swift Sources/pikapik/Common/FanHelperProtocol.swift Sources/pikapik/Tools/Uninstaller/AppFootprint.swift Sources/pikapik/Tools/Background/BackgroundTasks.swift scripts/test-background.swift -o build/test-background && build/test-background
+swiftc -parse-as-library Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Fans/FanHelperProtocol.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Background/BackgroundTasks.swift scripts/test-background.swift -o build/test-background && build/test-background
 ```
 
 `TrashWatcher` is what makes **Offer to clean up when an app goes to the Trash** work: it watches the Trash, ignores the apps that are already there when it starts, reports only the ones that arrive later, and stays quiet once stopped or when the folder cannot be read. The test watches a folder of its own in the temporary directory, never your real Trash, and takes about eight seconds. The folder stays in the temporary directory, which macOS clears itself:
@@ -335,7 +335,7 @@ swiftc -parse-as-library Sources/pikapik/Tools/Uninstaller/TrashWatcher.swift sc
 The archive engine in `Tools/Archive/` opens and creates ZIP, 7Z, TAR.GZ and TAR.XZ files and opens RAR and many more. It runs the bundled `7zz`, plus `ditto` and `bsdtar` for ZIP names in older encodings, as separate programs, and checks every result before it is shown: nothing lands outside the output folder, links that point out are removed, setuid bits are stripped, the archive's quarantine flag is copied onto everything extracted, and an unpacking that writes far more than the archive announced is stopped. The test makes its own archives, including broken and hostile ones, in a temporary folder, mounts a 16 MB scratch disk image to run out of space on purpose, and takes about ten seconds. Run it from the repository root: it uses `Vendor/7zip/7zz` (`scripts/fetch-7zip.sh` puts it there) or the tool named in `PIKA_7ZZ`. For RAR, set `PIKA_RAR_SAMPLES` to a folder of your own `.rar` files, otherwise that part is skipped:
 
 ```bash
-swiftc -parse-as-library scripts/test-archive.swift Sources/pikapik/Tools/Archive/Archive{,Create,Extract,Probe,Run,Sanitize}.swift Extensions/Preview/ZipNames.swift Sources/pikapik/Common/UniqueURL.swift -o build/test-archive && build/test-archive
+swiftc -parse-as-library scripts/test-archive.swift Sources/pikapik/Tools/Archive/Archive{,Create,Extract,Probe,Run,Sanitize}.swift Extensions/Preview/ZipNames.swift Sources/pikapik/Core/UniqueURL.swift -o build/test-archive && build/test-archive
 ```
 
 The archive windows are an `ArchivePanel`: the red button, a VoiceOver press and closing twice all answer the question only once:
@@ -347,8 +347,8 @@ swiftc -parse-as-library $(find Sources -name '*.swift' ! -name main.swift ! -na
 `Battery.swift` turns the readings from IOKit into a `BatteryState` and a `BatteryHealth`, and `BatterySettings.swift` shows them on the read-only Battery page. The battery condition comes from `system_profiler` in the direct version and straight from IOKit in the App Store version, which starts no other program. The test feeds them made-up readings, so it runs on a Mac without a battery; the second line checks the App Store version:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/Battery.swift scripts/test-battery.swift -o build/test-battery && build/test-battery
-swiftc -parse-as-library -D APPSTORE Sources/pikapik/Common/Battery.swift scripts/test-battery.swift -o build/test-battery-appstore && build/test-battery-appstore
+swiftc -parse-as-library Sources/pikapik/Tools/Battery/Battery.swift scripts/test-battery.swift -o build/test-battery && build/test-battery
+swiftc -parse-as-library -D APPSTORE Sources/pikapik/Tools/Battery/Battery.swift scripts/test-battery.swift -o build/test-battery-appstore && build/test-battery-appstore
 ```
 
 The **Ports** page learns which programs listen on which ports from the same kernel list `netstat` reads (`net.inet.tcp.pcblist_n` and `net.inet.udp.pcblist_n`), so it needs no extra tools. macOS 27 gives the whole list only to programs signed without a team, like local builds and this test, so the command signs the test before running it. A signed release sees only its own sockets: it finds the user's programs through libproc, and a port it can't see is checked with a test bind, so the page never calls a taken port free. In the App Store version the sandbox blocks libproc too, so the page is hidden there. The test opens a few sockets of its own on ports the system picks, checks that the list finds each one with the right program, address and protocol and that a plain connection is not counted as listening, that a taken port is never called free, then groups made-up processes the way the page does. It only reads the list and never touches other programs:
@@ -366,7 +366,7 @@ swiftc -parse-as-library Sources/pikapik/Tools/SpeedTest/SpeedResult.swift scrip
 The **Brightness** page changes the brightness of monitors macOS can’t adjust on its own: it asks the monitor itself through its cable or, if the monitor doesn’t listen, dims the picture. `BrightnessMath.swift` holds the parts that need no monitor: the messages that set and read the brightness with their checksums, reading the monitor’s answer even when HDMI repeats a byte or two, the maker, model and serial number from the monitor’s EDID, how dark the picture gets and the steps of the brightness keys. The test feeds it made-up bytes and never talks to a monitor:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/BrightnessMath.swift scripts/test-brightness.swift -o build/test-brightness && build/test-brightness
+swiftc -parse-as-library Sources/pikapik/Tools/Brightness/BrightnessMath.swift scripts/test-brightness.swift -o build/test-brightness && build/test-brightness
 ```
 
 `KeyboardLayouts` is the engine behind **Fix words typed in the wrong layout**. It turns the keys that were pressed into text for every keyboard layout you have, and fixes a word only when what came out is not a word in any of your languages while another layout gives a common one, so names, slang and typos stay as typed. The test uses Apple's own layouts and the system spelling dictionaries: it checks pairs such as ghbdtn → привет, then runs every word of the app's texts in 18 languages and about 25,000 English dictionary words and names through the engine and fails on a single wrong fix.
@@ -375,10 +375,10 @@ swiftc -parse-as-library Sources/pikapik/Common/BrightnessMath.swift scripts/tes
 swiftc -parse-as-library Sources/pikapik/Tools/LayoutFix/KeyboardLayouts.swift scripts/test-layout.swift -o build/test-layout && build/test-layout
 ```
 
-The **Player** page opens videos in `pikapik Player.app`, a small sandboxed app inside `Contents/Helpers/` that reads only the files you open, never reaches out to the internet and listens on the network only while a video is shown on an AirPlay device (see below). It plays every file through one pipeline: the `Demuxer` from `Extensions/MediaReader/` reads the packets with FFmpeg, H.264, HEVC and AV1 go straight to `AVSampleBufferDisplayLayer`, which decodes them in hardware, other video is decoded by FFmpeg, and the sound goes to `AVSampleBufferAudioRenderer`, both kept in step by one `AVSampleBufferRenderSynchronizer`. It is an alternate app for every type until **Open videos in pikapik**, **Open music in pikapik** or **Open pictures in pikapik** turns it into the default one: `Common/DefaultApps.swift` (shared with the archives switch) remembers each type’s previous app and assigns the helper with `NSWorkspace.setDefaultApplication`, one type at a time, waiting for each answer (macOS reports “Keep” as a cancel error, which only moves on to the next type; no answer for 60 s stops the run). On the way back it restores that app, or the next one that can open the type, never the helper. What the switches show is read from `urlForApplication(toOpen:)`, not from our own settings; all four, with the archives one, are the same row, `DefaultAppToggle` in `Common/RowStyles.swift`. Time, seeking, keys and the format list live in `PlayerLogic.swift`, and the chapter jumps, the chapter marks and the A–B loop in `PlayerMarks.swift`:
+The **Player** page opens videos in `pikapik Player.app`, a small sandboxed app inside `Contents/Helpers/` that reads only the files you open, never reaches out to the internet and listens on the network only while a video is shown on an AirPlay device (see below). It plays every file through one pipeline: the `Demuxer` from `Extensions/MediaReader/` reads the packets with FFmpeg, H.264, HEVC and AV1 go straight to `AVSampleBufferDisplayLayer`, which decodes them in hardware, other video is decoded by FFmpeg, and the sound goes to `AVSampleBufferAudioRenderer`, both kept in step by one `AVSampleBufferRenderSynchronizer`. It is an alternate app for every type until **Open videos in pikapik**, **Open music in pikapik** or **Open pictures in pikapik** turns it into the default one: `Core/DefaultApps.swift` (shared with the archives switch) remembers each type’s previous app and assigns the helper with `NSWorkspace.setDefaultApplication`, one type at a time, waiting for each answer (macOS reports “Keep” as a cancel error, which only moves on to the next type; no answer for 60 s stops the run). On the way back it restores that app, or the next one that can open the type, never the helper. What the switches show is read from `urlForApplication(toOpen:)`, not from our own settings; all four, with the archives one, are the same row, `DefaultAppToggle` in `UI/RowStyles.swift`. Time, seeking, keys and the format list live in `PlayerLogic.swift`, and the chapter jumps, the chapter marks and the A–B loop in `PlayerMarks.swift`:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Common/DefaultApps.swift Sources/pikapik/Tools/Player/PlayerLogic.swift Sources/pikapik/Tools/Player/PlayerMarks.swift Sources/pikapik/Tools/Player/PlayerOutput.swift scripts/test-player.swift -o build/test-player && build/test-player
+swiftc -parse-as-library Sources/pikapik/Core/DefaultApps.swift Sources/pikapik/Tools/Player/PlayerLogic.swift Sources/pikapik/Tools/Player/PlayerMarks.swift Sources/pikapik/Tools/Player/PlayerOutput.swift scripts/test-player.swift -o build/test-player && build/test-player
 ```
 
 The Picture in Picture window (`Helper/Player/PictureInPicture.swift`) has a check too: after it is closed it must not keep the video it showed alive, which AVKit does for as long as its content source holds the delegate. It does nothing on a Mac that cannot show Picture in Picture.
@@ -402,7 +402,7 @@ swiftc -parse-as-library Helper/Player/FolderAccess.swift Sources/pikapik/Tools/
 The player window has no title bar: `WindowChrome` (`Helper/Player/WindowChrome.swift`) makes the content run under a transparent, title-less bar, hides the three window buttons and a dark gradient under them together with the control panel, decides in `overControls` whether the panel may hide (an open sheet or menu of ours keeps it), owns the hide timer that starts again when a menu closes or a sheet ends, and is the one call any other player window makes. Its test opens real windows without showing them, and compiles the player's own `VideoView` (`PlayerWindow.swift`) so that a mouse-down is followed through to the window drag and the strip zoom; it needs the bundled FFmpeg like the thumbnail test below (CI builds it before the tests, and `./scripts/build.sh` builds it on your Mac the first time):
 
 ```bash
-swiftc -O -parse-as-library -target arm64-apple-macos14.0 -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include Vendor/ffmpeg/lib/*.dylib Vendor/ffmpeg/lib/libass.a -lc++ -liconv -framework CoreText -Xlinker -rpath -Xlinker "$PWD/Vendor/ffmpeg/lib" Helper/Player/{AirPlay,AirPlayBurn,AirPlayContainer,AirPlayPlaylists,AirPlaySegments,AirPlayServer,AirPlaySession,AirPlaySource,Ass,ControlPanel,Engine,FolderAccess,MusicView,NowPlaying,PictureInPicture,PlayerWindow,Subtitles,Thumbnails,TimeMarks,TrackMenus,WindowChrome}.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift scripts/test-player-window.swift -o build/test-player-window && build/test-player-window
+swiftc -O -parse-as-library -target arm64-apple-macos14.0 -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include Vendor/ffmpeg/lib/*.dylib Vendor/ffmpeg/lib/libass.a -lc++ -liconv -framework CoreText -Xlinker -rpath -Xlinker "$PWD/Vendor/ffmpeg/lib" Helper/Player/{AirPlay,AirPlayBurn,AirPlayContainer,AirPlayPlaylists,AirPlaySegments,AirPlayServer,AirPlaySession,AirPlaySource,Ass,ControlPanel,Engine,FolderAccess,MusicView,NowPlaying,PictureInPicture,PictureSubtitles,PlayerControls,PlayerWindow,SubtitleScanner,Subtitles,Thumbnails,TimeMarks,TrackMenus,WindowChrome}.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift scripts/test-player-window.swift -o build/test-player-window && build/test-player-window
 ```
 
 The chapter marks on the time bar (`Helper/Player/TimeMarks.swift`) are drawn offscreen on dark glass and must stay visible there:
@@ -426,7 +426,7 @@ swiftc -O -parse-as-library -target arm64-apple-macos14.0 -import-objc-header Ex
 The folder, the next-song logic and Now Playing have one too (`scripts/test-folder.swift`). It opens a folder of three songs in a real player window with the volume at zero, and checks the first song, the automatic move to the next one, Next and Previous, and what macOS would show in Control Center after opening, pausing, moving on and closing. It also checks that the bottom row of buttons, with every button shown and ten-hour times, fits the narrowest window, that a 16:9 video opens in a 16:9 window, and that video and music windows keep a larger size. It needs the same ffmpeg:
 
 ```bash
-swiftc -O -parse-as-library -target arm64-apple-macos14.0 -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include Vendor/ffmpeg/lib/*.dylib Vendor/ffmpeg/lib/libass.a -lc++ -liconv -framework CoreText -Xlinker -rpath -Xlinker "$PWD/Vendor/ffmpeg/lib" Helper/Player/{AirPlay,AirPlayBurn,AirPlayContainer,AirPlayPlaylists,AirPlaySegments,AirPlayServer,AirPlaySession,AirPlaySource,Ass,ControlPanel,Engine,FolderAccess,MusicView,NowPlaying,PictureInPicture,PlayerWindow,Subtitles,Thumbnails,TimeMarks,TrackMenus,WindowChrome}.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift scripts/test-folder.swift -o build/test-folder && build/test-folder
+swiftc -O -parse-as-library -target arm64-apple-macos14.0 -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include Vendor/ffmpeg/lib/*.dylib Vendor/ffmpeg/lib/libass.a -lc++ -liconv -framework CoreText -Xlinker -rpath -Xlinker "$PWD/Vendor/ffmpeg/lib" Helper/Player/{AirPlay,AirPlayBurn,AirPlayContainer,AirPlayPlaylists,AirPlaySegments,AirPlayServer,AirPlaySession,AirPlaySource,Ass,ControlPanel,Engine,FolderAccess,MusicView,NowPlaying,PictureInPicture,PictureSubtitles,PlayerControls,PlayerWindow,SubtitleScanner,Subtitles,Thumbnails,TimeMarks,TrackMenus,WindowChrome}.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift scripts/test-folder.swift -o build/test-folder && build/test-folder
 ```
 
 Subtitles have three tests. The reader (`Sources/pikapik/Tools/Player/SubtitleParser.swift`, no FFmpeg needed) is checked on SubRip, WebVTT, mov_text and WebVTT boxes with a byte order mark, CRLF, UTF-16, Windows-1251, overlapping lines, empty lines, broken times, the delay, the line at a given time, how an ASS script is told from other text, and random bytes:
@@ -444,7 +444,7 @@ swiftc -O -parse-as-library -target arm64-apple-macos14.0 -import-objc-header He
 The scan of subtitle tracks inside a video, the audio switch and the subtitle logic (`Helper/Player/Subtitles.swift`) use videos that the test makes with ffmpeg (an MKV with two audio and two subtitle tracks, mov_text, ASS with a font attached to the file, and WebVTT, picture tracks in PGS, VobSub and DVB, a two-minute file, damaged copies; the test writes the PGS file itself and ffmpeg’s own encoders make VobSub and DVB from it). ASS is checked for the picture libass draws from the file, a script file next to the video and the script in the MKV, with the font from the file. The picture subtitles are checked for the decoded bitmap, the time they are shown, their place and scale over the video (also with black bars), the lift above the panel and the memory limit. The audio switch is checked for a time that does not jump, a pause that stays, and 40 quick switches with seeks. It needs the bundled FFmpeg:
 
 ```bash
-swiftc -O -parse-as-library -target arm64-apple-macos14.0 -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include Vendor/ffmpeg/lib/*.dylib Vendor/ffmpeg/lib/libass.a -lc++ -liconv -framework CoreText -Xlinker -rpath -Xlinker "$PWD/Vendor/ffmpeg/lib" Helper/Player/{Ass,Engine,Subtitles}.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,SubtitleParser}.swift scripts/test-tracks.swift -o build/test-tracks && build/test-tracks
+swiftc -O -parse-as-library -target arm64-apple-macos14.0 -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include Vendor/ffmpeg/lib/*.dylib Vendor/ffmpeg/lib/libass.a -lc++ -liconv -framework CoreText -Xlinker -rpath -Xlinker "$PWD/Vendor/ffmpeg/lib" Helper/Player/{Ass,Engine,PictureSubtitles,SubtitleScanner,Subtitles}.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,SubtitleParser}.swift scripts/test-tracks.swift -o build/test-tracks && build/test-tracks
 ```
 
 AirPlay video (`Helper/Player/AirPlay*.swift`, direct build only) works when the owner picks a receiver with the system AirPlay button on the player panel: the window hands the playing film to an `AVPlayer`, and the helper serves it as HLS from the Mac. `AirPlaySource` reads the film once (key frames and tracks), `AirPlayPlaylists` cuts it into pieces of about six seconds at real key frames and writes the lists, and every piece is built only when the receiver asks for it by `AirPlaySegmentWriter` (`AVAssetWriter`, fragmented MP4): H.264 and HEVC unchanged, VP9 and AV1 re-encoded to HEVC with an H.264 variant next to it, sound as a separate track (AAC, AC-3, E-AC-3 and ALAC as they are, FLAC as ALAC, the rest as AAC), text subtitles as WebVTT and picture subtitles burnt into the frame while the track is chosen. `AirPlaySession` starts when the system list of receivers closes (macOS gives no earlier sign that a receiver was chosen): it opens `AirPlayServer` on the Mac’s own address with a fresh 128-bit token for every showing and reads the film only when the first request arrives. If no receiver takes over within 20 seconds (40 if one has already asked) it closes; it also closes and frees its cache when the film ends, when the owner leaves AirPlay and when pikapik quits. The server answers only `GET` and `HEAD` for the exact paths it knows, never decodes a path, accepts connections only from this Mac’s own networks, drops a connection that sends no valid request within 5 seconds or stays idle for 15, and limits connections (16 served, 16 waiting, 6 per address) so that one without the token holds nothing; the sandbox gets `network.server` and `network.client` only in the player. Its test needs neither a receiver nor the internet nor FFmpeg: it checks the pieces (no gaps, key frames, six seconds, exact jumps), the choice of codecs, the lists and WebVTT, the firewall text, refusal of a wrong token, `..`, encoded and odd paths, a foreign address and a request after closing, the connection limits and timeouts, the session (it reads the film only on request, does not count this Mac’s own addresses as a receiver, frees everything on close), the cache limit, and builds real audio and video pieces to check that each one plays with the shared first part and starts at its time stamp (a Mac without an H.264 encoder skips the picture part):
@@ -464,7 +464,7 @@ swiftc -O -parse-as-library -target arm64-apple-macos14.0 -import-objc-header Ex
 1. Create a file in `Sources/pikapik/Tools/` with a class that conforms to `Tool`.
 2. Add one line to `ToolRegistry.tools` in `Tools/Tool.swift`.
 3. Describe it in [`docs/FEATURES.md`](docs/FEATURES.md) under its Settings tab: what it does, how it works, its limits, which edition has it and how to test it by hand. Then run `./scripts/feature-form.sh` so the bug and feature forms list it. CI and `release.sh` fail while the forms and the catalog disagree. A changed tool gets the same update.
-4. If users should notice it after the update, add one line to `NewMarks.items` in `Common/NewMarks.swift`: the version that ships it, the tab, the tool’s `id` as the row, and the edition. The tab gets a dot until it is opened and the row a New tag until the tab is left.
+4. If users should notice it after the update, add one line to `NewMarks.items` in `UI/NewMarks.swift`: the version that ships it, the tab, the tool’s `id` as the row, and the edition. The tab gets a dot until it is opened and the row a New tag until the tab is left.
 
 ### Strings
 
@@ -504,7 +504,7 @@ swift scripts/make-icns.swift
 ## Icons in Settings
 
 Settings use three kinds of icons, the same way System Settings does:
-- a colored tile (`SectionIcon` in `Common/IconStyle.swift`) marks a place: the sidebar and page headers;
+- a colored tile (`SectionIcon` in `UI/IconStyle.swift`) marks a place: the sidebar and page headers;
 - an app's own icon means the row is that program: Ports, Background, Games, Uninstaller;
 - a plain symbol in a 24 pt column marks a fact: Battery, Temperature.
 

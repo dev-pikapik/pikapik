@@ -145,7 +145,7 @@ enum TestNewMarks {
 
         let table = NewMarks.items
         precondition(!table.isEmpty && table.allSatisfy { !Version.parts($0.version).isEmpty })
-        let source = try! String(contentsOfFile: "Sources/pikapik/Common/SettingsWindow.swift", encoding: .utf8)
+        let source = try! String(contentsOfFile: "Sources/pikapik/Settings/SettingsTab.swift", encoding: .utf8)
         let declaration = source.components(separatedBy: "\n").first { $0.hasPrefix("    case general") }!
         let names = declaration.replacingOccurrences(of: "case ", with: "").split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }
         for item in table { precondition(names.contains(item.tab), "\(item.tab) is not a Settings tab") }

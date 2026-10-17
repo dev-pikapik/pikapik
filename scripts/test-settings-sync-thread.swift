@@ -28,7 +28,7 @@ struct TestSettingsSyncThread {
             let count = ["UserDefaults.didChangeNotification", "NSUserDefaultsDidChangeNotification"].reduce(0) { $0 + text.components(separatedBy: $1).count - 1 }
             if count > 0 { listeners[path] = count }
         }
-        precondition(listeners == ["pikapik/Common/SettingsFile.swift": 1], "only SettingsFile.onSave may listen for saved settings: \(listeners)")
+        precondition(listeners == ["pikapik/Settings/SettingsFile.swift": 1], "only SettingsFile.onSave may listen for saved settings: \(listeners)")
         print("only SettingsFile.onSave listens for saved settings: ok")
     }
 }

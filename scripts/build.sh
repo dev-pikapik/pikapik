@@ -49,8 +49,8 @@ if [ -n "${APPSTORE:-}" ]; then
     KEPT=()
     for f in "${SOURCES[@]}"; do
         case $f in
-            */Tools/Uninstaller/AppFootprint.swift) KEPT+=("$f") ;;
-            */Common/Updater.swift|*/Tools/Player/*|*/Common/LeftoverPermissions*.swift|*/Common/SMC.swift|*/Common/FanHelperProtocol.swift|*/Common/FanControl.swift|*/Common/FanSettings.swift|*/Tools/Animations/*|*/Tools/KeyRepeat/*|*/Tools/Mouse/PointerTool.swift|*/Tools/Mouse/MiddleClick*|*/Tools/Windows/DockDisplay*|*/Tools/Uninstaller/*) ;;
+            */Tools/Uninstaller/AppIdentity.swift|*/Tools/Uninstaller/AppOwnerIndex.swift|*/Tools/Uninstaller/AppFootprint.swift) KEPT+=("$f") ;;
+            */Core/Updater.swift|*/Permissions/LeftoverPermissions*.swift|*/Tools/Fans/*|*/Tools/Player/*|*/Tools/Animations/*|*/Tools/KeyRepeat/*|*/Tools/Mouse/PointerTool.swift|*/Tools/Mouse/MiddleClick*|*/Tools/Dock/DockDisplay*|*/Tools/Uninstaller/*) ;;
             *) KEPT+=("$f") ;;
         esac
     done
@@ -75,7 +75,7 @@ for ARCH in arm64 x86_64; do
         -module-name FanHelper \
         -target "$ARCH-apple-macos$MIN_OS" \
         -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __info_plist -Xlinker build/fan-helper.plist \
-        Helper/FanHelper/main.swift Sources/pikapik/Common/SMC.swift Sources/pikapik/Common/FanHelperProtocol.swift \
+        Helper/FanHelper/main.swift Sources/pikapik/Tools/Fans/SMC.swift Sources/pikapik/Tools/Fans/FanHelperProtocol.swift \
         -o "build/fan-helper-$ARCH"
     [ -n "${APPSTORE:-}" ] || swiftc -O -whole-module-optimization \
         -module-name Player \
@@ -87,7 +87,7 @@ for ARCH in arm64 x86_64; do
         "${PLAYER_SOURCES[@]}" \
         -o "build/player-$ARCH"
     for EXT in $EXTENSIONS; do
-        SHARED=(Extensions/Shared/*.swift Sources/pikapik/Common/MainCopyChoice.swift)
+        SHARED=(Extensions/Shared/*.swift Sources/pikapik/Core/MainCopyChoice.swift)
         [ "$EXT" != Archive ] || SHARED+=(Sources/pikapik/Tools/Archive/Archive.swift)
         LINK=()
         [ "$EXT" != Preview ] || { SHARED=(); LINK=(-import-objc-header Extensions/Preview/libarchive.h -larchive); }

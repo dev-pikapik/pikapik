@@ -19,9 +19,7 @@ func replace(_ old: String, with new: String, _ proxy: CGEventTapProxy) {
     for character in new { post(0, String(character)) }
 }
 
-#if APPSTORE
-// The sandbox can't read or replace the selected text in other apps, so the shortcut presses the hidden
-// keys of the Services command (NSKeyEquivalent in Info.plist), and the app in front runs it on the selection.
+
 @Observable
 final class LayoutFixTool: Tool {
     let id = "layout-fix"
@@ -33,6 +31,11 @@ final class LayoutFixTool: Tool {
     private static let shortcutKey = "layout-fix-shortcut"
     private static let excludedKey = "layout-fix-excluded"
     private static let ignoredKey = "layout-fix-ignored"
+    #if APPSTORE
+    private static let defaultAuto = false
+    #else
+    private static let defaultAuto = true
+    #endif
 
     private(set) var isActive = false
 
@@ -43,11 +46,13 @@ final class LayoutFixTool: Tool {
         }
     }
 
-    // Off until the owner turns it on: the App Store build can't check the text field, so it retypes blindly.
+    // Off until the owner turns it on in the App Store build: the sandbox can't check the text field, so it retypes blindly.
     var fixesAsYouType: Bool {
         didSet {
             UserDefaults.standard.set(fixesAsYouType, forKey: Self.autoKey)
+            #if APPSTORE
             refresh()
+            #endif
         }
     }
 
@@ -69,29 +74,26 @@ final class LayoutFixTool: Tool {
         didSet { UserDefaults.standard.set(ignored, forKey: Self.ignoredKey) }
     }
 
-    // The Services menu works without a permission; the shortcut row asks for Accessibility itself.
-    var needs: [Permission] { [] }
-    var isDefault: Bool { !isEnabled && !fixesAsYouType && shortcut == Self.standard && excluded.isEmpty && ignored.isEmpty }
+    var isDefault: Bool { !isEnabled && fixesAsYouType == Self.defaultAuto && shortcut == Self.standard && excluded.isEmpty && ignored.isEmpty }
 
     @ObservationIgnored private var tap: CFMachPort?
     @ObservationIgnored private var source: CFRunLoopSource?
-    @ObservationIgnored var held: Int64?
-    @ObservationIgnored fileprivate var holding = false
     @ObservationIgnored private var typed: [Stroke] = []
     @ObservationIgnored private var layout: KeyboardLayout?
     @ObservationIgnored private var pid: pid_t = 0
+    @ObservationIgnored fileprivate var holding = false
     @ObservationIgnored private var last: (fix: LayoutFix, source: KeyboardLayout)?
 
     init() {
         isEnabled = UserDefaults.standard.bool(forKey: id)
-        fixesAsYouType = UserDefaults.standard.object(forKey: Self.autoKey) as? Bool ?? false
+        fixesAsYouType = UserDefaults.standard.object(forKey: Self.autoKey) as? Bool ?? Self.defaultAuto
         shortcut = Shortcut(stored: UserDefaults.standard.object(forKey: Self.shortcutKey)) ?? Self.standard
         excluded = UserDefaults.standard.stringArray(forKey: Self.excludedKey) ?? []
         ignored = UserDefaults.standard.stringArray(forKey: Self.ignoredKey) ?? []
     }
 
     func load() {
-        fixesAsYouType = UserDefaults.standard.object(forKey: Self.autoKey) as? Bool ?? false
+        fixesAsYouType = UserDefaults.standard.object(forKey: Self.autoKey) as? Bool ?? Self.defaultAuto
         shortcut = Shortcut(stored: UserDefaults.standard.object(forKey: Self.shortcutKey)) ?? Self.standard
         excluded = UserDefaults.standard.stringArray(forKey: Self.excludedKey) ?? []
         ignored = UserDefaults.standard.stringArray(forKey: Self.ignoredKey) ?? []
@@ -100,12 +102,31 @@ final class LayoutFixTool: Tool {
 
     func reset() {
         isEnabled = false
-        fixesAsYouType = false
+        fixesAsYouType = Self.defaultAuto
         shortcut = Self.standard
         excluded = []
         ignored = []
     }
 
+    private func ignore(_ word: String) {
+        guard !ignored.contains(word) else { return }
+        ignored = Array((ignored + [word]).suffix(200))
+    }
+
+    private func select(_ target: KeyboardLayout) {
+        TISSelectInputSource(target.source)
+        layout = target
+    }
+
+    private func allows(_ app: NSRunningApplication) -> Bool {
+        guard let id = app.bundleIdentifier, app.processIdentifier != ProcessInfo.processInfo.processIdentifier else { return false }
+        return !excluded.contains(id) && !alwaysExcluded.contains { id.hasPrefix($0) }
+    }
+
+#if APPSTORE
+    // The Services menu works without a permission; the shortcut row asks for Accessibility itself.
+    var needs: [Permission] { [] }
+    @ObservationIgnored var held: Int64?
     var settingsView: AnyView { AnyView(LayoutFixServiceSettings(tool: self)) }
 
     func refresh() {
@@ -238,229 +259,9 @@ final class LayoutFixTool: Tool {
         clear()
         return true
     }
-
-    private func ignore(_ word: String) {
-        guard !ignored.contains(word) else { return }
-        ignored = Array((ignored + [word]).suffix(200))
-    }
-
-    private func select(_ target: KeyboardLayout) {
-        TISSelectInputSource(target.source)
-        layout = target
-    }
-
-    private func allows(_ app: NSRunningApplication) -> Bool {
-        guard let id = app.bundleIdentifier, app.processIdentifier != ProcessInfo.processInfo.processIdentifier else { return false }
-        return !excluded.contains(id) && !alwaysExcluded.contains { id.hasPrefix($0) }
-    }
-}
-
-func layoutFixCallback(
-    proxy: CGEventTapProxy,
-    type: CGEventType,
-    event: CGEvent,
-    refcon: UnsafeMutableRawPointer?
-) -> Unmanaged<CGEvent>? {
-    guard let refcon else { return Unmanaged.passUnretained(event) }
-    let tool = Unmanaged<LayoutFixTool>.fromOpaque(refcon).takeUnretainedValue()
-    switch type {
-    case .tapDisabledByTimeout, .tapDisabledByUserInput:
-        DispatchQueue.main.async { tool.refresh() }
-    case .leftMouseDown, .rightMouseDown, .otherMouseDown:
-        tool.clear()
-    case .keyDown, .keyUp:
-        // A second copy of the app may be running: its own retyped keys must not be fixed again.
-        guard !event.isPikapik else {
-            tool.clear()
-            break
-        }
-        let code = event.getIntegerValueField(.keyboardEventKeycode)
-        if type == .keyUp {
-            if tool.held == code {
-                tool.held = nil
-                CGEvent.postPikapikKey(kVK_F19, down: false, flags: event.flags, proxy)
-                return nil
-            }
-            break
-        }
-        if !GameModeTool.shared.isPlaying,
-           Shortcut(key: UInt16(truncatingIfNeeded: code), modifiers: event.flags.rawValue) == tool.shortcut {
-            if event.getIntegerValueField(.keyboardEventAutorepeat) != 0 {
-                if tool.holding { return nil }
-                break
-            }
-            // Undoing a fix works whenever fixing as you type is on, with or without the Services shortcut.
-            tool.holding = true
-            if tool.undo(proxy) { return nil }
-            if tool.isEnabled {
-                tool.held = code
-                CGEvent.postPikapikKey(kVK_F19, down: true, flags: [.maskControl, .maskAlternate, .maskShift, .maskCommand], proxy)
-                return nil
-            }
-            tool.holding = false
-        }
-        if tool.handle(event, proxy) { return nil }
-    default:
-        break
-    }
-    return Unmanaged.passUnretained(event)
-}
-
-private struct LayoutFixServiceSettings: View {
-    @Bindable var tool: LayoutFixTool
-    @Environment(\.inSettings) private var inSettings
-    @State private var hovering = false
-
-    var body: some View {
-        if inSettings {
-            LayoutFixArt(on: true, service: tool.fixesAsYouType ? nil : LayoutFixService.title)
-            RowLabel(Text(tool.title), Text(LayoutFixService.hint))
-                .settingAnchor(tool.title)
-            Toggle(isOn: $tool.isEnabled) {
-                Group {
-                    if tool.isEnabled {
-                        ShortcutLabel(
-                            shortcut: $tool.shortcut,
-                            standard: LayoutFixTool.standard,
-                            title: Text("Fix the selected text"),
-                            subtitle: Text("Select the text, then press these keys"),
-                            others: []
-                        )
-                    } else {
-                        KeyLabel(keys: [tool.shortcut.text], title: Text("Fix the selected text"), subtitle: Text("Select the text, then press these keys"))
-                    }
-                }
-                .settingAnchor(String(localized: "Fix the selected text"))
-            }
-            .needs([.accessibility])
-            Toggle(isOn: $tool.fixesAsYouType) {
-                KeyLabel(keys: [String(localized: "Space")], title: Text("Fix words as you type"), subtitle: Text("When you press Space or Return"))
-            }
-            .settingAnchor(String(localized: "Fix words as you type"))
-            .help(Text("Press \(tool.shortcut.text) right after a fix to undo it. That word won’t be fixed again."))
-            .needs([.accessibility])
-            if tool.fixesAsYouType {
-                LayoutFixNotes(tool: tool)
-                AppExclusions(title: String(localized: "Don’t fix text in these apps"), apps: $tool.excluded, isEnabled: tool.fixesAsYouType)
-            }
-        } else {
-            Button { SettingsWindow.show(.keyboard) } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: tool.icon)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(tool.isActive ? Color.white : Color.secondary)
-                        .frame(width: 28, height: 28)
-                        .background(tool.isActive ? Color.accentColor : Color.secondary.opacity(0.15), in: Circle())
-                        .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(tool.title).font(.body).lineLimit(2)
-                        Group {
-                            if tool.fixesAsYouType, tool.isActive {
-                                Text("Fixed when you press Space")
-                            } else if tool.isActive {
-                                Text("Press \(tool.shortcut.text) to fix")
-                            } else {
-                                Text("In the Services menu")
-                            }
-                        }
-                        .font(.caption).foregroundStyle(.secondary).lineLimit(2)
-                    }
-                    Spacer(minLength: 0)
-                    if tool.isActive, tool.isEnabled { KeyCaps(keys: [tool.shortcut.text]) }
-                }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 5)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background {
-                    if hovering { RoundedRectangle(cornerRadius: 8, style: .continuous).fill(.fill.quaternary) }
-                }
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .onHover { hovering = $0 }
-        }
-    }
-}
 #else
-@Observable
-final class LayoutFixTool: Tool {
-    let id = "layout-fix"
-    let icon = "character.cursor.ibeam"
-    var title: String { String(localized: "Retype words you typed in the wrong language") }
-
-    static let standard = Shortcut(key: 49, modifiers: 0x60000)
-    private static let autoKey = "layout-fix-auto"
-    private static let shortcutKey = "layout-fix-shortcut"
-    private static let excludedKey = "layout-fix-excluded"
-    private static let ignoredKey = "layout-fix-ignored"
-
-    private(set) var isActive = false
-
-    var isEnabled: Bool {
-        didSet {
-            UserDefaults.standard.set(isEnabled, forKey: id)
-            refresh()
-        }
-    }
-
-    var fixesAsYouType: Bool {
-        didSet { UserDefaults.standard.set(fixesAsYouType, forKey: Self.autoKey) }
-    }
-
-    var shortcut: Shortcut {
-        didSet {
-            if shortcut == Self.standard {
-                UserDefaults.standard.removeObject(forKey: Self.shortcutKey)
-            } else {
-                UserDefaults.standard.set(shortcut.stored, forKey: Self.shortcutKey)
-            }
-        }
-    }
-
-    var excluded: [String] {
-        didSet { UserDefaults.standard.set(excluded, forKey: Self.excludedKey) }
-    }
-
-    var ignored: [String] {
-        didSet { UserDefaults.standard.set(ignored, forKey: Self.ignoredKey) }
-    }
-
-    @ObservationIgnored private var tap: CFMachPort?
-    @ObservationIgnored private var source: CFRunLoopSource?
-    @ObservationIgnored private var typed: [Stroke] = []
-    @ObservationIgnored private var layout: KeyboardLayout?
-    @ObservationIgnored private var pid: pid_t = 0
-    @ObservationIgnored private var holding = false
     @ObservationIgnored private var switched: (strokes: [Stroke], layout: KeyboardLayout)?
-    @ObservationIgnored private var last: (fix: LayoutFix, source: KeyboardLayout)?
     @ObservationIgnored private var cycle: (options: [(text: String, layout: KeyboardLayout?)], index: Int, word: String?)?
-
-    init() {
-        isEnabled = UserDefaults.standard.bool(forKey: id)
-        fixesAsYouType = UserDefaults.standard.object(forKey: Self.autoKey) as? Bool ?? true
-        shortcut = Shortcut(stored: UserDefaults.standard.object(forKey: Self.shortcutKey)) ?? Self.standard
-        excluded = UserDefaults.standard.stringArray(forKey: Self.excludedKey) ?? []
-        ignored = UserDefaults.standard.stringArray(forKey: Self.ignoredKey) ?? []
-    }
-
-    func load() {
-        fixesAsYouType = UserDefaults.standard.object(forKey: Self.autoKey) as? Bool ?? true
-        shortcut = Shortcut(stored: UserDefaults.standard.object(forKey: Self.shortcutKey)) ?? Self.standard
-        excluded = UserDefaults.standard.stringArray(forKey: Self.excludedKey) ?? []
-        ignored = UserDefaults.standard.stringArray(forKey: Self.ignoredKey) ?? []
-        isEnabled = UserDefaults.standard.bool(forKey: id)
-    }
-
-    var isDefault: Bool { !isEnabled && fixesAsYouType && shortcut == Self.standard && excluded.isEmpty && ignored.isEmpty }
-
-    func reset() {
-        isEnabled = false
-        fixesAsYouType = true
-        shortcut = Self.standard
-        excluded = []
-        ignored = []
-    }
-
     var settingsView: AnyView { AnyView(LayoutFixSettings(tool: self)) }
 
     func refresh() {
@@ -650,11 +451,6 @@ final class LayoutFixTool: Tool {
         return true
     }
 
-    private func ignore(_ word: String) {
-        guard !ignored.contains(word) else { return }
-        ignored = Array((ignored + [word]).suffix(200))
-    }
-
     private func refuse() -> Bool {
         NSSound.beep()
         clear()
@@ -665,16 +461,6 @@ final class LayoutFixTool: Tool {
         guard case .typing(let element) = TextFocus(pid),
               TextFocus.value(element, kAXSubroleAttribute).0 as? String != kAXSecureTextFieldSubrole else { return nil }
         return element
-    }
-
-    private func select(_ target: KeyboardLayout) {
-        TISSelectInputSource(target.source)
-        layout = target
-    }
-
-    private func allows(_ app: NSRunningApplication) -> Bool {
-        guard let id = app.bundleIdentifier, app.processIdentifier != ProcessInfo.processInfo.processIdentifier else { return false }
-        return !excluded.contains(id) && !alwaysExcluded.contains { id.hasPrefix($0) }
     }
 
     private static func isPlain(_ text: String) -> Bool {
@@ -705,8 +491,62 @@ final class LayoutFixTool: Tool {
         guard AXUIElementCopyParameterizedAttributeValue(element, kAXStringForRangeParameterizedAttribute as CFString, parameter, &text) == .success else { return nil }
         return text as? String
     }
+#endif
 }
 
+#if APPSTORE
+func layoutFixCallback(
+    proxy: CGEventTapProxy,
+    type: CGEventType,
+    event: CGEvent,
+    refcon: UnsafeMutableRawPointer?
+) -> Unmanaged<CGEvent>? {
+    guard let refcon else { return Unmanaged.passUnretained(event) }
+    let tool = Unmanaged<LayoutFixTool>.fromOpaque(refcon).takeUnretainedValue()
+    switch type {
+    case .tapDisabledByTimeout, .tapDisabledByUserInput:
+        DispatchQueue.main.async { tool.refresh() }
+    case .leftMouseDown, .rightMouseDown, .otherMouseDown:
+        tool.clear()
+    case .keyDown, .keyUp:
+        // A second copy of the app may be running: its own retyped keys must not be fixed again.
+        guard !event.isPikapik else {
+            tool.clear()
+            break
+        }
+        let code = event.getIntegerValueField(.keyboardEventKeycode)
+        if type == .keyUp {
+            if tool.held == code {
+                tool.held = nil
+                CGEvent.postPikapikKey(kVK_F19, down: false, flags: event.flags, proxy)
+                return nil
+            }
+            break
+        }
+        if !GameModeTool.shared.isPlaying,
+           Shortcut(key: UInt16(truncatingIfNeeded: code), modifiers: event.flags.rawValue) == tool.shortcut {
+            if event.getIntegerValueField(.keyboardEventAutorepeat) != 0 {
+                if tool.holding { return nil }
+                break
+            }
+            // Undoing a fix works whenever fixing as you type is on, with or without the Services shortcut.
+            tool.holding = true
+            if tool.undo(proxy) { return nil }
+            if tool.isEnabled {
+                tool.held = code
+                CGEvent.postPikapikKey(kVK_F19, down: true, flags: [.maskControl, .maskAlternate, .maskShift, .maskCommand], proxy)
+                return nil
+            }
+            tool.holding = false
+        }
+        if tool.handle(event, proxy) { return nil }
+    default:
+        break
+    }
+    return Unmanaged.passUnretained(event)
+}
+
+#else
 private func layoutFixCallback(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent, refcon: UnsafeMutableRawPointer?) -> Unmanaged<CGEvent>? {
     guard let refcon else { return Unmanaged.passUnretained(event) }
     let tool = Unmanaged<LayoutFixTool>.fromOpaque(refcon).takeUnretainedValue()
@@ -721,206 +561,4 @@ private func layoutFixCallback(proxy: CGEventTapProxy, type: CGEventType, event:
     return Unmanaged.passUnretained(event)
 }
 
-private struct LayoutFixSettings: View {
-    @Bindable var tool: LayoutFixTool
-    @Environment(\.inSettings) private var inSettings
-
-    var body: some View {
-        if inSettings { LayoutFixArt(on: tool.isEnabled) }
-        ToggleRow(
-            icon: tool.icon,
-            title: tool.title,
-            subtitle: Text("And the keyboard switches to the right language"),
-            hint: tool.fixesAsYouType ? Text("Fixed when you press Space") : Text("Press \(tool.shortcut.text) to fix"),
-            help: Text("Press \(tool.shortcut.text) right after a fix to undo it. That word won’t be fixed again."),
-            keys: [tool.shortcut.text],
-            isOn: $tool.isEnabled
-        )
-        if inSettings {
-            Toggle(isOn: $tool.fixesAsYouType) {
-                KeyLabel(keys: [String(localized: "Space")], title: Text("Fix words as you type"), subtitle: Text("When you press Space or Return"))
-            }
-            .disabled(!tool.isEnabled)
-            .settingAnchor(String(localized: "Fix words as you type"))
-            ShortcutLabel(
-                shortcut: $tool.shortcut,
-                standard: LayoutFixTool.standard,
-                title: Text("Fix the last word or selected text"),
-                subtitle: Text("Press again for other layouts. Right after a fix, it undoes it."),
-                others: []
-            )
-            .disabled(!tool.isEnabled)
-            .settingAnchor(String(localized: "Fix the last word or selected text"))
-            LayoutFixNotes(tool: tool)
-        }
-        AppExclusions(title: String(localized: "Don’t fix text in these apps"), apps: $tool.excluded, isEnabled: tool.isEnabled)
-    }
-}
 #endif
-
-/// The words left as typed and the notice about a single keyboard layout, the same in both builds.
-private struct LayoutFixNotes: View {
-    let tool: LayoutFixTool
-
-    var body: some View {
-        if !tool.ignored.isEmpty {
-            LabeledContent {
-                Button("Clear") { tool.ignored = [] }
-            } label: {
-                RowLabel(Text("Words left as you typed them"), Text(verbatim: tool.ignored.joined(separator: ", ")))
-            }
-        }
-        #if APPSTORE
-        if KeyboardLayouts.all.count < 2 {
-            HStack(spacing: 12) {
-                Text("This works when you have two or more keyboard layouts")
-                Spacer(minLength: 0)
-                Button("Keyboard Settings…") { NSWorkspace.shared.open(Shortcut.keyboardSettings) }
-            }
-            .noticeBar()
-        }
-        #else
-        AddLayoutNotice()
-        #endif
-    }
-}
-
-#if !APPSTORE
-private struct AddLayoutNotice: View {
-    @State private var added = 0
-    @State private var failed = false
-
-    var body: some View {
-        if KeyboardLayouts.all.count < 2 {
-            let choices = KeyboardLayouts.addable()
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(spacing: 12) {
-                    Text("This works when you have two or more keyboard layouts")
-                    Spacer(minLength: 0)
-                    if choices.isEmpty || failed {
-                        Button("Keyboard Settings…") { NSWorkspace.shared.open(Shortcut.keyboardSettings) }
-                    }
-                    if !choices.isEmpty {
-                        Menu("Add a Layout") {
-                            ForEach(choices, id: \.self) { source in
-                                Button(KeyboardLayouts.string(source, kTISPropertyLocalizedName) ?? "") {
-                                    failed = !KeyboardLayouts.enable(source)
-                                    added += 1
-                                }
-                            }
-                        }
-                        .fixedSize()
-                    }
-                }
-                if failed {
-                    Text("Couldn’t add the layout. Use Keyboard Settings instead.")
-                        .font(.caption)
-                        .foregroundStyle(.red)
-                }
-            }
-            .noticeBar()
-            .id(added)
-        }
-    }
-}
-#endif
-
-struct LayoutFixArt: View {
-    let on: Bool
-    var service: String?
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
-    private static let typing = [1.4, 0.35, 1.6, 0.6]
-    private static let menu = [1.2, 0.15, 0.5, 0.7, 0.45, 0.2, 2.0]
-    private static let click = CGPoint(x: 56, y: 40)
-
-    private static let sample: (typed: String, word: String, from: String, to: String) = {
-        let greetings = ["ru": "привет", "uk": "привіт", "bg": "здравей", "sr": "здраво", "mk": "здраво", "el": "γεια", "he": "שלום", "ar": "مرحبا", "fa": "سلام", "hi": "नमस्ते", "th": "สวัสดี", "ka": "გამარჯობა", "hy": "բարև"]
-        let all = KeyboardLayouts.all
-        for target in all {
-            guard let word = greetings[String(target.language.prefix { $0 != "-" && $0 != "_" })], target.canType(word),
-                  let source = all.first(where: { $0.language != target.language && $0.canType("a") }) else { continue }
-            let typed = KeyboardLayouts.convert(word, from: target, to: source)
-            if typed != word, !typed.contains(where: \.isWhitespace) { return (typed, word, LayoutFixArt.badge(source), LayoutFixArt.badge(target)) }
-        }
-        return ("ghbdtn", "привет", "EN", "RU")
-    }()
-
-    static func badge(_ layout: KeyboardLayout) -> String { String(layout.language.prefix(2)).uppercased() }
-
-    var body: some View {
-        if let service { menuScene(service) } else { typingScene }
-    }
-
-    private var typingScene: some View {
-        IllustrationRow(loop: Self.typing) { tick in
-            let step = reduceMotion ? 2 : tick % Self.typing.count
-            let fixed = on && step >= 2
-            Stage {
-                field(fixed ? Self.sample.word : Self.sample.typed, badge: fixed ? Self.sample.to : Self.sample.from, flash: on && step == 2)
-                    .position(x: 150, y: 40)
-                ArtKey(down: step == 1, width: 120) { Text("Space") }
-                    .position(x: 150, y: 96)
-            }
-            .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: step)
-        }
-    }
-
-    private func menuScene(_ service: String) -> some View {
-        IllustrationRow(loop: Self.menu) { tick in
-            let step = reduceMotion ? 6 : tick % Self.menu.count
-            let click = Self.click
-            let row = CGPoint(x: click.x + 40, y: click.y + 26)
-            let item = CGPoint(x: click.x + 150, y: click.y + 26)
-            Stage {
-                field(step == 6 ? Self.sample.word : Self.sample.typed, badge: nil, selected: step < 6)
-                    .position(x: 100, y: 40)
-                if (2...5).contains(step) {
-                    ArtMenu(width: 90) {
-                        ArtMenuRow(width: 34)
-                        ArtMenuRow(title: Text("Services"), active: step >= 3, submenu: true)
-                        ArtMenuRow(width: 48)
-                    }
-                    .position(x: click.x + 45, y: click.y + 26)
-                    .transition(.scale(scale: 0.85, anchor: .topLeading).combined(with: .opacity))
-                }
-                if (3...5).contains(step) {
-                    ArtMenu(width: 150) {
-                        ArtMenuRow(title: Text(verbatim: service), active: step >= 4)
-                    }
-                    .position(x: click.x + 163, y: click.y + 26)
-                    .transition(.opacity)
-                }
-                if (1...2).contains(step) { ArtRipple().position(click) }
-                if step == 5 { ArtRipple().position(item) }
-                ArtCursor(pressed: step == 1 || step == 5)
-                    .cursor(at: [CGPoint(x: 236, y: 104), click, click, row, item, item, item][step])
-                    .opacity(step == 6 ? 0 : 1)
-            }
-            .animation(reduceMotion ? nil : .smooth(duration: 0.3), value: step)
-        }
-    }
-
-    private func field(_ text: String, badge: String?, flash: Bool = false, selected: Bool = false) -> some View {
-        HStack(spacing: 0) {
-            Text(verbatim: text)
-                .font(.system(size: 13))
-                .background(selected ? Color.accentColor.opacity(0.3) : .clear, in: RoundedRectangle(cornerRadius: 3, style: .continuous))
-            if !selected {
-                Rectangle().fill(Color.accentColor).frame(width: 1.5, height: 16)
-            }
-            Spacer(minLength: 0)
-            if let badge {
-                Text(verbatim: badge)
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(flash ? Color.white : Color.primary)
-                    .frame(width: 26, height: 16)
-                    .background(flash ? Color.accentColor : Color.primary.opacity(0.1), in: RoundedRectangle(cornerRadius: 5, style: .continuous))
-            }
-        }
-        .padding(.horizontal, 10)
-        .frame(width: 180, height: 34)
-        .background(Color(nsColor: .textBackgroundColor), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 7, style: .continuous).hairline(Color.primary.opacity(0.18)))
-    }
-}
