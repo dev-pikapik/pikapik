@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Mode Game: roda tetap berfungsi saat berjongkok
+
+<sub>1.53.0 · 17 Oktober 2026</sub>
+
+Tahan Shift di dalam game dan roda mouse tetap mengganti slot hotbar.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Di Mac, menahan Shift membuat roda mouse berputar ke samping, jadi di game seperti Minecraft slot berhenti berganti saat Anda berjongkok. Kini Mode Game menjaga roda tetap normal selama game ada di depan.
+
+**Coba:** Pengaturan › Game › Roda mengganti slot saat ⇧ ditahan
+
+---
+
 ## <a id="v1.52.3"></a>Akselerasi penunjuk kini bisa dimatikan di setiap tetikus
 
 <sub>1.52.3 · 17 Oktober 2026</sub>

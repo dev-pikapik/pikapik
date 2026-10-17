@@ -262,6 +262,17 @@ struct GameRuleFrame: View {
             }
             ArtCursor(pressed: story.down)
                 .position(glide(from: CGPoint(x: 118, y: 80), to: CGPoint(x: 50, y: 32), bend: 14))
+        case .shiftWheel:
+            game()
+            HStack(spacing: 3) {
+                ForEach(0..<5, id: \.self) { slot in
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(Color.white.opacity(0.35))
+                        .overlay(RoundedRectangle(cornerRadius: 2).strokeBorder(Color.accentColor, lineWidth: slot == min(4, Int(p * 4.99)) ? 2 : 0))
+                        .frame(width: 14, height: 14)
+                }
+            }
+            .position(x: 85, y: 120)
         case .cursor:
             game()
             ArtDock().position(x: 85, y: 128 - 40 * p)

@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Oyun Modu: gizlenirken tekerlek çalışır
+
+<sub>1.53.0 · 17 Ekim 2026</sub>
+
+Oyunda Shift’e basılı tutun, fare tekerleği hızlı çubuktaki yuvaları yine değiştirsin.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Mac’te Shift’e basılıyken fare tekerleği yana döner; bu yüzden Minecraft gibi oyunlarda gizlenirken yuvalar değişmezdi. Oyun Modu artık bir oyun öndeyken tekerleği normal çalışır tutuyor.
+
+**Deneyin:** Ayarlar › Oyunlar › ⇧ basılıyken tekerlek yuva değiştirir
+
+---
+
 ## <a id="v1.52.3"></a>İmleç hızlandırma her farede kapanıyor
 
 <sub>1.52.3 · 17 Ekim 2026</sub>

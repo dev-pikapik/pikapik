@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Modul joc: rotița merge cât te furișezi
+
+<sub>1.53.0 · 17 octombrie 2026</sub>
+
+Ține apăsat Shift în joc, iar rotița mausului tot schimbă sloturile din bara rapidă.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Pe un Mac, cu Shift apăsat rotița mausului se învârte într-o parte, așa că în jocuri precum Minecraft sloturile nu se mai schimbă cât te furișezi. Acum modul joc păstrează rotița normală cât timp un joc e în față.
+
+**Încearcă:** Setări › Jocuri › Rotița schimbă sloturile cât ții apăsat ⇧
+
+---
+
 ## <a id="v1.52.3"></a>Accelerarea cursorului se dezactivează pe orice maus
 
 <sub>1.52.3 · 17 octombrie 2026</sub>

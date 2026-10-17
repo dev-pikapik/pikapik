@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Spielmodus: Das Rad funktioniert beim Schleichen
+
+<sub>1.53.0 · 17. Oktober 2026</sub>
+
+Halte in einem Spiel Shift, und das Mausrad wechselt trotzdem die Hotbar-Slots.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Auf einem Mac dreht das Mausrad bei gehaltener Shift-Taste zur Seite, deshalb wechseln in Spielen wie Minecraft die Slots beim Schleichen nicht mehr. Der Spielmodus lässt das Rad jetzt normal arbeiten, solange ein Spiel vorne ist.
+
+**Ausprobieren:** Einstellungen › Spiele › Das Rad wechselt Slots bei gehaltenem ⇧
+
+---
+
 ## <a id="v1.52.3"></a>Zeigerbeschleunigung lässt sich bei jeder Maus ausschalten
 
 <sub>1.52.3 · 17. Oktober 2026</sub>

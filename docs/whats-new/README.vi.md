@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Chế độ trò chơi: con lăn dùng được khi rón rén
+
+<sub>1.53.0 · 17 tháng 10 năm 2026</sub>
+
+Giữ Shift trong trò chơi, con lăn chuột vẫn đổi ô trên thanh nhanh.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Trên Mac, giữ Shift khiến con lăn chuột cuộn ngang, nên trong các trò như Minecraft các ô không đổi được khi bạn rón rén. Giờ Chế độ trò chơi giữ con lăn hoạt động bình thường khi trò chơi ở phía trước.
+
+**Thử ngay:** Cài đặt › Trò chơi › Con lăn đổi ô khi đang giữ ⇧
+
+---
+
 ## <a id="v1.52.3"></a>Tắt tăng tốc con trỏ giờ có tác dụng với mọi chuột
 
 <sub>1.52.3 · 17 tháng 10 năm 2026</sub>

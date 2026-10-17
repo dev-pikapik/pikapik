@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Herní režim: kolečko funguje při plížení
+
+<sub>1.53.0 · 17. října 2026</sub>
+
+Držte ve hře Shift a kolečko myši dál přepíná sloty lišty.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Na Macu se při držení Shiftu kolečko myši točí do strany, takže se ve hrách jako Minecraft sloty při plížení přestaly přepínat. Herní režim teď nechává kolečko fungovat normálně, dokud je hra vpředu.
+
+**Vyzkoušejte:** Nastavení › Hry › Kolečko přepíná sloty i při držení ⇧
+
+---
+
 ## <a id="v1.52.3"></a>Zrychlení ukazatele jde vypnout u každé myši
 
 <sub>1.52.3 · 17. října 2026</sub>

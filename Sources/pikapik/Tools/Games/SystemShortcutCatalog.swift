@@ -201,7 +201,7 @@ enum SystemShortcutCatalog {
     private static func legacyName(_ id: Int32) -> String? {
         guard let rule = SystemGameShortcut.controller(id) else { return nil }
         switch rule {
-        case .commandQ, .commandW, .controlClick, .cursor, .display, .swipes: return nil
+        case .commandQ, .commandW, .controlClick, .shiftWheel, .cursor, .display, .swipes: return nil
         case .appSwitcher: return String(localized: "Apps and windows don’t switch")
         case .hide: return String(localized: "The game doesn’t hide")
         case .spotlight: return String(localized: "Spotlight")

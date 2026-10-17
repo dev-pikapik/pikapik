@@ -1365,3 +1365,6 @@
 "Playing on AirPlay" = "التشغيل عبر AirPlay";
 "pikapik couldn’t start sharing this video with the AirPlay device. Check that this Mac is connected to Wi-Fi or Ethernet, then pick the device again." = "تعذّر على pikapik بدء مشاركة هذا الفيديو مع جهاز AirPlay. تأكد من أن هذا الـ Mac متصل بشبكة Wi-Fi أو Ethernet، ثم اخترْ الجهاز مرة أخرى.";
 "pikapik Player shares the video you are playing with the AirPlay device you choose, only inside your local network." = "يشارك pikapik Player الفيديو الذي تشغّله مع جهاز AirPlay الذي تختاره، وذلك داخل شبكتك المحلية فقط.";
+"The wheel switches slots while you hold ⇧" = "العجلة تبدّل الخانات أثناء الضغط على ⇧";
+"Keeps the mouse wheel switching hotbar slots while you hold Shift to sneak." = "تبقى عجلة الفأرة تبدّل خانات الشريط السريع أثناء الضغط على Shift للتسلل.";
+"shift, scroll, wheel, hotbar, sneak, minecraft, mouse" = "shift, تمرير, عجلة, شريط سريع, تسلل, ماين كرافت, فأرة";

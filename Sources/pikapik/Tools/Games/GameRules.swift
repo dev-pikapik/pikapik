@@ -37,6 +37,24 @@ enum GameRules {
         return flags.subtracting(.maskControl)
     }
 
+    static func wheelFlags(_ event: CGEvent, playing: Bool, keepsVertical: Bool) {
+        guard playing, keepsVertical, event.flags.contains(.maskShift),
+              event.getIntegerValueField(.scrollWheelEventDeltaAxis1) == 0,
+              event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1) == 0,
+              event.getIntegerValueField(.scrollWheelEventPointDeltaAxis1) == 0 else { return }
+        let delta = event.getIntegerValueField(.scrollWheelEventDeltaAxis2)
+        let fixed = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2)
+        let point = event.getIntegerValueField(.scrollWheelEventPointDeltaAxis2)
+        guard delta != 0 || fixed != 0 || point != 0 else { return }
+        event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: delta)
+        event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: fixed)
+        event.setIntegerValueField(.scrollWheelEventPointDeltaAxis1, value: point)
+        event.setIntegerValueField(.scrollWheelEventDeltaAxis2, value: 0)
+        event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0)
+        event.setIntegerValueField(.scrollWheelEventPointDeltaAxis2, value: 0)
+        event.flags = event.flags.subtracting(.maskShift)
+    }
+
     static func isGame(id: String?, name: String?, path: String, in games: [String]) -> Bool {
         if let id, minecraftLaunchers.contains(id) { return false }
         if !path.isEmpty, games.contains(path) { return true }
@@ -158,7 +176,7 @@ enum GameRule: String, CaseIterable {
     case commandQ = "command-q", commandW = "command-w", spotlight, siri, appSwitcher = "app-switcher", hide, launchpad
     case missionControl = "mission-control", appWindows = "app-windows", showDesktop = "show-desktop", desktops
     case desktopNumbers = "desktop-numbers", swipes, emoji, lookUp = "look-up", focusKeys = "focus-keys", globe, controlClick = "control-click"
-    case cursor, display
+    case shiftWheel = "shift-wheel", cursor, display
 
     var key: String { "game-mode-\(rawValue)" }
 
@@ -167,7 +185,7 @@ enum GameRule: String, CaseIterable {
         case .commandQ, .commandW: "game-mode-quit"
         case .spotlight, .siri, .emoji, .lookUp, .globe: "game-mode-search"
         case .appSwitcher, .hide, .launchpad, .showDesktop, .swipes: "game-mode-switching"
-        case .missionControl, .appWindows, .desktops, .desktopNumbers, .focusKeys, .controlClick: "game-mode-control"
+        case .missionControl, .appWindows, .desktops, .desktopNumbers, .focusKeys, .controlClick, .shiftWheel: "game-mode-control"
         case .cursor, .display: nil
         }
     }
@@ -188,7 +206,7 @@ enum GameRule: String, CaseIterable {
             case .lookUp: [70]
         case .focusKeys: Array(7...13) + [57, 60, 61, 159]
         case .globe: [190, 196, 197] + Array(210...214) + Array(237...258)
-        case .commandQ, .commandW, .swipes, .controlClick, .cursor, .display: []
+        case .commandQ, .commandW, .swipes, .controlClick, .shiftWheel, .cursor, .display: []
         }
     }
 }

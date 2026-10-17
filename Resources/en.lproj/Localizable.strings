@@ -1365,3 +1365,6 @@
 "Playing on AirPlay" = "Playing on AirPlay";
 "pikapik couldn’t start sharing this video with the AirPlay device. Check that this Mac is connected to Wi-Fi or Ethernet, then pick the device again." = "pikapik couldn’t start sharing this video with the AirPlay device. Check that this Mac is connected to Wi-Fi or Ethernet, then pick the device again.";
 "pikapik Player shares the video you are playing with the AirPlay device you choose, only inside your local network." = "pikapik Player shares the video you are playing with the AirPlay device you choose, only inside your local network.";
+"The wheel switches slots while you hold ⇧" = "The wheel switches slots while you hold ⇧";
+"Keeps the mouse wheel switching hotbar slots while you hold Shift to sneak." = "Keeps the mouse wheel switching hotbar slots while you hold Shift to sneak.";
+"shift, scroll, wheel, hotbar, sneak, minecraft, mouse" = "shift, scroll, wheel, hotbar, sneak, minecraft, mouse";

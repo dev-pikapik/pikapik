@@ -16,13 +16,30 @@ enum TestGameMode {
         precondition(!GameRules.looksLikeGame(id: "com.apple.Safari", category: "public.app-category.productivity", supportsGameMode: false, path: "/Applications/Safari.app"))
         print("detection: ok")
 
+        func wheel(shift: Bool, a1: Int64, a2: Int64) -> CGEvent {
+            let e = CGEvent(scrollWheelEvent2Source: nil, units: .line, wheelCount: 2, wheel1: Int32(a1), wheel2: Int32(a2), wheel3: 0)!
+            e.flags = shift ? .maskShift : []
+            return e
+        }
+        let swapped = wheel(shift: true, a1: 0, a2: 3)
+        GameRules.wheelFlags(swapped, playing: true, keepsVertical: true)
+        precondition(swapped.getIntegerValueField(.scrollWheelEventDeltaAxis1) == 3 && swapped.getIntegerValueField(.scrollWheelEventDeltaAxis2) == 0 && !swapped.flags.contains(.maskShift))
+        for (event, playing, on) in [(wheel(shift: true, a1: 0, a2: 3), false, true), (wheel(shift: true, a1: 0, a2: 3), true, false), (wheel(shift: false, a1: 0, a2: 3), true, true)] {
+            GameRules.wheelFlags(event, playing: playing, keepsVertical: on)
+            precondition(event.getIntegerValueField(.scrollWheelEventDeltaAxis1) == 0 && event.getIntegerValueField(.scrollWheelEventDeltaAxis2) == 3)
+        }
+        let vertical = wheel(shift: true, a1: 2, a2: 0)
+        GameRules.wheelFlags(vertical, playing: true, keepsVertical: true)
+        precondition(vertical.getIntegerValueField(.scrollWheelEventDeltaAxis1) == 2 && vertical.flags.contains(.maskShift))
+        print("shift wheel: ok")
+
         let ids = GameRule.allCases.flatMap(\.hotKeys) + [1, 2]
         let all = Set(GameRule.allCases)
         precondition(Set(ids).count == ids.count)
         precondition(GameRules.neverBlocked.isDisjoint(with: ids) && GameRules.neverBlocked.contains(156))
         precondition(Set(GameRule.allCases.map(\.key)).count == all.count)
         precondition(GameRules.hotKeys([], appSwitcher: true).isEmpty)
-        precondition(GameRules.hotKeys([.commandQ, .commandW, .swipes, .controlClick, .cursor, .display], appSwitcher: true).isEmpty)
+        precondition(GameRules.hotKeys([.commandQ, .commandW, .swipes, .controlClick, .shiftWheel, .cursor, .display], appSwitcher: true).isEmpty)
         precondition(GameRules.hotKeys([.spotlight], appSwitcher: true) == GameRule.spotlight.hotKeys)
         precondition(GameRules.hotKeys(all, appSwitcher: true).contains(1))
         precondition(!GameRules.hotKeys(all, appSwitcher: false).contains(2))
@@ -164,7 +181,7 @@ enum TestGameMode {
         precondition(GameRules.retiredKeys.allSatisfy { file[$0] == nil })
         precondition(file[GameRule.desktops.key] as? Bool == false && file[GameRule.controlClick.key] as? Bool == false)
         precondition(file[GameRule.swipes.key] as? Bool == true && file[GameRule.hide.key] as? Bool == false)
-        precondition(file[GameRule.spotlight.key] == nil && file["x"] as? Int == 1 && file.count == 12)
+        precondition(file[GameRule.spotlight.key] == nil && file["x"] as? Int == 1 && file.count == 13)
         print("migration: ok")
 
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("test-game-mode-\(UUID().uuidString)")

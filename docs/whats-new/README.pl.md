@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Tryb gry: kółko działa podczas skradania
+
+<sub>1.53.0 · 17 października 2026</sub>
+
+Przytrzymaj Shift w grze, a kółko myszy nadal zmienia sloty paska.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Na Macu przy wciśniętym Shifcie kółko myszy kręci się na bok, więc w grach takich jak Minecraft sloty przestawały się zmieniać podczas skradania. Teraz tryb gry zachowuje zwykłe działanie kółka, dopóki gra jest na wierzchu.
+
+**Wypróbuj:** Ustawienia › Gry › Kółko zmienia sloty przy wciśniętym ⇧
+
+---
+
 ## <a id="v1.52.3"></a>Przyspieszenie wskaźnika wyłącza się na każdej myszy
 
 <sub>1.52.3 · 17 października 2026</sub>

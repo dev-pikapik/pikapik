@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Game Mode: the wheel works while you sneak
+
+<sub>1.53.0 · October 17, 2026</sub>
+
+Hold Shift in a game and the mouse wheel still switches your hotbar slots.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+On a Mac, holding Shift turns the mouse wheel sideways, so in games such as Minecraft the slots stop switching while you sneak. Game Mode now keeps the wheel working the normal way while a game is in front.
+
+**Try it:** Settings › Games › The wheel switches slots while you hold ⇧
+
+---
+
 ## <a id="v1.52.3"></a>Turning off pointer acceleration now works on every mouse
 
 <sub>1.52.3 · October 17, 2026</sub>

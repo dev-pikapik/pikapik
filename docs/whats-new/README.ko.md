@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>게임 모드: 웅크린 채로도 휠이 작동합니다
+
+<sub>1.53.0 · 2026년 10월 17일</sub>
+
+게임에서 Shift를 누른 채로도 마우스 휠로 단축 슬롯을 전환할 수 있습니다.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Mac에서는 Shift를 누르면 마우스 휠이 옆으로 돌아가서 마인크래프트 같은 게임에서 웅크리는 동안 슬롯이 바뀌지 않았습니다. 이제 게임 모드가 게임이 맨 앞에 있는 동안 휠을 평소처럼 유지합니다.
+
+**사용해 보기:** 설정 › 게임 › ⇧를 누른 채로 휠로 슬롯 전환
+
+---
+
 ## <a id="v1.52.3"></a>어떤 마우스에서도 포인터 가속을 끌 수 있습니다
 
 <sub>1.52.3 · 2026년 10월 17일</sub>

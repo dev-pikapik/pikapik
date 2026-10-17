@@ -1365,3 +1365,6 @@
 "Playing on AirPlay" = "AirPlay üzerinde oynatılıyor";
 "pikapik couldn’t start sharing this video with the AirPlay device. Check that this Mac is connected to Wi-Fi or Ethernet, then pick the device again." = "pikapik bu videoyu AirPlay aygıtıyla paylaşmaya başlayamadı. Bu Mac’in Wi-Fi veya Ethernet’e bağlı olduğunu kontrol edin, sonra aygıtı yeniden seçin.";
 "pikapik Player shares the video you are playing with the AirPlay device you choose, only inside your local network." = "pikapik Player, oynattığınız videoyu seçtiğiniz AirPlay aygıtıyla yalnızca yerel ağınızın içinde paylaşır.";
+"The wheel switches slots while you hold ⇧" = "⇧ basılıyken tekerlek yuva değiştirir";
+"Keeps the mouse wheel switching hotbar slots while you hold Shift to sneak." = "Gizlenmek için Shift’e basılı tutarken fare tekerleği hızlı çubuktaki yuvaları değiştirmeye devam eder.";
+"shift, scroll, wheel, hotbar, sneak, minecraft, mouse" = "shift, kaydırma, tekerlek, hızlı çubuk, gizlenme, minecraft, fare";

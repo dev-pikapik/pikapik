@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Spelmodus: het wiel werkt terwijl je sluipt
+
+<sub>1.53.0 · 17 oktober 2026</sub>
+
+Houd Shift ingedrukt in een spel en het muiswiel wisselt nog steeds van hotbar-slot.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Op een Mac draait het muiswiel zijwaarts als je Shift ingedrukt houdt, dus in spellen zoals Minecraft wisselden de slots niet meer tijdens het sluipen. Spelmodus laat het wiel nu gewoon werken zolang een spel vooraan staat.
+
+**Probeer het:** Instellingen › Games › Het wiel wisselt van slot terwijl je ⇧ vasthoudt
+
+---
+
 ## <a id="v1.52.3"></a>Aanwijzerversnelling gaat uit op elke muis
 
 <sub>1.52.3 · 17 oktober 2026</sub>

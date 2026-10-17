@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Modo jogo: a roda funciona ao agachar
+
+<sub>1.53.0 · 17 de outubro de 2026</sub>
+
+Segure Shift em um jogo e a roda do mouse continua trocando os espaços da barra de atalhos.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+No Mac, segurar Shift faz a roda do mouse girar para o lado, então em jogos como Minecraft os espaços param de trocar enquanto você agacha. Agora o modo jogo mantém a roda funcionando normalmente enquanto um jogo está à frente.
+
+**Experimente:** Ajustes › Jogos › A roda troca de espaço com ⇧ pressionado
+
+---
+
 ## <a id="v1.52.3"></a>A aceleração do cursor desliga em qualquer mouse
 
 <sub>1.52.3 · 17 de outubro de 2026</sub>

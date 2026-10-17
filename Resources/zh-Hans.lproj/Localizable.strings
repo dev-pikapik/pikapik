@@ -1365,3 +1365,6 @@
 "Playing on AirPlay" = "正在通过 AirPlay 播放";
 "pikapik couldn’t start sharing this video with the AirPlay device. Check that this Mac is connected to Wi-Fi or Ethernet, then pick the device again." = "pikapik 无法开始向 AirPlay 设备共享此视频。请确认这台 Mac 已连接 Wi-Fi 或以太网，然后重新选择设备。";
 "pikapik Player shares the video you are playing with the AirPlay device you choose, only inside your local network." = "pikapik Player 会把你正在播放的视频共享给你选择的 AirPlay 设备，仅限在你的本地网络内。";
+"The wheel switches slots while you hold ⇧" = "按住 ⇧ 时滚轮也能切换栏位";
+"Keeps the mouse wheel switching hotbar slots while you hold Shift to sneak." = "按住 Shift 潜行时，鼠标滚轮仍可切换快捷栏。";
+"shift, scroll, wheel, hotbar, sneak, minecraft, mouse" = "shift, 滚动, 滚轮, 快捷栏, 潜行, 我的世界, 鼠标";

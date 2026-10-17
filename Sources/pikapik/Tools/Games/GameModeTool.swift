@@ -348,7 +348,7 @@ final class GameModeTool: Tool {
     }
 
     private func startTap() {
-        let types: [CGEventType] = [.keyDown, .keyUp, .flagsChanged, .leftMouseDown, .leftMouseUp, .leftMouseDragged]
+        let types: [CGEventType] = [.keyDown, .keyUp, .flagsChanged, .leftMouseDown, .leftMouseUp, .leftMouseDragged, .scrollWheel]
         let mask = types.reduce(CGEventMask(0)) { $0 | (1 << $1.rawValue) }
 
         guard let tap = CGEvent.tapCreate(
@@ -701,6 +701,8 @@ private func gameModeCallback(
         if tool.isPlaying { tool.inputIntent.changed(event.flags, at: event.timestamp) }
     case .leftMouseDown, .leftMouseUp, .leftMouseDragged:
         event.flags = GameRules.clickFlags(type, event.flags, playing: tool.isPlaying, blocksControl: tool.rules.contains(.controlClick))
+    case .scrollWheel:
+        GameRules.wheelFlags(event, playing: tool.isPlaying, keepsVertical: tool.rules.contains(.shiftWheel))
     default:
         break
     }
@@ -818,6 +820,7 @@ struct GameModePage: View {
                     ])
                     rules(Text("Mouse and screen"), [
                         Rule(.controlClick, String(localized: "⌃-click works as a plain click"), ["⌃"]),
+                        Rule(.shiftWheel, String(localized: "The wheel switches slots while you hold ⇧"), ["⇧"]),
                         Rule(.swipes, String(localized: "Gestures don’t leave the game")),
                         Rule(
                             .cursor, String(localized: "The pointer stays in the game"),

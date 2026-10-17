@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Spelläge: hjulet fungerar när du smyger
+
+<sub>1.53.0 · 17 oktober 2026</sub>
+
+Håll Skift i ett spel så byter mushjulet fortfarande plats i snabbfältet.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+På en Mac vrids mushjulet åt sidan när du håller Skift, så i spel som Minecraft slutade platserna att växla medan du smög. Nu låter spelläget hjulet fungera som vanligt så länge ett spel ligger överst.
+
+**Prova:** Inställningar › Spel › Hjulet byter plats medan du håller ⇧
+
+---
+
 ## <a id="v1.52.3"></a>Pekaracceleration stängs av på alla möss
 
 <sub>1.52.3 · 17 oktober 2026</sub>

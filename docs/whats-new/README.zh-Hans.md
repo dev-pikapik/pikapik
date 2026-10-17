@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>游戏模式：潜行时滚轮照常使用
+
+<sub>1.53.0 · 2026年10月17日</sub>
+
+在游戏中按住 Shift，鼠标滚轮仍然可以切换快捷栏。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+在 Mac 上，按住 Shift 时鼠标滚轮会变成横向滚动，所以在《我的世界》等游戏里潜行时无法切换栏位。现在只要游戏在最前面，游戏模式就让滚轮保持正常。
+
+**试试看：** 设置 › 游戏 › 按住 ⇧ 时滚轮也能切换栏位
+
+---
+
 ## <a id="v1.52.3"></a>任何鼠标都能关闭指针加速
 
 <sub>1.52.3 · 2026年10月17日</sub>

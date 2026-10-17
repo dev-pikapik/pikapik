@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Mode jeu : la molette fonctionne en vous accroupissant
+
+<sub>1.53.0 · 17 octobre 2026</sub>
+
+Maintenez Maj dans un jeu : la molette change toujours d’emplacement dans la barre rapide.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Sur un Mac, la molette de la souris part de côté quand on maintient Maj, donc dans des jeux comme Minecraft les emplacements ne changent plus quand vous vous accroupissez. Le mode jeu laisse désormais la molette fonctionner normalement tant qu’un jeu est au premier plan.
+
+**Pour essayer :** Réglages › Jeux › La molette change d’emplacement avec ⇧ maintenu
+
+---
+
 ## <a id="v1.52.3"></a>L’accélération du pointeur se désactive sur toutes les souris
 
 <sub>1.52.3 · 17 octobre 2026</sub>

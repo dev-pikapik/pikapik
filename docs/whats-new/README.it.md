@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Modalità gioco: la rotella funziona mentre ti accovacci
+
+<sub>1.53.0 · 17 ottobre 2026</sub>
+
+Tieni premuto Maiusc in un gioco e la rotella del mouse continua a cambiare gli slot della barra rapida.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Su un Mac, tenendo premuto Maiusc la rotella del mouse scorre di lato, quindi in giochi come Minecraft gli slot smettono di cambiare mentre ti accovacci. Ora la modalità gioco lascia la rotella normale finché un gioco è in primo piano.
+
+**Provalo:** Impostazioni › Giochi › La rotella cambia slot con ⇧ premuto
+
+---
+
 ## <a id="v1.52.3"></a>L’accelerazione del puntatore si disattiva su ogni mouse
 
 <sub>1.52.3 · 17 ottobre 2026</sub>

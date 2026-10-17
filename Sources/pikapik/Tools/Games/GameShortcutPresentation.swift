@@ -49,7 +49,7 @@ enum GameShortcutGroup: String, CaseIterable, Identifiable {
 }
 
 enum GameShortcutDescription: Equatable {
-    case language, windows, desktops, screenshot, capture, zoom, contrast, invert, voice, captions, presenter, focus, brightness, volume, note, notifications, forceQuit, apps, spotlight, siri, launchpad, emoji, dictionary, keyboard, globe, quit, close, click, cursor, display, dock, named, other
+    case language, windows, desktops, screenshot, capture, zoom, contrast, invert, voice, captions, presenter, focus, brightness, volume, note, notifications, forceQuit, apps, spotlight, siri, launchpad, emoji, dictionary, keyboard, globe, quit, close, click, wheel, cursor, display, dock, named, other
 
     var text: String {
         switch self {
@@ -81,6 +81,7 @@ enum GameShortcutDescription: Equatable {
         case .quit: String(localized: "Prevents an accidental quit shortcut from ending the game.")
         case .close: String(localized: "Prevents an accidental close shortcut from closing the game window.")
         case .click: String(localized: "Lets you hold Control and click without opening a context menu.")
+        case .wheel: String(localized: "Keeps the mouse wheel switching hotbar slots while you hold Shift to sneak.")
         case .cursor: String(localized: "The Dock, menu bar and hot corners don’t pop up, and the pointer doesn’t slip onto another screen")
         case .display: String(localized: "The display doesn’t dim or sleep while you play")
         case .dock: String(localized: "Shows or hides the Dock.")
@@ -112,6 +113,7 @@ extension GameRule {
         case .focusKeys: .keyboard
         case .globe: .globe
         case .controlClick: .click
+        case .shiftWheel: .wheel
         case .cursor: .cursor
         case .display: .display
         }
@@ -179,7 +181,7 @@ extension SystemGameShortcut {
         case .windows, .apps, .launchpad, .forceQuit, .quit, .close: .windows
         case .desktops: .desktops
         case .screenshot, .capture: .screenshots
-        case .keyboard, .emoji, .dictionary, .globe, .click: .keyboard
+        case .keyboard, .emoji, .dictionary, .globe, .click, .wheel: .keyboard
         case .zoom, .contrast, .invert, .voice, .captions: .accessibility
         case .spotlight, .siri, .brightness, .volume, .note, .notifications, .focus, .presenter, .dock, .cursor, .display: .system
         case .named:

@@ -1365,3 +1365,6 @@
 "Playing on AirPlay" = "Đang phát trên AirPlay";
 "pikapik couldn’t start sharing this video with the AirPlay device. Check that this Mac is connected to Wi-Fi or Ethernet, then pick the device again." = "pikapik không thể bắt đầu chia sẻ video này với thiết bị AirPlay. Hãy kiểm tra Mac này đã kết nối Wi-Fi hoặc Ethernet, rồi chọn lại thiết bị.";
 "pikapik Player shares the video you are playing with the AirPlay device you choose, only inside your local network." = "pikapik Player chia sẻ video bạn đang phát với thiết bị AirPlay bạn chọn, chỉ trong mạng cục bộ của bạn.";
+"The wheel switches slots while you hold ⇧" = "Con lăn đổi ô khi đang giữ ⇧";
+"Keeps the mouse wheel switching hotbar slots while you hold Shift to sneak." = "Con lăn chuột vẫn đổi ô thanh nhanh khi bạn giữ Shift để rón rén.";
+"shift, scroll, wheel, hotbar, sneak, minecraft, mouse" = "shift, cuộn, con lăn, thanh nhanh, rón rén, minecraft, chuột";

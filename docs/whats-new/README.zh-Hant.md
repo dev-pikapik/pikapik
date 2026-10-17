@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>遊戲模式：潛行時滾輪照常使用
+
+<sub>1.53.0 · 2026年10月17日</sub>
+
+在遊戲中按住 Shift，滑鼠滾輪仍然可以切換快捷列。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+在 Mac 上，按住 Shift 時滑鼠滾輪會變成橫向捲動，所以在《Minecraft》等遊戲裡潛行時無法切換欄位。現在只要遊戲在最前面，遊戲模式就讓滾輪保持正常。
+
+**試試看：** 設定 › 遊戲 › 按住 ⇧ 時滾輪也能切換欄位
+
+---
+
 ## <a id="v1.52.3"></a>任何滑鼠都能關閉指標加速
 
 <sub>1.52.3 · 2026年10月17日</sub>

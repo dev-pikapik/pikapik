@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.0"></a>Modo juego: la rueda funciona al agacharte
+
+<sub>1.53.0 · 17 de octubre de 2026</sub>
+
+Mantén Mayús en un juego y la rueda del ratón sigue cambiando las ranuras de la barra rápida.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+En un Mac, al mantener Mayús la rueda del ratón se desplaza de lado, así que en juegos como Minecraft las ranuras dejan de cambiar mientras te agachas. Ahora el modo juego mantiene la rueda funcionando con normalidad mientras un juego está delante.
+
+**Pruébalo:** Ajustes › Juegos › La rueda cambia de ranura con ⇧ pulsado
+
+---
+
 ## <a id="v1.52.3"></a>La aceleración del puntero se desactiva en cualquier ratón
 
 <sub>1.52.3 · 17 de octubre de 2026</sub>
