@@ -38,7 +38,7 @@ Sources/pikapik/
   Tools/Windows/QuitOnCloseTool.swift, DockHideTool.swift
   Tools/Pet/PetTool.swift, PetStage.swift, PetPhysics.swift, PetFigure.swift, PetPhrases.swift
   Common/                            shared UI, permissions, login item, updater
-Resources/<lang>.lproj/              Localizable.strings
+Resources/Localizable.xcstrings      String Catalog (23 languages)
 Resources/AppIcon.icon               app icon, AppIcon.icns is the fallback
 scripts/                             build, package, release, icon, tests
 ```
@@ -468,10 +468,10 @@ swiftc -O -parse-as-library -target arm64-apple-macos14.0 -import-objc-header Ex
 
 ### Strings
 
-English is the development language and the keys are the English text. Use `String(localized: "…")` when you need a `String`, and plain literals in SwiftUI (`Text("…")`, `Button("…")`). Every new key goes into all `Resources/*.lproj/Localizable.strings` files, and they all must have the same set of keys. Check with:
+English is the development language and the keys are the English text. Use `String(localized: "…")` when you need a `String`, and plain literals in SwiftUI (`Text("…")`, `Button("…")`). Every new key goes into `Resources/Localizable.xcstrings` for all 23 languages, and all languages must have the same set of keys. Check with:
 
 ```bash
-for f in Resources/*.lproj/Localizable.strings; do plutil -lint "$f"; done
+./scripts/check-strings.sh
 ```
 
 ## Releasing

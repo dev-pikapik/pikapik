@@ -13,21 +13,23 @@ struct LayoutFixServiceSettings: View {
             LayoutFixArt(on: true, service: tool.fixesAsYouType ? nil : LayoutFixService.title)
             RowLabel(Text(tool.title), Text(LayoutFixService.hint))
                 .settingAnchor(tool.title)
+            let selectedTitle = String(localized: "Fix the selected text")
+            let selectedSub = String(localized: "Select the text, then press these keys")
             Toggle(isOn: $tool.isEnabled) {
                 Group {
                     if tool.isEnabled {
                         ShortcutLabel(
                             shortcut: $tool.shortcut,
                             standard: LayoutFixTool.standard,
-                            title: Text("Fix the selected text"),
-                            subtitle: Text("Select the text, then press these keys"),
+                            title: Text(selectedTitle),
+                            subtitle: Text(selectedSub),
                             others: []
                         )
                     } else {
-                        KeyLabel(keys: [tool.shortcut.text], title: Text("Fix the selected text"), subtitle: Text("Select the text, then press these keys"))
+                        KeyLabel(keys: [tool.shortcut.text], title: Text(selectedTitle), subtitle: Text(selectedSub))
                     }
                 }
-                .settingAnchor(String(localized: "Fix the selected text"))
+                .settingAnchor(selectedTitle)
             }
             .needs([.accessibility])
             Toggle(isOn: $tool.fixesAsYouType) {

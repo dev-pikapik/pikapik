@@ -124,6 +124,53 @@ rm -rf build/strings
 
 lipo -create build/pikapik-arm64 build/pikapik-x86_64 -output "$APP/Contents/MacOS/pikapik"
 rm build/pikapik-arm64 build/pikapik-x86_64
+rm -rf build/lproj
+python3 - <<'XCPY'
+import json, os, plistlib
+
+def esc(s):
+    return s.replace('\\', '\\\\').replace('"', '\\"').replace('\n', '\\n').replace('\r', '\\r').replace('\t', '\\t')
+
+with open('Resources/Localizable.xcstrings', encoding='utf-8') as f:
+    loc_data = json.load(f)['strings']
+with open('Resources/ServicesMenu.xcstrings', encoding='utf-8') as f:
+    srv_data = json.load(f)['strings']
+
+langs = sorted({l for item in loc_data.values() for l in item.get('localizations', {})})
+for lang in langs:
+    out_dir = f'build/lproj/{lang}.lproj'
+    os.makedirs(out_dir, exist_ok=True)
+    lines = []
+    sdict = {}
+    for key, item in loc_data.items():
+        loc = item.get('localizations', {}).get(lang, {})
+        if 'stringUnit' in loc:
+            val = loc['stringUnit']['value']
+            lines.append(f'"{esc(key)}" = "{esc(val)}";\n')
+        elif 'variations' in loc and 'plural' in loc['variations']:
+            plural = loc['variations']['plural']
+            fallback = (plural.get('many') or plural.get('other'))['stringUnit']['value']
+            lines.append(f'"{esc(key)}" = "{esc(fallback)}";\n')
+            var_name = 'lines' if 'lines' in key else 'count'
+            rule_dict = {
+                'NSStringFormatSpecTypeKey': 'NSStringPluralRuleType',
+                'NSStringFormatValueTypeKey': 'lld',
+            }
+            for rule, unit in plural.items():
+                rule_dict[rule] = unit['stringUnit']['value']
+            sdict[key] = {'NSStringLocalizedFormatKey': f'%#@{var_name}@', var_name: rule_dict}
+    with open(f'{out_dir}/Localizable.strings', 'w', encoding='utf-8') as f:
+        f.writelines(lines)
+    with open(f'{out_dir}/Localizable.stringsdict', 'wb') as f:
+        plistlib.dump(sdict, f, sort_keys=False)
+    srv_lines = []
+    for key, item in srv_data.items():
+        loc = item.get('localizations', {}).get(lang, {})
+        if 'stringUnit' in loc:
+            srv_lines.append(f'"{esc(key)}" = "{esc(loc["stringUnit"]["value"])}";\n')
+    with open(f'{out_dir}/ServicesMenu.strings', 'w', encoding='utf-8') as f:
+        f.writelines(srv_lines)
+XCPY
 if [ -z "${APPSTORE:-}" ]; then
     lipo -create build/fan-helper-arm64 build/fan-helper-x86_64 -output "$APP/Contents/Library/LaunchServices/fan-helper"
     rm build/fan-helper-arm64 build/fan-helper-x86_64
@@ -131,9 +178,9 @@ if [ -z "${APPSTORE:-}" ]; then
     lipo -create build/player-arm64 build/player-x86_64 -output "$PLAYER/Contents/MacOS/pikapik Player"
     rm build/player-arm64 build/player-x86_64
     cp Helper/Player/Info.plist "$PLAYER/Contents/Info.plist"
-    cp -R Resources/*.lproj "$PLAYER/Contents/Resources/"
+    cp -R build/lproj/*.lproj "$PLAYER/Contents/Resources/"
     LOCAL_TEXT='pikapik Player shares the video you are playing with the AirPlay device you choose, only inside your local network.'
-    for LPROJ in Resources/*.lproj; do
+    for LPROJ in build/lproj/*.lproj; do
         grep -F "\"$LOCAL_TEXT\" = " "$LPROJ/Localizable.strings" | sed 's/^"[^"]*"/"NSLocalNetworkUsageDescription"/' > "$PLAYER/Contents/Resources/$(basename "$LPROJ")/InfoPlist.strings"
     done
 fi
@@ -147,7 +194,7 @@ for EXT in $EXTENSIONS; do
     for KEY in CFBundleShortVersionString CFBundleVersion; do
         /usr/libexec/PlistBuddy -c "Set :$KEY $(/usr/libexec/PlistBuddy -c "Print :$KEY" "$APP/Contents/Info.plist")" "$APPEX/Contents/Info.plist"
     done
-    for LPROJ in Resources/*.lproj; do
+    for LPROJ in build/lproj/*.lproj; do
         OUT="$APPEX/Contents/Resources/$(basename "$LPROJ")"
         mkdir -p "$OUT"
         case $EXT in
@@ -176,16 +223,16 @@ done
 
 RES="$APP/Contents/Resources"
 mkdir -p "$RES"
-cp -R Resources/*.lproj "$RES/"
+cp -R build/lproj/*.lproj "$RES/"
 CAPTURE_TEXT='pikapik passes each app’s sound through itself to change its volume. Nothing is recorded or saved.'
-for LPROJ in Resources/*.lproj; do
+for LPROJ in build/lproj/*.lproj; do
     grep -F "\"$CAPTURE_TEXT\" = " "$LPROJ/Localizable.strings" | sed 's/^"[^"]*"/"NSAudioCaptureUsageDescription"/' > "$RES/$(basename "$LPROJ")/InfoPlist.strings"
     grep '^"Archive" = ' "$LPROJ/Localizable.strings" >> "$RES/$(basename "$LPROJ")/InfoPlist.strings"
 done
 if [ -z "${APPSTORE:-}" ]; then
     FINDER_TEXT='pikapik asks Finder to move apps to the Trash when macOS doesn’t let it do that itself.'
     /usr/libexec/PlistBuddy -c "Add :NSAppleEventsUsageDescription string $FINDER_TEXT" "$APP/Contents/Info.plist"
-    for LPROJ in Resources/*.lproj; do
+    for LPROJ in build/lproj/*.lproj; do
         grep -F "\"$FINDER_TEXT\" = " "$LPROJ/Localizable.strings" | sed 's/^"[^"]*"/"NSAppleEventsUsageDescription"/' >> "$RES/$(basename "$LPROJ")/InfoPlist.strings"
     done
     cp Vendor/7zip/License.txt "$RES/7-Zip License.txt"
@@ -193,6 +240,7 @@ if [ -z "${APPSTORE:-}" ]; then
     cp Vendor/ffmpeg/lib/*.dylib "$APP/Contents/Frameworks/"
     { printf 'pikapik Player plays DTS sound and shows the picture subtitles PGS, VobSub and DVB with the FFmpeg decoders dca, pgssub, dvdsub and dvbsub; like all of FFmpeg here, they are under the LGPL below.\n\n'; cat Vendor/ffmpeg/License.txt; } > "$RES/Player Licenses.txt"
 fi
+rm -rf build/lproj
 cp Resources/github.svg Resources/AppIcon.icon/Assets/pikapik.svg "$RES/"
 [ -n "${APPSTORE:-}" ] && cp Resources/PrivacyInfo.xcprivacy "$RES/"
 if xcrun --find actool >/dev/null 2>&1 && xcrun actool "$PWD/Resources/AppIcon.icon" \

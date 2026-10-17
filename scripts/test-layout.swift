@@ -25,10 +25,17 @@ enum TestLayout {
     }
 
     static func words(_ language: String) -> [String] {
-        let table = NSDictionary(contentsOfFile: "Resources/\(language).lproj/Localizable.strings") as? [String: String] ?? [:]
-        precondition(!table.isEmpty, "no strings for \(language)")
+        let data = (try? Data(contentsOf: URL(fileURLWithPath: "Resources/Localizable.xcstrings"))) ?? Data()
+        let root = (try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["strings"] as? [String: [String: Any]] ?? [:]
+        let values = root.values.compactMap { item -> String? in
+            guard let loc = (item["localizations"] as? [String: Any])?[language] as? [String: Any] else { return nil }
+            if let value = (loc["stringUnit"] as? [String: Any])?["value"] as? String { return value }
+            let plural = (loc["variations"] as? [String: Any])?["plural"] as? [String: Any]
+            return ((plural?["many"] ?? plural?["other"]) as? [String: Any]).flatMap { ($0["stringUnit"] as? [String: Any])?["value"] as? String }
+        }
+        precondition(!values.isEmpty, "no strings for \(language)")
         var words = Set<String>()
-        for token in table.values.flatMap({ value in value.split(whereSeparator: \.isWhitespace) }) where !token.contains("%") {
+        for token in values.flatMap({ value in value.split(whereSeparator: \.isWhitespace) }) where !token.contains("%") {
             words.insert(String(token))
             if let core = KeyboardLayouts.core(String(token)) { words.insert(core) }
         }

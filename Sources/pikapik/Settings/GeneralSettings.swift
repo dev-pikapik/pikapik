@@ -91,10 +91,11 @@ struct GeneralSettings: View {
                 }
                 .settingAnchor(String(localized: "Open at Login"))
                 #if !APPSTORE
+                let stayTitle = String(localized: "Stay in the background after Quit")
                 Toggle(isOn: $keepRunning) {
-                    RowLabel(Text("Stay in the background after Quit"), Text("Shortcuts and Keep Awake keep working. Hold Option to quit completely"))
+                    RowLabel(Text(stayTitle), Text("Shortcuts and Keep Awake keep working. Hold Option to quit completely"))
                 }
-                .settingAnchor(String(localized: "Stay in the background after Quit"))
+                .settingAnchor(stayTitle)
                 #endif
                 LabeledContent("Appearance") {
                     AppearancePicker(selection: Binding(get: { appearance }, set: { appearance = $0; $0.apply() }))
@@ -125,10 +126,11 @@ struct GeneralSettings: View {
                 .padding(.vertical, 2)
                 .settingAnchor(String(localized: "Settings file"))
                 if SettingsSync.isAvailable {
+                    let syncTitle = String(localized: "Sync settings with iCloud")
                     Toggle(isOn: $sync.isEnabled) {
-                        RowLabel(Text("Sync settings with iCloud"), Text(syncStatus))
+                        RowLabel(Text(syncTitle), Text(syncStatus))
                     }
-                    .settingAnchor(String(localized: "Sync settings with iCloud"))
+                    .settingAnchor(syncTitle)
                 }
                 #if !APPSTORE
                 if sync.state == .noDrive {

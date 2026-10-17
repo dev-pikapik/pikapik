@@ -55,16 +55,36 @@ SPEC = re.compile(r'%(?:\d+\$)?[-+ 0#]*(?:\d+|\*)?(?:\.\d+)?(?:hh|h|ll|l|q|L|z|t
 def specs(s):
     return Counter(re.sub(r'(?<=%)\d+\$', '', m) for m in SPEC.findall(s.replace('%%', '')))
 
-def load(path):
-    r = subprocess.run(['plutil', '-convert', 'json', '-o', '-', path], capture_output=True, text=True)
-    if r.returncode:
-        fail(f'{path}: {r.stderr.strip()}')
-        return {}
-    table = json.loads(r.stdout)
-    written = len(re.findall(r'^"(?:[^"\\]|\\.)*"\s*=', open(path, encoding='utf-8').read(), re.M))
-    if written != len(table):
-        fail(f'{path}: {written - len(table)} duplicate key(s)')
-    return table
+def load_catalog(path):
+    if not os.path.exists(path):
+        fail(f'{path}: missing')
+        return {}, []
+    try:
+        data = json.load(open(path, encoding='utf-8'))
+    except Exception as e:
+        fail(f'{path}: {e}')
+        return {}, []
+    xc_bin = '/Applications/Xcode.app/Contents/Developer/usr/bin/xcstringstool'
+    if os.path.exists(xc_bin):
+        r = subprocess.run([xc_bin, 'compile', path, '--output-directory', sys.argv[1] + '/xc', '--dry-run'], capture_output=True, text=True)
+        if r.returncode:
+            fail(f'{path}: {r.stderr.strip()}')
+    strings = data.get('strings', {})
+    all_langs = sorted({lang for item in strings.values() for lang in item.get('localizations', {})})
+    tables = {lang: {} for lang in all_langs}
+    for key, item in strings.items():
+        for lang, loc in item.get('localizations', {}).items():
+            if 'stringUnit' in loc:
+                tables[lang][key] = loc['stringUnit'].get('value', '')
+            elif 'variations' in loc and 'plural' in loc['variations']:
+                plural = loc['variations']['plural']
+                if 'other' not in plural:
+                    fail(f'{path} ({lang}): "{key[:60]}" is missing plural "other"')
+                for rule, unit in plural.items():
+                    if not unit.get('stringUnit', {}).get('value', '').strip():
+                        fail(f'{path} ({lang}.{rule}): "{key[:60]}" is empty')
+                tables[lang][key] = plural.get('other', {}).get('stringUnit', {}).get('value', '')
+    return tables, all_langs
 
 code = {}
 for path in sorted(glob.glob(sys.argv[1] + '/**/*.stringsdata', recursive=True)):
@@ -92,8 +112,10 @@ for path, text in swift.items():
                 named.setdefault(unescape(m.group(1)), f'{path}:{n}')
 needed = {**named, **code}
 
-langs = sorted(os.path.basename(p)[:-len('.lproj')] for p in glob.glob('Resources/*.lproj'))
-tables = {lang: load(f'Resources/{lang}.lproj/Localizable.strings') for lang in langs}
+tables, langs = load_catalog('Resources/Localizable.xcstrings')
+srv_tables, srv_langs = load_catalog('Resources/ServicesMenu.xcstrings')
+if srv_langs != langs:
+    fail(f'ServicesMenu.xcstrings languages differ from Localizable.xcstrings: {sorted(set(srv_langs) ^ set(langs))}')
 english = tables.get('en', {})
 all_text = '\n'.join(swift.values())
 for path in glob.glob('Helper/*/Info.plist'):
@@ -129,7 +151,7 @@ picker = re.search(r'static let codes = \[([^\]]*)\]', all_text)
 picker = set(re.findall(r'"([^"]+)"', picker.group(1))) if picker else set()
 for name, found in (('CFBundleLocalizations in Info.plist', declared), ('Language.codes', picker)):
     if found != set(langs):
-        fail(f'{name} differs from Resources/*.lproj: {sorted(found ^ set(langs))}')
+        fail(f'{name} differs from Resources/Localizable.xcstrings: {sorted(found ^ set(langs))}')
 for lang in langs:
     readme = 'README.md' if lang == 'en' else f'docs/readme/README.{lang}.md'
     if not os.path.exists(readme):

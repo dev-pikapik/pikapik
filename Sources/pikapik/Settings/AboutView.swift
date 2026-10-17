@@ -37,8 +37,9 @@ struct AboutView: View {
             Section { LabeledContent { EmptyView() } label: { RowLabel(Text("Version \(version)")) } }
             #else
             Section("Updates") {
-                Toggle("Check for updates automatically", isOn: $updater.checksAutomatically)
-                    .settingAnchor(String(localized: "Check for updates automatically"))
+                let autoTitle = String(localized: "Check for updates automatically")
+                Toggle(autoTitle, isOn: $updater.checksAutomatically)
+                    .settingAnchor(autoTitle)
                 LabeledContent {
                     if case .available(let version) = updater.state {
                         Button("Update to \(version)", systemImage: "arrow.down.circle") { Task { await updater.install() } }
@@ -110,6 +111,7 @@ struct AboutView: View {
 
 #if !APPSTORE
 private struct CoffeeLine: View {
+    static let coffeeTitle = String(localized: "Buy me a coffee")
     @State private var hovering = false
 
     var body: some View {
@@ -135,7 +137,7 @@ private struct CoffeeLine: View {
             .onDisappear {
                 if hovering { NSCursor.pop() }
             }
-            .settingAnchor(String(localized: "Buy me a coffee"))
+            .settingAnchor(Self.coffeeTitle)
         }
     }
 }
