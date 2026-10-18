@@ -488,7 +488,7 @@ Before running the script, add the version to `CHANGELOG.md` under `## [1.3.0] -
 
 Every release is signed with the same certificate, so macOS keeps the Accessibility and Input Monitoring permissions across updates and the fan helper accepts the next version without a password. The certificate lives in repository secrets:
 
-- `DEVID_P12` and `DEVID_P12_PASSWORD`: the Developer ID Application certificate and private key exported as `.p12`, base64-encoded, and its password. When they are set, the release is signed with Developer ID and sent to Apple for notarization.
+- `DEVID_P12` and `DEVID_P12_PASSWORD`: the Developer ID Application certificate and private key exported as `.p12`, base64-encoded, and its password. When they are set, the release is signed with Developer ID and sent to Apple for notarization. A release never waits for Apple: with no answer in 15 minutes, the signed build goes out without a notarization ticket. If Apple refuses it, nothing is published.
 - `SIGN_P12` and `SIGN_P12_PASSWORD`: a permanent self-issued certificate, used only when there is no Developer ID. Its common name must be `pikapik`.
 
 Without any of these secrets the release job fails on purpose: an ad-hoc signed release would reset everyone's permissions.

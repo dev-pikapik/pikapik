@@ -87,8 +87,8 @@ jobs:
             AUTH=(--apple-id "$NOTARY_APPLE_ID" --password "$NOTARY_PASSWORD" --team-id "$NOTARY_TEAM_ID")
           fi
           # Both zips hold the same signed bundle, so one ticket covers both.
-          # Apple never holds up a release: no answer in 15 minutes or a rejection
-          # ships the Developer ID signed build as is, without a stapled ticket.
+          # Apple never holds up a release: no answer in 15 minutes ships the
+          # Developer ID signed build as is, without a stapled ticket.
           xcrun notarytool submit build/pikapik.zip "${AUTH[@]}" --wait --timeout 15m --output-format json > build/notary.json || true
           cat build/notary.json
           ID=$(/usr/bin/plutil -extract id raw -o - build/notary.json 2>/dev/null || true)
@@ -96,6 +96,10 @@ jobs:
           rm -f build/notary.json
           if [ "$STATUS" != Accepted ]; then
             [ -n "$ID" ] && xcrun notarytool log "$ID" "${AUTH[@]}" || true
+            if [ "$STATUS" = Invalid ] || [ "$STATUS" = Rejected ]; then
+              echo "::error::Apple refused notarization (status $STATUS), so nothing is published"
+              exit 1
+            fi
             echo "::warning::Notarization ended with status '${STATUS:-no answer}'; publishing the signed build without a ticket"
             exit 0
           fi
