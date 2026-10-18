@@ -52,8 +52,9 @@ func colorAttachments(primaries: AVColorPrimaries, transfer: AVColorTransferChar
 
 func openVideoCodec(_ codecType: CMVideoCodecType, _ description: CMVideoFormatDescription, lowDelay: Bool) throws -> (UnsafeMutablePointer<AVCodecContext>, Bool) {
     let atoms = CMFormatDescriptionGetExtension(description, extensionKey: kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms) as? [String: Data]
-    guard let atom = atoms?[PikaCodec.atom], atom.count >= 5,
-          let id = PikaCodec.video.first(where: { PikaCodec.fourCC($0.1) == codecType })?.0,
+    let av1 = codecType == kCMVideoCodecType_AV1
+    guard let atom = av1 ? atoms?["av1C"].map({ Data(count: 5) + $0 }) : atoms?[PikaCodec.atom], atom.count >= 5,
+          let id = av1 ? AV_CODEC_ID_AV1 : PikaCodec.video.first(where: { PikaCodec.fourCC($0.1) == codecType })?.0,
           let codec = id == AV_CODEC_ID_AV1 ? avcodec_find_decoder_by_name("libdav1d") : avcodec_find_decoder(id),
           let context = avcodec_alloc_context3(codec) else { throw MediaError.unsupportedFeature }
     let bytes = [UInt8](atom)
