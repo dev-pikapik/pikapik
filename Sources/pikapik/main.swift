@@ -6,6 +6,7 @@ if CommandLine.arguments.contains("--uninstall") {
     #if !APPSTORE
     AnimationsTool.uninstall()
     KeyRepeatTool.uninstall()
+    PointerTool.uninstall()
     DockDisplayTool.uninstall()
     DesktopIconsTool.putBack()
     HiddenFilesTool.putBack()

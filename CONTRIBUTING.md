@@ -153,6 +153,12 @@ Middle click on the trackpad uses two `CGEventTap`s. A listen-only one reads the
 swiftc -parse-as-library Sources/pikapik/Tools/Mouse/MiddleClickGesture.swift scripts/test-middle-click.swift -o build/test-middle-click && build/test-middle-click
 ```
 
+Turn off pointer acceleration sets `HIDUseLinearScalingMouseAcceleration` and the speed on each mouse through the private `IOHIDEventSystemClient`. Before the first write it notes what the mouse had (`linear-pointer-saved`) and what pikapik writes (`linear-pointer-ours`). Quitting and `--uninstall` put back what the mouse had, or what System Settings has now, only where the mouse still has pikapik’s value, so a change made since then stays. `--uninstall` runs in a new copy that knows only these notes. `PointerPutBack` makes the decisions, and the test runs it on pretend mice, starting from the notes as `--uninstall` does:
+
+```bash
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Tools/Mouse/PointerPutBack.swift scripts/test-pointer-put-back.swift -o build/test-pointer-put-back && build/test-pointer-put-back
+```
+
 `WheelStep` turns each mouse wheel notch into a fixed number of lines or pixels and leaves trackpad scrolling alone, and `ScrollDirection` sets the direction for the mouse and the trackpad separately. The same test checks how `SettingsFile` merges settings from another Mac:
 
 ```bash

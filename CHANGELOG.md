@@ -4,6 +4,9 @@ Every update to pikapik, version by version. The same news, told simply with a p
 
 ## [1.53.2] - Unreleased
 
+### Fixed
+- Turn off pointer acceleration, website version: removing pikapik with Homebrew or the uninstall script now puts back the mouse settings pikapik changed, also when pikapik didn’t quit normally, for example after a crash or a force quit. Before, the mouse could keep moving without acceleration after the app was gone.
+
 ### Changed
 - Mac App Store version: **Fix words as you type** is held back until the App Store version is approved, because there it can’t see the text field and retypes words without looking. Fix the selected text and the Services command stay.
 
