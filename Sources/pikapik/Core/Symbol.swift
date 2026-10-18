@@ -174,6 +174,7 @@ enum Symbol: String, CaseIterable {
     case `repeat` = "repeat"
     case `return` = "return"
     case rotateLeft = "rotate.left"
+    case safariFill = "safari.fill"
     case scissors = "scissors"
     case shield = "shield"
     case shippingboxFill = "shippingbox.fill"

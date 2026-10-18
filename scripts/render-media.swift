@@ -57,7 +57,7 @@ enum RenderMedia {
         ("whats-new/1.25.0/game-pictures", 4.2, AnyView(SwitchRowsArt(rows: [(AnyView(GameRuleFrame(rule: .commandQ, story: .still(on: false), height: 32)), 64), (AnyView(GameRuleFrame(rule: .spotlight, story: .still(on: false), height: 32)), 52), (AnyView(GameRuleFrame(rule: .missionControl, story: .still(on: false), height: 32)), 72)], height: 36))),
         ("whats-new/1.26.1/game-previews", 6.2, AnyView(IllustrationRow { HStack(spacing: 14) { GameRuleArt(rule: .spotlight, keys: ["⌘Space"], height: 96); GameRuleArt(rule: .showDesktop, keys: ["F11"], height: 96) } })),
         ("whats-new/1.25.1/dock-games", 3.85, AnyView(DockShelfArt())),
-        ("whats-new/1.28.0/app-shelf", 3.85, AnyView(DockShelfArt(symbol: "safari.fill"))),
+        ("whats-new/1.28.0/app-shelf", 3.85, AnyView(DockShelfArt(symbol: .safariFill))),
         ("whats-new/1.29.0/pet-ball", PetBallArt.length, AnyView(PetBallArt())),
         ("whats-new/1.31.0/system-shortcuts", 6.2, AnyView(SystemShortcutsCard())),
         ("whats-new/1.31.2/game-settings", 5.4, AnyView(GameSettingsCard())),
@@ -372,7 +372,7 @@ private struct CommandKeysArt: View {
 }
 
 private struct DockShelfArt: View {
-    var symbol = "gamecontroller.fill"
+    var symbol = Symbol.gamecontrollerFill
     @State private var tick = 0
 
     private static let colors: [Color] = [.teal, .orange, .purple, .pink]
@@ -388,7 +388,7 @@ private struct DockShelfArt: View {
                                 .fill(LinearGradient(colors: [Self.colors[index], Self.colors[index].opacity(0.65)], startPoint: .top, endPoint: .bottom))
                                 .frame(width: 40, height: 40)
                                 .overlay {
-                                    if index == 2 { Image(systemName: symbol).font(.system(size: 18)).foregroundStyle(.white) }
+                                    if index == 2 { Image(symbol).font(.system(size: 18)).foregroundStyle(.white) }
                                 }
                                 .overlay(alignment: .bottomTrailing) {
                                     if index == 2 && step == 3 {
@@ -880,9 +880,9 @@ private struct SpeedTestArt: View {
         let (down, up) = Self.speeds[step]
         IllustrationRow {
             HStack(spacing: 0) {
-                number("arrow.down", down, active: step == 1 || step == 2)
+                number(.arrowDown, down, active: step == 1 || step == 2)
                 Rectangle().fill(Color.primary.opacity(0.12)).frame(width: 0.5, height: 56)
-                number("arrow.up", up, active: step == 3)
+                number(.arrowUp, up, active: step == 3)
             }
             .frame(width: 260)
             .animation(.snappy, value: step)
@@ -890,9 +890,9 @@ private struct SpeedTestArt: View {
         .loop($tick, [1.0, 0.8, 0.8, 0.8, 2.0])
     }
 
-    private func number(_ symbol: String, _ value: Double?, active: Bool) -> some View {
+    private func number(_ symbol: Symbol, _ value: Double?, active: Bool) -> some View {
         VStack(spacing: 2) {
-            Image(systemName: symbol)
+            Image(symbol)
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(active ? Color.accentColor : .secondary)
             Text(verbatim: value.map(SpeedTest.format) ?? "–")
@@ -1446,8 +1446,8 @@ private struct AppVolumeMixerCard: View {
 private struct AppVolumeMixerScene: View {
     let t: Double
 
-    private static let apps: [(symbol: String, color: Color, caption: CGFloat)] = [
-        ("phone.fill", Art.green, 44), ("gamecontroller.fill", .accentColor, 36), ("music.note", Art.red, 40),
+    private static let apps: [(symbol: Symbol, color: Color, caption: CGFloat)] = [
+        (.phoneFill, Art.green, 44), (.gamecontrollerFill, .accentColor, 36), (.musicNote, Art.red, 40),
     ]
     private static let left: CGFloat = 140
     private static let width: CGFloat = 84
@@ -1505,12 +1505,12 @@ private struct AppVolumeMixerScene: View {
         }
     }
 
-    private func tile(_ symbol: String, color: Color) -> some View {
+    private func tile(_ symbol: Symbol, color: Color) -> some View {
         let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
         return shape
             .fill(LinearGradient(colors: [color, color.opacity(0.7)], startPoint: .top, endPoint: .bottom))
             .overlay(shape.hairline(Color.white.opacity(0.25)))
-            .overlay(Image(systemName: symbol).font(.system(size: 11, weight: .semibold)).foregroundStyle(.white))
+            .overlay(Image(symbol).font(.system(size: 11, weight: .semibold)).foregroundStyle(.white))
             .frame(width: 22, height: 22)
             .shadow(color: .black.opacity(0.18), radius: 2, y: 1)
     }

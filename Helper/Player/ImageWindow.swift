@@ -201,13 +201,13 @@ final class ImageController: NSWindowController, NSWindowDelegate, NSMenuItemVal
         loading.appearance = NSAppearance(named: .darkAqua)
         controls.appearance = NSAppearance(named: .darkAqua)
 
-        configure(previousButton, "chevron.left", String(localized: "Previous Image"), #selector(previous))
-        configure(nextButton, "chevron.right", String(localized: "Next Image"), #selector(next))
-        configure(rotateButton, "rotate.left", String(localized: "Rotate Left"), #selector(rotateLeft))
-        configure(zoomOutButton, "minus.magnifyingglass", String(localized: "Zoom Out"), #selector(zoomOut))
-        configure(zoomInButton, "plus.magnifyingglass", String(localized: "Zoom In"), #selector(zoomIn))
-        configure(slideshowButton, "play.square.stack", String(localized: "Start Slideshow"), #selector(toggleSlideshow))
-        configure(fullScreenButton, "arrow.up.left.and.arrow.down.right", String(localized: "Full Screen"), #selector(fullScreen))
+        configure(previousButton, .chevronLeft, String(localized: "Previous Image"), #selector(previous))
+        configure(nextButton, .chevronRight, String(localized: "Next Image"), #selector(next))
+        configure(rotateButton, .rotateLeft, String(localized: "Rotate Left"), #selector(rotateLeft))
+        configure(zoomOutButton, .minusMagnifyingglass, String(localized: "Zoom Out"), #selector(zoomOut))
+        configure(zoomInButton, .plusMagnifyingglass, String(localized: "Zoom In"), #selector(zoomIn))
+        configure(slideshowButton, .playSquareStack, String(localized: "Start Slideshow"), #selector(toggleSlideshow))
+        configure(fullScreenButton, .arrowUpLeftAndArrowDownRight, String(localized: "Full Screen"), #selector(fullScreen))
         zoomButton.isBordered = false
         zoomButton.font = .monospacedDigitSystemFont(ofSize: 11, weight: .regular)
         zoomButton.contentTintColor = .labelColor
@@ -245,8 +245,8 @@ final class ImageController: NSWindowController, NSWindowDelegate, NSMenuItemVal
         controls.isHidden = true
     }
 
-    private func configure(_ button: NSButton, _ symbol: String, _ label: String, _ action: Selector) {
-        button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: label)
+    private func configure(_ button: NSButton, _ symbol: Symbol, _ label: String, _ action: Selector) {
+        button.image = NSImage(symbol, accessibilityDescription: label)
         button.setAccessibilityLabel(label)
         button.isBordered = false
         button.contentTintColor = .labelColor
@@ -572,7 +572,7 @@ final class ImageController: NSWindowController, NSWindowDelegate, NSMenuItemVal
         nextButton.isEnabled = canExpand || ImageList.step(index, by: 1, count: urls.count, wrap: false) != nil
         for button in [rotateButton, zoomOutButton, zoomInButton, zoomButton] { button.isEnabled = probe != nil }
         let label = slideshow == nil ? String(localized: "Start Slideshow") : String(localized: "Stop Slideshow")
-        slideshowButton.image = NSImage(systemSymbolName: slideshow == nil ? "play.square.stack" : "pause.fill", accessibilityDescription: label)
+        slideshowButton.image = NSImage(slideshow == nil ? .playSquareStack : .pauseFill, accessibilityDescription: label)
         slideshowButton.setAccessibilityLabel(label)
     }
 
