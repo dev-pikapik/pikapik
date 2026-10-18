@@ -135,6 +135,12 @@ A `Toggle` inside a `Menu` needs `.toggleStyle(.automatic)`: the switch style th
 swiftc -parse-as-library scripts/test-menu-items.swift -o build/test-menu-items && build/test-menu-items
 ```
 
+Creating an event tap makes macOS ask for Accessibility or Input Monitoring at once, so every tool checks the permission it `needs` before it creates one (`AXIsProcessTrusted()`, `CGPreflightListenEventAccess()` or `Permissions.shared`) and leaves the request to the Permissions tab. The test reads every Swift file in `Sources` and fails on a `CGEvent.tapCreate` whose function, or each function that calls it, doesn't check first.
+
+```bash
+swiftc -parse-as-library scripts/test-tap-guards.swift -o build/test-tap-guards && build/test-tap-guards
+```
+
 The language switch uses a listen-only `CGEventTap`, so it never changes or delays events. It watches `flagsChanged` for Option and Shift, and any `keyDown` or mouse click in between cancels the gesture, as does Cmd, Ctrl or Fn. When both keys are released, the order they were pressed in picks the next or previous input source, which is then selected with `TISSelectInputSource`. Only keyboard layouts and input methods take part, not the emoji or character palettes. The decision is made in `InputSwitchGesture`, which you can test without the app:
 
 ```bash

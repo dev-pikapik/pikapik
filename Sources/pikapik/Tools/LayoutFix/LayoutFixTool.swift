@@ -186,7 +186,7 @@ final class LayoutFixTool: Tool {
 
     func refresh() {
         stop()
-        if isEnabled, MainCopy.canAct { start() }
+        if isEnabled, MainCopy.canAct, AXIsProcessTrusted() { start() }
         if !isActive { TextFocus.unwatch(self) }
     }
 
