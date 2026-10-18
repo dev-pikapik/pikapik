@@ -480,15 +480,15 @@ for f in Resources/*.lproj/Localizable.strings; do plutil -lint "$f"; done
 ./scripts/release.sh 1.3.0
 ```
 
-The script bumps the version in `Info.plist`, commits, tags `v1.3.0` and pushes. GitHub Actions does the rest on a `macos-26` runner: builds the universal app, signs it, checks the signature, publishes the `.zip` and `.dmg` to Releases and updates the cask in the [Homebrew tap](https://github.com/dev-pikapik/homebrew-pikapik). Installed copies pick up the new version on their own.
+The script bumps the version in `Info.plist`, commits, tags `v1.3.0` and pushes. GitHub Actions does the rest on a `macos-26` runner: builds the universal app, signs it, checks the signature, waits until the Build workflow has passed for the same commit on `main` (both editions and every test in this file), publishes the `.zip` and `.dmg` to Releases and updates the cask in the [Homebrew tap](https://github.com/dev-pikapik/homebrew-pikapik). If that Build run fails, nothing is published: make `main` green and release the next version. Installed copies pick up the new version on their own.
 
-Before running the script, add the version to `CHANGELOG.md` under `## [1.3.0] - Unreleased` (the script fills in the date and the link) and add the version’s post to all 23 pages in `docs/whats-new/`: a short title, one sentence, a picture, a few short paragraphs and what to try. Pictures live in `docs/media/whats-new/<version>/`, and `scripts/render-media.sh <card>` draws them in light and dark. The script won’t start until every page has the post. The English post becomes the text of the GitHub release; `./scripts/release-notes.sh 1.3.0` shows it.
+Before running the script, add the version to `CHANGELOG.md` under `## [1.3.0] - Unreleased` (the script fills in the date and the link) and add the version’s post to all 23 pages in `docs/whats-new/`: a short title, one sentence, a picture, a few short paragraphs and what to try. Pictures live in `docs/media/whats-new/<version>/`, and `scripts/render-media.sh <card>` draws them in light and dark. The script won’t start until every page has the post. It also stops unless you are on `main` with nothing to push or pull and the Build workflow has passed for that commit, so push the changelog and the posts first and wait until Build is green. The English post becomes the text of the GitHub release; `./scripts/release-notes.sh 1.3.0` shows it.
 
 ### Signing
 
 Every release is signed with the same certificate, so macOS keeps the Accessibility and Input Monitoring permissions across updates and the fan helper accepts the next version without a password. The certificate lives in repository secrets:
 
-- `DEVID_P12` and `DEVID_P12_PASSWORD`: the Developer ID Application certificate and private key exported as `.p12`, base64-encoded, and its password. When they are set, the release is signed with Developer ID and sent to Apple for notarization.
+- `DEVID_P12` and `DEVID_P12_PASSWORD`: the Developer ID Application certificate and private key exported as `.p12`, base64-encoded, and its password. When they are set, the release is signed with Developer ID and sent to Apple for notarization. A release never waits for Apple: with no answer in 15 minutes, the signed build goes out without a notarization ticket. If Apple refuses it, nothing is published.
 - `SIGN_P12` and `SIGN_P12_PASSWORD`: a permanent self-issued certificate, used only when there is no Developer ID. Its common name must be `pikapik`.
 
 Without any of these secrets the release job fails on purpose: an ad-hoc signed release would reset everyone's permissions.
