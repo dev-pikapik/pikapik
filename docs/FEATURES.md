@@ -335,7 +335,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Gives links you can add to Shortcuts, Control Center and widgets to start Keep Awake in one click.
 
-**How it works:** `pikapik://keep-awake`, `pikapik://display`, `pikapik://lid-closed` handled by `KeepAwake.handle(_:)` (`KeepAwake.swift`). The App Store build uses the scheme `pikapik-store` (`CFBundleURLSchemes` in `scripts/build.sh`). Add the Open URLs action in Shortcuts with the link.
+**How it works:** `pikapik://keep-awake`, `pikapik://display`, `pikapik://lid-closed` handled by `KeepAwake.handle(_:)` (`KeepAwake.swift:482`). The App Store build uses the scheme `pikapik-store` (`scripts/build.sh:181`). Add the Open URLs action in Shortcuts with the link.
 
 **Options:**
 - Keep Awake — row with Copy Link (`KeepAwakeSettings` in `KeepAwakeView.swift`).
@@ -657,14 +657,14 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Fixes text typed in the wrong keyboard layout (“ghbdtn” becomes “привет”).
 
-**How it works:** Website: event tap with Accessibility (`Sources/pikapik/Tools/LayoutFix/LayoutFixTool.swift:196`). Chromium and Electron apps show their text fields only after `TextFocus.watch()` asks them (`TextFocus.unwatch()` sets back only what it turned on when both tools stop or the app quits) (`AXManualAccessibility`, else `AXEnhancedUserInterface`) when they become the front app (`Sources/pikapik/Core/TextFocus.swift`). App Store: Services-based (`LayoutFixTool.swift:121`, `LayoutFixServiceSettings` in `LayoutFixView.swift:6-70`) because the sandbox cannot read selected text; the toggle row asks Accessibility itself.
+**How it works:** Website: event tap with Accessibility (`LayoutFixTool.start()` in `Sources/pikapik/Tools/LayoutFix/LayoutFixTool.swift`). Chromium and Electron apps show their text fields only after `TextFocus.watch()` asks them (`TextFocus.unwatch()` sets back only what it turned on when both tools stop or the app quits) (`AXManualAccessibility`, else `AXEnhancedUserInterface`) when they become the front app (`Sources/pikapik/Core/TextFocus.swift`). App Store: Services-based (`LayoutFixTool.swift`, `LayoutFixServiceSettings` in `LayoutFixView.swift`) because the sandbox cannot read selected text; the toggle row asks Accessibility itself.
 
 **Options:**
-- Fix words as you type — fixes on Space or Return (`LayoutFixView.swift:88`). Website only, on at first.
-- Fix the last word or selected text — shortcut recorder, default ⌃⇧Space (`:93`). Website only; the App Store build has Fix the selected text instead.
-- Words left as you typed them — list with a Clear button, shown only when not empty (`:114-120`). Website only.
+- Fix words as you type — fixes on Space or Return (`LayoutFixSettings` in `LayoutFixView.swift`). Website only, on at first.
+- Fix the last word or selected text — shortcut recorder, default ⌃⇧Space (`LayoutFixSettings` in `LayoutFixView.swift`). Website only; the App Store build has Fix the selected text instead.
+- Words left as you typed them — list with a Clear button, shown only when not empty (`LayoutFixNotes` in `LayoutFixView.swift`). Website only.
 - Add a Layout — menu in the note shown when fewer than two layouts exist: the installed layouts for your preferred languages that you don’t have yet; picking one turns it on with `TISEnableInputSource`, no password (`LayoutFixView.swift` `AddLayoutNotice`, `KeyboardLayouts.addable`). If none is left to offer, or adding fails, the Keyboard Settings… button opens System Settings. Website only.
-- Don’t fix text in these apps — app exclusion list (`LayoutFixView.swift:104`). Website only.
+- Don’t fix text in these apps — app exclusion list (`LayoutFixSettings` in `LayoutFixView.swift`). Website only.
 
 **Nuances:** Needs at least two input sources. Website App Exclusions: Add App… / Done, app shelf, Remove. The retyped text and the keys it sends are tagged (`EventTag.swift`), so with two copies of pikapik one copy does not fix the text the other has just retyped.
 
@@ -682,7 +682,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** (App Store) Fixes the selected mistyped text with a shortcut, no need to open the Services menu.
 
-**How it works:** `LayoutFixTool.swift:121` and `LayoutFixView.swift` (`LayoutFixServiceSettings`). The event tap (Accessibility, asked on the Permissions tab) holds back your recorded shortcut (default ⌃⇧Space) and posts the hidden Services key ⌃⌥⇧⌘F19 (`NSKeyEquivalent` of the Fix Wrong Keyboard Layout service, PR #78). No clipboard, no Accessibility reading of text.
+**How it works:** `LayoutFixTool.swift` and `LayoutFixView.swift` (`LayoutFixServiceSettings`). The event tap (Accessibility, asked on the Permissions tab) holds back your recorded shortcut (default ⌃⇧Space) and posts the hidden Services key ⌃⌥⇧⌘F19 (`NSKeyEquivalent` of the Fix Wrong Keyboard Layout service, PR #78). No clipboard, no Accessibility reading of text.
 
 **Options:**
 - Fix the selected text — shortcut recorder, “Select the text, then press these keys”.
@@ -1519,7 +1519,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows the licenses of the open-source libraries the player uses, and links to their source code.
 
-**How it works:** The Player Licenses row opens the bundled `Player Licenses.txt` (`PlayerPage.swift`), made from `Vendor/ffmpeg/License.txt` by `scripts/fetch-ffmpeg.sh`: FFmpeg under LGPL 2.1 or later, dav1d under BSD 2-Clause, libass under ISC, FreeType under the FreeType License, HarfBuzz under MIT, and FriBidi under LGPL 2.1, which is a separate library you can replace (`libfribidi.0.dylib` in the Frameworks folder of the app; the others are built into the player). The first lines of the file name the DTS and picture-subtitle decoders (written by `scripts/build.sh`). Source Code opens the latest release on GitHub, where the source archives of all six are attached (`PlayerPage.swift`).
+**How it works:** The Player Licenses row opens the bundled `Player Licenses.txt` (`PlayerPage.swift:27`), made from `Vendor/ffmpeg/License.txt` by `scripts/fetch-ffmpeg.sh`: FFmpeg under LGPL 2.1 or later, dav1d under BSD 2-Clause, libass under ISC, FreeType under the FreeType License, HarfBuzz under MIT, and FriBidi under LGPL 2.1, which is a separate library you can replace (`libfribidi.0.dylib` in the Frameworks folder of the app; the others are built into the player). The first lines of the file name the DTS and picture-subtitle decoders (`scripts/build.sh:194`). Source Code opens the latest release on GitHub, where the source archives of all six are attached (`PlayerPage.swift:29`).
 
 **Edition:** Website only (App Store: hidden; the player and libass are not in that build).
 
