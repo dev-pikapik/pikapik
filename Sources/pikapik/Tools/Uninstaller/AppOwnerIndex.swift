@@ -51,7 +51,7 @@ struct Cask {
     var token: String
     var dir: URL
     var appNames: [String] = []
-    var quitIDs: [String] = []
+    var packages: [String] = []
     var zap: [String] = []
     var staged: [String] = []
 }

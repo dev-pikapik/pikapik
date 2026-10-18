@@ -230,7 +230,7 @@ final class AppFootprint {
                             if let name = entry as? String { cask.appNames.append(URL(fileURLWithPath: name).lastPathComponent) }
                             if let target = (entry as? [String: Any])?["target"] as? String { cask.appNames.append(URL(fileURLWithPath: target).lastPathComponent) }
                         }
-                        for step in artifact["uninstall"] as? [[String: Any]] ?? [] { cask.quitIDs += artifactValues(step["quit"]) }
+                        for step in artifact["uninstall"] as? [[String: Any]] ?? [] { cask.packages += artifactValues(step["pkgutil"]) }
                         for step in artifact["zap"] as? [[String: Any]] ?? [] {
                             for key in ["trash", "delete"] { cask.zap += artifactValues(step[key]) }
                         }
@@ -299,6 +299,12 @@ private final class Run {
     func isForeign(_ claims: [Int: Claim]) -> Bool {
         claims.contains { $0.key != me && $0.value.tier >= 2 }
     }
+
+    func siblings(named names: [String] = []) -> [AppIdentity] {
+        var seen = Set<URL>()
+        let keys = Set((app.vendors + names).map(AppNames.squash) + [""])
+        return keys.sorted().flatMap { owners.sharers(ofVendor: $0, team: app.teamID, excluding: app.url) }.filter { seen.insert($0.url).inserted }
+    }
 }
 
 extension AppFootprint {
@@ -325,8 +331,9 @@ extension AppFootprint {
         scanPlaces(run)
         scanJobs(run)
         scanLinks(run)
-        scanCasks(run)
-        scanReceipts(run)
+        let installer = installerPackages(app)
+        scanCasks(run, packages: installer.found)
+        scanReceipts(run, installer)
         return run.found.values.sorted { ($0.kind, $0.url.path.lowercased()) < ($1.kind, $1.url.path.lowercased()) }
     }
 
@@ -470,10 +477,9 @@ extension AppFootprint {
         }
     }
 
-    fileprivate func caskMatches(_ cask: Cask, _ app: AppIdentity) -> Bool {
+    fileprivate func caskMatches(_ cask: Cask, _ app: AppIdentity, packages: [String] = []) -> Bool {
         let file = app.url.lastPathComponent.lowercased()
-        if cask.appNames.contains(where: { $0.lowercased() == file }) { return true }
-        if !app.bundleID.isEmpty, cask.quitIDs.contains(where: { $0.caseInsensitiveCompare(app.bundleID) == .orderedSame }) { return true }
+        if cask.appNames.contains(where: { $0.lowercased() == file }) || cask.packages.contains(where: packages.contains) { return true }
         let resolved = app.url.resolvingSymlinksInPath().path
         return cask.staged.contains { URL(fileURLWithPath: $0).resolvingSymlinksInPath().path == resolved }
     }
@@ -511,15 +517,27 @@ extension AppFootprint {
         return found
     }
 
-    fileprivate func scanCasks(_ run: Run) {
-        for cask in casks where caskMatches(cask, run.app) {
-            let shared = run.owners.apps.filter { $0.url != run.app.url && caskMatches(cask, $0) }.map(\.displayName).sorted()
+    fileprivate func scanCasks(_ run: Run, packages: [String]) {
+        let matched = casks.filter { caskMatches($0, run.app, packages: packages) }
+        let siblings = matched.contains { !$0.packages.isEmpty } ? run.siblings().map { (app: $0, packages: self.packages(at: $0.url)) } : []
+        let vendorKeys = Set(run.app.vendors.map(AppNames.squash))
+        for cask in matched {
+            let users = run.owners.apps.filter { $0.url != run.app.url && caskMatches(cask, $0) } + siblings.filter { caskMatches(cask, $0.app, packages: $0.packages) }.map(\.app)
+            let shared = Set(users.map(\.displayName)).sorted()
             merge(makeLeftover(cask.dir, kind: .install, reason: .homebrew(cask.token), preselected: true, shared: shared), into: run)
             for url in zapPaths(cask) {
                 let name = url.lastPathComponent
-                guard !run.isForeign(run.owners.claims(name, mode: [.id, .name])), !isProtected(url, for: run.app, names: [name]) else { continue }
                 let kind = kindByDirectory[url.deletingLastPathComponent().standardizedFileURL.path] ?? .appData
-                merge(makeLeftover(url, kind: kind, reason: .homebrew(cask.token), preselected: true, shared: shared), into: run)
+                let inVendor = vendorKeys.contains(AppNames.squash(url.deletingLastPathComponent().lastPathComponent))
+                let claims = run.owners.claims(name, mode: inVendor ? [.id, .name, .vendorChild] : [.id, .name])
+                if claims.isEmpty, vendorKeys.contains(AppNames.squash(name)) {
+                    scanVendorFolder(run, url, kind: kind)
+                    continue
+                }
+                guard !run.isForeign(claims), !isProtected(url, for: run.app, names: [name]) else { continue }
+                let verdict = run.verdict(claims)
+                let selected = (verdict.map { preselects($0.claim, run.app) } ?? false) || run.found[url.standardizedFileURL.path]?.preselected == true
+                merge(makeLeftover(url, kind: kind, reason: .homebrew(cask.token), preselected: selected, shared: Set(shared + (verdict?.shared ?? [])).sorted()), into: run)
             }
         }
     }
@@ -545,17 +563,18 @@ extension AppFootprint {
         return Array(related.prefix(8))
     }
 
-    fileprivate func scanReceipts(_ run: Run) {
+    fileprivate func packages(at url: URL) -> [String] {
+        AppIdentity.unique((roots.pkgutil(["--file-info", url.path]) ?? "").split(separator: "\n").compactMap { line in
+            line.hasPrefix("pkgid:") ? String(line.dropFirst(6)).trimmingCharacters(in: .whitespaces) : nil
+        })
+    }
+
+    fileprivate func installerPackages(_ app: AppIdentity) -> (found: [String], loaded: [String: (info: String, files: String)]) {
         var loaded: [String: (info: String, files: String)] = [:]
-        var found: [String] = []
-        if let report = roots.pkgutil(["--file-info", run.app.url.path]) {
-            found = AppIdentity.unique(report.split(separator: "\n").compactMap { line in
-                line.hasPrefix("pkgid:") ? String(line.dropFirst(6)).trimmingCharacters(in: .whitespaces) : nil
-            })
-        }
+        var found = packages(at: app.url)
         if found.isEmpty {
-            let appPath = run.app.url.standardizedFileURL.path
-            for package in receiptCandidates(for: run.app) {
+            let appPath = app.url.standardizedFileURL.path
+            for package in receiptCandidates(for: app) {
                 let info = roots.pkgutil(["--pkg-info", package]) ?? ""
                 let prefix = Self.receiptPrefix(info)
                 guard let files = roots.pkgutil(["--files", package]), files.split(separator: "\n").contains(where: {
@@ -565,28 +584,73 @@ extension AppFootprint {
                 found.append(package)
             }
         }
-        for package in found where !package.lowercased().hasPrefix("com.apple.") {
-            let info = loaded[package]?.info ?? roots.pkgutil(["--pkg-info", package]) ?? ""
-            guard (Self.field("volume", in: info) ?? "/") == "/", let files = loaded[package]?.files ?? roots.pkgutil(["--files", package]) else { continue }
+        return (found, loaded)
+    }
+
+    fileprivate func scanReceipts(_ run: Run, _ installer: (found: [String], loaded: [String: (info: String, files: String)])) {
+        let own = Set(installer.found)
+        func listers(_ url: URL) -> [String] {
+            packages(at: url).filter { !own.contains($0) }.flatMap { package -> [String] in
+                let apps = run.owners.claims(package, mode: .id).keys.filter { $0 != run.me }.map { run.owners.apps[$0].displayName }
+                return apps.isEmpty ? [AppNames.orphanTitle(package)] : apps
+            }
+        }
+        func untick(_ url: URL, _ shared: [String]) {
+            let key = url.standardizedFileURL.path
+            guard !shared.isEmpty, var kept = run.found[key] else { return }
+            kept.preselected = false
+            kept.sharedWith = Set(kept.sharedWith + shared).sorted()
+            run.found[key] = kept
+        }
+        for package in installer.found where !package.lowercased().hasPrefix("com.apple.") {
+            let info = installer.loaded[package]?.info ?? roots.pkgutil(["--pkg-info", package]) ?? ""
+            guard (Self.field("volume", in: info) ?? "/") == "/", let files = installer.loaded[package]?.files ?? roots.pkgutil(["--files", package]) else { continue }
             let prefix = Self.receiptPrefix(info)
             var otherApps = Set<String>()
-            var items: [Leftover] = []
+            var listed: [String: Set<String>] = [:]
+            var tops: [(url: URL, kind: LeftoverKind)] = []
             for line in files.split(separator: "\n") {
                 let url = roots.atRoot(prefix + String(line))
+                let parent = url.deletingLastPathComponent().standardizedFileURL.path
                 if line.hasSuffix(".app"), let other = run.owners.appPaths.first(where: { $0.path == url.standardizedFileURL.path && $0.app != run.me }) {
                     otherApps.insert(run.owners.apps[other.app].displayName)
                 }
-                guard let kind = kindByDirectory[url.deletingLastPathComponent().standardizedFileURL.path] else { continue }
+                listed[parent, default: []].insert(url.lastPathComponent)
+                if let kind = kindByDirectory[parent] { tops.append((url, kind)) }
+            }
+            var picks: [(url: URL, kind: LeftoverKind, selected: Bool, shared: [String])] = []
+            for (url, kind) in tops {
                 let name = url.lastPathComponent
-                guard !run.isForeign(run.owners.claims(name, mode: [.id, .name])), !isProtected(url, for: run.app, names: [name]) else { continue }
-                if let item = makeLeftover(url, kind: kind, reason: .receipt(package), preselected: true) { items.append(item) }
+                let id = embeddedID(url)
+                let claims = run.owners.claims(name, name: id == nil ? name : matchName(url), extraIDs: id.map { [$0] } ?? [], mode: [.id, .name])
+                guard let file = fileInfo(url), !run.isForeign(claims), !isProtected(url, for: run.app, names: [name] + (id.map { [$0] } ?? [])) else { continue }
+                let verdict = run.verdict(claims)
+                if !file.isDirectory || verdict.map({ preselects($0.claim, run.app) }) == true {
+                    picks.append((url, kind, true, (verdict?.shared ?? []) + listers(url)))
+                    continue
+                }
+                let contents = listed[url.standardizedFileURL.path] ?? []
+                let others = listers(url)
+                if others.isEmpty, id != nil || listing(url).allSatisfy(contents.contains), run.siblings(named: [name]).isEmpty {
+                    picks.append((url, kind, true, []))
+                } else if id != nil {
+                    picks.append((url, kind, false, others))
+                } else {
+                    untick(url, otherApps.union(others).sorted())
+                    for child in contents.sorted() {
+                        let inner = url.appendingPathComponent(child)
+                        guard fileInfo(inner) != nil, !run.isForeign(run.owners.claims(child, mode: [.id, .name, .vendorChild])),
+                              !isProtected(inner, for: run.app, names: [child]) else { continue }
+                        picks.append((inner, kind, true, listers(inner)))
+                    }
+                }
+            }
+            for pick in picks {
+                let shared = otherApps.union(pick.shared).sorted()
+                merge(makeLeftover(pick.url, kind: pick.kind, reason: .receipt(package), preselected: pick.selected, shared: shared), into: run)
+                untick(pick.url, shared)
             }
             let shared = otherApps.sorted()
-            for var item in items {
-                item.sharedWith = shared
-                item.preselected = shared.isEmpty
-                merge(item, into: run)
-            }
             var receipt = Leftover(url: roots.atRoot("var/db/receipts/\(package).plist"), kind: .install, reason: .receipt(package), preselected: shared.isEmpty, sharedWith: shared, needsAdmin: true)
             receipt.packageID = package
             merge(receipt, into: run)

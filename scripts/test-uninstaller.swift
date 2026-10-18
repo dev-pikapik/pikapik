@@ -175,7 +175,9 @@ enum UninstallerTests {
         links()
         jobs()
         receipts()
+        vendorReceipts()
         casks()
+        vendorCasks()
         inventory()
         trash()
         orphans()
@@ -619,17 +621,17 @@ enum UninstallerTests {
             ["--pkg-info", "com.packed.pkg"]: "package-id: com.packed.pkg\nversion: 1.0\nvolume: /\nlocation: \ninstall-time: 1\n",
             ["--files", "com.packed.pkg"]: files,
             ["--pkg-info", "com.packed.extra"]: "package-id: com.packed.extra\nvolume: /\nlocation: Library\n",
-            ["--files", "com.packed.extra"]: "Application Support/PackedExtra\n",
+            ["--files", "com.packed.extra"]: "Application Support/PackedExtra\nApplication Support/PackedExtra/data\n",
             ["--pkg-info", "com.packed.usb"]: "package-id: com.packed.usb\nvolume: /Volumes/USB\nlocation: \n",
             ["--files", "com.packed.usb"]: "Library/Application Support/PackedUsb\n",
             ["--file-info", one.url.path]: "pkgid: com.suite.pkg\n",
             ["--file-info", two.url.path]: "pkgid: com.suite.pkg\n",
             ["--pkg-info", "com.suite.pkg"]: "volume: /\nlocation: \n",
-            ["--files", "com.suite.pkg"]: "Applications/Suite One.app\nApplications/Suite Two.app\nLibrary/Application Support/Suite\n",
+            ["--files", "com.suite.pkg"]: "Applications/Suite One.app\nApplications/Suite Two.app\nLibrary/Application Support/Suite\nLibrary/Application Support/Suite/data\n",
             ["--file-info", appley.url.path]: "pkgid: com.apple.pkg.Appley\n",
             ["--pkgs"]: "com.apple.pkg.Base\ncom.fallback.pkg.tool\ncom.fallback.other\ncom.unrelated.pkg\n",
             ["--pkg-info", "com.fallback.pkg.tool"]: "volume: /\nlocation: \n",
-            ["--files", "com.fallback.pkg.tool"]: "Applications/Fallback Tool.app\nLibrary/Application Support/FallbackData\n",
+            ["--files", "com.fallback.pkg.tool"]: "Applications/Fallback Tool.app\nLibrary/Application Support/FallbackData\nLibrary/Application Support/FallbackData/data\n",
             ["--pkg-info", "com.fallback.other"]: "volume: /\nlocation: Applications\n",
             ["--files", "com.fallback.other"]: "Other.app\n",
         ])
@@ -651,21 +653,21 @@ enum UninstallerTests {
         check(found, "root/Library/Application Support/PackedExtra", .receipt("com.packed.extra"), .appData)
         check(found, "root/var/db/receipts/com.packed.pkg.plist", .receipt("com.packed.pkg"), .install)
         precondition(found["root/var/db/receipts/com.packed.pkg.plist"]?.packageID == "com.packed.pkg" && found["root/var/db/receipts/com.packed.pkg.plist"]?.needsAdmin == true)
-        precondition(fake.calls.count == 6 && fake.calls.filter { $0[0] == "--files" }.count == 2, "\(fake.calls)")
+        precondition(fake.calls.count == 10 && fake.calls.filter { $0[0] == "--files" }.count == 2 && fake.calls.filter { $0[0] == "--file-info" }.count == 5, "\(fake.calls)")
         precondition(!fake.calls.contains { $0.contains("com.apple.pkg.Foo") } && !fake.calls.contains { $0 == ["--files", "com.packed.usb"] })
 
         let shared = w.scan(footprint, one)
         expect(shared, [
             "root/Applications/Suite One.app": true,
-            "root/Library/Application Support/Suite": false,
+            "root/Library/Application Support/Suite/data": false,
             "root/var/db/receipts/com.suite.pkg.plist": false,
         ], "Suite One")
-        precondition(shared["root/Library/Application Support/Suite"]?.sharedWith == ["Suite Two"])
+        precondition(shared["root/Library/Application Support/Suite/data"]?.sharedWith == ["Suite Two"])
         precondition(shared["root/var/db/receipts/com.suite.pkg.plist"]?.sharedWith == ["Suite Two"])
-        precondition(fake.calls.count == 9)
+        precondition(fake.calls.count == 15, "\(fake.calls.count)")
 
         expect(w.scan(footprint, appley), ["root/Applications/Appley.app": true], "Appley")
-        precondition(fake.calls.count == 10)
+        precondition(fake.calls.count == 16, "\(fake.calls.count)")
 
         let rescued = w.scan(footprint, fallback)
         expect(rescued, [
@@ -674,11 +676,86 @@ enum UninstallerTests {
             "root/var/db/receipts/com.fallback.pkg.tool.plist": true,
         ], "Fallback Tool")
         check(rescued, "root/Library/Application Support/FallbackData", .receipt("com.fallback.pkg.tool"), .appData)
-        precondition(fake.calls.count == 16 && fake.calls.filter { $0 == ["--pkgs"] }.count == 1, "\(fake.calls)")
+        precondition(fake.calls.count == 23 && fake.calls.filter { $0 == ["--pkgs"] }.count == 1, "\(fake.calls)")
         precondition(!fake.calls.contains { $0.contains("com.unrelated.pkg") || $0.contains("com.apple.pkg.Base") })
 
         expect(w.scan(footprint, loner), ["root/Applications/Fallback Loner.app": true], "Fallback Loner")
-        precondition(fake.calls.count == 17 && fake.calls.filter { $0 == ["--pkgs"] }.count == 1)
+        precondition(fake.calls.count == 24 && fake.calls.filter { $0 == ["--pkgs"] }.count == 1, "\(fake.calls.count)")
+    }
+
+    static func vendorReceipts() {
+        let w = World()
+        defer { w.destroy() }
+        let support = "root/Library/Application Support"
+        let productA = w.app("StubVendor ProductA", id: "com.stubvendor.producta")
+        let productB = w.app("StubVendor ProductB", id: "com.stubvendor.productb")
+        let gadget = w.app("Gadget", id: "com.gadget.app")
+        let gadgetPro = w.app("Gadget Pro", id: "com.gadget.pro")
+        let writer = w.app("SoloVendor Writer", id: "com.solovendor.writer")
+        let notes = w.app("OldVendor Notes", id: "com.oldvendor.notes")
+        let first = w.app("TwinVendor First", id: "com.twinvendor.first")
+        let second = w.app("TwinVendor Second", id: "com.twinvendor.second")
+        for path in ["StubVendor/ProductA", "StubVendor/ProductB", "StubVendor/Shared", "Gadget/cache", "SoloVendor/Engine", "OldVendor/Notes", "TwinVendor/First"] {
+            w.node("\(support)/\(path)")
+        }
+        w.file("\(support)/Gadget/notes.txt")
+        var table: [[String]: String] = [:]
+        for (app, package, paths) in [
+            (productA, "com.stubvendor.producta", ["StubVendor/ProductA", "StubVendor/Shared"]), (productB, "com.stubvendor.productb", ["StubVendor/ProductB", "StubVendor/Shared"]),
+            (gadget, "com.gadget.pkg", ["Gadget/cache"]), (writer, "com.solovendor.writer", ["SoloVendor/Engine"]), (notes, "com.oldvendor.notes", ["OldVendor/Notes"]),
+            (first, "com.twinvendor.first", ["TwinVendor/First"]),
+        ] {
+            let top = String(paths[0].prefix { $0 != "/" })
+            let lines = ["Applications/\(app.url.lastPathComponent)", "Library/Application Support/\(top)"]
+                + paths.flatMap { ["Library/Application Support/\($0)", "Library/Application Support/\($0)/data"] }
+            table[["--file-info", app.url.path]] = "pkgid: \(package)\n"
+            table[["--pkg-info", package]] = "volume: /\nlocation: \n"
+            table[["--files", package]] = lines.joined(separator: "\n")
+        }
+        for (path, packages) in [
+            ("StubVendor", ["com.stubvendor.producta", "com.stubvendor.productb"]), ("StubVendor/ProductA", ["com.stubvendor.producta"]),
+            ("StubVendor/ProductB", ["com.stubvendor.productb"]), ("StubVendor/Shared", ["com.stubvendor.producta", "com.stubvendor.productb"]),
+            ("Gadget", ["com.gadget.pkg"]), ("SoloVendor", ["com.solovendor.writer"]), ("OldVendor", ["com.oldvendor.notes", "com.oldvendor.legacy"]),
+            ("OldVendor/Notes", ["com.oldvendor.notes"]), ("TwinVendor", ["com.twinvendor.first"]), ("TwinVendor/First", ["com.twinvendor.first"]),
+        ] {
+            table[["--file-info", w.at("\(support)/\(path)").path]] = packages.map { "pkgid: \($0)\n" }.joined(separator: "\n")
+        }
+        let footprint = w.footprint([productA, productB, gadget, gadgetPro, writer, notes, first, second], pkgutil: FakePkgutil(table).run)
+
+        let found = w.scan(footprint, productA)
+        expect(found, [
+            "root/Applications/StubVendor ProductA.app": true,
+            "\(support)/StubVendor/ProductA": true,
+            "\(support)/StubVendor/Shared": false,
+            "root/var/db/receipts/com.stubvendor.producta.plist": true,
+        ], "a vendor folder another product also installed")
+        check(found, "\(support)/StubVendor/ProductA", .receipt("com.stubvendor.producta"), .appData)
+        check(found, "\(support)/StubVendor/Shared", .receipt("com.stubvendor.producta"), .appData)
+        precondition(found["\(support)/StubVendor/Shared"]?.sharedWith == ["StubVendor ProductB"], "\(found["\(support)/StubVendor/Shared"]?.sharedWith ?? [])")
+        let other = w.scan(footprint, productB)
+        precondition(other["\(support)/StubVendor/ProductB"]?.preselected == true && other["\(support)/StubVendor/ProductA"] == nil && other["\(support)/StubVendor"] == nil)
+        precondition(other["\(support)/StubVendor/Shared"]?.preselected == false && other["\(support)/StubVendor/Shared"]?.sharedWith == ["StubVendor ProductA"])
+
+        let named = w.scan(footprint, gadget)
+        expect(named, ["root/Applications/Gadget.app": true, "\(support)/Gadget": true, "root/var/db/receipts/com.gadget.pkg.plist": true], "a folder named after the app")
+        check(named, "\(support)/Gadget", .receipt("com.gadget.pkg"), .appData)
+
+        let owned = w.scan(footprint, writer)
+        expect(owned, [
+            "root/Applications/SoloVendor Writer.app": true, "\(support)/SoloVendor": true, "\(support)/SoloVendor/Engine": false,
+            "root/var/db/receipts/com.solovendor.writer.plist": true,
+        ], "a vendor folder only this app's package fills")
+        check(owned, "\(support)/SoloVendor", .receipt("com.solovendor.writer"), .appData)
+
+        let older = w.scan(footprint, notes)
+        expect(older, [
+            "root/Applications/OldVendor Notes.app": true, "\(support)/OldVendor": false, "\(support)/OldVendor/Notes": true,
+            "root/var/db/receipts/com.oldvendor.notes.plist": true,
+        ], "a vendor folder an older package still lists")
+        precondition(older["\(support)/OldVendor"]?.sharedWith == ["Legacy"], "\(older["\(support)/OldVendor"]?.sharedWith ?? [])")
+        expect(w.scan(footprint, first), [
+            "root/Applications/TwinVendor First.app": true, "\(support)/TwinVendor/First": true, "root/var/db/receipts/com.twinvendor.first.plist": true,
+        ], "a vendor folder while a sibling app is installed")
     }
 
     static func casks() {
@@ -696,6 +773,7 @@ enum UninstallerTests {
             "\(lib)/Preferences/org.brewed.b.plist", "\(lib)/Preferences/other.brewed.c.plist", "root/Library/Application Support/BrewedGlobal",
             "home/Documents/Brewed", "home/Documents/Brewed2", "\(lib)/Mobile Documents/iCloud~org~brewed", "home/.brewed",
             "\(lib)/Preferences/com.apple.finder.plist", "\(lib)/Application Support/Slack", "\(lib)/Caches/zapped-cache",
+            "\(lib)/Application Support/CrashReporter/Brewed_E1B2C3D4-0000-4000-8000-0000000000AA.plist",
         ] { w.node(path) }
         w.file("\(lib)/Keychains/brewed.keychain-db")
         let zap = [
@@ -704,6 +782,7 @@ enum UninstallerTests {
             "~/Library/Application Support/../Mobile Documents/iCloud~org~brewed", "~/Library/../Documents/Brewed", "~/.brewed",
             "~/Library/Keychains/brewed.keychain-db", "~/Library/Preferences/com.apple.finder.plist", "~/Library/Application Support/Slack",
             "~/Library/Application Support", "~/Library/Caches/brewed-missing", "/usr/local/brewed", "/etc/brewed",
+            "~/Library/Application Support/CrashReporter/Brewed_*.plist",
         ]
         w.json("\(caskroom)/brewed/.metadata/INSTALL_RECEIPT.json", ["uninstall_artifacts": [["app": ["Brewed.app"]], ["zap": [["trash": zap]]]]])
         w.link("\(caskroom)/brewed/1.0/Brewed.app", to: w.at("root/Applications/Brewed.app").path)
@@ -718,20 +797,86 @@ enum UninstallerTests {
         expect(found, [
             "root/Applications/Brewed.app": true,
             "\(caskroom)/brewed": true,
-            "\(lib)/Application Support/BrewedSupportFiles": true,
+            "\(lib)/Application Support/BrewedSupportFiles": false,
             "\(lib)/Application Support/Brewed": true,
-            "\(lib)/Preferences/org.brewed.a.plist": true,
-            "\(lib)/Preferences/org.brewed.b.plist": true,
-            "root/Library/Application Support/BrewedGlobal": true,
+            "\(lib)/Preferences/org.brewed.a.plist": false,
+            "\(lib)/Preferences/org.brewed.b.plist": false,
+            "root/Library/Application Support/BrewedGlobal": false,
+            "\(lib)/Application Support/CrashReporter/Brewed_E1B2C3D4-0000-4000-8000-0000000000AA.plist": true,
         ], "Brewed")
         check(found, "\(caskroom)/brewed", .homebrew("brewed"), .install)
         check(found, "\(lib)/Application Support/BrewedSupportFiles", .homebrew("brewed"), .appData)
         check(found, "\(lib)/Preferences/org.brewed.a.plist", .homebrew("brewed"), .preferences)
-        expect(w.scan(footprint, two), ["root/Applications/Brewed Two.app": true, "\(caskroom)/brewed2": true, "\(lib)/Caches/zapped-cache": true], "Brewed Two")
-        expect(w.scan(footprint, quitter), ["root/Applications/Quitter.app": true, "\(caskroom)/quitter": true], "Quitter")
+        check(found, "\(lib)/Application Support/Brewed", .homebrew("brewed"), .appData)
+        check(found, "\(lib)/Application Support/CrashReporter/Brewed_E1B2C3D4-0000-4000-8000-0000000000AA.plist", .homebrew("brewed"), .logs)
+        expect(w.scan(footprint, two), ["root/Applications/Brewed Two.app": true, "\(caskroom)/brewed2": true, "\(lib)/Caches/zapped-cache": false], "Brewed Two")
+        expect(w.scan(footprint, quitter), ["root/Applications/Quitter.app": true], "Quitter is not matched by the app it quits")
         expect(w.scan(footprint, staged), ["root/Applications/Staged.app": true, "\(caskroom)/staged": true], "Staged")
         let slackFound = w.scan(footprint, slack)
         expect(slackFound, ["root/Applications/Slack.app": true, "\(lib)/Application Support/Slack": true], "Slack beside casks")
+    }
+
+    static func vendorCasks() {
+        let w = World()
+        defer { w.destroy() }
+        let lib = "home/Library"
+        let caskroom = "root/opt/homebrew/Caskroom"
+        let chrome = w.app("Google Chrome", id: "com.google.Chrome")
+        let drive = w.app("Google Drive", id: "com.google.drivefs")
+        let update = w.app("Microsoft AutoUpdate", id: "com.microsoft.autoupdate2", in: "root/Library/Application Support/Microsoft/MAU2.0")
+        let word = w.app("Microsoft Word", id: "com.microsoft.Word")
+        let excel = w.app("Microsoft Excel", id: "com.microsoft.Excel")
+        let own = ["Application Support/Google/Chrome", "Caches/Google/Chrome", "Preferences/com.google.Chrome.plist"]
+        let keystone = [
+            "Google/GoogleSoftwareUpdate", "Application Support/Google/GoogleUpdater", "Caches/com.google.Keystone",
+            "Preferences/com.google.Keystone.Agent.plist", "LaunchAgents/com.google.keystone.agent.plist",
+        ]
+        for path in own + keystone + ["Containers/com.microsoft.Word", "Group Containers/UBF8T346G9.Office"] { w.node("\(lib)/\(path)") }
+        w.json("\(caskroom)/google-chrome/.metadata/INSTALL_RECEIPT.json",
+               ["uninstall_artifacts": [["app": ["Google Chrome.app"]], ["zap": [["trash": (own + keystone + ["Google"]).map { "~/Library/\($0)" }]]]]])
+        var table: [[String]: String] = [:]
+        let microsoft: [(String, AppIdentity?, String)] = [
+            ("microsoft-word", word, "com.microsoft.package.Microsoft_Word.app"), ("microsoft-excel", excel, "com.microsoft.package.Microsoft_Excel.app"),
+            ("microsoft-outlook", nil, "com.microsoft.package.Microsoft_Outlook.app"), ("microsoft-teams", nil, "com.microsoft.teams2"),
+        ]
+        for (token, app, package) in microsoft {
+            let zap = ["~/Library/Group Containers/UBF8T346G9.Office"] + (app == word ? ["~/Library/Containers/com.microsoft.Word"] : [])
+            w.json("\(caskroom)/\(token)/.metadata/INSTALL_RECEIPT.json", ["uninstall_artifacts": [
+                ["uninstall": [["quit": "com.microsoft.autoupdate2", "pkgutil": [package, "com.microsoft.pkg.licensing"]]]], ["zap": [["trash": zap]]],
+            ]])
+            if let app { table[["--file-info", app.url.path]] = "pkgid: \(package)\n" }
+        }
+        table[["--file-info", update.url.path]] = "pkgid: com.microsoft.package.Microsoft_AutoUpdate.app\n"
+        let footprint = w.footprint([chrome, drive, update, word, excel], pkgutil: FakePkgutil(table).run)
+
+        let found = w.scan(footprint, chrome)
+        var expected = ["root/Applications/Google Chrome.app": true, "\(caskroom)/google-chrome": true]
+        for path in own { expected["\(lib)/\(path)"] = true }
+        for path in keystone { expected["\(lib)/\(path)"] = false }
+        expect(found, expected, "Chrome beside another Google app")
+        check(found, "\(lib)/Application Support/Google/Chrome", .homebrew("google-chrome"), .appData)
+        for path in keystone { precondition(found["\(lib)/\(path)"]?.reason == .homebrew("google-chrome"), path) }
+
+        expect(w.scan(footprint, update), ["root/Library/Application Support/Microsoft/MAU2.0/Microsoft AutoUpdate.app": true], "AutoUpdate is not every cask that quits it")
+        let words = w.scan(footprint, word)
+        expect(words, [
+            "root/Applications/Microsoft Word.app": true, "\(caskroom)/microsoft-word": true, "\(lib)/Containers/com.microsoft.Word": true,
+            "\(lib)/Group Containers/UBF8T346G9.Office": false,
+        ], "Word from its package-only cask")
+        check(words, "\(caskroom)/microsoft-word", .homebrew("microsoft-word"), .install)
+        check(words, "\(lib)/Group Containers/UBF8T346G9.Office", .homebrew("microsoft-word"), .containers)
+        expect(w.scan(footprint, excel), ["root/Applications/Microsoft Excel.app": true, "\(caskroom)/microsoft-excel": true, "\(lib)/Group Containers/UBF8T346G9.Office": false],
+               "Excel from its package-only cask")
+
+        let s = World()
+        defer { s.destroy() }
+        let apps = [("Microsoft Word", "com.microsoft.Word", "Word"), ("Microsoft Excel", "com.microsoft.Excel", "Excel"), ("Microsoft AutoUpdate", "com.microsoft.autoupdate2", "AutoUpdate")]
+            .map { (app: s.app($0.0, id: $0.1), package: "com.microsoft.package.Microsoft_\($0.2).app") }
+        s.json("\(caskroom)/microsoft-office/.metadata/INSTALL_RECEIPT.json", ["uninstall_artifacts": [["uninstall": [["pkgutil": apps.map(\.package) + ["com.microsoft.package.*"]]]]]])
+        let suite = s.footprint(apps.map(\.app), pkgutil: FakePkgutil(Dictionary(uniqueKeysWithValues: apps.map { (["--file-info", $0.app.url.path], "pkgid: \($0.package)\n") })).run)
+        let fromSuite = s.scan(suite, apps[2].app)
+        expect(fromSuite, ["root/Applications/Microsoft AutoUpdate.app": true, "\(caskroom)/microsoft-office": false], "AutoUpdate inside the Office suite cask")
+        precondition(fromSuite["\(caskroom)/microsoft-office"]?.sharedWith == ["Microsoft Excel", "Microsoft Word"], "\(fromSuite["\(caskroom)/microsoft-office"]?.sharedWith ?? [])")
     }
 
     static func inventory() {
