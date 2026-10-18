@@ -171,7 +171,15 @@ english = tables.get('en', {})
 all_text = '\n'.join(swift.values())
 for path in glob.glob('Helper/*/Info.plist'):
     all_text += ''.join(f'\n"{escape(text)}"' for text in re.findall(r'UsageDescription</key>\s*<string>(.*?)</string>', open(path, encoding='utf-8').read()))
-interpolated = {re.sub(r'\\\((?:[^()]|\([^()]*\))*\)', '%', m) for m in re.findall(r'"((?:[^"\\\n]|\\.)*\\\((?:[^"\\\n]|\\.)*)"', all_text)}
+def flatten(s):
+    out, i = '', 0
+    while (j := s.find('\\(', i)) >= 0:
+        out, depth, i = out + s[i:j] + '%', 1, j + 2
+        while i < len(s) and depth:
+            depth += (s[i] == '(') - (s[i] == ')')
+            i += 1
+    return out + s[i:]
+interpolated = {flatten(m) for m in re.findall(r'"((?:[^"\\\n]|\\.)*\\\((?:[^"\\\n]|\\.)*)"', all_text)}
 
 for key, where in sorted(needed.items(), key=lambda kv: kv[1]):
     if not any(key in table for table in tables.values()):
