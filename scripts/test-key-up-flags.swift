@@ -188,13 +188,25 @@ struct TestKeyUpFlags {
         expect(record { layoutFix.stop() }, [up(kVK_F19)], "Layout fix stop")
         expect(record { layoutFix.stop() }, [], "Layout fix second stop")
         print("Layout fix releases a held F19 once when it stops: ok")
-        #endif
-
+        UserDefaults.standard.register(defaults: [ToolID.layoutFix: true, PreferenceKey.layoutFixAuto: true])
+        let typing = LayoutFixTool()
+        precondition(typing.isEnabled, "Layout fix must be on for the typing check")
+        for key in [kVK_ANSI_G, kVK_ANSI_H, kVK_ANSI_B, kVK_ANSI_D, kVK_ANSI_T, kVK_ANSI_N, kVK_Space] {
+            for down in [true, false] {
+                let event = keyEvent(key, down: down)
+                let data = event.data as Data?
+                expect(record { inTap { result = layoutFixCallback(proxy: proxy, type: event.type, event: event, refcon: Unmanaged.passUnretained(typing).toOpaque()) } }, [], "Layout fix typing")
+                precondition(result?.takeUnretainedValue() === event && event.data as Data? == data, "Layout fix must let every typed key through untouched: \(key)")
+            }
+        }
+        print("Layout fix lets typed words through untouched and types nothing: ok")
+        #else
         expect(record { inTap { replace("ab", with: "c", proxy) } }, [
             down(kVK_Delete, [], proxy: true), up(kVK_Delete, [], proxy: true), down(kVK_Delete, [], proxy: true), up(kVK_Delete, [], proxy: true),
             down(0, [], text: "c", proxy: true), up(0, [], text: "c", proxy: true),
         ], "Layout fix retype")
         print("Layout fix retype sends one Delete per typed letter, then the new letters, each released with no modifiers: ok")
+        #endif
 
         expect(record { BackForward.press(.maskCommand, forward: true) }, [down(kVK_ANSI_RightBracket, .maskCommand), up(kVK_ANSI_RightBracket)], "Forward")
         expect(record { BackForward.press([.maskCommand, .maskAlternate], forward: false) }, [down(kVK_ANSI_LeftBracket, [.maskCommand, .maskAlternate]), up(kVK_ANSI_LeftBracket)], "Back")

@@ -2,6 +2,7 @@ import AppKit
 import Carbon.HIToolbox
 import SwiftUI
 
+#if !APPSTORE
 private let alwaysExcluded = HomeEndTool.consoles + ["com.jetbrains.", "com.google.android.studio"]
 
 func replace(_ old: String, with new: String, _ proxy: CGEventTapProxy) {
@@ -18,6 +19,7 @@ func replace(_ old: String, with new: String, _ proxy: CGEventTapProxy) {
     for _ in old.unicodeScalars { post(kVK_Delete, nil) }
     for character in new { post(0, String(character)) }
 }
+#endif
 
 
 @Observable
@@ -27,13 +29,11 @@ final class LayoutFixTool: Tool {
     var title: String { SettingTitle.layoutFix }
 
     static let standard = Shortcut(key: 49, modifiers: 0x60000)
-    private static let autoKey = PreferenceKey.layoutFixAuto
     private static let shortcutKey = PreferenceKey.layoutFixShortcut
+    #if !APPSTORE
+    private static let autoKey = PreferenceKey.layoutFixAuto
     private static let excludedKey = PreferenceKey.layoutFixExcluded
     private static let ignoredKey = PreferenceKey.layoutFixIgnored
-    #if APPSTORE
-    private static let defaultAuto = false
-    #else
     private static let defaultAuto = true
     #endif
 
@@ -46,15 +46,13 @@ final class LayoutFixTool: Tool {
         }
     }
 
-    // Off until the owner turns it on in the App Store build: the sandbox can't check the text field, so it retypes blindly.
+    #if !APPSTORE
     var fixesAsYouType: Bool {
         didSet {
             UserDefaults.standard.set(fixesAsYouType, forKey: Self.autoKey)
-            #if APPSTORE
-            refresh()
-            #endif
         }
     }
+    #endif
 
     var shortcut: Shortcut {
         didSet {
@@ -66,6 +64,9 @@ final class LayoutFixTool: Tool {
         }
     }
 
+    #if APPSTORE
+    var isDefault: Bool { !isEnabled && shortcut == Self.standard }
+    #else
     var excluded: [String] {
         didSet { UserDefaults.standard.set(excluded, forKey: Self.excludedKey) }
     }
@@ -75,52 +76,46 @@ final class LayoutFixTool: Tool {
     }
 
     var isDefault: Bool { !isEnabled && fixesAsYouType == Self.defaultAuto && shortcut == Self.standard && excluded.isEmpty && ignored.isEmpty }
+    #endif
 
     @ObservationIgnored private var tap: CFMachPort?
     @ObservationIgnored private var source: CFRunLoopSource?
+    @ObservationIgnored fileprivate var holding = false
+    #if !APPSTORE
     @ObservationIgnored private var typed: [Stroke] = []
     @ObservationIgnored private var layout: KeyboardLayout?
     @ObservationIgnored private var pid: pid_t = 0
-    @ObservationIgnored fileprivate var holding = false
     @ObservationIgnored private var last: (fix: LayoutFix, source: KeyboardLayout)?
+    #endif
 
     init() {
         isEnabled = UserDefaults.standard.bool(forKey: id)
-        fixesAsYouType = UserDefaults.standard.object(forKey: Self.autoKey) as? Bool ?? Self.defaultAuto
         shortcut = Shortcut(stored: UserDefaults.standard.object(forKey: Self.shortcutKey)) ?? Self.standard
+        #if !APPSTORE
+        fixesAsYouType = UserDefaults.standard.object(forKey: Self.autoKey) as? Bool ?? Self.defaultAuto
         excluded = UserDefaults.standard.stringArray(forKey: Self.excludedKey) ?? []
         ignored = UserDefaults.standard.stringArray(forKey: Self.ignoredKey) ?? []
+        #endif
     }
 
     func load() {
-        fixesAsYouType = UserDefaults.standard.object(forKey: Self.autoKey) as? Bool ?? Self.defaultAuto
         shortcut = Shortcut(stored: UserDefaults.standard.object(forKey: Self.shortcutKey)) ?? Self.standard
+        #if !APPSTORE
+        fixesAsYouType = UserDefaults.standard.object(forKey: Self.autoKey) as? Bool ?? Self.defaultAuto
         excluded = UserDefaults.standard.stringArray(forKey: Self.excludedKey) ?? []
         ignored = UserDefaults.standard.stringArray(forKey: Self.ignoredKey) ?? []
+        #endif
         isEnabled = UserDefaults.standard.bool(forKey: id)
     }
 
     func reset() {
         isEnabled = false
-        fixesAsYouType = Self.defaultAuto
         shortcut = Self.standard
+        #if !APPSTORE
+        fixesAsYouType = Self.defaultAuto
         excluded = []
         ignored = []
-    }
-
-    private func ignore(_ word: String) {
-        guard !ignored.contains(word) else { return }
-        ignored = Array((ignored + [word]).suffix(200))
-    }
-
-    private func select(_ target: KeyboardLayout) {
-        TISSelectInputSource(target.source)
-        layout = target
-    }
-
-    private func allows(_ app: NSRunningApplication) -> Bool {
-        guard let id = app.bundleIdentifier, app.processIdentifier != ProcessInfo.processInfo.processIdentifier else { return false }
-        return !excluded.contains(id) && !alwaysExcluded.contains { id.hasPrefix($0) }
+        #endif
     }
 
 #if APPSTORE
@@ -131,11 +126,11 @@ final class LayoutFixTool: Tool {
 
     func refresh() {
         stop()
-        if isEnabled || fixesAsYouType, MainCopy.canAct, AXIsProcessTrusted() { start() }
+        if isEnabled, MainCopy.canAct, AXIsProcessTrusted() { start() }
     }
 
     private func start() {
-        let types: [CGEventType] = [.keyDown, .keyUp, .leftMouseDown, .rightMouseDown, .otherMouseDown]
+        let types: [CGEventType] = [.keyDown, .keyUp]
         let mask = types.reduce(CGEventMask(0)) { $0 | (1 << $1.rawValue) }
         guard let tap = CGEvent.tapCreate(
             tap: .cgSessionEventTap,
@@ -151,7 +146,6 @@ final class LayoutFixTool: Tool {
         self.tap = tap
         self.source = source
         isActive = true
-        if fixesAsYouType { DispatchQueue.main.async { KeyboardLayouts.prepare() } }
     }
 
     func stop() {
@@ -169,97 +163,23 @@ final class LayoutFixTool: Tool {
         tap = nil
         source = nil
         isActive = false
-        clear()
-    }
-
-    fileprivate func clear() {
-        typed = []
-        last = nil
-    }
-
-    // No Accessibility check on the field (the sandbox has none for other apps), so text is replaced
-    // blindly. Wrong in a browser address bar with inline autocomplete (Backspace first removes the selected
-    // suggestion), in design apps where Backspace deletes a selected object, and after a click into the middle
-    // of a word. Held back by KeyboardLayouts.fix (4+ letters, unknown in the source language), the buffer
-    // cleared on every mouse down, and the feature being off by default.
-    fileprivate func handle(_ event: CGEvent, _ proxy: CGEventTapProxy) -> Bool {
-        guard fixesAsYouType, !GameModeTool.shared.isPlaying, !IsSecureEventInputEnabled(),
-              let app = NSWorkspace.shared.frontmostApplication, allows(app),
-              KeyboardLayouts.all.count > 1, let current = KeyboardLayouts.current else {
-            clear()
-            return false
-        }
-        if app.processIdentifier != pid {
-            pid = app.processIdentifier
-            clear()
-        }
-        if current.id != layout?.id {
-            clear()
-            layout = current
-        }
-        let code = UInt16(truncatingIfNeeded: event.getIntegerValueField(.keyboardEventKeycode))
-        let flags = event.flags
-        if Int(code) == kVK_Space, !flags.isDisjoint(with: [.maskControl, .maskCommand]) { return false }
-        if !flags.isDisjoint(with: [.maskCommand, .maskControl]) {
-            clear()
-            return false
-        }
-        if Stroke.keys.contains(code) {
-            last = nil
-            typed.append(Stroke(key: code, flags: flags))
-            if typed.count > 100 {
-                if let space = typed.firstIndex(of: .space) { typed.removeSubrange(...space) } else { clear() }
-            }
-            return false
-        }
-        switch Int(code) {
-        case kVK_Space where flags.contains(.maskAlternate):
-            clear()
-            return false
-        case kVK_Space:
-            return finish(event, proxy, current, space: true)
-        case kVK_Return, kVK_ANSI_KeypadEnter:
-            return finish(event, proxy, current, space: false)
-        case kVK_Delete where !flags.contains(.maskAlternate):
-            last = nil
-            if !typed.isEmpty { typed.removeLast() }
-            return false
-        default:
-            clear()
-            return false
-        }
-    }
-
-    private func finish(_ event: CGEvent, _ proxy: CGEventTapProxy, _ current: KeyboardLayout, space: Bool) -> Bool {
-        // Backspace deletes a character, replace() counts scalars: only plain text can be retyped without looking.
-        if let fix = KeyboardLayouts.fix(typed, from: current, ignored: Set(ignored)),
-           [fix.original, fix.text].allSatisfy({ $0.unicodeScalars.count == $0.count }) {
-            replace(fix.original, with: fix.text, proxy)
-            event.copy()?.postPikapik(proxy)
-            select(fix.target)
-            clear()
-            if space { last = (fix, current) }
-            return true
-        }
-        if space {
-            last = nil
-            typed.append(.space)
-        } else {
-            clear()
-        }
-        return false
-    }
-
-    fileprivate func undo(_ proxy: CGEventTapProxy) -> Bool {
-        guard let last, !IsSecureEventInputEnabled(),
-              NSWorkspace.shared.frontmostApplication?.processIdentifier == pid else { return false }
-        replace(last.fix.text + " ", with: last.fix.original + " ", proxy)
-        select(last.source)
-        if let word = KeyboardLayouts.core(String(last.fix.original.split(separator: " ").last ?? ""))?.lowercased() { ignore(word) }
-        clear()
-        return true
     }
 #else
+    private func ignore(_ word: String) {
+        guard !ignored.contains(word) else { return }
+        ignored = Array((ignored + [word]).suffix(200))
+    }
+
+    private func select(_ target: KeyboardLayout) {
+        TISSelectInputSource(target.source)
+        layout = target
+    }
+
+    private func allows(_ app: NSRunningApplication) -> Bool {
+        guard let id = app.bundleIdentifier, app.processIdentifier != ProcessInfo.processInfo.processIdentifier else { return false }
+        return !excluded.contains(id) && !alwaysExcluded.contains { id.hasPrefix($0) }
+    }
+
     @ObservationIgnored private var switched: (strokes: [Stroke], layout: KeyboardLayout)?
     @ObservationIgnored private var cycle: (options: [(text: String, layout: KeyboardLayout?)], index: Int, word: String?)?
     var settingsView: AnyView { AnyView(LayoutFixSettings(tool: self)) }
@@ -506,14 +426,8 @@ func layoutFixCallback(
     switch type {
     case .tapDisabledByTimeout, .tapDisabledByUserInput:
         DispatchQueue.main.async { tool.refresh() }
-    case .leftMouseDown, .rightMouseDown, .otherMouseDown:
-        tool.clear()
     case .keyDown, .keyUp:
-        // A second copy of the app may be running: its own retyped keys must not be fixed again.
-        guard !event.isPikapik else {
-            tool.clear()
-            break
-        }
+        guard !event.isPikapik else { break }
         let code = event.getIntegerValueField(.keyboardEventKeycode)
         if type == .keyUp {
             if tool.held == code {
@@ -529,9 +443,7 @@ func layoutFixCallback(
                 if tool.holding { return nil }
                 break
             }
-            // Undoing a fix works whenever fixing as you type is on, with or without the Services shortcut.
             tool.holding = true
-            if tool.undo(proxy) { return nil }
             if tool.isEnabled {
                 tool.held = code
                 CGEvent.postPikapikKey(kVK_F19, down: true, flags: [.maskControl, .maskAlternate, .maskShift, .maskCommand], proxy)
@@ -539,7 +451,6 @@ func layoutFixCallback(
             }
             tool.holding = false
         }
-        if tool.handle(event, proxy) { return nil }
     default:
         break
     }

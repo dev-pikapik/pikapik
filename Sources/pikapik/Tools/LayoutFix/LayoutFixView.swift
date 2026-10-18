@@ -10,7 +10,7 @@ struct LayoutFixServiceSettings: View {
 
     var body: some View {
         if inSettings {
-            LayoutFixArt(on: true, service: tool.fixesAsYouType ? nil : LayoutFixService.title)
+            LayoutFixArt(on: true, service: LayoutFixService.title)
             RowLabel(Text(tool.title), Text(LayoutFixService.hint))
                 .settingAnchor(tool.title)
             let selectedTitle = SettingTitle.fixSelectedText
@@ -32,16 +32,6 @@ struct LayoutFixServiceSettings: View {
                 .settingAnchor(selectedTitle)
             }
             .needs([.accessibility])
-            Toggle(isOn: $tool.fixesAsYouType) {
-                KeyLabel(keys: [String(localized: "Space")], title: Text(SettingTitle.fixWordsAsYouType), subtitle: Text("When you press Space or Return"))
-            }
-            .settingAnchor(SettingTitle.fixWordsAsYouType)
-            .help(Text("Press \(tool.shortcut.text) right after a fix to undo it. That word won’t be fixed again."))
-            .needs([.accessibility])
-            if tool.fixesAsYouType {
-                LayoutFixNotes(tool: tool)
-                AppExclusions(title: String(localized: "Don’t fix text in these apps"), apps: $tool.excluded, isEnabled: tool.fixesAsYouType)
-            }
         } else {
             Button { SettingsWindow.show(.keyboard) } label: {
                 HStack(spacing: 10) {
@@ -54,9 +44,7 @@ struct LayoutFixServiceSettings: View {
                     VStack(alignment: .leading, spacing: 1) {
                         Text(tool.title).font(.body).lineLimit(2)
                         Group {
-                            if tool.fixesAsYouType, tool.isActive {
-                                Text("Fixed when you press Space")
-                            } else if tool.isActive {
+                            if tool.isActive {
                                 Text("Press \(tool.shortcut.text) to fix")
                             } else {
                                 Text("In the Services menu")
@@ -118,6 +106,7 @@ struct LayoutFixSettings: View {
 }
 #endif
 
+#if !APPSTORE
 private struct LayoutFixNotes: View {
     let tool: LayoutFixTool
 
@@ -129,22 +118,10 @@ private struct LayoutFixNotes: View {
                 RowLabel(Text("Words left as you typed them"), Text(verbatim: tool.ignored.joined(separator: ", ")))
             }
         }
-        #if APPSTORE
-        if KeyboardLayouts.all.count < 2 {
-            HStack(spacing: 12) {
-                Text("This works when you have two or more keyboard layouts")
-                Spacer(minLength: 0)
-                Button("Keyboard Settings…") { NSWorkspace.shared.open(Shortcut.keyboardSettings) }
-            }
-            .noticeBar()
-        }
-        #else
         AddLayoutNotice()
-        #endif
     }
 }
 
-#if !APPSTORE
 private struct AddLayoutNotice: View {
     @State private var added = 0
     @State private var failed = false
