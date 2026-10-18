@@ -657,21 +657,21 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Fixes text typed in the wrong keyboard layout (“ghbdtn” becomes “привет”).
 
-**How it works:** Website: event tap with Accessibility (`Sources/pikapik/Tools/LayoutFix/LayoutFixTool.swift:488`). Chromium and Electron apps show their text fields only after `TextFocus.watch()` asks them (`TextFocus.unwatch()` sets back only what it turned on when both tools stop or the app quits) (`AXManualAccessibility`, else `AXEnhancedUserInterface`) when they become the front app (`Sources/pikapik/Core/TextFocus.swift`). App Store: Services-based (`LayoutFixTool.swift:25`, `LayoutFixServiceSettings` :322-395) because the sandbox cannot read selected text; the toggle rows ask Accessibility themselves. Since 1.50.1 (PR #92) the App Store build also fixes words as you type with the same kind of event tap, but it cannot check the text field, so it retypes without looking (`:162-167`).
+**How it works:** Website: event tap with Accessibility (`Sources/pikapik/Tools/LayoutFix/LayoutFixTool.swift:196`). Chromium and Electron apps show their text fields only after `TextFocus.watch()` asks them (`TextFocus.unwatch()` sets back only what it turned on when both tools stop or the app quits) (`AXManualAccessibility`, else `AXEnhancedUserInterface`) when they become the front app (`Sources/pikapik/Core/TextFocus.swift`). App Store: Services-based (`LayoutFixTool.swift:121`, `LayoutFixServiceSettings` in `LayoutFixView.swift:6-70`) because the sandbox cannot read selected text; the toggle row asks Accessibility itself.
 
 **Options:**
-- Fix words as you type — fixes on Space or Return (`LayoutFixTool.swift:755`). Both. Website: on at first. App Store: a switch under Fix the selected text, off at first (`:349`).
-- Fix the last word or selected text — shortcut recorder, default ⌃⇧Space (`:763`). Website only; the App Store build has Fix the selected text instead.
-- Words left as you typed them — list with a Clear button, shown only when not empty (`:777-787`). Both; in the App Store build it shows while Fix words as you type is on.
-- Add a Layout — menu in the note shown when fewer than two layouts exist: the installed layouts for your preferred languages that you don’t have yet; picking one turns it on with `TISEnableInputSource`, no password (`LayoutFixTool.swift` `AddLayoutNotice`, `KeyboardLayouts.addable`). If none is left to offer, or adding fails, the Keyboard Settings… button opens System Settings. Website only; the App Store build shows only Keyboard Settings….
-- Don’t fix text in these apps — app exclusion list (`:771`). Both; in the App Store build it shows while Fix words as you type is on (`:357`).
+- Fix words as you type — fixes on Space or Return (`LayoutFixView.swift:88`). Website only, on at first.
+- Fix the last word or selected text — shortcut recorder, default ⌃⇧Space (`:93`). Website only; the App Store build has Fix the selected text instead.
+- Words left as you typed them — list with a Clear button, shown only when not empty (`:114-120`). Website only.
+- Add a Layout — menu in the note shown when fewer than two layouts exist: the installed layouts for your preferred languages that you don’t have yet; picking one turns it on with `TISEnableInputSource`, no password (`LayoutFixView.swift` `AddLayoutNotice`, `KeyboardLayouts.addable`). If none is left to offer, or adding fails, the Keyboard Settings… button opens System Settings. Website only.
+- Don’t fix text in these apps — app exclusion list (`LayoutFixView.swift:104`). Website only.
 
 **Nuances:** Needs at least two input sources. Website App Exclusions: Add App… / Done, app shelf, Remove. The retyped text and the keys it sends are tagged (`EventTag.swift`), so with two copies of pikapik one copy does not fix the text the other has just retyped.
 
-**Edition:** Both; App Store differs: the selected text is fixed through the Services item or the shortcut (see Fix the selected text), and Fix words as you type is there too since 1.50.1, off at first. Fix the last word or selected text and Add a Layout are Website only.
+**Edition:** Both; App Store differs: only the selected text is fixed, through the Services item or the shortcut (see Fix the selected text); the options above are Website only.
 
 **Test:**
-1. Add two input sources (ABC and Russian). (Website) Turn on Retype words you typed in the wrong language and Fix words as you type, type “ghbdtn ” in TextEdit with the ABC layout → it becomes “привет ”. (App Store) Turn on Fix words as you type, allow Accessibility when asked, and type the same → the same result.
+1. Add two input sources (ABC and Russian). (Website) Turn on Retype words you typed in the wrong language and Fix words as you type, type “ghbdtn ” in TextEdit with the ABC layout → it becomes “привет ”.
 2. Select a mistyped word and press ⌃⇧Space → it is fixed.
 3. Undo a fix → the word appears under Words left as you typed them; Clear empties the list.
 4. With only one input source (and a second language in System Settings › General › Language & Region) → the note shows Add a Layout; pick a layout → it turns on at once, the note goes away, no password asked. Remove it again in System Settings › Keyboard › Input Sources. With no other language → the note shows Keyboard Settings… instead.
@@ -682,7 +682,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** (App Store) Fixes the selected mistyped text with a shortcut, no need to open the Services menu.
 
-**How it works:** `LayoutFixTool.swift` (`LayoutFixServiceSettings`). The event tap (Accessibility, asked on the Permissions tab) holds back your recorded shortcut (default ⌃⇧Space) and posts the hidden Services key ⌃⌥⇧⌘F19 (`NSKeyEquivalent` of the Fix Wrong Keyboard Layout service, PR #78). No clipboard, no Accessibility reading of text.
+**How it works:** `LayoutFixTool.swift:121` and `LayoutFixView.swift` (`LayoutFixServiceSettings`). The event tap (Accessibility, asked on the Permissions tab) holds back your recorded shortcut (default ⌃⇧Space) and posts the hidden Services key ⌃⌥⇧⌘F19 (`NSKeyEquivalent` of the Fix Wrong Keyboard Layout service, PR #78). No clipboard, no Accessibility reading of text.
 
 **Options:**
 - Fix the selected text — shortcut recorder, “Select the text, then press these keys”.
@@ -699,7 +699,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** A Services command in every app’s Services menu and right-click menu that fixes the selected text.
 
-**How it works:** `NSServices` in the Info.plist, `Sources/pikapik/Common/LayoutFixService.swift` (`fixLayout` pasteboard service; title in `Resources/en.lproj/ServicesMenu.strings`). Receives only the selected text, only on that command; the app in front puts the fixed text back. Needs no permission.
+**How it works:** `NSServices` in the Info.plist, `Sources/pikapik/Tools/LayoutFix/LayoutFixService.swift` (`fixLayout` pasteboard service; title in `Resources/ServicesMenu.xcstrings`). Receives only the selected text, only on that command; the app in front puts the fixed text back. Needs no permission.
 
 **Edition:** Both.
 
