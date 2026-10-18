@@ -7,7 +7,7 @@ struct PassiveCopyView: View {
     var body: some View {
         let caption = copy.leaderCaption
         ContentUnavailableView {
-            Label("Another copy of pikapik is in charge", systemImage: "rectangle.on.rectangle")
+            Label("Another copy of pikapik is in charge", symbol: .rectangleOnRectangle)
         } description: {
             Text("This copy changes nothing on your Mac and takes over when the other copy quits.")
             Text(verbatim: caption.title)

@@ -33,30 +33,30 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         }
     }
 
-    private var symbol: String {
+    private var symbol: Symbol {
         switch self {
-        case .general: "gearshape.fill"
-        case .battery: "battery.100percent"
-        case .keepAwake: "cup.and.saucer.fill"
-        case .brightness: "sun.max.fill"
-        case .fans: "fan"
-        case .temperatures: "thermometer.medium"
-        case .speedTest: "speedometer"
-        case .ports: "network"
-        case .sound: "speaker.wave.2.fill"
-        case .keyboard: "keyboard.fill"
-        case .mouse: "computermouse.fill"
-        case .windows: "macwindow.on.rectangle"
-        case .dock: "dock.rectangle"
-        case .finder: "folder.fill"
-        case .animations: "hare.fill"
-        case .player: "play.rectangle.fill"
-        case .uninstaller: "xmark.bin.fill"
-        case .background: "gearshape.2.fill"
-        case .games: "gamecontroller.fill"
-        case .pet: "pawprint.fill"
-        case .permissions: "hand.raised.fill"
-        case .about: "info.circle.fill"
+        case .general: .gearshapeFill
+        case .battery: .battery100percent
+        case .keepAwake: .cupAndSaucerFill
+        case .brightness: .sunMaxFill
+        case .fans: .fan
+        case .temperatures: .thermometerMedium
+        case .speedTest: .speedometer
+        case .ports: .network
+        case .sound: .speakerWave2Fill
+        case .keyboard: .keyboardFill
+        case .mouse: .computermouseFill
+        case .windows: .macwindowOnRectangle
+        case .dock: .dockRectangle
+        case .finder: .folderFill
+        case .animations: .hareFill
+        case .player: .playRectangleFill
+        case .uninstaller: .xmarkBinFill
+        case .background: .gearshape2Fill
+        case .games: .gamecontrollerFill
+        case .pet: .pawprintFill
+        case .permissions: .handRaisedFill
+        case .about: .infoCircleFill
         }
     }
 

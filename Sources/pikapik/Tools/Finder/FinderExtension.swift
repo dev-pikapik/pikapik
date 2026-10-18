@@ -236,7 +236,7 @@ struct FinderRestartBar: View {
     var body: some View {
         if restart.isNeeded {
             HStack(spacing: 12) {
-                Image(systemName: "arrow.clockwise")
+                Image(.arrowClockwise)
                     .accessibilityHidden(true)
                 Text("Restart Finder once to bring back the right-click items")
                 Spacer(minLength: 0)

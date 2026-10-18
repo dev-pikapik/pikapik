@@ -57,6 +57,7 @@ enum Symbol: String, CaseIterable {
     case chevronUpChevronDown = "chevron.up.chevron.down"
     case circleDottedCircleFill = "circle.dotted.circle.fill"
     case circleLefthalfFilled = "circle.lefthalf.filled"
+    case cloudFill = "cloud.fill"
     case command = "command"
     case computermouse = "computermouse"
     case computermouseFill = "computermouse.fill"

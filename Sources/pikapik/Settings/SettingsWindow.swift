@@ -167,15 +167,15 @@ private struct SettingsView: View {
                     ToolbarItem(placement: .navigation) {
                         Button {
                             withAnimation { columns = columns == .detailOnly ? .all : .detailOnly }
-                        } label: { Label("Sidebar", systemImage: "sidebar.left") }
+                        } label: { Label("Sidebar", symbol: .sidebarLeft) }
                         .help(Text("Sidebar"))
                     }
                     ToolbarItem(placement: .navigation) {
                         ControlGroup {
-                            Button { model.goBack() } label: { Label("Back", systemImage: "chevron.backward") }
+                            Button { model.goBack() } label: { Label("Back", symbol: .chevronBackward) }
                                 .keyboardShortcut("[")
                                 .disabled(model.back.isEmpty)
-                            Button { model.goForward() } label: { Label("Forward", systemImage: "chevron.forward") }
+                            Button { model.goForward() } label: { Label("Forward", symbol: .chevronForward) }
                                 .keyboardShortcut("]")
                                 .disabled(model.forward.isEmpty)
                         }
@@ -398,7 +398,7 @@ struct RestoreDefaultsSection: View {
         } footer: {
             HStack {
                 Spacer()
-                Button("Restore Defaults…", systemImage: "arrow.counterclockwise") { model.confirmingReset = true }
+                Button("Restore Defaults…", symbol: .arrowCounterclockwise) { model.confirmingReset = true }
                     .disabled(isDefault)
             }
         }
@@ -509,7 +509,7 @@ struct SystemSettingsRow: View {
     var body: some View {
         if let guide { guide }
         LabeledContent {
-            Button("Open", systemImage: "arrow.up.forward.app") { NSWorkspace.shared.open(url) }
+            Button("Open", symbol: .arrowUpForwardApp) { NSWorkspace.shared.open(url) }
         } label: {
             RowLabel(Text(title), subtitle)
         }

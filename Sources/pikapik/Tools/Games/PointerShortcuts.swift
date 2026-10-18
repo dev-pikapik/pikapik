@@ -10,7 +10,7 @@ struct PointerTrigger: Equatable {
     var fingers = 0
     var corner: Int?
     var action: Int?
-    var symbol = "computermouse"
+    var symbol = Symbol.computermouse
     var modifiers = ""
     var motions: Set<Int64> = []
     var controller: GameRule?
@@ -36,10 +36,10 @@ enum PointerShortcuts {
         "trk": SystemPath.trackpadExtension,
         "mou": SystemPath.mouseExtension,
     ]
-    static let actions: [Int: (name: String, symbol: String)] = [
-        2: ("Mission Control", "rectangle.3.group"), 3: ("Application Windows", "macwindow.on.rectangle"), 4: ("Desktop", "desktopcomputer"),
-        5: ("Start Screen Saver", "sparkles"), 6: ("Disable Screen Saver", "display"), 10: ("Put Display to Sleep", "moon.zzz.fill"),
-        11: ("Apps", "square.grid.3x3.fill"), 12: ("Notification Center", "bell.fill"), 13: ("Lock Screen", "lock.fill"), 14: ("Quick Note", "note.text"),
+    static let actions: [Int: (name: String, symbol: Symbol)] = [
+        2: ("Mission Control", .rectangle3Group), 3: ("Application Windows", .macwindowOnRectangle), 4: ("Desktop", .desktopcomputer),
+        5: ("Start Screen Saver", .sparkles), 6: ("Disable Screen Saver", .display), 10: ("Put Display to Sleep", .moonZzzFill),
+        11: ("Apps", .squareGrid3x3Fill), 12: ("Notification Center", .bellFill), 13: ("Lock Screen", .lockFill), 14: ("Quick Note", .noteText),
     ]
 
     static func isSynthetic(_ id: Int32) -> Bool { id >= first }

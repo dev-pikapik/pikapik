@@ -164,7 +164,7 @@ struct ArchiveHero: View {
         .animation(reduceMotion ? nil : .spring(duration: 0.3), value: identity)
         .overlay(alignment: .bottomTrailing) {
             if locked {
-                Image(systemName: "lock.fill")
+                Image(.lockFill)
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(width: 22, height: 22)
@@ -181,14 +181,14 @@ struct ArchiveHero: View {
 
 private struct ArchiveOptionRow<Control: View>: View {
     let tint: Color
-    let symbol: String
+    let symbol: Symbol
     let title: LocalizedStringKey
     var note: String?
     @ViewBuilder let control: Control
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: symbol)
+            Image(symbol)
                 .font(.system(size: 12, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(width: 22, height: 22)
@@ -291,7 +291,7 @@ struct ArchiveCreateView: View {
     private var options: some View {
         let shape = RoundedRectangle(cornerRadius: 10, style: .continuous)
         return VStack(spacing: 0) {
-            ArchiveOptionRow(tint: .blue, symbol: "lock.fill", title: "Password", note: model.passwordNote) {
+            ArchiveOptionRow(tint: .blue, symbol: .lockFill, title: "Password", note: model.passwordNote) {
                 Toggle("Password", isOn: Binding(get: { model.usesPassword }, set: { on in
                     model.passwordOn = on
                     if !on {
@@ -318,7 +318,7 @@ struct ArchiveCreateView: View {
             }
             #if !APPSTORE
             Divider().padding(.leading, 46)
-            ArchiveOptionRow(tint: .purple, symbol: "rectangle.split.3x1.fill", title: "Split archive") {
+            ArchiveOptionRow(tint: .purple, symbol: .rectangleSplit3x1Fill, title: "Split archive") {
                 Picker("Split archive", selection: $model.split) {
                     ForEach(ArchiveSplit.allCases) { Text($0.title).tag($0) }
                 }
@@ -338,10 +338,10 @@ struct ArchiveCreateView: View {
                 Text("Use English letters, numbers and symbols only")
                     .foregroundStyle(.orange)
             } else if model.passwordsDiffer {
-                Label("Passwords don’t match", systemImage: "xmark.circle.fill")
+                Label("Passwords don’t match", symbol: .xmarkCircleFill)
                     .foregroundStyle(.red)
             } else if model.passwordsMatch {
-                Label("Passwords match", systemImage: "checkmark.circle.fill")
+                Label("Passwords match", symbol: .checkmarkCircleFill)
                     .foregroundStyle(.green)
             }
         }
@@ -372,7 +372,7 @@ struct ArchivePasswordField: View {
                 shown.toggle()
                 if was != nil { DispatchQueue.main.async { focus = was } }
             } label: {
-                Image(systemName: shown ? "eye.slash" : "eye")
+                Image(shown ? .eyeSlash : .eye)
                     .frame(width: 20)
             }
             .buttonStyle(.borderless)
@@ -486,7 +486,7 @@ struct ArchivePasswordView: View {
                     if model.checking {
                         ProgressView().controlSize(.small)
                     } else if model.wrong {
-                        Label("Wrong password", systemImage: "xmark.circle.fill")
+                        Label("Wrong password", symbol: .xmarkCircleFill)
                             .font(.caption)
                             .foregroundStyle(.red)
                     }

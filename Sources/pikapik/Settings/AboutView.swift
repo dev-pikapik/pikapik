@@ -41,11 +41,11 @@ struct AboutView: View {
                     .settingAnchor(SettingTitle.checkForUpdatesAutomatically)
                 LabeledContent {
                     if case .available(let version) = updater.state {
-                        Button("Update to \(version)", systemImage: "arrow.down.circle") { Task { await updater.install() } }
+                        Button("Update to \(version)", symbol: .arrowDownCircle) { Task { await updater.install() } }
                             .buttonStyle(.borderedProminent)
                             .accessibilityElement(children: .contain)
                     } else {
-                        Button("Check Now", systemImage: "arrow.triangle.2.circlepath") { Task { await updater.check() } }
+                        Button("Check Now", symbol: .arrowTriangle2Circlepath) { Task { await updater.check() } }
                             .disabled(updater.state == .checking || updater.state == .installing)
                             .accessibilityElement(children: .contain)
                     }
@@ -61,10 +61,10 @@ struct AboutView: View {
             #endif
 
             Section {
-                link("GitHub", Self.source, symbol: "chevron.left.forwardslash.chevron.right", color: .gray, template: Self.github)
-                link(SettingTitle.whatsNew, Self.whatsNew, symbol: "newspaper.fill", color: .blue)
-                link(SettingTitle.reportAProblem, "\(AppConstants.githubRepoURL)/issues/new?template=bug_report.yml&edition=\(Self.edition)&version=\(version)", symbol: "ladybug.fill", color: .red)
-                link(SettingTitle.licenseMIT, "\(AppConstants.githubRepoURL)/blob/main/LICENSE", symbol: "doc.text.fill", color: .green)
+                link("GitHub", Self.source, symbol: .chevronLeftForwardslashChevronRight, color: .gray, template: Self.github)
+                link(SettingTitle.whatsNew, Self.whatsNew, symbol: .newspaperFill, color: .blue)
+                link(SettingTitle.reportAProblem, "\(AppConstants.githubRepoURL)/issues/new?template=bug_report.yml&edition=\(Self.edition)&version=\(version)", symbol: .ladybugFill, color: .red)
+                link(SettingTitle.licenseMIT, "\(AppConstants.githubRepoURL)/blob/main/LICENSE", symbol: .docTextFill, color: .green)
             } footer: {
                 VStack(spacing: 4) {
                     Text(verbatim: info["NSHumanReadableCopyright"] as? String ?? "")
@@ -89,10 +89,10 @@ struct AboutView: View {
         .settingsPage()
     }
 
-    private func link(_ title: String, _ url: String, symbol: String, color: Color, template: NSImage? = nil) -> some View {
+    private func link(_ title: String, _ url: String, symbol: Symbol, color: Color, template: NSImage? = nil) -> some View {
         Link(destination: URL(string: url)!) {
             LabeledContent {
-                Image(systemName: "arrow.up.right")
+                Image(.arrowUpRight)
                     .foregroundStyle(.secondary)
             } label: {
                 HStack(spacing: 10) {
@@ -119,7 +119,7 @@ private struct CoffeeLine: View {
                 .accessibilityHidden(true)
             Link(destination: URL(string: AppConstants.buyMeACoffeeURL)!) {
                 HStack(spacing: 4) {
-                    Image(systemName: "cup.and.saucer.fill")
+                    Image(.cupAndSaucerFill)
                         .imageScale(.small)
                         .accessibilityHidden(true)
                     Text(SettingTitle.buyMeACoffee)

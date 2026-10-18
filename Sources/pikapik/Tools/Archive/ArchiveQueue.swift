@@ -275,7 +275,7 @@ private struct ArchiveRowView: View {
                 }
             }
             Button(action: stop) {
-                Image(systemName: "xmark.circle.fill")
+                Image(.xmarkCircleFill)
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }

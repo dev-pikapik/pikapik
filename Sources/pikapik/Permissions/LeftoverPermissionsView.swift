@@ -131,7 +131,7 @@ struct LeftoverPermissionsSection: View {
                             EmptyView()
                         } label: {
                             HStack(spacing: 10) {
-                                Image(systemName: "checkmark.seal.fill")
+                                Image(.checkmarkSealFill)
                                     .font(.title2)
                                     .foregroundStyle(.green)
                                     .accessibilityHidden(true)
@@ -161,7 +161,7 @@ struct LeftoverPermissionsSection: View {
                 if model.removable.count > 1 {
                     HStack {
                         Spacer()
-                        Button("Remove All…", systemImage: "trash") { confirming = model.removable }
+                        Button("Remove All…", symbol: .trash) { confirming = model.removable }
                             .disabled(!model.removing.isEmpty)
                     }
                 }
@@ -195,7 +195,7 @@ private struct LeftoverRow: View {
             if removing {
                 ProgressView().controlSize(.small)
             } else if app.isPath {
-                Button("Open", systemImage: "arrow.up.forward.app") { Permissions.shared.openSettings(app.kinds.first?.pane ?? "Privacy") }
+                Button("Open", symbol: .arrowUpForwardApp) { Permissions.shared.openSettings(app.kinds.first?.pane ?? "Privacy") }
             } else {
                 Button("Remove", action: remove)
             }
@@ -241,12 +241,12 @@ private struct StuckRow: View {
         LabeledContent {
             HStack(spacing: 8) {
                 Button("Try Again", action: retry)
-                Button("Open", systemImage: "arrow.up.forward.app") { Permissions.shared.openSettings(apps.first?.kinds.first?.pane ?? "Privacy") }
+                Button("Open", symbol: .arrowUpForwardApp) { Permissions.shared.openSettings(apps.first?.kinds.first?.pane ?? "Privacy") }
             }
             .fixedSize()
         } label: {
             HStack(alignment: .top, spacing: 10) {
-                Image(systemName: "exclamationmark.triangle.fill")
+                Image(.exclamationmarkTriangleFill)
                     .font(.title2)
                     .foregroundStyle(.orange)
                     .accessibilityHidden(true)
@@ -265,7 +265,7 @@ private struct PermissionChips: View {
     var body: some View {
         ChipFlow {
             ForEach(kinds, id: \.name) { kind in
-                Label(kind.name, systemImage: kind.symbol)
+                Label(kind.name, symbol: kind.symbol)
                     .font(.caption)
                     .padding(.horizontal, 7)
                     .padding(.vertical, 3)
@@ -307,11 +307,11 @@ struct LeftoversArt: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private static let center = CGPoint(x: 150, y: 64)
-    private static let chips: [(symbol: String, color: Color, at: CGPoint)] = [
-        ("camera.fill", .blue, CGPoint(x: 84, y: 38)),
-        ("mic.fill", .orange, CGPoint(x: 72, y: 88)),
-        ("accessibility", .indigo, CGPoint(x: 216, y: 36)),
-        ("rectangle.dashed.badge.record", .pink, CGPoint(x: 228, y: 86)),
+    private static let chips: [(symbol: Symbol, color: Color, at: CGPoint)] = [
+        (.cameraFill, .blue, CGPoint(x: 84, y: 38)),
+        (.micFill, .orange, CGPoint(x: 72, y: 88)),
+        (.accessibility, .indigo, CGPoint(x: 216, y: 36)),
+        (.rectangleDashedBadgeRecord, .pink, CGPoint(x: 228, y: 86)),
     ]
 
     var body: some View {
@@ -326,7 +326,7 @@ struct LeftoversArt: View {
                     .position(Self.center)
                 ForEach(Self.chips.indices, id: \.self) { index in
                     let chip = Self.chips[index]
-                    Image(systemName: chip.symbol)
+                    Image(chip.symbol)
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(width: 32, height: 32)
@@ -336,7 +336,7 @@ struct LeftoversArt: View {
                         .opacity(clean ? 0 : 1)
                         .position(clean ? Self.center : chip.at)
                 }
-                Image(systemName: "checkmark.circle.fill")
+                Image(.checkmarkCircleFill)
                     .font(.system(size: 34))
                     .foregroundStyle(.white, Art.green)
                     .scaleEffect(clean ? 1 : 0.4)

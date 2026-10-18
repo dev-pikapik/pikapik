@@ -165,12 +165,12 @@ private struct TileFrame: ViewModifier {
 }
 
 private struct Badge: View {
-    let symbol: String
+    let symbol: Symbol
     let fill: Color
     let ink: Color
 
     var body: some View {
-        Image(systemName: symbol)
+        Image(symbol)
             .font(.system(size: 8, weight: .bold))
             .foregroundStyle(ink)
             .frame(width: 16, height: 16)
@@ -255,9 +255,9 @@ struct ItemTile: View {
             .modifier(TileFrame(tint: item.rank.color, selected: on, locked: !unlocked))
             .overlay(alignment: .topTrailing) {
                 if on {
-                    Badge(symbol: "checkmark", fill: .accentColor, ink: .white).padding(5)
+                    Badge(symbol: .checkmark, fill: .accentColor, ink: .white).padding(5)
                 } else if !unlocked {
-                    Badge(symbol: "lock.fill", fill: Color.primary.opacity(0.12), ink: .secondary).padding(5)
+                    Badge(symbol: .lockFill, fill: Color.primary.opacity(0.12), ink: .secondary).padding(5)
                 }
             }
             .overlay(alignment: .topLeading) {
@@ -297,7 +297,7 @@ private struct LookCard: View {
                     RankLabel(rank: look.rank)
                 } else {
                     HStack(spacing: 3) {
-                        Image(systemName: "lock.fill")
+                        Image(.lockFill)
                         Text(petCount(have, look.items.count)).lineLimit(1)
                     }
                     .font(.caption2)
@@ -308,7 +308,7 @@ private struct LookCard: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .modifier(TileFrame(tint: look.rank.color, selected: on, locked: !ready))
             .overlay(alignment: .topTrailing) {
-                if on { Badge(symbol: "checkmark", fill: .accentColor, ink: .white).padding(5) }
+                if on { Badge(symbol: .checkmark, fill: .accentColor, ink: .white).padding(5) }
             }
         }
         .buttonStyle(TileStyle())
@@ -345,7 +345,7 @@ struct PetWardrobeSection: View {
         } footer: {
             HStack {
                 Spacer()
-                Button("Take Everything Off", systemImage: "hanger") {
+                Button("Take Everything Off", symbol: .hanger) {
                     for item in progress.outfit.values { progress.wear(item) }
                 }
                 .disabled(progress.outfit.isEmpty)

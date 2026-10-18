@@ -46,7 +46,7 @@ struct QuitCloseArt: View {
         }
         .overlay {
             if locked {
-                Image(systemName: "lock.fill")
+                Image(.lockFill)
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(width: 26, height: 26)

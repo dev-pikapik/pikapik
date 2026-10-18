@@ -19,7 +19,7 @@ struct AppExclusions: View {
                     if adding && isEnabled {
                         Button("Done") { adding = false }
                     } else {
-                        Button("Add App…", systemImage: "plus") { adding = true }
+                        Button("Add App…", symbol: .plus) { adding = true }
                     }
                 } label: {
                     KeyLabel(keys: keys, title: Text(title), subtitle: apps.isEmpty ? empty : nil)
@@ -76,7 +76,7 @@ struct AppRow: View {
     var body: some View {
         LabeledContent {
             Button(role: .destructive, action: remove) {
-                Image(systemName: "minus.circle.fill")
+                Image(.minusCircleFill)
                     .foregroundStyle(.red)
             }
             .buttonStyle(.plain)

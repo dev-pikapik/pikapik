@@ -16,15 +16,15 @@ enum GuidePane {
         }
     }
 
-    fileprivate var symbol: String {
+    fileprivate var symbol: Symbol {
         switch self {
-        case .desktop: "dock.rectangle"
-        case .mouse: "computermouse.fill"
-        case .keyboard: "keyboard.fill"
-        case .displays: "sun.max.fill"
-        case .accessibility: "accessibility"
-        case .privacy: "hand.raised.fill"
-        case .general: "gearshape.fill"
+        case .desktop: .dockRectangle
+        case .mouse: .computermouseFill
+        case .keyboard: .keyboardFill
+        case .displays: .sunMaxFill
+        case .accessibility: .accessibility
+        case .privacy: .handRaisedFill
+        case .general: .gearshapeFill
         }
     }
 
@@ -148,7 +148,7 @@ struct SettingsGuideScene: View {
             ForEach(0..<5, id: \.self) { index in
                 if index == pane.slot {
                     HStack(spacing: 3) {
-                        Image(systemName: pane.symbol)
+                        Image(pane.symbol)
                             .font(.system(size: 5.5, weight: .bold))
                             .foregroundStyle(.white)
                             .frame(width: 9, height: 9)
@@ -189,7 +189,7 @@ struct SettingsGuideScene: View {
                 if layout.layers[page].kind == .page, let title = steps[layout.layers[page].opener].label {
                     place(CGRect(x: 84, y: 6, width: 144, height: 10)) {
                         HStack(spacing: 3) {
-                            Image(systemName: "chevron.left").font(.system(size: 6, weight: .bold)).foregroundStyle(Color.accentColor)
+                            Image(.chevronLeft).font(.system(size: 6, weight: .bold)).foregroundStyle(Color.accentColor)
                             GuideLabel(text: title, pane: pane, size: 8, weight: .semibold)
                         }
                     }
@@ -312,7 +312,7 @@ struct SettingsGuideScene: View {
                 RoundedRectangle(cornerRadius: 2, style: .continuous)
                     .fill(value ? Color.accentColor : Color(nsColor: .textBackgroundColor))
                     .overlay(RoundedRectangle(cornerRadius: 2, style: .continuous).hairline(Color.primary.opacity(0.3)))
-                    .overlay { if value { Image(systemName: "checkmark").font(.system(size: 5.5, weight: .heavy)).foregroundStyle(.white) } }
+                    .overlay { if value { Image(.checkmark).font(.system(size: 5.5, weight: .heavy)).foregroundStyle(.white) } }
                     .frame(width: 8, height: 8)
                 if let text = GuideText.text(option, in: pane) {
                     Text(verbatim: text).font(.system(size: 7)).lineLimit(1).minimumScaleFactor(0.7)
@@ -330,7 +330,7 @@ struct SettingsGuideScene: View {
                     bar(26)
                 }
                 Spacer(minLength: 0)
-                Image(systemName: "chevron.up.chevron.down").font(.system(size: 5, weight: .bold)).foregroundStyle(.secondary)
+                Image(.chevronUpChevronDown).font(.system(size: 5, weight: .bold)).foregroundStyle(.secondary)
             }
             .padding(.horizontal, 4)
             .frame(width: 80, height: 12)
@@ -349,9 +349,9 @@ struct SettingsGuideScene: View {
             .background(pressed ? Color.primary.opacity(0.12) : Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 3, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 3, style: .continuous).hairline(Color.primary.opacity(0.2)))
         case .page:
-            Image(systemName: "chevron.right").font(.system(size: 6, weight: .bold)).foregroundStyle(.secondary)
+            Image(.chevronRight).font(.system(size: 6, weight: .bold)).foregroundStyle(.secondary)
         case .info, .appInfo:
-            Image(systemName: "info.circle").font(.system(size: 9)).foregroundStyle(Color.accentColor)
+            Image(.infoCircle).font(.system(size: 9)).foregroundStyle(Color.accentColor)
         case .display, .select:
             EmptyView()
         }

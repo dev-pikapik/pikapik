@@ -61,7 +61,7 @@ struct BatterySettings: View {
                         Link("Get Service…", destination: Self.service)
                     }
                 } label: {
-                    Label { RowLabel(Text("Condition")) } icon: { Image(systemName: "heart").frame(width: 24) }
+                    Label { RowLabel(Text("Condition")) } icon: { Image(.heart).frame(width: 24) }
                 }
             }
             if let capacity = battery.health?.capacity {
@@ -71,7 +71,7 @@ struct BatterySettings: View {
                 } label: {
                     Label {
                         RowLabel(Text("Maximum Capacity"), Text("Compared with when it was new"))
-                    } icon: { Image(systemName: "battery.100percent").frame(width: 24) }
+                    } icon: { Image(.battery100percent).frame(width: 24) }
                 }
             }
             if let cycles = state.cycles {
@@ -82,7 +82,7 @@ struct BatterySettings: View {
                 } label: {
                     Label {
                         RowLabel(Text("Cycle Count"), Text("Designed for \(Battery.ratedCycles.formatted()) cycles"))
-                    } icon: { Image(systemName: "arrow.triangle.2.circlepath").frame(width: 24) }
+                    } icon: { Image(.arrowTriangle2Circlepath).frame(width: 24) }
                 }
             }
         } header: {
@@ -105,7 +105,7 @@ struct BatterySettings: View {
                     } label: {
                         Label {
                             RowLabel(Text(SettingTitle.powerAdapter), state.adapter.map { Text(verbatim: $0) })
-                        } icon: { Image(systemName: "powerplug").frame(width: 24) }
+                        } icon: { Image(.powerplug).frame(width: 24) }
                     }
                 }
                 if let watts = state.watts {
@@ -118,11 +118,11 @@ struct BatterySettings: View {
                         if state.phase == .charging {
                             Label {
                                 RowLabel(Text("Charging Power"), Text("Going into the battery right now"))
-                            } icon: { Image(systemName: "bolt").frame(width: 24) }
+                            } icon: { Image(.bolt).frame(width: 24) }
                         } else {
                             Label {
                                 RowLabel(Text("Power Use"), Text("What your Mac uses right now"))
-                            } icon: { Image(systemName: "gauge.with.dots.needle.50percent").frame(width: 24) }
+                            } icon: { Image(.gaugeWithDotsNeedle50percent).frame(width: 24) }
                         }
                     }
                 }
@@ -138,14 +138,14 @@ struct BatterySettings: View {
             LabeledContent {
                 Button("Battery Settings…") { NSWorkspace.shared.open(Self.batterySettings) }
             } label: {
-                Label { Self.limit } icon: { Image(systemName: "battery.75percent").frame(width: 24) }
+                Label { Self.limit } icon: { Image(.battery75percent).frame(width: 24) }
             }
             Label {
                 RowLabel(Text("Keep It Cool"), Text("Use your Mac where it’s between \(Self.celsius(10)) and \(Self.celsius(35))"))
-            } icon: { Image(systemName: "thermometer.medium").frame(width: 24) }
+            } icon: { Image(.thermometerMedium).frame(width: 24) }
             Label {
                 RowLabel(Text("Storing Your Mac"), Text("Charge it to about \(0.5.formatted(.percent)) and shut it down"))
-            } icon: { Image(systemName: "archivebox").frame(width: 24) }
+            } icon: { Image(.archivebox).frame(width: 24) }
         } header: {
             Text(SettingTitle.keepItHealthy)
                 .settingAnchor(SettingTitle.keepItHealthy)
@@ -220,11 +220,11 @@ struct BatteryScene: View {
         }
     }
 
-    private var glyph: String? {
+    private var glyph: Symbol? {
         switch phase {
-        case .charging, .full: "bolt.fill"
-        case .onHold: "pause.fill"
-        case .draining: "bolt.slash.fill"
+        case .charging, .full: .boltFill
+        case .onHold: .pauseFill
+        case .draining: .boltSlashFill
         case .onBattery: nil
         }
     }
@@ -242,7 +242,7 @@ struct BatteryScene: View {
                     .frame(width: 140 * Double(charge) / 100)
                     .padding(6)
                 if let glyph {
-                    Image(systemName: glyph)
+                    Image(glyph)
                         .font(.system(size: 30, weight: .bold))
                         .foregroundStyle(.white)
                         .shadow(color: .black.opacity(0.35), radius: 1.5)

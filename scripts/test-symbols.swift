@@ -107,6 +107,8 @@ struct TestSymbols {
                 if file != catalog, let text = try? String(contentsOfFile: file, encoding: .utf8) { files[file] = text }
             }
         }
+        // The pictures in docs/media are drawn by a script built with the app's sources, so it uses the catalog too
+        files["scripts/render-media.swift"] = try? String(contentsOfFile: "scripts/render-media.swift", encoding: .utf8)
         precondition(files.count > 150)
         let names = Set(all.map(\.rawValue))
         var written = 0

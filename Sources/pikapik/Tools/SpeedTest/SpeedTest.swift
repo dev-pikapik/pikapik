@@ -196,9 +196,9 @@ struct SpeedTestSettings: View {
             Section {
                 VStack(spacing: 18) {
                     HStack(spacing: 0) {
-                        SpeedNumber(title: "Download", symbol: "arrow.down", value: download, active: test.phase == .download)
+                        SpeedNumber(title: "Download", symbol: .arrowDown, value: download, active: test.phase == .download)
                         Divider().frame(height: 72)
-                        SpeedNumber(title: "Upload", symbol: "arrow.up", value: upload, active: test.phase == .upload)
+                        SpeedNumber(title: "Upload", symbol: .arrowUp, value: upload, active: test.phase == .upload)
                     }
                     status
                         .frame(minHeight: 20)
@@ -278,7 +278,7 @@ struct SpeedTestSettings: View {
             .foregroundStyle(.secondary)
         } else if test.failure != nil {
             VStack(spacing: 2) {
-                Label { test.failureTitle } icon: { Image(systemName: "exclamationmark.triangle.fill") }
+                Label { test.failureTitle } icon: { Image(.exclamationmarkTriangleFill) }
                     .foregroundStyle(.orange)
                 test.failureHint
                     .font(.subheadline)
@@ -327,7 +327,7 @@ struct SpeedTestSettings: View {
         return Label {
             RowLabel(title, note)
         } icon: {
-            Image(systemName: good ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+            Image(good ? .checkmarkCircleFill : .exclamationmarkCircleFill)
                 .foregroundStyle(good ? .green : .orange)
                 .accessibilityLabel(good ? Text("Yes") : Text("Not quite"))
         }
@@ -336,14 +336,14 @@ struct SpeedTestSettings: View {
 
 private struct SpeedNumber: View {
     let title: LocalizedStringKey
-    let symbol: String
+    let symbol: Symbol
     let value: Double?
     let active: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(spacing: 2) {
-            Label(title, systemImage: symbol)
+            Label(title, symbol: symbol)
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(active ? Color.accentColor : .secondary)
                 .symbolEffect(.pulse, options: .repeating, isActive: active && !reduceMotion)
@@ -372,7 +372,7 @@ struct SpeedTestRow: View {
         HStack(spacing: 8) {
             Button { SettingsWindow.show(.speedTest) } label: {
                 HStack(spacing: 10) {
-                    Image(systemName: "speedometer")
+                    Image(.speedometer)
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(test.isRunning ? Color.white : Color.secondary)
                         .frame(width: 28, height: 28)
@@ -418,9 +418,9 @@ struct SpeedTestRow: View {
             test.failureTitle
         } else if let result = test.result {
             HStack(spacing: 3) {
-                Image(systemName: "arrow.down")
+                Image(.arrowDown)
                 Text(verbatim: SpeedTest.format(result.download))
-                Image(systemName: "arrow.up")
+                Image(.arrowUp)
                     .padding(.leading, 4)
                 Text(verbatim: SpeedTest.format(result.upload))
                 Text("Mbit/s")

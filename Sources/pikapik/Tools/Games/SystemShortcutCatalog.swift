@@ -17,26 +17,26 @@ enum GameShortcutMode: String, CaseIterable {
 enum SystemShortcutKind: String, CaseIterable {
     case existing, screenshot, selection, capturePanel, zoom, contrast, invert, voice, captions, presenter, focusMode, brightness, volume, window, language, note, notifications, forceQuit, pointer, other
 
-    var symbol: String {
+    var symbol: Symbol {
         switch self {
-        case .existing, .other: "gearshape.fill"
-        case .screenshot, .selection: "camera.fill"
-        case .capturePanel: "record.circle"
-        case .zoom: "plus.magnifyingglass"
-        case .contrast: "circle.lefthalf.filled"
-        case .invert: "circle.dotted.circle.fill"
-        case .voice: "speaker.wave.2.fill"
-        case .captions: "captions.bubble.fill"
-        case .presenter: "person.crop.circle.fill"
-        case .focusMode: "moon.fill"
-        case .brightness: "sun.max.fill"
-        case .volume: "speaker.wave.2.fill"
-        case .window: "rectangle.split.2x1"
-        case .language: "globe"
-        case .note: "note.text"
-        case .notifications: "bell.fill"
-        case .forceQuit: "xmark.app.fill"
-        case .pointer: "computermouse"
+        case .existing, .other: .gearshapeFill
+        case .screenshot, .selection: .cameraFill
+        case .capturePanel: .recordCircle
+        case .zoom: .plusMagnifyingglass
+        case .contrast: .circleLefthalfFilled
+        case .invert: .circleDottedCircleFill
+        case .voice: .speakerWave2Fill
+        case .captions: .captionsBubbleFill
+        case .presenter: .personCropCircleFill
+        case .focusMode: .moonFill
+        case .brightness: .sunMaxFill
+        case .volume: .speakerWave2Fill
+        case .window: .rectangleSplit2x1
+        case .language: .globe
+        case .note: .noteText
+        case .notifications: .bellFill
+        case .forceQuit: .xmarkAppFill
+        case .pointer: .computermouse
         }
     }
 }

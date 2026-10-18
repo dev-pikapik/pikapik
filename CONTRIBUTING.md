@@ -168,7 +168,7 @@ swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift Sources/pikap
 Permissions left by deleted apps are read from the system TCC database (`/Library/Application Support/com.apple.TCC/TCC.db`), which needs Full Disk Access. A client counts as deleted when LaunchServices has no copy of it outside the Trash, no helper, launch agent or system extension with its id is left, and it is not on a disk that is unplugged; Apple apps and system paths are skipped. Remove calls `tccutil reset All <id>`. tccutil only accepts ids that LaunchServices knows, so pikapik registers a tiny placeholder app with that id in its Caches folder for a moment and deletes it right after. Path clients can’t be reset this way, so their row opens the list in System Settings instead. The parsing and the deleted check live in `LeftoverPermissions`, which you can test without the app:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Permissions/LeftoverPermissions.swift scripts/test-leftover-permissions.swift -o build/test-leftover-permissions && build/test-leftover-permissions
+swiftc -parse-as-library Sources/pikapik/Core/Symbol.swift Sources/pikapik/Permissions/LeftoverPermissions.swift scripts/test-leftover-permissions.swift -o build/test-leftover-permissions && build/test-leftover-permissions
 ```
 
 In the App Store version the sandbox and macOS hide who was allowed, so Settings › Permissions reads the usage keys in the `Info.plist` of the apps in `/Applications` (and one folder level below it) and says “can ask”, never “has”: Camera (`NSCameraUsageDescription`), Microphone, Automation (`NSAppleEventsUsageDescription`), Files and Folders (the folder and volume keys) and Bluetooth. Accessibility, Screen Recording, Input Monitoring, Full Disk Access, App Management and Developer Tools have no such key, so those rows only open System Settings. The scan lives in `PrivacyAsks`, which you can test without the app:
@@ -198,7 +198,7 @@ swiftc -parse-as-library Sources/pikapik/Tools/Pet/PetPhysics.swift Sources/pika
 Awards and wardrobe unlocks live in `PetProgress`. `PetPhysics` reports what the pet does (jumps, leaps over the pointer, climbs, tumbles, hard throws) and `PetStage` adds it up while no demo runs, together with steps, kicks, phrases and the days, nights and weekends you spend together. Everything stays on the Mac in five keys, `pet-counts`, `pet-awards`, `pet-seen`, `pet-fresh` and `pet-outfit`; they are not part of the settings file, so Restore Defaults leaves them alone. The rules run without the app too:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Tools/Pet/PetWardrobe.swift Sources/pikapik/Tools/Pet/PetAwards.swift scripts/test-awards.swift -o build/test-awards && build/test-awards
+swiftc -parse-as-library Sources/pikapik/Core/Symbol.swift Sources/pikapik/Tools/Pet/PetWardrobe.swift Sources/pikapik/Tools/Pet/PetAwards.swift scripts/test-awards.swift -o build/test-awards && build/test-awards
 ```
 
 The pet’s feelings are a face (eye, brow, mouth, blush, a mark above the head) that `PetMind` fades between. `PetStage` cues a mood from what the pet already knows (being picked up, a kick, an award, a late hour) and the rules are plain numbers: a higher mood interrupts a lower one, the same cue extends a mood instead of restarting it, every mood rests before it can come back, and the pet starts at most one mood of its own every three minutes. The rules run without the app too:
@@ -210,7 +210,7 @@ swiftc -parse-as-library Sources/pikapik/Tools/Pet/PetMood.swift scripts/test-mo
 What the pet feels, when it sits down and when it says a phrase it owes live in `PetCues`, which has no AppKit, and `PetStage` only feeds it the clock and the pet: a pet that wakes from a doze is sleepy and sits, the morning phrase waits for the yawn and is never lost, a phrase owed while the pet cannot sit waits until it can, and bored and sleepy never start while it cannot sit:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Tools/Pet/{PetCues,PetMood,PetPhrases,PetPhysics,BallPhysics,PetWardrobe,PetAwards}.swift scripts/test-pet-cues.swift -o build/test-pet-cues && build/test-pet-cues
+swiftc -parse-as-library Sources/pikapik/Core/Symbol.swift Sources/pikapik/Tools/Pet/{PetCues,PetMood,PetPhrases,PetPhysics,BallPhysics,PetWardrobe,PetAwards}.swift scripts/test-pet-cues.swift -o build/test-pet-cues && build/test-pet-cues
 ```
 
 Each mark stays 0.4 units clear of the pet and of every hat and back item, in every pose and both facings, so the crown heights in `PetFigure.mark` can’t drift out of date:
@@ -264,7 +264,7 @@ swiftc -parse-as-library Sources/pikapik/Tools/Fans/SMC.swift scripts/test-fans.
 `ThermalSensors` picks which SMC sensors stand for the processor, graphics, memory, storage, battery and Wi-Fi on each chip family, from M1 to M5, and on Intel:
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Tools/Fans/SMC.swift Sources/pikapik/Tools/Temperatures/Temperatures.swift scripts/test-temps.swift -o build/test-temps && build/test-temps
+swiftc -parse-as-library Sources/pikapik/Core/Symbol.swift Sources/pikapik/Tools/Fans/SMC.swift Sources/pikapik/Tools/Temperatures/Temperatures.swift scripts/test-temps.swift -o build/test-temps && build/test-temps
 ```
 
 The same helper switches launch daemons off and on with `launchctl disable` and `bootout`, or `enable` and `bootstrap`, for `system/<label>`. It takes only a label and finds the file itself, so the app never hands it a path. A label must use letters, digits, dots, hyphens and underscores, must not start with `com.apple.` or be pikapik’s own, and must be the `Label` of a regular file (not a link) directly inside `/Library/LaunchDaemons`. The only exceptions are Remote Login (`com.openssh.sshd`) and Screen Sharing (`com.apple.screensharing`), which have fixed files in `/System/Library/LaunchDaemons`. File Sharing (`com.apple.smbd`) is left out: macOS 27 has no launchd on/off entry for it (the other two have one), so System Settings stays the way to change it. Change the allow-list only together with this test:
@@ -513,7 +513,7 @@ A program without its own icon, such as a command-line tool, gets a gray tile wi
 
 ## Symbols
 
-Every SF Symbol name pikapik uses is written once, in `Symbol` (`Core/Symbol.swift`): one case per symbol, named after it, so `"sun.max.fill"` is `.sunMaxFill`. A misspelled name, or a symbol that the oldest supported macOS doesn't have yet, draws nothing and gives no error. The test checks that every symbol in the catalog exists, that the system's own availability table has it in macOS 14, that the cases are sorted, named after their symbols and all used, and that every name written next to `systemName:`, `systemSymbolName:` or `systemImage:` is in the catalog:
+Every SF Symbol name pikapik uses is written once, in `Symbol` (`Core/Symbol.swift`): one case per symbol, named after it, so `"sun.max.fill"` is `.sunMaxFill`. Draw one with `Image(.sunMaxFill)`, `Label("Title", symbol: .sunMaxFill)` or `Button("Title", symbol: .sunMaxFill) { }` (`UI/SymbolViews.swift`), and give a view that shows a symbol a `Symbol`, not a `String`. A misspelled name, or a symbol that the oldest supported macOS doesn't have yet, draws nothing and gives no error. The test checks that every symbol in the catalog exists, that the system's own availability table has it in macOS 14, that the cases are sorted, named after their symbols and all used, and that every name written next to `systemName:`, `systemSymbolName:` or `systemImage:` is in the catalog:
 
 ```bash
 swiftc -parse-as-library Sources/pikapik/Core/Symbol.swift scripts/test-symbols.swift -o build/test-symbols && build/test-symbols
