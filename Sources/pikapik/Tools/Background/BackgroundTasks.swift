@@ -160,7 +160,7 @@ enum BackgroundTasks {
         return stat(path, &info) != 0 && errno == ENOENT
     }
 
-    static func collect(_ footprint: AppFootprint, launchd: Launchd, own: URL, loginItems: [URL], turnedOff: [URL] = [], turnedOffServices: [String] = [],
+    static func collect(_ footprint: AppFootprint, launchd: Launchd, own: URL, loginItems: [URL], turnedOff: [URL] = [], turnedOffServices: [String] = [], admin: Bool = false,
                         running: [(id: String?, url: URL?)],
                         status: (URL) -> Int = { SMAppService.statusForLegacyPlist(at: $0).rawValue }) -> [BackgroundTask] {
         let fm = FileManager.default
@@ -199,7 +199,7 @@ enum BackgroundTasks {
             }
             if !daemon, !mine, file.path.hasPrefix(home) || file.path.hasPrefix(shared) { task.domain = domain }
             #if !APPSTORE
-            if daemon, !mine, file.path.hasPrefix(daemons), HelperServices.allows(label) { task.domain = domain }
+            if daemon, !mine, admin, file.path.hasPrefix(daemons), HelperServices.allows(label) { task.domain = domain }
             #endif
             labels.insert(label.lowercased())
             paths.insert(file.standardizedFileURL.path)
@@ -265,13 +265,13 @@ enum BackgroundTasks {
         }
 
         #if !APPSTORE
-        for label in turnedOffServices {
+        for label in turnedOffServices where launchd.system.disabled[label] == true {
             guard let path = HelperServices.sharing[label] else { continue }
             var task = BackgroundTask(file: URL(fileURLWithPath: path), label: label, title: sharingTitle(label), icon: systemSettingsAppURL)
             task.developer = "Apple"
             task.scope = .wholeMac
             task.state = .off
-            task.domain = "system"
+            if admin { task.domain = "system" }
             tasks.append(task)
         }
         #endif
@@ -283,7 +283,7 @@ enum BackgroundTasks {
     }
 
     #if !APPSTORE
-    private static let turnedOffKey = "background-turned-off-logins"
+    private static let turnedOffKey = PreferenceKey.backgroundTurnedOffLogins
 
     static func loginItems() -> [URL] {
         (SessionLoginItems() as LoginItemsList).urls()
@@ -304,24 +304,31 @@ enum BackgroundTasks {
         defaults.set(paths, forKey: turnedOffKey)
     }
 
-    private static let turnedOffServicesKey = "background-turned-off-services"
+    private static let turnedOffAgentsKey = PreferenceKey.backgroundTurnedOffAgents
 
     static func sharingTitle(_ label: String) -> String {
         label == "com.openssh.sshd" ? String(localized: "Remote Login") : String(localized: "Screen Sharing")
     }
 
-    static func turnedOffServices(launchd: Launchd, defaults: UserDefaults = .standard) -> [String] {
-        let all = defaults.stringArray(forKey: turnedOffServicesKey) ?? []
-        let kept = all.filter { HelperServices.sharing[$0] != nil && launchd.system.disabled[$0] == true }
-        if kept.count != all.count { defaults.set(kept, forKey: turnedOffServicesKey) }
-        return kept
+    private static func rememberAgent(_ task: BackgroundTask, off: Bool, in defaults: UserDefaults) {
+        var agents = defaults.dictionary(forKey: turnedOffAgentsKey) as? [String: String] ?? [:]
+        agents["\(task.domain)/\(task.label)"] = off ? task.file.path : nil
+        defaults.set(agents, forKey: turnedOffAgentsKey)
     }
 
-    static func rememberService(_ label: String, off: Bool, defaults: UserDefaults = .standard) {
-        guard HelperServices.sharing[label] != nil else { return }
-        var labels = (defaults.stringArray(forKey: turnedOffServicesKey) ?? []).filter { $0 != label }
-        if off { labels.append(label) }
-        defaults.set(labels, forKey: turnedOffServicesKey)
+    static func putBack(launchctl: ([String]) -> String? = BackgroundTasks.launchctl, list: LoginItemsList = SessionLoginItems(), defaults: UserDefaults = .standard) {
+        for url in turnedOffLogins(live: list.urls(), defaults: defaults) {
+            var task = BackgroundTask(file: url, label: "", title: "", icon: url)
+            task.inLoginList = true
+            _ = turnOn(task, launchctl: launchctl, list: list, defaults: defaults)
+        }
+        for (key, path) in defaults.dictionary(forKey: turnedOffAgentsKey) as? [String: String] ?? [:] {
+            let parts = key.split(separator: "/", maxSplits: 2, omittingEmptySubsequences: false)
+            guard parts.count == 3, !parts[2].isEmpty else { continue }
+            var task = BackgroundTask(file: URL(fileURLWithPath: path), label: String(parts[2]), title: "", icon: URL(fileURLWithPath: path))
+            task.domain = parts[0] + "/" + parts[1]
+            _ = turnOn(task, launchctl: launchctl, list: list, defaults: defaults)
+        }
     }
 
     private static func launchctl(_ arguments: [String]) -> String? { AppRoots.run(launchctlPath, arguments) }
@@ -335,6 +342,7 @@ enum BackgroundTasks {
         }
         guard !task.domain.isEmpty, launchctl(["disable", "\(task.domain)/\(task.label)"]) != nil else { return false }
         _ = launchctl(["bootout", "\(task.domain)/\(task.label)"])
+        rememberAgent(task, off: true, in: defaults)
         return true
     }
 
@@ -347,6 +355,7 @@ enum BackgroundTasks {
         }
         guard !task.domain.isEmpty, launchctl(["enable", "\(task.domain)/\(task.label)"]) != nil else { return false }
         _ = launchctl(["bootstrap", task.domain, task.file.path])
+        rememberAgent(task, off: false, in: defaults)
         return true
     }
     #endif

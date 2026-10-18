@@ -1,4 +1,5 @@
 import CommonCrypto
+import Darwin.membership
 import Foundation
 import Security
 
@@ -8,6 +9,108 @@ import Security
     func setAuto(fan: Int, reply: @escaping (Bool) -> Void)
     func update(from path: String, reply: @escaping (Bool) -> Void)
     func setService(label: String, on: Bool, reply: @escaping (Bool) -> Void)
+    func adopt(labels: [String], reply: @escaping (Bool) -> Void)
+    func restoreServices(reply: @escaping (Bool) -> Void)
+}
+
+enum HelperAccess {
+    static func isAdmin(_ uid: uid_t) -> Bool {
+        guard uid != 0 else { return true }
+        var user = [UInt8](repeating: 0, count: 16), admin = [UInt8](repeating: 0, count: 16)
+        var member: Int32 = 0
+        return mbr_uid_to_uuid(uid, &user) == 0 && mbr_gid_to_uuid(80, &admin) == 0
+            && mbr_check_membership(user, admin, &member) == 0 && member == 1
+    }
+}
+
+struct ServiceSwitch {
+    private static let launchctlExecutableURL = URL(fileURLWithPath: "/bin/launchctl")
+    let record: String
+    let own: String
+    var folder = HelperServices.folder
+    var launchctl: ([String]) -> String? = ServiceSwitch.run
+
+    static func turnedOff(_ record: String) -> [String] {
+        FileManager.default.contents(atPath: record).flatMap { try? PropertyListSerialization.propertyList(from: $0, format: nil) } as? [String] ?? []
+    }
+
+    func set(_ label: String, on: Bool, by caller: uid_t) -> Bool {
+        guard HelperAccess.isAdmin(caller), label != own, let file = HelperServices.plist(for: label, in: folder) else { return false }
+        let target = "system/" + label
+        let labels = Self.turnedOff(record)
+        let sharing = HelperServices.sharing[label] != nil
+        if on {
+            guard !sharing || labels.contains(label), launchctl(["enable", target]) != nil else { return false }
+            if labels.contains(label) { _ = save(labels.filter { $0 != label }) }
+            return launchctl(["bootstrap", "system", file]) != nil || launchctl(["print", target]) != nil
+        }
+        guard !sharing || launchctl(["print", target]) != nil else { return false }
+        let added = !labels.contains(label)
+        guard !added || save(labels + [label]) else { return false }
+        guard launchctl(["disable", target]) != nil else {
+            if added { _ = save(labels) }
+            return false
+        }
+        _ = launchctl(["bootout", target])
+        return true
+    }
+
+    func restore(by caller: uid_t) -> Bool {
+        guard HelperAccess.isAdmin(caller) else { return false }
+        let labels = Self.turnedOff(record)
+        let left = labels.filter { label in
+            guard label != own, HelperServices.allows(label) || HelperServices.sharing[label] != nil else { return false }
+            guard launchctl(["enable", "system/" + label]) != nil else { return true }
+            if let file = HelperServices.plist(for: label, in: folder) { _ = launchctl(["bootstrap", "system", file]) }
+            return false
+        }
+        return (left == labels || save(left)) && left.isEmpty
+    }
+
+    func adopt(_ labels: [String], by caller: uid_t) -> Bool {
+        guard HelperAccess.isAdmin(caller), !FileManager.default.fileExists(atPath: record), let disabled = disabled() else { return false }
+        return save(labels.reduce(into: [String]()) { kept, label in
+            if HelperServices.sharing[label] != nil, disabled.contains(label), !kept.contains(label) { kept.append(label) }
+        })
+    }
+
+    func prune() {
+        let labels = Self.turnedOff(record)
+        guard !labels.isEmpty, let disabled = disabled(), !disabled.isEmpty else { return }
+        let kept = labels.filter(disabled.contains)
+        if kept != labels { _ = save(kept) }
+    }
+
+    private func disabled() -> Set<String>? {
+        launchctl(["print-disabled", "system"]).map { text in
+            Set(text.split(separator: "\n").compactMap { line -> String? in
+                let item = line.trimmingCharacters(in: .whitespaces)
+                guard item.hasPrefix("\""), let end = item.range(of: "\" => "), ["disabled", "true"].contains(String(item[end.upperBound...])) else { return nil }
+                return String(item[item.index(after: item.startIndex)..<end.lowerBound])
+            })
+        }
+    }
+
+    private func save(_ labels: [String]) -> Bool {
+        guard let data = try? PropertyListSerialization.data(fromPropertyList: labels, format: .xml, options: 0),
+              (try? data.write(to: URL(fileURLWithPath: record), options: .atomic)) != nil
+        else { return false }
+        _ = chown(record, 0, 0)
+        return chmod(record, 0o644) == 0
+    }
+
+    static func run(_ arguments: [String]) -> String? {
+        let process = Process()
+        let output = Pipe()
+        process.executableURL = launchctlExecutableURL
+        process.arguments = arguments
+        process.standardOutput = output
+        process.standardError = FileHandle.nullDevice
+        guard (try? process.run()) != nil else { return nil }
+        let data = output.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        return process.terminationStatus == 0 ? String(decoding: data, as: UTF8.self) : nil
+    }
 }
 
 enum HelperServices {
@@ -35,9 +138,10 @@ enum HelperServices {
 }
 
 enum FanHelperInfo {
-    static let version = 3
+    static let version = 4
     static let selfUpdating = 2
     static let suffix = ".fans"
+    static let recordSuffix = ".turned-off"
     static let appIdentifier = "com.pikapik.app.direct"
 
     static func requirement(identifier: String) -> String? {

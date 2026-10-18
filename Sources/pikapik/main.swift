@@ -10,6 +10,8 @@ if CommandLine.arguments.contains("--uninstall") {
     DesktopIconsTool.putBack()
     HiddenFilesTool.putBack()
     HotCorners.putBackAll()
+    BackgroundTasks.putBack()
+    FanControl.putBackServices()
     #endif
     DockEdges.restore()
     HotKeyTrace().restore()

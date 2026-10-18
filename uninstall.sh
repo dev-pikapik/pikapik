@@ -36,7 +36,8 @@ FANS="/Library/PrivilegedHelperTools/$BUNDLE_ID.fans"
 if [ -e "$FANS" ]; then
     say "Removing fan control"
     sudo launchctl bootout "system/$BUNDLE_ID.fans" >/dev/null 2>&1 || true
-    sudo rm -f "$FANS" "/Library/LaunchDaemons/$BUNDLE_ID.fans.plist"
+    [ ! -e "$FANS.turned-off" ] || sudo /bin/sh -c '"$1" --restore >/dev/null 2>&1 & p=$!; (sleep 30; kill $p) >/dev/null 2>&1 & w=$!; wait $p; kill $w 2>/dev/null' sh "$FANS" || true
+    sudo rm -f "$FANS" "$FANS.new" "$FANS.turned-off" "/Library/LaunchDaemons/$BUNDLE_ID.fans.plist"
 fi
 
 say "Resetting permissions and settings"

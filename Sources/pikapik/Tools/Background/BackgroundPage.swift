@@ -16,7 +16,7 @@ actor BackgroundScanner {
         let logins = BackgroundTasks.loginItems()
         let launchd = Launchd.read()
         return BackgroundTasks.collect(footprint, launchd: launchd, own: own, loginItems: logins, turnedOff: BackgroundTasks.turnedOffLogins(live: logins),
-                                       turnedOffServices: BackgroundTasks.turnedOffServices(launchd: launchd), running: running)
+                                       turnedOffServices: FanControl.turnedOffServices, admin: HelperAccess.isAdmin(getuid()), running: running)
         #endif
     }
 
@@ -87,16 +87,9 @@ final class BackgroundModel {
             self.refresh()
         }
         if task.domain == "system" {
-            setService(task.label, on: task.state != .on, done: finish)
+            FanControl.shared.setService(task.label, on: task.state != .on, done: finish)
         } else {
             Task { finish(await scanner.toggle(task)) }
-        }
-    }
-
-    func setService(_ label: String, on: Bool, done: @escaping (Bool) -> Void) {
-        FanControl.shared.setService(label, on: on) { ok in
-            if ok { BackgroundTasks.rememberService(label, off: !on) }
-            done(ok)
         }
     }
     #endif

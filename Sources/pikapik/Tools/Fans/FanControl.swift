@@ -9,6 +9,8 @@ final class FanControl {
     private static let helperDir = "/Library/PrivilegedHelperTools"
     private static let binary = helperDir + "/" + label
     private static let plist = "/Library/LaunchDaemons/" + label + ".plist"
+    private static let record = binary + FanHelperInfo.recordSuffix
+    private static let oldServicesKey = PreferenceKey.backgroundTurnedOffServices
     private static let bundled = Bundle.main.bundleURL.appendingPathComponent("Contents/Library/LaunchServices/fan-helper")
     private static let launchctlPath = SystemPath.launchctl
     private static let mkdirPath = SystemPath.mkdir
@@ -18,6 +20,7 @@ final class FanControl {
     private static let chmodPath = SystemPath.chmod
     private static let codesignPath = SystemPath.codesign
     private static let printfPath = SystemPath.printf
+    private static let sleepPath = SystemPath.sleep
 
     @ObservationIgnored private let smc = SMC()
     @ObservationIgnored private var timer: Timer?
@@ -37,6 +40,8 @@ final class FanControl {
     }
 
     var hasFans: Bool { !fans.isEmpty }
+
+    static var turnedOffServices: [String] { ServiceSwitch.turnedOff(record) }
 
     var summary: Text {
         guard let first = fans.first else { return Text(verbatim: "") }
@@ -154,7 +159,8 @@ final class FanControl {
         wanted = [:]
         connection?.invalidate()
         let q = Self.quoted
-        let command = "\(Self.launchctlPath) bootout system/\(Self.label) >/dev/null 2>&1; \(Self.rmPath) -f \(q(Self.binary)) \(q(Self.binary + ".new")) \(q(Self.plist))"
+        let restore = "\(q(Self.binary)) --restore >/dev/null 2>&1 & p=$!; (\(Self.sleepPath) 30; kill $p) >/dev/null 2>&1 & w=$!; wait $p; kill $w 2>/dev/null"
+        let command = "\(Self.launchctlPath) bootout system/\(Self.label) >/dev/null 2>&1; [ ! -e \(q(Self.record)) ] || { \(restore); }; \(Self.rmPath) -f \(q(Self.binary)) \(q(Self.binary + ".new")) \(q(Self.record)) \(q(Self.plist))"
         let prompt = String(localized: "pikapik wants to remove administrator access.")
         DispatchQueue.global().async {
             let ok = KeepAwake.runAsAdmin(command, prompt: prompt)
@@ -193,6 +199,7 @@ final class FanControl {
         helper.version { version in
             DispatchQueue.main.async {
                 self.ready = version == FanHelperInfo.version
+                if self.ready { self.migrate(helper) }
                 guard version >= FanHelperInfo.selfUpdating, !self.updated, !FileManager.default.contentsEqual(atPath: Self.binary, andPath: Self.bundled.path) else { return }
                 self.updated = true
                 helper.update(from: Self.bundled.path) { ok in
@@ -204,6 +211,27 @@ final class FanControl {
                 }
             }
         }
+    }
+
+    private func migrate(_ helper: FanHelperProtocol) {
+        guard let old = UserDefaults.standard.stringArray(forKey: Self.oldServicesKey) else { return }
+        guard HelperAccess.isAdmin(getuid()) else { return UserDefaults.standard.removeObject(forKey: Self.oldServicesKey) }
+        helper.adopt(labels: old) { _ in DispatchQueue.main.async { UserDefaults.standard.removeObject(forKey: Self.oldServicesKey) } }
+    }
+
+    static func putBackServices() {
+        guard HelperAccess.isAdmin(getuid()), FileManager.default.fileExists(atPath: record), FileManager.default.fileExists(atPath: plist),
+              let requirement = FanHelperInfo.requirement(identifier: label)
+        else { return }
+        let connection = NSXPCConnection(machServiceName: label, options: .privileged)
+        connection.remoteObjectInterface = NSXPCInterface(with: FanHelperProtocol.self)
+        connection.setCodeSigningRequirement(requirement)
+        connection.resume()
+        defer { connection.invalidate() }
+        let done = DispatchSemaphore(value: 0)
+        guard let helper = connection.remoteObjectProxyWithErrorHandler({ _ in done.signal() }) as? FanHelperProtocol else { return }
+        helper.restoreServices { _ in done.signal() }
+        _ = done.wait(timeout: .now() + 10)
     }
 
     private func helper(onError: (() -> Void)? = nil) -> FanHelperProtocol? {

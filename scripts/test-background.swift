@@ -147,13 +147,20 @@ enum BackgroundTests {
         launchd.gui.pids = ["com.foo.agent": 0, "com.foo.sync": 42]
         launchd.gui.disabled = ["com.gone.updater": true, "com.foo.sync": false]
         launchd.system.pids = ["com.vendor.daemon": 77]
+        launchd.system.disabled = ["com.openssh.sshd": true, "com.apple.smbd": true, "com.apple.screensharing": false]
         file("home/Gone.app/Contents/MacOS/gone")
-        let tasks = BackgroundTasks.collect(AppFootprint(roots: roots, installed: [foo], system: []), launchd: launchd, own: own,
-                                            loginItems: [foo.url, own, launcher, at("home/.Trash/Old.app")], turnedOff: [at("home/Gone.app")],
-                                            turnedOffServices: ["com.openssh.sshd", "com.apple.smbd"],
-                                            running: [(id: "com.foo.launcher", url: nil), (id: "com.foo.app", url: foo.url)],
-                                            status: { ["com.needs.approval.plist": 2, "com.foo.daemon.plist": 1][$0.lastPathComponent] ?? 0 })
-        let found = Dictionary(tasks.map { ($0.label.isEmpty ? $0.file.lastPathComponent : $0.label, $0) }, uniquingKeysWith: { first, _ in first })
+        func scan(admin: Bool) -> [BackgroundTask] {
+            BackgroundTasks.collect(AppFootprint(roots: roots, installed: [foo], system: []), launchd: launchd, own: own,
+                                    loginItems: [foo.url, own, launcher, at("home/.Trash/Old.app")], turnedOff: [at("home/Gone.app")],
+                                    turnedOffServices: ["com.openssh.sshd", "com.apple.smbd", "com.apple.screensharing"], admin: admin,
+                                    running: [(id: "com.foo.launcher", url: nil), (id: "com.foo.app", url: foo.url)],
+                                    status: { ["com.needs.approval.plist": 2, "com.foo.daemon.plist": 1][$0.lastPathComponent] ?? 0 })
+        }
+        func named(_ tasks: [BackgroundTask]) -> [String: BackgroundTask] {
+            Dictionary(tasks.map { ($0.label.isEmpty ? $0.file.lastPathComponent : $0.label, $0) }, uniquingKeysWith: { first, _ in first })
+        }
+        let tasks = scan(admin: true)
+        let found = named(tasks)
         let expected: Set = ["com.foo.agent", "com.foo.daemon", "com.foo.launcher", "com.foo.sync", "com.gone.updater", "com.needs.approval",
                              "com.pikapik.app.direct.test", "com.vendor.daemon", "com.vendor.shared", "com.foo.app", "com.pikapik.app.direct", "Old.app", "Gone.app",
                              "com weird", "com.pikapik.app.helper", "com.openssh.sshd"]
@@ -182,6 +189,13 @@ enum BackgroundTests {
         check("com.pikapik.app.direct") { $0.kind == .login && $0.isOwn && $0.title == "pikapik" && $0.icon == own && $0.version == "1.50.1" && !$0.canToggle }
         check("Old.app") { $0.kind == .leftover && $0.title == "Old" && $0.canToggle }
         check("Gone.app") { $0.kind == .login && $0.title == "Gone" && $0.state == .off && $0.canToggle && !$0.running }
+
+        let standard = named(scan(admin: false))
+        precondition(Set(standard.keys) == expected)
+        for (label, task) in standard where task.scope != .wholeMac { precondition(task == found[label]!, "\(label) changed for a standard user") }
+        let daemon = standard["com.vendor.daemon"]!, ssh = standard["com.openssh.sshd"]!
+        precondition(daemon.domain.isEmpty && !daemon.canToggle && daemon.opensLoginItems, "standard users turn whole-Mac services off in System Settings")
+        precondition(ssh.domain.isEmpty && !ssh.canToggle && ssh.state == .off && !ssh.opensLoginItems)
     }
 
     static func switches() {
@@ -201,18 +215,30 @@ enum BackgroundTests {
         var agent = BackgroundTask(file: at("root/Library/LaunchAgents/a.plist"), label: "a", title: "A", icon: at("root"))
         agent.domain = "gui/501"
 
+        func agents() -> [String: String] { defaults.dictionary(forKey: "background-turned-off-agents") as? [String: String] ?? [:] }
+        let path = at("root/Library/LaunchAgents/a.plist").path
+
         precondition(BackgroundTasks.turnOff(agent, launchctl: launchctl, list: list, defaults: defaults))
         precondition(calls == [["disable", "gui/501/a"], ["bootout", "gui/501/a"]], "\(calls)")
+        precondition(agents() == ["gui/501/a": path])
         calls = []
         precondition(BackgroundTasks.turnOn(agent, launchctl: launchctl, list: list, defaults: defaults))
-        precondition(calls == [["enable", "gui/501/a"], ["bootstrap", "gui/501", at("root/Library/LaunchAgents/a.plist").path]], "\(calls)")
+        precondition(calls == [["enable", "gui/501/a"], ["bootstrap", "gui/501", path]], "\(calls)")
+        precondition(agents().isEmpty)
         calls = []
         launchctlWorks = false
         precondition(!BackgroundTasks.turnOff(agent, launchctl: launchctl, list: list, defaults: defaults) && calls == [["disable", "gui/501/a"]], "\(calls)")
+        precondition(agents().isEmpty, "a failed turn-off is not remembered")
+        launchctlWorks = true
+        precondition(BackgroundTasks.turnOff(agent, launchctl: launchctl, list: list, defaults: defaults))
+        launchctlWorks = false
         precondition(!BackgroundTasks.turnOn(agent, launchctl: launchctl, list: list, defaults: defaults))
+        precondition(agents() == ["gui/501/a": path], "a failed turn-on stays remembered")
+        launchctlWorks = true
         agent.domain = ""
         calls = []
         precondition(!BackgroundTasks.turnOff(agent, launchctl: launchctl, list: list, defaults: defaults) && calls.isEmpty)
+        agent.domain = "gui/501"
 
         file("home/Foo.app/Contents/MacOS/foo")
         file("home/Other.app/Contents/MacOS/other")
@@ -237,18 +263,34 @@ enum BackgroundTests {
         try! FileManager.default.removeItem(at: at("home/Other.app"))
         precondition(BackgroundTasks.turnedOffLogins(live: [], defaults: defaults).isEmpty)
 
-        var launchd = Launchd()
-        launchd.system.disabled = ["com.openssh.sshd": true, "com.apple.screensharing": true, "com.apple.smbd": true]
-        BackgroundTasks.rememberService("com.openssh.sshd", off: true, defaults: defaults)
-        BackgroundTasks.rememberService("com.apple.screensharing", off: true, defaults: defaults)
-        BackgroundTasks.rememberService("com.apple.smbd", off: true, defaults: defaults)
-        BackgroundTasks.rememberService("com.vendor.daemon", off: true, defaults: defaults)
-        precondition(BackgroundTasks.turnedOffServices(launchd: launchd, defaults: defaults) == ["com.openssh.sshd", "com.apple.screensharing"])
-        BackgroundTasks.rememberService("com.openssh.sshd", off: false, defaults: defaults)
-        precondition(BackgroundTasks.turnedOffServices(launchd: launchd, defaults: defaults) == ["com.apple.screensharing"])
-        launchd.system.disabled["com.apple.screensharing"] = false
-        precondition(BackgroundTasks.turnedOffServices(launchd: launchd, defaults: defaults).isEmpty)
-        precondition(defaults.stringArray(forKey: "background-turned-off-services") == [])
+        putBack(defaults: defaults, list: list, agent: agent)
+    }
+
+    private static func putBack(defaults: UserDefaults, list: FakeLoginItems, agent: BackgroundTask) {
+        var calls: [[String]] = []
+        let launchctl: ([String]) -> String? = { calls.append($0); return "" }
+        file("home/Back.app/Contents/MacOS/back")
+        list.items.append(at("home/Back.app"))
+        var login = BackgroundTask(file: at("home/Back.app"), label: "", title: "Back", icon: at("home/Back.app"))
+        login.inLoginList = true
+        var other = BackgroundTask(file: at("home/Library/LaunchAgents/b.plist"), label: "b", title: "B", icon: at("home"))
+        other.domain = "user/501"
+        precondition(BackgroundTasks.turnOff(login, launchctl: launchctl, list: list, defaults: defaults))
+        precondition(BackgroundTasks.turnOff(other, launchctl: launchctl, list: list, defaults: defaults))
+        var agents = defaults.dictionary(forKey: "background-turned-off-agents") as? [String: String] ?? [:]
+        precondition(agents.keys.sorted() == ["gui/501/a", "user/501/b"], "\(agents)")
+        agents["broken"] = "/x"
+        agents["gui/501/"] = "/y"
+        defaults.set(agents, forKey: "background-turned-off-agents")
+        calls = []
+
+        BackgroundTasks.putBack(launchctl: launchctl, list: list, defaults: defaults)
+        precondition(list.items.contains { $0.path == at("home/Back.app").path }, "login item put back")
+        precondition(BackgroundTasks.turnedOffLogins(live: [], defaults: defaults).isEmpty)
+        precondition(Set(calls) == [["enable", agent.domain + "/a"], ["bootstrap", agent.domain, agent.file.path],
+                                    ["enable", "user/501/b"], ["bootstrap", "user/501", other.file.path]], "\(calls)")
+        precondition(Set((defaults.dictionary(forKey: "background-turned-off-agents") ?? [:]).keys) == ["broken", "gui/501/"])
+        print("putting back on uninstall: ok")
     }
 }
 
