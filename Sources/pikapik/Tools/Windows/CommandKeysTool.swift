@@ -60,7 +60,8 @@ final class CommandKeysTool: Tool {
     @ObservationIgnored private var tap: CFMachPort?
     @ObservationIgnored private var source: CFRunLoopSource?
     @ObservationIgnored fileprivate var keys: Set<Int64> = []
-    @ObservationIgnored fileprivate var blocked: Set<Int64> = []
+    @ObservationIgnored var blocked: Set<Int64> = []
+    @ObservationIgnored fileprivate var swallowed = SwallowedKeys()
     @ObservationIgnored var triggers: [Shortcut: Int64] = [:]
     @ObservationIgnored var held: (key: Int64, target: Int64)?
 
@@ -105,6 +106,7 @@ final class CommandKeysTool: Tool {
         let targets = [(quitKeys, Int64(kVK_ANSI_Q)), (closeKeys, Int64(kVK_ANSI_W))].filter { keys.contains($0.1) }
         triggers = Dictionary(targets) { first, _ in first }
         held = nil
+        swallowed.removeAll()
         if !keys.isEmpty, MainCopy.canAct, AXIsProcessTrusted() { start() }
     }
 
@@ -174,11 +176,13 @@ func commandKeysCallback(
             CGEvent.postPikapikKey(Int(target), down: true, flags: .maskCommand)
             return nil
         }
-        guard tool.blocked.contains(code),
-              flags.contains(.maskCommand),
-              flags.isDisjoint(with: [.maskControl, .maskAlternate, .maskShift])
-        else { break }
-        if type == .keyDown { GameModeTool.shared.hint() }
+        if type == .keyUp {
+            guard tool.swallowed.up(code) else { break }
+            return nil
+        }
+        let blocks = tool.blocked.contains(code) && flags.contains(.maskCommand) && flags.isDisjoint(with: [.maskControl, .maskAlternate, .maskShift])
+        guard tool.swallowed.down(code, swallow: blocks) else { break }
+        GameModeTool.shared.hint()
         return nil
     default:
         break

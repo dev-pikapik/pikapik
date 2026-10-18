@@ -154,6 +154,29 @@ struct TestKeyUpFlags {
         expect(record { commandKeys.stop() }, [], "Command keys second stop")
         print("Command keys releases a held key once when it stops: ok")
 
+        commandKeys.blocked = [Int64(kVK_ANSI_Q)]
+        func commandKeysSees(_ type: CGEventType, _ flags: CGEventFlags) -> Bool {
+            let event = keyEvent(kVK_ANSI_Q, down: type == .keyDown)
+            event.flags = flags
+            var passed = false
+            expect(record { inTap { passed = commandKeysCallback(proxy: proxy, type: type, event: event, refcon: Unmanaged.passUnretained(commandKeys).toOpaque()) != nil } }, [], "Command keys \(type == .keyDown ? "key-down" : "key-up") with \(flags)")
+            return passed
+        }
+        precondition(commandKeysSees(.keyDown, []), "Command keys must pass a Q typed without Command")
+        precondition(commandKeysSees(.keyUp, .maskCommand), "a key that went down before Command must come up in the app even with Command held, or the app keeps it held")
+        precondition(!commandKeysSees(.keyDown, .maskCommand), "Command keys must swallow Command Q")
+        precondition(!commandKeysSees(.keyUp, []), "Command keys must swallow the key-up of the Command Q it swallowed, even after Command came up")
+        commandKeys.blocked = []
+        print("Command keys swallows a key-up only when it swallowed its key-down, so a key held when Command goes down still comes up: ok")
+
+        var swallowed = SwallowedKeys()
+        precondition(swallowed.down(13, swallow: true) && !swallowed.down(13, swallow: false) && !swallowed.up(13), "a key-down that passes, such as a repeat after Command came up, must let its key-up pass too")
+        precondition(swallowed.down(48, swallow: true) && swallowed.up(48) && !swallowed.up(48), "a swallowed key-down must swallow one key-up, not the next one")
+        _ = swallowed.down(4, swallow: true)
+        swallowed.removeAll()
+        precondition(!swallowed.up(4), "a stopped tap forgets what it swallowed")
+        print("Game Mode remembers the key-downs it swallowed the same way: ok")
+
         let finderKeys = FinderKeys.shared
         finderKeys.held = (kVK_F2, kVK_Return)
         expect(record { inTap { result = finderKeysCallback(proxy: proxy, type: .keyUp, event: release(kVK_F2), refcon: Unmanaged.passUnretained(finderKeys).toOpaque()) } }, [up(kVK_Return)], "Finder keys key-up")

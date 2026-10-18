@@ -5,6 +5,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 ## [1.53.2] - Unreleased
 
 ### Fixed
+- Game Mode and Protect quitting and closing: a key you hold when you press ⌘, such as W to walk in a game, no longer stays held after you let go of it. Before, if ⌘ was still down when you let go, the game kept the key pressed until you tapped it again. The same went for Tab, H and M in games, and for Q and W anywhere while quitting or closing is protected.
 - Turn off pointer acceleration, website version: removing pikapik with Homebrew or the uninstall script now puts back the mouse settings pikapik changed, also when pikapik didn’t quit normally, for example after a crash or a force quit. Before, the mouse could keep moving without acceleration after the app was gone.
 
 ### Changed
