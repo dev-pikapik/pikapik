@@ -8,6 +8,13 @@ struct SettingsFile {
     static let app = AppConstants.legacyAppName
     static let name = "settings.json"
     static let maxSize = 2_000_000
+    /// The time on an upload that no change on this Mac caused, for example the first one after sync is turned on while
+    /// iCloud has not delivered the file yet. It lies in the first day of 1970, so it loses to every real file: the other
+    /// Macs keep their settings and send them here instead of taking this Mac's. A later upload gets an earlier time, so of
+    /// two Macs that turn sync on before iCloud has anything, the second takes the settings of the first.
+    static func unclaimed(at date: Date = .now) -> Date {
+        Date(timeIntervalSince1970: 86_400 - date.timeIntervalSince1970 / 100_000)
+    }
     static let keys = Set([
         PreferenceKey.appearance, PreferenceKey.appleLanguages, PreferenceKey.openAtLogin, PreferenceKey.keepRunning, PreferenceKey.checkUpdates,
         PreferenceKey.commandKeysQuit, PreferenceKey.commandKeysClose, PreferenceKey.commandKeysQuitShortcut, PreferenceKey.commandKeysCloseShortcut,
@@ -70,6 +77,32 @@ struct SettingsFile {
         if let table = value as? [String: Any] { return table.values.allSatisfy { $0 is NSNumber || $0 is String } }
         guard let list = value as? [Any] else { return false }
         return list.allSatisfy { $0 is String }
+    }
+
+    /// The file at `url`; nil when there is none or it is damaged, so it may be replaced; or the error when it can't be read
+    /// now, for example while iCloud downloads it or the Mac is offline. Nothing may replace it then.
+    static func read(_ url: URL) -> Result<SettingsFile?, Error> {
+        var result = Result<SettingsFile?, Error>.success(nil)
+        var error: NSError?
+        NSFileCoordinator().coordinate(readingItemAt: url, options: [], error: &error) { url in
+            guard FileManager.default.fileExists(atPath: url.path) else { return }
+            do {
+                let size = try FileManager.default.attributesOfItem(atPath: url.path)[.size] as? Int ?? 0
+                if size <= maxSize {
+                    let data = try Data(contentsOf: url)
+                    result = .success(SettingsFile(data: data))
+                }
+            } catch {
+                if !isMissing(error) { result = .failure(error) }
+            }
+        }
+        if let error, !isMissing(error) { return .failure(error) }
+        return result
+    }
+
+    private static func isMissing(_ error: Error) -> Bool {
+        let error = error as NSError
+        return error.domain == NSCocoaErrorDomain && (error.code == NSFileNoSuchFileError || error.code == NSFileReadNoSuchFileError)
     }
 
     static func merge(local: Date, remote: SettingsFile?, device: String) -> Action {
