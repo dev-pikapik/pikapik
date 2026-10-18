@@ -31,7 +31,7 @@ SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" NOTARY_PROFILE=pika
 ```
 Sources/pikapik/
   main.swift, App.swift, MenuView.swift
-  Core/                              constants, strings, event tags, shortcuts, focus, updater
+  Core/                              constants, symbols, strings, event tags, shortcuts, focus, updater
   UI/                                shared controls, row styles, icons, new marks
   Settings/                          settings window, tabs, search, iCloud sync
   Permissions/                       permissions checks, UI, leftover permissions
@@ -510,6 +510,14 @@ Settings use three kinds of icons, the same way System Settings does:
 - a plain symbol in a 24 pt column marks a fact: Battery, Temperature.
 
 A program without its own icon, such as a command-line tool, gets a gray tile with the `terminal` symbol.
+
+## Symbols
+
+Every SF Symbol name pikapik uses is written once, in `Symbol` (`Core/Symbol.swift`): one case per symbol, named after it, so `"sun.max.fill"` is `.sunMaxFill`. A misspelled name, or a symbol that the oldest supported macOS doesn't have yet, draws nothing and gives no error. The test checks that every symbol in the catalog exists, that the system's own availability table has it in macOS 14, that the cases are sorted, named after their symbols and all used, and that every name written next to `systemName:`, `systemSymbolName:` or `systemImage:` is in the catalog:
+
+```bash
+swiftc -parse-as-library Sources/pikapik/Core/Symbol.swift scripts/test-symbols.swift -o build/test-symbols && build/test-symbols
+```
 
 ## Third-party software
 
