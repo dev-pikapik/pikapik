@@ -861,10 +861,7 @@ enum TestArchive {
     }
 
     static func rar() {
-        guard let samples = ProcessInfo.processInfo.environment["PIKA_RAR_SAMPLES"] else {
-            print("rar skipped (set PIKA_RAR_SAMPLES to a folder of your own .rar files)")
-            return
-        }
+        let samples = ProcessInfo.processInfo.environment["PIKA_RAR_SAMPLES"] ?? manager.currentDirectoryPath + "/scripts/rar-corpus"
         let folder = fresh("rar")
         let names = (try! manager.contentsOfDirectory(atPath: samples)).filter { !$0.hasPrefix(".") }.sorted()
         for name in names { try! manager.copyItem(atPath: samples + "/" + name, toPath: folder.path + "/" + name) }
