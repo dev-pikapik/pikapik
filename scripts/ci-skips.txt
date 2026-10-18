@@ -1,4 +1,4 @@
 # Skips CI allows. On CI a test that prints a line with "skip" fails, unless a line here names the test and part of that line.
-# test | text it prints | why CI can't run that part
-test-archive | rar skipped | Free tools can't make .rar files, so the runner has no samples; set PIKA_RAR_SAMPLES to a folder of your own .rar files to run this part on a Mac.
-test-system-shortcuts | live check skipped | The runner's macOS keeps a different number of system shortcuts than the app's list, which follows the newest macOS, so the live comparison can't line them up; the converter and Apple-defaults parts still run.
+# test | text it prints | why the runner can't run that part, and where and how it runs instead
+test-archive | rar skipped | Only RARLAB's rar can make .rar files: Homebrew's rar cask has been disabled since 2026-09-01 because it fails the Gatekeeper check, and RARLAB's license allows only a 40-day trial, so the runner has no samples. Run this part on the Mac mini with a folder of .rar files: build test-archive with its line in CONTRIBUTING.md, then run `PIKA_RAR_SAMPLES=<folder> build/test-archive`.
+test-system-shortcuts | live check skipped | The runner has macOS 26, which keeps a different number of system shortcuts than the app's list, which follows macOS 27, so the live comparison can't line them up; the converter and Apple-defaults parts still run. Run the live part on macOS 27, on the Mac mini or in the test virtual machine: its line in CONTRIBUTING.md, unchanged.
