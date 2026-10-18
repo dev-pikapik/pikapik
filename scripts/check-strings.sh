@@ -176,9 +176,10 @@ interpolated = {re.sub(r'\\\((?:[^()]|\([^()]*\))*\)', '%', m) for m in re.finda
 for key, where in sorted(needed.items(), key=lambda kv: kv[1]):
     if not any(key in table for table in tables.values()):
         fail(f'{where}: "{key[:60]}" is not in Resources/Localizable.xcstrings')
-for key in sorted(english):
-    if key not in needed and f'"{escape(key)}"' not in all_text and SPEC.sub('%', escape(key)) not in interpolated:
-        fail(f'Resources/Localizable.xcstrings: "{key[:60]}" is not used in the code')
+if not os.environ.get('APPSTORE'):
+    for key in sorted(english):
+        if key not in needed and f'"{escape(key)}"' not in all_text and SPEC.sub('%', escape(key)) not in interpolated:
+            fail(f'Resources/Localizable.xcstrings: "{key[:60]}" is not used in the code')
 for path, catalog in (('Resources/Localizable.xcstrings', tables), ('Resources/ServicesMenu.xcstrings', srv_tables)):
     for lang, table in catalog.items():
         for key, value in table.items():
