@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Mac znów usypia się przy zamkniętej pokrywie
+
+<sub>1.53.2 · 18 października 2026</sub>
+
+Po „Pracy z zamkniętą pokrywą” Mac zawsze znów usypia się, gdy zamkniesz pokrywę.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Wcześniej wylogowanie, ponowne uruchomienie albo anulowana prośba o hasło mogły sprawić, że Mac przestawał się usypiać przy zamkniętej pokrywie, nawet w torbie. Teraz pikapik przywraca usypianie, gdy „Bez usypiania” się wyłącza, minutę po zamknięciu pikapik, przy wylogowaniu, ponownym uruchomieniu i wyłączeniu oraz przy usuwaniu aplikacji. Jeśli mimo to się nie uda, Ustawienia › Bez usypiania pokażą „Mac nadal nie usypia się przy zamkniętej pokrywie” i przycisk „Pozwól uśpić”. „Praca z zamkniętą pokrywą” ustawia się teraz na każdym Macu osobno. A „Wpisz ponownie słowa napisane w złym języku” nie każe już macOS prosić o dostęp przy uruchamianiu: zezwól na niego na karcie „Uprawnienia”.
+
+**Wypróbuj:** Ustawienia › Bez usypiania
+
+**Poprawki**
+
+- Klawisz przytrzymany w grze, na przykład W do chodzenia, nie zacina się już po naciśnięciu ⌘.
+- Odtwarzacz nie zamyka się już nagle przy niektórych uszkodzonych filmach ani po odłączeniu dysku z filmem.
+- „Zakończ po zamknięciu ostatniego okna” nie zamraża już myszy i klawiatury, gdy aplikacja jest zajęta.
+- Włączenie „Synchronizuj ustawienia przez iCloud” na kolejnym Macu nie resetuje już ustawień na pozostałych Macach.
+- Usuwanie aplikacji nie zaznacza już folderu, którego wciąż używa inna aplikacja tego samego twórcy, ani wspólnych elementów z listy Homebrew do całkowitego usuwania, takich jak program do aktualizacji Google.
+
+---
+
 ## <a id="v1.53.1"></a>Filmy AV1 odtwarzają się, nawet gdy macOS nie potrafi ich zdekodować
 
 <sub>1.53.1 · 18 października 2026</sub>

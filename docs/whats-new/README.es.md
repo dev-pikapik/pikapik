@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Tu Mac vuelve a entrar en reposo con la tapa cerrada
+
+<sub>1.53.2 · 18 de octubre de 2026</sub>
+
+Después de «Funcionar con la tapa cerrada», tu Mac siempre vuelve a entrar en reposo al cerrar la tapa.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Antes, cerrar sesión, reiniciar o cancelar la petición de contraseña podía dejar el Mac sin reposo con la tapa cerrada, incluso dentro de una mochila. Ahora pikapik devuelve el reposo cuando «Mantener activo» se detiene, un minuto después de salir de pikapik, al cerrar sesión, reiniciar o apagar, y al eliminar la app. Si aun así no lo consigue, Ajustes › Mantener activo muestra «Tu Mac sigue sin entrar en reposo con la tapa cerrada» y el botón «Permitir reposo». «Funcionar con la tapa cerrada» ahora se ajusta en cada Mac por separado. Además, «Reescribir las palabras escritas en el idioma equivocado» ya no hace que macOS pida acceso al abrirse: permítelo en la pestaña «Permisos».
+
+**Pruébalo:** Ajustes › Mantener activo
+
+**Corregido**
+
+- Una tecla que mantienes pulsada en un juego, como W para caminar, ya no se queda pulsada después de ⌘.
+- El reproductor ya no se cierra con algunas películas dañadas ni al desconectar el disco donde está la película.
+- «Salir al cerrar la última ventana» ya no congela el ratón y el teclado mientras una app está ocupada.
+- Activar «Sincronizar ajustes con iCloud» en otro Mac ya no restablece los ajustes de tus demás Mac.
+- Eliminar apps ya no marca una carpeta que otra app del mismo desarrollador todavía usa, ni las partes compartidas de la lista de eliminación completa de Homebrew, como el actualizador de Google.
+
+---
+
 ## <a id="v1.53.1"></a>Las películas en AV1 se reproducen aunque macOS no pueda descodificarlas
 
 <sub>1.53.1 · 18 de octubre de 2026</sub>

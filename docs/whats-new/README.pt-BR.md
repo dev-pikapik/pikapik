@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>O Mac volta a entrar em repouso com a tampa fechada
+
+<sub>1.53.2 · 18 de outubro de 2026</sub>
+
+Depois de “Funcionar com a tampa fechada”, o Mac sempre volta a entrar em repouso quando você fecha a tampa.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Antes, sair da sessão, reiniciar ou cancelar o pedido de senha podia deixar o Mac sem repouso com a tampa fechada, mesmo dentro da mochila. Agora o pikapik devolve o repouso quando o “Manter ativo” para, um minuto depois de o pikapik fechar, ao sair da sessão, reiniciar ou desligar, e ao remover o app. Se mesmo assim não conseguir, Ajustes › Manter ativo mostra “O Mac ainda não entra em repouso com a tampa fechada” e o botão “Permitir repouso”. “Funcionar com a tampa fechada” agora é ajustado em cada Mac separadamente. E “Redigitar palavras digitadas no idioma errado” não faz mais o macOS pedir acesso ao abrir: permita na aba “Permissões”.
+
+**Experimente:** Ajustes › Manter ativo
+
+**Corrigido**
+
+- Uma tecla que você segura em um jogo, como W para andar, não fica mais presa depois do ⌘.
+- O Player não fecha mais com alguns filmes danificados nem quando o disco do filme é desconectado.
+- “Encerrar ao fechar a última janela” não congela mais o mouse e o teclado enquanto um app está ocupado.
+- Ativar “Sincronizar ajustes com o iCloud” em mais um Mac não redefine mais os ajustes dos seus outros Macs.
+- Remover apps não marca mais uma pasta que outro app do mesmo desenvolvedor ainda usa, nem partes compartilhadas da lista de remoção completa do Homebrew, como o atualizador do Google.
+
+---
+
 ## <a id="v1.53.1"></a>Filmes em AV1 tocam mesmo quando o macOS não consegue decodificá-los
 
 <sub>1.53.1 · 18 de outubro de 2026</sub>

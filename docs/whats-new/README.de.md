@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Ihr Mac schläft zugeklappt wieder ein
+
+<sub>1.53.2 · 18. Oktober 2026</sub>
+
+Nach „Mit geschlossenem Deckel arbeiten“ schläft Ihr Mac zugeklappt immer wieder ein.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Bisher konnten ein Abmelden, ein Neustart oder eine abgebrochene Passwortabfrage dazu führen, dass der Mac zugeklappt gar nicht mehr schlief, selbst in der Tasche. Jetzt gibt pikapik den Ruhezustand zurück, wenn „Wach bleiben“ endet, eine Minute nachdem pikapik beendet wurde, beim Abmelden, Neustarten und Ausschalten und wenn Sie die App entfernen. Klappt das trotzdem nicht, zeigt Einstellungen › Wach bleiben „Dein Mac schläft zugeklappt immer noch nicht“ und die Taste „Schlafen lassen“. „Mit geschlossenem Deckel arbeiten“ wird jetzt auf jedem Mac einzeln eingestellt. Außerdem lässt „In der falschen Sprache getippte Wörter neu tippen“ macOS beim Start nicht mehr nach Zugriff fragen: Erlauben Sie ihn im Tab „Berechtigungen“.
+
+**Ausprobieren:** Einstellungen › Wach bleiben
+
+**Behoben**
+
+- Eine Taste, die Sie in einem Spiel gedrückt halten, etwa W zum Laufen, bleibt nach ⌘ nicht mehr hängen.
+- Der Player stürzt bei manchen beschädigten Filmen und beim Abziehen des Laufwerks mit dem Film nicht mehr ab.
+- „Beenden, wenn das letzte Fenster schließt“ friert Maus und Tastatur nicht mehr ein, während eine App beschäftigt ist.
+- Wenn Sie „Einstellungen mit iCloud synchronisieren“ auf einem weiteren Mac einschalten, werden die Einstellungen auf Ihren anderen Macs nicht mehr zurückgesetzt.
+- Apps entfernen: Ein Ordner, den eine andere App desselben Entwicklers noch nutzt, wird nicht mehr angehakt, ebenso wenig gemeinsame Teile aus der Liste für das vollständige Entfernen mit Homebrew, etwa der Updater von Google.
+
+---
+
 ## <a id="v1.53.1"></a>AV1-Filme laufen, auch wenn macOS sie nicht decodieren kann
 
 <sub>1.53.1 · 18. Oktober 2026</sub>

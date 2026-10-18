@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Je Mac gaat met het deksel dicht weer in sluimerstand
+
+<sub>1.53.2 · 18 oktober 2026</sub>
+
+Na “Werk met gesloten deksel” gaat je Mac met het deksel dicht altijd weer in sluimerstand.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Eerder kon uitloggen, herstarten of een geannuleerd wachtwoordverzoek ervoor zorgen dat je Mac met het deksel dicht nooit meer in sluimerstand ging, zelfs niet in een tas. Nu zet pikapik de sluimerstand terug als “Wakker houden” stopt, een minuut nadat pikapik is gestopt, bij uitloggen, herstarten en uitzetten, en als je de app verwijdert. Lukt dat toch niet, dan toont Instellingen › Wakker houden “Je Mac gaat nog steeds niet in sluimerstand met het deksel dicht” met de knop “Laat sluimeren”. “Werk met gesloten deksel” stel je nu per Mac apart in. En “Woorden in de verkeerde taal opnieuw typen” laat macOS bij het opstarten niet meer om toegang vragen: geef die op het tabblad “Toestemmingen”.
+
+**Probeer het:** Instellingen › Wakker houden
+
+**Opgelost**
+
+- Een toets die je in een game ingedrukt houdt, zoals W om te lopen, blijft na ⌘ niet meer hangen.
+- De speler crasht niet meer bij sommige beschadigde films of als de schijf met de film wordt losgekoppeld.
+- “Stop als het laatste venster sluit” bevriest de muis en het toetsenbord niet meer terwijl een app bezig is.
+- “Instellingen synchroniseren met iCloud” aanzetten op nog een Mac zet de instellingen op je andere Macs niet meer terug.
+- Apps verwijderen vinkt geen map meer aan die een andere app van dezelfde ontwikkelaar nog gebruikt, en ook geen gedeelde onderdelen uit de volledige verwijderlijst van Homebrew, zoals de updater van Google.
+
+---
+
 ## <a id="v1.53.1"></a>AV1-films spelen af, ook als macOS ze niet kan decoderen
 
 <sub>1.53.1 · 18 oktober 2026</sub>

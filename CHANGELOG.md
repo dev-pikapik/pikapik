@@ -4,6 +4,9 @@ Every update to pikapik, version by version. The same news, told simply with a p
 
 ## [1.53.2] - Unreleased
 
+### Changed
+- Mac App Store version: **Fix words as you type** is held back until the App Store version is approved, because there it can’t see the text field and retypes words without looking. Fix the selected text and the Services command stay.
+
 ### Fixed
 - Keep Awake, website version: after Work with the lid closed, your Mac could stay unable to sleep with the lid closed for good, even in a bag. pikapik now lets it sleep again when Keep Awake stops, a minute after you quit pikapik or it stops unexpectedly, when you log out, restart or shut down, and when you remove the app. If that still fails, for example because the password prompt was canceled, Settings › Keep Awake and the menu say “Your Mac still won’t sleep with the lid closed” and offer a Let It Sleep button.
 - Keep Awake and settings sync: Work with the lid closed is now set on each Mac separately, because it needs that Mac’s administrator password. Settings that arrive from another Mac no longer restart a running Keep Awake timer or turn lid sleep on or off.
@@ -13,11 +16,6 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - Settings sync: turning it on while iCloud is still catching up no longer resets the settings on your other Macs. Before, the new Mac could upload its own defaults as the newest settings, and every other Mac took them. Now that first upload loses to any settings already in iCloud, and sync waits while the file in iCloud Drive can’t be read yet.
 - Retype words you typed in the wrong language, website version: without Accessibility access it no longer makes macOS show its own request at launch, after the Mac wakes or when you turn it on; it starts as soon as you allow access on the Permissions tab.
 - Game Mode, Mac App Store version: on some Macs with macOS 27.0.1 it now sees every system shortcut with ⌘, including ones you set to other keys, so it can hold them back while you play. Before, it recognized only some of them there, and only on Apple’s original keys.
-
-### Changed
-- Mac App Store version: **Fix words as you type** is held back until the App Store version is approved, because there it can’t see the text field and retypes words without looking. Fix the selected text and the Services command stay.
-
-### Fixed
 - Uninstaller, website version: a folder from an app’s installer package is ticked only when it is named after the app, or when it belongs to that app alone: no other package lists it, nothing else from the same developer is installed, and every file in it came with this app. Otherwise pikapik lists the app’s own items inside it, and an item that another package also installed starts unticked with “Also used by …”. Before, a developer’s shared folder, such as `/Library/Application Support/<Developer>`, could be ticked and moved to the Trash together with the files of the developer’s other apps.
 - Uninstaller, website version: items from Homebrew’s full removal list (zap) are ticked only when they carry the app’s name or bundle ID; the others are listed unticked as “Installed with Homebrew”. Shared parts such as Google’s updater are no longer ticked when you remove Chrome. An app is no longer matched to every Homebrew package that quits it, so removing Microsoft AutoUpdate no longer brings in the Homebrew files of Word and Excel, and apps that Homebrew installed from a package, such as Microsoft Word, now find their own Homebrew folder.
 

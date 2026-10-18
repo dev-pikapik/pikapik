@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Your Mac sleeps with the lid closed again
+
+<sub>1.53.2 · October 18, 2026</sub>
+
+After “Work with the lid closed”, your Mac always sleeps with the lid closed again.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Before, logging out, restarting or a canceled password prompt could leave your Mac unable to sleep with the lid closed, even in a bag. Now pikapik lets it sleep again when Keep Awake stops, a minute after pikapik quits, when you log out, restart or shut down, and when you remove the app. If it still can’t, Settings › Keep Awake says “Your Mac still won’t sleep with the lid closed” and offers a “Let It Sleep” button. “Work with the lid closed” is now set on each Mac separately. Also, “Retype words you typed in the wrong language” no longer makes macOS ask for access at launch: allow it on the Permissions tab.
+
+**Try it:** Settings › Keep Awake
+
+**Fixed**
+
+- A key you hold in a game, such as W to walk, no longer stays held after you press ⌘.
+- The player no longer crashes on some damaged films or when the drive with the film is unplugged.
+- “Quit when the last window closes” no longer freezes the mouse and keyboard while an app is busy.
+- Turning on “Sync settings with iCloud” on one more Mac no longer resets the settings on your other Macs.
+- The Uninstaller no longer ticks a folder that another app from the same developer still uses, or shared parts from Homebrew’s full removal list, such as Google’s updater.
+
+---
+
 ## <a id="v1.53.1"></a>AV1 films play even when macOS can’t decode them
 
 <sub>1.53.1 · October 18, 2026</sub>

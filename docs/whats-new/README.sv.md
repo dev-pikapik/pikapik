@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Din Mac går i vila med locket stängt igen
+
+<sub>1.53.2 · 18 oktober 2026</sub>
+
+Efter «Arbeta med locket stängt» går din Mac alltid i vila igen när du stänger locket.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Tidigare kunde en utloggning, en omstart eller en avbruten lösenordsfråga göra att Macen aldrig mer gick i vila med locket stängt, inte ens i en väska. Nu ger pikapik tillbaka viloläget när «Håll vaken» slutar, en minut efter att pikapik avslutats, vid utloggning, omstart och avstängning, och när du tar bort appen. Om det ändå inte går visar Inställningar › Håll vaken «Din Mac går fortfarande inte i vila med locket stängt» och knappen «Låt den vila». «Arbeta med locket stängt» ställs nu in på varje Mac för sig. Och «Skriv om ord som skrivits på fel språk» får inte längre macOS att be om åtkomst vid start: tillåt den på fliken «Behörigheter».
+
+**Prova:** Inställningar › Håll vaken
+
+**Åtgärdat**
+
+- En tangent som du håller ned i ett spel, till exempel W för att gå, fastnar inte längre efter ⌘.
+- Spelaren kraschar inte längre på vissa skadade filmer eller när enheten med filmen kopplas från.
+- «Avsluta när sista fönstret stängs» fryser inte längre musen och tangentbordet medan en app är upptagen.
+- Att slå på «Synkronisera inställningar med iCloud» på ännu en Mac återställer inte längre inställningarna på dina andra Mac-datorer.
+- Ta bort appar kryssar inte längre i en mapp som en annan app från samma utvecklare fortfarande använder, och inte heller delade komponenter från Homebrews lista för fullständig borttagning, till exempel Googles uppdateringsprogram.
+
+---
+
 ## <a id="v1.53.1"></a>AV1-filmer spelas upp även när macOS inte kan avkoda dem
 
 <sub>1.53.1 · 18 oktober 2026</sub>

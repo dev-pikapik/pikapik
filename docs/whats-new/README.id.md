@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Mac Anda kembali tidur saat penutup ditutup
+
+<sub>1.53.2 · 18 Oktober 2026</sub>
+
+Setelah “Bekerja dengan penutup tertutup”, Mac Anda selalu kembali tidur saat penutupnya ditutup.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Sebelumnya, keluar dari akun, memulai ulang, atau permintaan kata sandi yang dibatalkan bisa membuat Mac tidak pernah tidur lagi saat penutup ditutup, bahkan di dalam tas. Sekarang pikapik mengembalikan mode tidur saat “Tetap Terjaga” berhenti, satu menit setelah pikapik ditutup, saat Anda keluar dari akun, memulai ulang, atau mematikan Mac, dan saat Anda menghapus aplikasinya. Jika tetap gagal, Pengaturan › Tetap Terjaga menampilkan “Mac Anda masih tidak tidur saat penutup ditutup” dan tombol “Biarkan Tidur”. “Bekerja dengan penutup tertutup” kini diatur di setiap Mac secara terpisah. Selain itu, “Ketik ulang kata yang salah bahasa” tidak lagi membuat macOS meminta akses saat dibuka: izinkan di tab “Izin”.
+
+**Coba:** Pengaturan › Tetap Terjaga
+
+**Diperbaiki**
+
+- Tombol yang Anda tahan dalam game, misalnya W untuk berjalan, tidak lagi tetap tertekan setelah ⌘.
+- Pemutar tidak lagi mogok pada beberapa film yang rusak atau saat drive berisi film dicabut.
+- “Keluar saat jendela terakhir ditutup” tidak lagi membekukan mouse dan papan ketik saat app sedang sibuk.
+- Menyalakan “Selaraskan pengaturan dengan iCloud” di satu Mac lagi tidak lagi mengatur ulang pengaturan di Mac Anda yang lain.
+- Hapus App tidak lagi mencentang folder yang masih dipakai app lain dari pengembang yang sama, atau bagian bersama dari daftar penghapusan penuh Homebrew, seperti alat pembaruan dari Google.
+
+---
+
 ## <a id="v1.53.1"></a>Film AV1 tetap bisa diputar meski macOS tidak bisa mendekodenya
 
 <sub>1.53.1 · 18 Oktober 2026</sub>
