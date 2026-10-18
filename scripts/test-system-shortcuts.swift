@@ -33,6 +33,7 @@ struct TestSystemShortcuts {
         let agree = sandboxed.filter { id, entry in SymbolicHotKeys.value(id).map { $0.key == entry.key && $0.modifiers == entry.modifiers && SymbolicHotKeys.isEnabled(id) == entry.enabled } ?? false }
         print("without IDs: \(sandboxed.count) of \(apple.count) Apple defaults are in the live list, \(agree.count) agree with the SkyLight reader")
         guard records.count == SymbolicHotKeys.ids.count else {
+            precondition(ProcessInfo.processInfo.operatingSystemVersion.majorVersion != 27, "macOS 27 publishes \(records.count) system shortcut records, but the ID list in SymbolicHotKeys.ids has \(SymbolicHotKeys.ids.count)")
             return print("live check skipped: \(records.count) records, the ID list has \(SymbolicHotKeys.ids.count) (another macOS version)")
         }
         let rebuilt = SymbolicHotKeys.table(native: records, defaults: apple)

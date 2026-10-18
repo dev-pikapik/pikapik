@@ -240,7 +240,7 @@ enum SymbolicHotKeys {
     typealias Default = (character: UInt16, key: UInt16, modifiers: UInt64)
 
     // IDs WindowServer reports on macOS 27, in CopySymbolicHotKeys order
-    static let ids: [Int32] = ([0...2, 4...4, 6...37, 50...65, 70...70, 73...73, 75...86, 95...182, 184...264] as [ClosedRange<Int32>]).flatMap { $0 }
+    static let ids: [Int32] = ([0...2, 4...4, 6...37, 50...65, 70...70, 73...73, 75...86, 95...163, 165...182, 184...264] as [ClosedRange<Int32>]).flatMap { $0 }
 
     // CopySymbolicHotKeys works in the sandbox but names no IDs: on a Mac with the same ID list the records are matched by position, on any other the Apple defaults supply the IDs
     static func table(native: [[String: Any]], defaults: [Int32: Default], ids: [Int32] = ids) -> [Int32: Entry] {
