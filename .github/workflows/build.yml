@@ -8,10 +8,10 @@ on:
 permissions:
   contents: read
 
-# A newer push cancels an older run of the same pull request, but every commit on main keeps its run:
-# a release waits for the run of its own commit, and a red main shows which commit broke it
+# A newer push cancels an older run of the same pull request. Runs of main go one at a time, and a newer push takes the place
+# of a run still waiting its turn, since the newer run checks those commits too; a release commit keeps its own run, because the release waits for it
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'pull_request' && 'pr' || github.sha }}
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || (startsWith(github.event.head_commit.message, 'Version ') && github.sha || 'main') }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 defaults:
@@ -39,46 +39,55 @@ jobs:
       - name: No signing keys, certificates, profiles or tokens in the code
         run: ./scripts/check-secrets.sh
 
-  # Direct and Tests both need FFmpeg; building it here once keeps them from building it twice side by side when the cache is empty
-  ffmpeg:
-    name: FFmpeg
-    runs-on: macos-26
-    timeout-minutes: 30
+  # A pull request that changes only documents skips the macOS jobs: nothing they build or test reads those files.
+  # CONTRIBUTING.md holds the test lines, and check-strings needs every README to exist, so a change to CONTRIBUTING.md or a deleted or renamed document runs everything
+  changes:
+    name: Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.diff.outputs.code }}
     steps:
       - uses: actions/checkout@v5
-
-      - name: Look for FFmpeg in the cache
-        id: cache
-        uses: actions/cache@v4
         with:
-          path: Vendor/ffmpeg
-          key: ffmpeg-${{ hashFiles('scripts/fetch-ffmpeg.sh') }}
-          lookup-only: true
+          fetch-depth: 2
 
-      - name: Build FFmpeg
-        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Look for changes outside the documents
+        id: diff
         run: |
-          brew install meson ninja nasm pkg-config
-          ./scripts/fetch-ffmpeg.sh
+          code=true
+          if [ "$GITHUB_EVENT_NAME" = pull_request ] &&
+             git diff --quiet --no-renames HEAD^ HEAD -- . ':!docs' ':!.github/ISSUE_TEMPLATE' ':!.github/PULL_REQUEST_TEMPLATE.md' ':(exclude,glob)*.md' &&
+             git diff --quiet HEAD^ HEAD -- CONTRIBUTING.md &&
+             git diff --quiet --no-renames --diff-filter=D HEAD^ HEAD; then
+            code=false
+          fi
+          echo "code=$code" | tee -a "$GITHUB_OUTPUT"
 
   direct:
     name: Direct
-    needs: ffmpeg
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: macos-26
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
 
+      # When the cache has no FFmpeg for this fetch-ffmpeg.sh, Direct and Tests each build it once and save it
       - name: Restore FFmpeg
+        id: ffmpeg
         uses: actions/cache@v4
         with:
           path: Vendor/ffmpeg
           key: ffmpeg-${{ hashFiles('scripts/fetch-ffmpeg.sh') }}
 
+      - name: Install the FFmpeg build tools
+        if: steps.ffmpeg.outputs.cache-hit != 'true'
+        run: brew install meson ninja nasm pkg-config
+
       - name: Build
         run: |
           xcodebuild -version
-          brew install meson ninja nasm pkg-config
           ./scripts/build.sh
 
       # The built app has to start, keep running and quit cleanly when asked
@@ -96,6 +105,8 @@ jobs:
 
   appstore:
     name: App Store
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: macos-26
     timeout-minutes: 30
     steps:
@@ -118,7 +129,8 @@ jobs:
 
   tests:
     name: Tests
-    needs: ffmpeg
+    needs: changes
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
     runs-on: macos-26
     # the tests take about 35 minutes; the rest is room for tests stopped at their own time limit
     timeout-minutes: 90
@@ -127,11 +139,17 @@ jobs:
 
       # the player tests read videos through the app's own FFmpeg build
       - name: Restore FFmpeg
+        id: ffmpeg
         uses: actions/cache@v4
         with:
           path: Vendor/ffmpeg
           key: ffmpeg-${{ hashFiles('scripts/fetch-ffmpeg.sh') }}
-          fail-on-cache-miss: true
+
+      - name: Build FFmpeg
+        if: steps.ffmpeg.outputs.cache-hit != 'true'
+        run: |
+          brew install meson ninja nasm pkg-config
+          ./scripts/fetch-ffmpeg.sh
 
       # test-thumbnails makes its sample videos with Homebrew's ffmpeg; coreutils gives gtimeout, so one stuck test can't stop the rest
       - name: Install the ffmpeg and timeout tools
