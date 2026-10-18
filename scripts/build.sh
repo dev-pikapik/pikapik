@@ -46,15 +46,8 @@ FLAGS=()
 [ -z "${DEBUG:-}" ] || FLAGS+=(-D DEBUG)
 if [ -n "${APPSTORE:-}" ]; then
     FLAGS+=(-D APPSTORE)
-    KEPT=()
-    for f in "${SOURCES[@]}"; do
-        case $f in
-            */Tools/Uninstaller/AppIdentity.swift|*/Tools/Uninstaller/AppOwnerIndex.swift|*/Tools/Uninstaller/AppFootprint.swift) KEPT+=("$f") ;;
-            */Core/Updater.swift|*/Permissions/LeftoverPermissions*.swift|*/Tools/Fans/*|*/Tools/Player/*|*/Tools/Animations/*|*/Tools/KeyRepeat/*|*/Tools/Mouse/PointerTool.swift|*/Tools/Mouse/MiddleClick*|*/Tools/Dock/DockDisplay*|*/Tools/Uninstaller/*) ;;
-            *) KEPT+=("$f") ;;
-        esac
-    done
-    SOURCES=("${KEPT[@]}")
+    SOURCES=()
+    while IFS= read -r f; do SOURCES+=("$f"); done < <(./scripts/appstore-sources.sh)
     echo "App Store build"
 elif [ -d Private/Sources ] && [ -n "$(find Private/Sources -name '*.swift' -print -quit)" ]; then
     while IFS= read -r -d '' f; do SOURCES+=("$f"); done < <(find Private/Sources -name '*.swift' -print0)
