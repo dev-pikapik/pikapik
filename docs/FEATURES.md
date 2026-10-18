@@ -713,7 +713,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes the pointer move the same distance for the same hand movement, with no speed-up.
 
-**How it works:** Website: the private `IOHIDEventSystemClient` (`HIDPointerAccelerationType`), no permission; restored when pikapik quits (`AppDelegate.stopFeatures(quitting:)` in `Sources/pikapik/App.swift`, `PointerTool.restore()` in `Sources/pikapik/Tools/Mouse/PointerTool.swift`), but not by `--uninstall`. App Store: replaced by an animated guide and a row with an Open button to System Settings › Mouse (`ToolsSettings` in `SettingsWindow.swift`, `com.apple.Mouse-Settings.extension`) because an App Store app cannot change it. The guide (`SettingsGuide`, `Sources/pikapik/Settings/SettingsGuide.swift`) shows where to click: Advanced…, then “Pointer acceleration” off; its labels come from your Mac, in its language. System Settings shows the Mouse page only while a mouse is connected.
+**How it works:** Website: the private `IOHIDEventSystemClient` (`HIDPointerAccelerationType`), no permission; restored when pikapik quits (`AppDelegate.stopFeatures(quitting:)` in `Sources/pikapik/App.swift`, `PointerTool.restore()` in `Sources/pikapik/Tools/Mouse/PointerTool.swift`), and by `--uninstall` the same way, from what pikapik noted before its first change (`PointerTool.uninstall()`, `PointerPutBack` in `Sources/pikapik/Tools/Mouse/PointerPutBack.swift`). App Store: replaced by an animated guide and a row with an Open button to System Settings › Mouse (`ToolsSettings` in `SettingsWindow.swift`, `com.apple.Mouse-Settings.extension`) because an App Store app cannot change it. The guide (`SettingsGuide`, `Sources/pikapik/Settings/SettingsGuide.swift`) shows where to click: Advanced…, then “Pointer acceleration” off; its labels come from your Mac, in its language. System Settings shows the Mouse page only while a mouse is connected.
 
 **Options:**
 - Tracking speed — slider, disabled while the switch is off (`PointerSettings` in `PointerTool.swift`). Website only; in the App Store guide it is the system’s own slider.
@@ -723,7 +723,8 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 **Test:**
 1. (Website) Turn it on, move the mouse slowly and quickly → the distance per hand movement is the same; move Tracking speed → the pointer speed changes. Turn it off → acceleration returns.
 2. Quit pikapik → acceleration is restored.
-3. (App Store) The row shows an animation (click Advanced…, turn off Pointer acceleration) above Open; press Open → System Settings opens on Mouse. With Reduce Motion on, the animation is one still frame with the click marked. Search for “Tracking speed” in Settings → nothing.
+3. (Website) Turn it on and end pikapik with `pkill -9 pikapik` → acceleration stays off. Run `build/pikapik.app/Contents/MacOS/pikapik --uninstall` → acceleration is restored.
+4. (App Store) The row shows an animation (click Advanced…, turn off Pointer acceleration) above Open; press Open → System Settings opens on Mouse. With Reduce Motion on, the animation is one still frame with the click marked. Search for “Tracking speed” in Settings → nothing.
 
 ### Scroll by lines
 
