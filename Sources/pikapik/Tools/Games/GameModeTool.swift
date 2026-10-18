@@ -103,6 +103,7 @@ final class GameModeTool: Tool {
     @ObservationIgnored private let trace = HotKeyTrace()
     @ObservationIgnored fileprivate var languageBindings: [UInt64: (direction: InputSwitchGesture.Direction, automatic: Bool)] = [:]
     @ObservationIgnored fileprivate var inputIntent = GameInputIntent()
+    @ObservationIgnored fileprivate var swallowed = SwallowedKeys()
     @ObservationIgnored fileprivate var allowedAppShortcuts: Set<UInt64> = []
 
     func allowsLanguageGesture(flags: CGEventFlags, at time: UInt64) -> Bool {
@@ -382,6 +383,7 @@ final class GameModeTool: Tool {
         }
         tap = nil
         source = nil
+        swallowed.removeAll()
         isActive = false
     }
 
@@ -499,6 +501,10 @@ private func gameModeCallback(
     case .keyDown, .keyUp:
         let key = Int(event.getIntegerValueField(.keyboardEventKeycode))
         let flags = event.flags
+        if type == .keyUp, tool.swallowed.up(Int64(key)) {
+            if tool.isPlaying { tool.inputIntent.pressed(Int64(key), down: false) }
+            return nil
+        }
         guard tool.isPlaying else { break }
         if type == .keyDown, event.getIntegerValueField(.keyboardEventAutorepeat) == 0 {
             let combo = GameRules.combo(key: Int64(key), flags: flags.rawValue)
@@ -512,12 +518,15 @@ private func gameModeCallback(
             }
         }
         tool.inputIntent.pressed(Int64(key), down: type == .keyDown)
+        guard type == .keyDown else { break }
         let blocked = GameRules.blocksAppShortcut(key: key, flags: flags, rules: tool.rules, allowed: tool.allowedAppShortcuts)
-        if type == .keyDown, blocked || tool.combos.contains(GameRules.combo(key: Int64(key), flags: flags.rawValue)) { tool.hint() }
-        if blocked { return nil }
+        if blocked || tool.combos.contains(GameRules.combo(key: Int64(key), flags: flags.rawValue)) { tool.hint() }
         #if APPSTORE
-        if SymbolicHotKeys.swallows(key: key, flags: flags.rawValue) { return nil }
+        let swallow = blocked || SymbolicHotKeys.swallows(key: key, flags: flags.rawValue)
+        #else
+        let swallow = blocked
         #endif
+        if tool.swallowed.down(Int64(key), swallow: swallow) { return nil }
     case .flagsChanged:
         if tool.isPlaying { tool.inputIntent.changed(event.flags, at: event.timestamp) }
     case .leftMouseDown, .leftMouseUp, .leftMouseDragged:
