@@ -31,6 +31,11 @@ final class QuitOnCloseTool: Tool {
     @ObservationIgnored private var tokens: [NSObjectProtocol] = []
     @ObservationIgnored private var tap: CFMachPort?
     @ObservationIgnored private var tapSource: CFRunLoopSource?
+    /// An Accessibility question to another app can wait for seconds while that app is busy, and every pikapik tap runs on
+    /// the main thread. So the observers are made, signed up and told the window news on a thread of their own, and the
+    /// clicks and minimized windows are checked on a queue, where a busy app never freezes the keyboard or the mouse.
+    @ObservationIgnored private var observing: RunLoopThread?
+    @ObservationIgnored fileprivate let checks = DispatchQueue(label: "pikapik.quit-on-close", qos: .userInitiated)
 
     init() {
         isEnabled = UserDefaults.standard.bool(forKey: id)
@@ -56,11 +61,12 @@ final class QuitOnCloseTool: Tool {
     func refresh() {
         stop()
         guard isEnabled, MainCopy.canAct, AXIsProcessTrusted(), Permissions.shared.inputMonitoring else { return }
+        if observing == nil { observing = RunLoopThread(name: "pikapik.quit-on-close") }
         let center = NSWorkspace.shared.notificationCenter
         tokens = [
             center.addObserver(forName: NSWorkspace.didLaunchApplicationNotification, object: nil, queue: .main) { [weak self] note in
                 guard let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication else { return }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { self?.watch(app) }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { if self?.isActive == true { self?.watch(app) } }
             },
             center.addObserver(forName: NSWorkspace.didTerminateApplicationNotification, object: nil, queue: .main) { [weak self] note in
                 guard let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication else { return }
@@ -75,7 +81,7 @@ final class QuitOnCloseTool: Tool {
     private func stop() {
         tokens.forEach(NSWorkspace.shared.notificationCenter.removeObserver)
         tokens = []
-        observers.keys.forEach(unwatch)
+        observing?.run { [self] in observers.keys.forEach(stopObserving) }
         if let tap {
             CGEvent.tapEnable(tap: tap, enable: false)
             CFMachPortInvalidate(tap)
@@ -110,14 +116,17 @@ final class QuitOnCloseTool: Tool {
         if let tap { CGEvent.tapEnable(tap: tap, enable: true) }
     }
 
+    /// Runs on the checks queue. Only a click in a title bar corner is looked at, and only in the app it belongs to.
     fileprivate func clicked(at point: CGPoint) {
+        let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
+        guard let pid = TitleBarCorner.owner(at: point, in: windows) else { return }
+        let app = AXUIElementCreateApplication(pid)
+        AXUIElementSetMessagingTimeout(app, 0.25)
         var element: AXUIElement?
-        guard AXUIElementCopyElementAtPosition(AXUIElementCreateSystemWide(), Float(point.x), Float(point.y), &element) == .success,
-              let element, Self.string(element, kAXSubroleAttribute) == kAXCloseButtonSubrole as String
-        else { return }
-        var pid: pid_t = 0
-        guard AXUIElementGetPid(element, &pid) == .success else { return }
-        scheduleChecks(pid)
+        guard AXUIElementCopyElementAtPosition(app, Float(point.x), Float(point.y), &element) == .success, let element else { return }
+        AXUIElementSetMessagingTimeout(element, 0.25)
+        guard Self.string(element, kAXSubroleAttribute) == kAXCloseButtonSubrole as String else { return }
+        DispatchQueue.main.async { [weak self] in self?.scheduleChecks(pid) }
     }
 
     fileprivate func closeShortcutPressed() {
@@ -127,61 +136,99 @@ final class QuitOnCloseTool: Tool {
 
     private func watch(_ app: NSRunningApplication) {
         let pid = app.processIdentifier
-        guard observers[pid] == nil, !app.isTerminated, app.activationPolicy == .regular,
+        guard !app.isTerminated, app.activationPolicy == .regular,
               !Self.alwaysExcluded.contains(app.bundleIdentifier ?? "") else { return }
+        observing?.run { [self] in observe(pid) }
+    }
+
+    private func unwatch(_ pid: pid_t) {
+        observing?.run { [self] in stopObserving(pid) }
+    }
+
+    /// Runs on the observing thread, like everything that touches `observers`.
+    private func observe(_ pid: pid_t) {
+        guard observers[pid] == nil else { return }
         var observer: AXObserver?
         guard AXObserverCreate(pid, quitOnCloseCallback, &observer) == .success, let observer else { return }
+        CFRunLoopAddSource(CFRunLoopGetCurrent(), AXObserverGetRunLoopSource(observer), .commonModes)
+        observers[pid] = observer
         let element = AXUIElementCreateApplication(pid)
+        AXUIElementSetMessagingTimeout(element, 0.5)
         let refcon = Unmanaged.passUnretained(self).toOpaque()
         AXObserverAddNotification(observer, element, kAXWindowCreatedNotification as CFString, refcon)
         AXObserverAddNotification(observer, element, kAXFocusedWindowChangedNotification as CFString, refcon)
         AXObserverAddNotification(observer, element, kAXMainWindowChangedNotification as CFString, refcon)
-        CFRunLoopAddSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(observer), .commonModes)
-        observers[pid] = observer
-        Self.windows(of: element).forEach { track($0, observer: observer) }
+        Self.windows(of: element)?.forEach { track($0, observer: observer) }
     }
 
-    private func unwatch(_ pid: pid_t) {
+    /// Runs on the observing thread.
+    private func stopObserving(_ pid: pid_t) {
         guard let observer = observers.removeValue(forKey: pid) else { return }
-        CFRunLoopRemoveSource(CFRunLoopGetMain(), AXObserverGetRunLoopSource(observer), .commonModes)
+        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), AXObserverGetRunLoopSource(observer), .commonModes)
     }
 
+    /// Runs on the observing thread.
     fileprivate func track(_ window: AXUIElement, observer: AXObserver) {
+        AXUIElementSetMessagingTimeout(window, 0.5)
         guard Self.string(window, kAXSubroleAttribute) == kAXStandardWindowSubrole as String else { return }
         AXObserverAddNotification(observer, window, kAXUIElementDestroyedNotification as CFString, Unmanaged.passUnretained(self).toOpaque())
     }
 
+    /// Runs on the observing thread.
     fileprivate func windowClosed(observer: AXObserver) {
         guard let pid = observers.first(where: { $0.value === observer })?.key else { return }
-        scheduleChecks(pid)
+        DispatchQueue.main.async { [weak self] in self?.scheduleChecks(pid) }
     }
 
     private func scheduleChecks(_ pid: pid_t) {
         for delay in [0.35, 1.0, 2.2] {
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
-                guard let self, shouldQuit(pid) != nil else { return }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
-                    self?.shouldQuit(pid)?.terminate()
+                self?.whenWindowless(pid) { _ in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
+                        self?.whenWindowless(pid) { $0.terminate() }
+                    }
                 }
             }
         }
     }
 
-    private func shouldQuit(_ pid: pid_t) -> NSRunningApplication? {
+    /// Calls `then` on the main thread when the app may quit and has no window left. The windows in the Dock are counted on
+    /// the checks queue, because that asks the app.
+    private func whenWindowless(_ pid: pid_t, then: @escaping (NSRunningApplication) -> Void) {
+        guard mayQuit(pid) != nil else { return }
+        checks.async { [weak self] in
+            guard !Self.mayHaveMinimizedWindow(pid) else { return }
+            DispatchQueue.main.async {
+                if let app = self?.mayQuit(pid) { then(app) }
+            }
+        }
+    }
+
+    private func mayQuit(_ pid: pid_t) -> NSRunningApplication? {
         guard isEnabled, let app = NSRunningApplication(processIdentifier: pid), !app.isTerminated, !app.isHidden,
               app.activationPolicy == .regular,
               !Self.alwaysExcluded.contains(app.bundleIdentifier ?? ""),
               !excluded.contains(app.bundleIdentifier ?? ""),
               !GameModeTool.shared.keepsOpen(app),
-              !Self.hasWindows(pid)
+              !Self.hasLiveCGWindow(pid)
         else { return nil }
         return app
     }
 
-    private static func windows(of app: AXUIElement) -> [AXUIElement] {
+    /// The app's windows, or nil when it did not answer in time.
+    private static func windows(of app: AXUIElement) -> [AXUIElement]? {
+        AXUIElementSetMessagingTimeout(app, 0.5)
         var value: CFTypeRef?
-        guard AXUIElementCopyAttributeValue(app, kAXWindowsAttribute as CFString, &value) == .success else { return [] }
-        return value as? [AXUIElement] ?? []
+        switch AXUIElementCopyAttributeValue(app, kAXWindowsAttribute as CFString, &value) {
+        case .success:
+            let windows = value as? [AXUIElement] ?? []
+            windows.forEach { AXUIElementSetMessagingTimeout($0, 0.5) }
+            return windows
+        case .cannotComplete:
+            return nil
+        default:
+            return []
+        }
     }
 
     private static func string(_ element: AXUIElement, _ attribute: String) -> String? {
@@ -190,11 +237,13 @@ final class QuitOnCloseTool: Tool {
         return value as? String
     }
 
-    private static func hasWindows(_ pid: pid_t) -> Bool {
-        hasLiveCGWindow(pid) || windows(of: AXUIElementCreateApplication(pid)).contains { window in
+    /// True when the app has a window in the Dock, or is too busy to say, so a busy app is never quit by mistake.
+    private static func mayHaveMinimizedWindow(_ pid: pid_t) -> Bool {
+        guard let windows = windows(of: AXUIElementCreateApplication(pid)) else { return true }
+        return windows.contains { window in
             var value: CFTypeRef?
-            return AXUIElementCopyAttributeValue(window, kAXMinimizedAttribute as CFString, &value) == .success
-                && value as? Bool == true
+            let result = AXUIElementCopyAttributeValue(window, kAXMinimizedAttribute as CFString, &value)
+            return result == .cannotComplete || result == .success && value as? Bool == true
         }
     }
 
@@ -263,7 +312,7 @@ private func quitOnCloseTapCallback(
         tool.reenableTap()
     case .leftMouseDown:
         let point = event.location
-        DispatchQueue.main.async { tool.clicked(at: point) }
+        tool.checks.async { tool.clicked(at: point) }
     case .keyDown:
         let flags = event.flags
         if flags.contains(.maskCommand), flags.isDisjoint(with: [.maskControl, .maskAlternate]),
