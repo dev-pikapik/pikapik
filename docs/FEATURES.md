@@ -1569,7 +1569,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 - Groups: The app, Saved data, Private storage, Temporary files, Settings, Background helpers, Add-ons, Logs, Installer records.
 - Select All / Deselect All, Quick Look, Copy Path, Cancel.
 
-**Nuances:** Items other apps may still use start unticked. A folder from the app's installer package that another package or another app of the same vendor also uses shows “Also used by …”, and the app's own items inside it are offered instead. Homebrew zap items not named after the app or its bundle ID show “Installed with Homebrew”.
+**Nuances:** Items other apps may still use start unticked. A folder from the app's installer package that another package or another app of the same vendor also uses shows “Also used by …”, and the app's own items inside it are offered instead; while another app of that vendor is installed, only those named after the app start ticked. Homebrew zap items not named after the app or its bundle ID show “Installed with Homebrew”.
 
 **Edition:** Website only.
 

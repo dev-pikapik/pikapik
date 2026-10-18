@@ -695,7 +695,7 @@ enum UninstallerTests {
         let notes = w.app("OldVendor Notes", id: "com.oldvendor.notes")
         let first = w.app("TwinVendor First", id: "com.twinvendor.first")
         let second = w.app("TwinVendor Second", id: "com.twinvendor.second")
-        for path in ["StubVendor/ProductA", "StubVendor/ProductB", "StubVendor/Shared", "Gadget/cache", "SoloVendor/Engine", "OldVendor/Notes", "TwinVendor/First"] {
+        for path in ["StubVendor/ProductA", "StubVendor/ProductB", "StubVendor/Shared", "Gadget/cache", "SoloVendor/Engine", "OldVendor/Notes", "TwinVendor/First", "TwinVendor/Common"] {
             w.node("\(support)/\(path)")
         }
         w.file("\(support)/Gadget/notes.txt")
@@ -703,7 +703,7 @@ enum UninstallerTests {
         for (app, package, paths) in [
             (productA, "com.stubvendor.producta", ["StubVendor/ProductA", "StubVendor/Shared"]), (productB, "com.stubvendor.productb", ["StubVendor/ProductB", "StubVendor/Shared"]),
             (gadget, "com.gadget.pkg", ["Gadget/cache"]), (writer, "com.solovendor.writer", ["SoloVendor/Engine"]), (notes, "com.oldvendor.notes", ["OldVendor/Notes"]),
-            (first, "com.twinvendor.first", ["TwinVendor/First"]),
+            (first, "com.twinvendor.first", ["TwinVendor/First", "TwinVendor/Common"]),
         ] {
             let top = String(paths[0].prefix { $0 != "/" })
             let lines = ["Applications/\(app.url.lastPathComponent)", "Library/Application Support/\(top)"]
@@ -716,7 +716,7 @@ enum UninstallerTests {
             ("StubVendor", ["com.stubvendor.producta", "com.stubvendor.productb"]), ("StubVendor/ProductA", ["com.stubvendor.producta"]),
             ("StubVendor/ProductB", ["com.stubvendor.productb"]), ("StubVendor/Shared", ["com.stubvendor.producta", "com.stubvendor.productb"]),
             ("Gadget", ["com.gadget.pkg"]), ("SoloVendor", ["com.solovendor.writer"]), ("OldVendor", ["com.oldvendor.notes", "com.oldvendor.legacy"]),
-            ("OldVendor/Notes", ["com.oldvendor.notes"]), ("TwinVendor", ["com.twinvendor.first"]), ("TwinVendor/First", ["com.twinvendor.first"]),
+            ("OldVendor/Notes", ["com.oldvendor.notes"]), ("TwinVendor", ["com.twinvendor.first"]), ("TwinVendor/First", ["com.twinvendor.first"]), ("TwinVendor/Common", ["com.twinvendor.first"]),
         ] {
             table[["--file-info", w.at("\(support)/\(path)").path]] = packages.map { "pkgid: \($0)\n" }.joined(separator: "\n")
         }
@@ -754,7 +754,8 @@ enum UninstallerTests {
         ], "a vendor folder an older package still lists")
         precondition(older["\(support)/OldVendor"]?.sharedWith == ["Legacy"], "\(older["\(support)/OldVendor"]?.sharedWith ?? [])")
         expect(w.scan(footprint, first), [
-            "root/Applications/TwinVendor First.app": true, "\(support)/TwinVendor/First": true, "root/var/db/receipts/com.twinvendor.first.plist": true,
+            "root/Applications/TwinVendor First.app": true, "\(support)/TwinVendor/First": true, "\(support)/TwinVendor/Common": false,
+            "root/var/db/receipts/com.twinvendor.first.plist": true,
         ], "a vendor folder while a sibling app is installed")
     }
 

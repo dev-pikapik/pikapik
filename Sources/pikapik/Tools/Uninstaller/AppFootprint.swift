@@ -631,7 +631,8 @@ extension AppFootprint {
                 }
                 let contents = listed[url.standardizedFileURL.path] ?? []
                 let others = listers(url)
-                if others.isEmpty, id != nil || listing(url).allSatisfy(contents.contains), run.siblings(named: [name]).isEmpty {
+                let siblings = run.siblings(named: [name])
+                if others.isEmpty, id != nil || listing(url).allSatisfy(contents.contains), siblings.isEmpty {
                     picks.append((url, kind, true, []))
                 } else if id != nil {
                     picks.append((url, kind, false, others))
@@ -639,9 +640,9 @@ extension AppFootprint {
                     untick(url, otherApps.union(others).sorted())
                     for child in contents.sorted() {
                         let inner = url.appendingPathComponent(child)
-                        guard fileInfo(inner) != nil, !run.isForeign(run.owners.claims(child, mode: [.id, .name, .vendorChild])),
-                              !isProtected(inner, for: run.app, names: [child]) else { continue }
-                        picks.append((inner, kind, true, listers(inner)))
+                        let claims = run.owners.claims(child, mode: [.id, .name, .vendorChild])
+                        guard fileInfo(inner) != nil, !run.isForeign(claims), !isProtected(inner, for: run.app, names: [child]) else { continue }
+                        picks.append((inner, kind, siblings.isEmpty || run.verdict(claims).map { preselects($0.claim, run.app) } == true, listers(inner)))
                     }
                 }
             }
