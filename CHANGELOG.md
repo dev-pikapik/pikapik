@@ -8,7 +8,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - Player, website version: AV1 films that macOS says it can decode but then can’t open, for example in a virtual Mac, now play through the player’s own decoder: in the player, over AirPlay and in previews. Before, such a film didn’t play, AirPlay refused it and the preview was missing. Films in the AV1 High profile (full 4:4:4 colour) now always use the player’s own decoder.
 
 ### Changed
-- Releases: a new version is published only after both versions are built and every automatic test has passed on it.
+- Releases: a new version is published only after both versions are built and every automatic test has passed on it, and never when Apple refuses to notarize it.
 
 ## [1.53.0] - 2026-10-17
 
