@@ -130,8 +130,9 @@ final class AirPlaySource: AirPlayContent {
 
         let codec: AirPlayVideoCodec = stream.codec == AV_CODEC_ID_H264 && stream.depth <= 8 ? .h264 : stream.codec == AV_CODEC_ID_HEVC ? .hevc : .other
         let range = stream.transfer == AVCOL_TRC_SMPTE2084 ? "PQ" : stream.transfer == AVCOL_TRC_ARIB_STD_B67 ? "HLG" : "SDR"
-        let decoder = codec == .other ? try? FrameDecoder(video.format.description) : nil
-        if codec == .other, decoder == nil, AirPlayHardwareDecoder(video.format.description) == nil { throw MediaError.unsupportedFeature }
+        let hardwareAV1 = CMFormatDescriptionGetMediaSubType(video.format.description) == kCMVideoCodecType_AV1 && AirPlayHardwareDecoder(video.format.description) != nil
+        let decoder = codec == .other && !hardwareAV1 ? try? FrameDecoder(video.format.description) : nil
+        if codec == .other, decoder == nil, !hardwareAV1, AirPlayHardwareDecoder(video.format.description) == nil { throw MediaError.unsupportedFeature }
         let burned = range == "SDR" && stream.depth <= 8 ? pictureStreams.first { $0.isForced } ?? pictureStreams.first { $0.isDefault } : nil
         let pictures = burned.flatMap { picture in
             container.parameters(picture.index).flatMap { parameters in
@@ -329,6 +330,7 @@ final class AirPlaySource: AirPlayContent {
         }
         let burner = pictures.map { AirPlayBurner(pictures: $0, from: segment.start, to: segment.end) }
         let hardware = frameDecoder == nil ? AirPlayHardwareDecoder(video.format.description) : nil
+        if frameDecoder == nil, hardware == nil { frameDecoder = try? FrameDecoder(video.format.description) }
         guard frameDecoder != nil || hardware != nil else { throw MediaError.unsupportedFeature }
         frameDecoder?.flush()
         var ready: [CMSampleBuffer] = []

@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>AV1-Filme laufen, auch wenn macOS sie nicht decodieren kann
+
+<sub>1.53.1 · 18. Oktober 2026</sub>
+
+AV1-Filme, die macOS nicht öffnen kann, laufen jetzt im Player, über AirPlay und in Vorschauen.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Manchmal meldet der Mac, dass er AV1 decodieren kann, und scheitert dann doch, zum Beispiel auf einem virtuellen Mac. Bisher lief so ein Film nicht, jetzt decodiert der Player ihn selbst. Außerdem kommen neue Versionen erst bei Ihnen an, wenn alle automatischen Prüfungen bestanden sind.
+
+**Ausprobieren:** Einstellungen › Player
+
+---
+
 ## <a id="v1.53.0"></a>Spielmodus: Das Rad funktioniert beim Schleichen
 
 <sub>1.53.0 · 17. Oktober 2026</sub>

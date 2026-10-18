@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>macOS 解碼不了的 AV1 影片，現在也能播放了
+
+<sub>1.53.1 · 2026年10月18日</sub>
+
+macOS 打不開的 AV1 影片，現在在播放器、AirPlay 和預覽中都能正常使用。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+有時 Mac 說自己能解碼 AV1，結果卻失敗了，例如在虛擬 Mac 裡。以前這樣的影片播不出來，現在播放器會自己解碼。另外，新版本要通過所有自動檢查後才會送到你手上。
+
+**試試看：** 設定 › 播放器
+
+---
+
 ## <a id="v1.53.0"></a>遊戲模式：潛行時滾輪照常使用
 
 <sub>1.53.0 · 2026年10月17日</sub>

@@ -145,8 +145,8 @@ final class AirPlayHardwareDecoder {
 
     init?(_ description: CMVideoFormatDescription) {
         let attributes: [String: Any] = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange]
-        guard VTDecompressionSessionCreate(allocator: nil, formatDescription: description, decoderSpecification: nil, imageBufferAttributes: attributes as CFDictionary,
-                                           outputCallback: nil, decompressionSessionOut: &session) == noErr else { return nil }
+        guard let made = videoToolboxSession(description, attributes) else { return nil }
+        session = made
     }
 
     deinit {

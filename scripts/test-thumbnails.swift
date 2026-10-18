@@ -105,6 +105,22 @@ enum TestThumbnails {
         let color = thumbnail(red, size: CGSize(width: 320, height: 180), duration: 4, at: 0.5).map(pixels).map(average)
         check(color.map { $0.r > 200 && $0.g < 60 && $0.b < 60 } ?? false, "red stays red: \(String(describing: color))")
 
+        let av1 = make(ffmpeg, "red-av1.mkv", in: folder, ["-f", "lavfi", "-i", "color=c=red:size=320x180:rate=25:duration=4", "-c:v", "libsvtav1", "-preset", "12", "-pix_fmt", "yuv420p"])
+        let native = PikaCodec.nativeAV1
+        for (name, description, videoToolbox) in [("AV1", native, true), ("AV1 on dav1d", false, true), ("AV1 that VideoToolbox refuses", true, false)] {
+            (PikaCodec.nativeAV1, videoToolboxDecodesAV1) = (description, videoToolbox)
+            let color = thumbnail(av1, size: CGSize(width: 320, height: 180), duration: 4, at: 0.5).map(pixels).map(average)
+            check(color.map { $0.r > 200 && $0.g < 60 && $0.b < 60 } ?? false, "\(name): the preview is red: \(String(describing: color))")
+            let engine = try? Engine(av1)
+            engine?.muted = true
+            engine?.seek(to: .zero, rate: 1)
+            wait(5) { (engine?.synchronizer.currentTime().seconds ?? 0) > 1.5 }
+            let reached = engine?.synchronizer.currentTime().seconds ?? 0
+            check(engine?.hasVideo == true && engine?.failed == false && reached > 1.5, "\(name): the film plays without a decoding error: reached \(String(format: "%.1f", reached)) s")
+            engine?.stop()
+        }
+        (PikaCodec.nativeAV1, videoToolboxDecodesAV1) = (native, true)
+
         let tall = make(ffmpeg, "tall.mp4", in: folder, ["-f", "lavfi", "-i", "testsrc2=size=180x320:rate=25:duration=4", "-c:v", "libx264", "-pix_fmt", "yuv420p"])
         let shape = thumbnail(tall, size: CGSize(width: 180, height: 320), duration: 4, at: 0.5)
         check(shape.map { $0.width == 100 && $0.height == 180 } ?? false, "a tall video keeps its shape: \(shape.map { "\($0.width) × \($0.height)" } ?? "none")")

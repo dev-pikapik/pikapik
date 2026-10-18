@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>Phim AV1 vẫn phát được ngay cả khi macOS không giải mã được
+
+<sub>1.53.1 · 18 tháng 10 năm 2026</sub>
+
+Phim AV1 mà macOS không mở được giờ đã hoạt động trong trình phát, qua AirPlay và trong bản xem trước.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Đôi khi Mac báo là giải mã được AV1 nhưng rồi lại thất bại, chẳng hạn trên một máy Mac ảo. Trước đây phim như vậy không phát được, giờ trình phát tự giải mã những phim này. Ngoài ra, phiên bản mới chỉ đến với bạn sau khi đã vượt qua mọi bước kiểm tra tự động.
+
+**Thử ngay:** Cài đặt › Trình phát
+
+---
+
 ## <a id="v1.53.0"></a>Chế độ trò chơi: con lăn dùng được khi rón rén
 
 <sub>1.53.0 · 17 tháng 10 năm 2026</sub>

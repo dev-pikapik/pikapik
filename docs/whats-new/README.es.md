@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>Las películas en AV1 se reproducen aunque macOS no pueda descodificarlas
+
+<sub>1.53.1 · 18 de octubre de 2026</sub>
+
+Las películas en AV1 que macOS no puede abrir ya funcionan en el reproductor, por AirPlay y en las vistas previas.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+A veces el Mac dice que puede descodificar AV1 y luego falla, por ejemplo en un Mac virtual. Antes una película así no se reproducía; ahora el reproductor la descodifica por su cuenta. Además, las nuevas versiones solo te llegan cuando han pasado todas las comprobaciones automáticas.
+
+**Pruébalo:** Ajustes › Reproductor
+
+---
+
 ## <a id="v1.53.0"></a>Modo juego: la rueda funciona al agacharte
 
 <sub>1.53.0 · 17 de octubre de 2026</sub>

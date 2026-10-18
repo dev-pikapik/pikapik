@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>AV1 filmler, macOS kodlarını çözemese bile oynatılıyor
+
+<sub>1.53.1 · 18 Ekim 2026</sub>
+
+macOS’un açamadığı AV1 filmler artık oynatıcıda, AirPlay ile ve önizlemelerde çalışıyor.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Mac bazen AV1 kodunu çözebildiğini söylüyor ama sonra başaramıyor, örneğin sanal bir Mac’te. Önceden böyle bir film oynatılmıyordu, artık oynatıcı bu filmlerin kodunu kendisi çözüyor. Ayrıca yeni sürümler size ancak tüm otomatik kontrollerden geçtikten sonra ulaşıyor.
+
+**Deneyin:** Ayarlar › Oynatıcı
+
+---
+
 ## <a id="v1.53.0"></a>Oyun Modu: gizlenirken tekerlek çalışır
 
 <sub>1.53.0 · 17 Ekim 2026</sub>

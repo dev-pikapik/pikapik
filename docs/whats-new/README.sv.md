@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>AV1-filmer spelas upp även när macOS inte kan avkoda dem
+
+<sub>1.53.1 · 18 oktober 2026</sub>
+
+AV1-filmer som macOS inte kan öppna fungerar nu i spelaren, via AirPlay och i förhandsvisningar.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Ibland säger Macen att den kan avkoda AV1 men misslyckas sedan, till exempel på en virtuell Mac. Förut spelades en sådan film inte upp, nu avkodar spelaren den själv. Dessutom når nya versioner dig först när alla automatiska kontroller har gått igenom.
+
+**Prova:** Inställningar › Spelare
+
+---
+
 ## <a id="v1.53.0"></a>Spelläge: hjulet fungerar när du smyger
 
 <sub>1.53.0 · 17 oktober 2026</sub>

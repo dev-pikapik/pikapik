@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>AV1-films spelen af, ook als macOS ze niet kan decoderen
+
+<sub>1.53.1 · 18 oktober 2026</sub>
+
+AV1-films die macOS niet kan openen, werken nu in de speler, via AirPlay en in voorbeelden.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Soms meldt de Mac dat hij AV1 kan decoderen, maar daarna lukt het toch niet, bijvoorbeeld op een virtuele Mac. Vroeger speelde zo’n film dan niet af, nu decodeert de speler hem zelf. Bovendien bereiken nieuwe versies je pas als alle automatische controles geslaagd zijn.
+
+**Probeer het:** Instellingen › Speler
+
+---
+
 ## <a id="v1.53.0"></a>Spelmodus: het wiel werkt terwijl je sluipt
 
 <sub>1.53.0 · 17 oktober 2026</sub>

@@ -2,6 +2,22 @@ import AVFoundation
 import CoreMedia
 import VideoToolbox
 
+var videoToolboxDecodesAV1 = true
+
+func videoToolboxSession(_ description: CMFormatDescription, _ attributes: [String: Any]? = nil) -> VTDecompressionSession? {
+    var session: VTDecompressionSession?
+    guard videoToolboxDecodesAV1 || CMFormatDescriptionGetMediaSubType(description) != kCMVideoCodecType_AV1,
+          VTDecompressionSessionCreate(allocator: nil, formatDescription: description, decoderSpecification: nil, imageBufferAttributes: attributes as CFDictionary?,
+                                       outputCallback: nil, decompressionSessionOut: &session) == noErr else { return nil }
+    return session
+}
+
+func videoToolboxDecodes(_ description: CMFormatDescription) -> Bool {
+    guard let session = videoToolboxSession(description) else { return false }
+    VTDecompressionSessionInvalidate(session)
+    return true
+}
+
 final class FrameDecoder {
     private var context: UnsafeMutablePointer<AVCodecContext>?
     private let presentationOrder: Bool
@@ -186,7 +202,7 @@ final class Engine {
             }
             let codec = CMFormatDescriptionGetMediaSubType(track.format.description)
             var decoder: FrameDecoder?
-            if PikaCodec.video.contains(where: { PikaCodec.fourCC($0.1) == codec }) {
+            if PikaCodec.video.contains(where: { PikaCodec.fourCC($0.1) == codec }) || codec == kCMVideoCodecType_AV1 && !videoToolboxDecodes(track.format.description) {
                 guard let opened = try? FrameDecoder(track.format.description) else { continue }
                 decoder = opened
             }
