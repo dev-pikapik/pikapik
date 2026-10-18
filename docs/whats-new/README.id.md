@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>Film AV1 tetap bisa diputar meski macOS tidak bisa mendekodenya
+
+<sub>1.53.1 · 18 Oktober 2026</sub>
+
+Film AV1 yang tidak bisa dibuka macOS kini berfungsi di pemutar, lewat AirPlay, dan di pratinjau.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Kadang Mac menyatakan bisa mendekode AV1, tetapi kemudian gagal, misalnya di Mac virtual. Dulu film seperti itu tidak bisa diputar, kini pemutar mendekodenya sendiri. Selain itu, versi baru hanya sampai ke Anda setelah lolos semua pemeriksaan otomatis.
+
+**Coba:** Pengaturan › Pemutar
+
+---
+
 ## <a id="v1.53.0"></a>Mode Game: roda tetap berfungsi saat berjongkok
 
 <sub>1.53.0 · 17 Oktober 2026</sub>

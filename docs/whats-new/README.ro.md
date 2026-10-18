@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>Filmele AV1 se redau chiar și când macOS nu le poate decoda
+
+<sub>1.53.1 · 18 octombrie 2026</sub>
+
+Filmele AV1 pe care macOS nu le poate deschide merg acum în player, prin AirPlay și în previzualizări.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Uneori Mac-ul spune că poate decoda AV1, dar apoi nu reușește, de exemplu pe un Mac virtual. Înainte un astfel de film nu pornea, acum playerul îl decodează singur. În plus, versiunile noi îți ajung doar după ce trec toate verificările automate.
+
+**Încearcă:** Setări › Player
+
+---
+
 ## <a id="v1.53.0"></a>Modul joc: rotița merge cât te furișezi
 
 <sub>1.53.0 · 17 octombrie 2026</sub>

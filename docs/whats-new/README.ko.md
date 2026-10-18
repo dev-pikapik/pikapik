@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>macOS가 디코딩하지 못해도 AV1 영상이 재생됩니다
+
+<sub>1.53.1 · 2026년 10월 18일</sub>
+
+macOS에서 열리지 않던 AV1 영상을 이제 플레이어와 AirPlay에서 재생할 수 있고, 미리보기도 나타납니다.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Mac이 AV1을 디코딩할 수 있다고 하면서도 실제로는 실패할 때가 있었습니다. 예를 들어 가상 Mac에서는 이런 영상이 재생되지 않았습니다. 이제는 플레이어가 이런 영상을 직접 디코딩합니다. 또한 새 버전은 모든 자동 검사를 통과한 뒤에만 전달됩니다.
+
+**사용해 보기:** 설정 › 플레이어
+
+---
+
 ## <a id="v1.53.0"></a>게임 모드: 웅크린 채로도 휠이 작동합니다
 
 <sub>1.53.0 · 2026년 10월 17일</sub>

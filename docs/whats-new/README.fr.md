@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>Les films AV1 se lisent même quand macOS ne sait pas les décoder
+
+<sub>1.53.1 · 18 octobre 2026</sub>
+
+Les films AV1 que macOS n’arrive pas à ouvrir fonctionnent maintenant dans le lecteur, via AirPlay et dans les aperçus.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Parfois, le Mac affirme pouvoir décoder l’AV1 puis échoue, par exemple sur un Mac virtuel. Avant, un tel film ne se lisait pas. Maintenant, le lecteur le décode lui-même. De plus, les nouvelles versions ne vous parviennent qu’une fois tous les contrôles automatiques réussis.
+
+**Pour essayer :** Réglages › Lecteur
+
+---
+
 ## <a id="v1.53.0"></a>Mode jeu : la molette fonctionne en vous accroupissant
 
 <sub>1.53.0 · 17 octobre 2026</sub>

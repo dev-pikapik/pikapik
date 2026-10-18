@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>Filmes em AV1 tocam mesmo quando o macOS não consegue decodificá-los
+
+<sub>1.53.1 · 18 de outubro de 2026</sub>
+
+Filmes em AV1 que o macOS não consegue abrir agora funcionam no player, pelo AirPlay e nas prévias.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Às vezes o Mac diz que consegue decodificar AV1, mas depois falha, por exemplo em um Mac virtual. Antes, um filme assim não tocava. Agora o próprio player decodifica esses filmes. Além disso, as novas versões só chegam até você depois de passar em todas as verificações automáticas.
+
+**Experimente:** Ajustes › Player
+
+---
+
 ## <a id="v1.53.0"></a>Modo jogo: a roda funciona ao agachar
 
 <sub>1.53.0 · 17 de outubro de 2026</sub>

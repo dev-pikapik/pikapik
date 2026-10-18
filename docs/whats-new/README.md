@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>AV1 films play even when macOS can’t decode them
+
+<sub>1.53.1 · October 18, 2026</sub>
+
+AV1 films that macOS can’t open now play in the player, over AirPlay and in previews.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Sometimes the Mac reports that it can decode AV1 but then fails, for example in a virtual Mac, and such a film didn’t play. Now the player decodes these films itself. New versions also reach you only after every automatic check has passed.
+
+**Try it:** Settings › Player
+
+---
+
 ## <a id="v1.53.0"></a>Game Mode: the wheel works while you sneak
 
 <sub>1.53.0 · October 17, 2026</sub>
