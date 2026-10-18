@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   release:
@@ -136,6 +137,22 @@ jobs:
         with:
           name: pikapik
           path: build/pikapik.zip
+
+      # Only a commit whose Build run on main passed (both editions and every test in CONTRIBUTING.md) becomes a release.
+      # release.sh pushes the version commit to main with the tag, so that run starts together with this job.
+      - name: Wait for the Build run of this commit
+        if: github.ref_type == 'tag'
+        run: |
+          for attempt in $(seq 1 180); do
+            RESULT=$(gh run list -R "$GITHUB_REPOSITORY" --workflow build.yml --commit "$GITHUB_SHA" --event push --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"')
+            case "$RESULT" in
+              "completed success") echo "Build passed for $GITHUB_SHA"; exit 0 ;;
+              completed*) echo "::error::The Build run for $GITHUB_SHA ended with '${RESULT#completed }'. Make main green, then release a new version." >&2; exit 1 ;;
+            esac
+            sleep 30
+          done
+          echo "::error::No finished Build run for $GITHUB_SHA after an hour and a half" >&2
+          exit 1
 
       - name: Publish release
         if: github.ref_type == 'tag'

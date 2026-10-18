@@ -8,9 +8,11 @@ on:
 permissions:
   contents: read
 
+# A newer push cancels an older run of the same pull request, but every commit on main keeps its run:
+# a release waits for the run of its own commit, and a red main shows which commit broke it
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'pull_request' && 'pr' || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 defaults:
   run:
@@ -116,11 +118,23 @@ jobs:
           security find-identity -p codesigning "$keychain"
           echo "SIGN_IDENTITY=pikapik CI" >> "$GITHUB_ENV"
 
+      # Every test runs even after one fails, so a single failure can't hide the others
       - name: Run the tests from CONTRIBUTING.md
         run: |
           mkdir -p build
           ./scripts/fetch-7zip.sh
-          grep '^swiftc .*scripts/test-' CONTRIBUTING.md | while IFS= read -r test; do
-            echo "${test##*&& build/}"
-            bash -c "$test" < /dev/null
-          done
+          failed=()
+          while IFS= read -r test; do
+            name="${test##*&& build/}"
+            echo "::group::$name"
+            if ! bash -c "$test" < /dev/null; then
+              failed+=("$name")
+              echo "::error title=$name::$name failed"
+            fi
+            echo "::endgroup::"
+          done < <(grep '^swiftc .*scripts/test-' CONTRIBUTING.md)
+          if [ ${#failed[@]} -gt 0 ]; then
+            echo "${#failed[@]} tests failed:"
+            printf '  %s\n' "${failed[@]}"
+            exit 1
+          fi
