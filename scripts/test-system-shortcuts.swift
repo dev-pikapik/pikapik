@@ -25,6 +25,12 @@ struct TestSystemShortcuts {
         }
         let fallback = SymbolicHotKeys.table(native: fake + [record(2, 0x900, false)], defaults: defaults, ids: [1])
         precondition(fallback.count == 2 && same(fallback[10], (true, 100, 2, 0x180000)) && same(fallback[11], (false, 0xFFFF, 123, 0x840000)) && fallback[12] == nil)
+        let ids = SymbolicHotKeys.ids
+        for count in [ids.count, ids.count - 1] {
+            let lined = SymbolicHotKeys.table(native: (0..<count).map { record($0, 0, true) }, defaults: [:])
+            let at = { (id: Int32) in lined[id]?.key }
+            precondition(lined.count == count && at(163) == UInt16(ids.firstIndex(of: 163)!) && at(165) == UInt16(ids.firstIndex(of: 165)! - ids.count + count) && at(164) == (count == ids.count ? UInt16(ids.firstIndex(of: 164)!) : nil))
+        }
         print("system shortcuts without the settings file, converter: ok")
 
         let apple = SymbolicHotKeys.appleDefaults()
@@ -32,11 +38,12 @@ struct TestSystemShortcuts {
         let sandboxed = SymbolicHotKeys.table(native: records, defaults: apple, ids: [])
         let agree = sandboxed.filter { id, entry in SymbolicHotKeys.value(id).map { $0.key == entry.key && $0.modifiers == entry.modifiers && SymbolicHotKeys.isEnabled(id) == entry.enabled } ?? false }
         print("without IDs: \(sandboxed.count) of \(apple.count) Apple defaults are in the live list, \(agree.count) agree with the SkyLight reader")
-        guard records.count == SymbolicHotKeys.ids.count else {
+        guard let listed = SymbolicHotKeys.order(records.count) else {
+            precondition(ProcessInfo.processInfo.operatingSystemVersion.majorVersion != 27, "macOS 27 publishes \(records.count) system shortcut records, but the ID list in SymbolicHotKeys.ids has \(SymbolicHotKeys.ids.count), or one fewer without 164")
             return print("live check skipped: \(records.count) records, the ID list has \(SymbolicHotKeys.ids.count) (another macOS version)")
         }
         let rebuilt = SymbolicHotKeys.table(native: records, defaults: apple)
-        let differing = SymbolicHotKeys.ids.filter { id in
+        let differing = listed.filter { id in
             guard let entry = rebuilt[id], let value = SymbolicHotKeys.value(id) else { return true }
             return entry.key != value.key || entry.modifiers != value.modifiers || entry.enabled != SymbolicHotKeys.isEnabled(id)
         }

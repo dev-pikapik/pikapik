@@ -242,6 +242,10 @@ enum SymbolicHotKeys {
     // IDs WindowServer reports on macOS 27, in CopySymbolicHotKeys order
     static let ids: [Int32] = ([0...2, 4...4, 6...37, 50...65, 70...70, 73...73, 75...86, 95...182, 184...264] as [ClosedRange<Int32>]).flatMap { $0 }
 
+    static func order(_ count: Int, ids: [Int32] = ids) -> [Int32]? {
+        [ids, ids.filter { $0 != 164 }].first { $0.count == count }
+    }
+
     // CopySymbolicHotKeys works in the sandbox but names no IDs: on a Mac with the same ID list the records are matched by position, on any other the Apple defaults supply the IDs
     static func table(native: [[String: Any]], defaults: [Int32: Default], ids: [Int32] = ids) -> [Int32: Entry] {
         let carbon: [(UInt64, UInt64)] = [(0x100, 0x100000), (0x200, 0x20000), (0x800, 0x80000), (0x1000, 0x40000), (0x20000, 0x800000)]
@@ -253,7 +257,7 @@ enum SymbolicHotKeys {
                 carbon.reduce(0) { mask & $1.0 != 0 ? $0 | $1.1 : $0 }
             )
         }
-        if live.count == ids.count {
+        if let ids = order(live.count, ids: ids) {
             return Dictionary(uniqueKeysWithValues: zip(ids, live).map { id, entry in
                 (id, (entry.enabled, defaults[id]?.key == entry.key ? defaults[id]!.character : 0xFFFF, entry.key, entry.modifiers))
             })
