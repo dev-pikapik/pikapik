@@ -96,7 +96,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **How it works:** Stored under `Background.key`; `Sources/pikapik/Core/Background.swift`, toggle at `SettingsWindow.swift:790` (`#if !APPSTORE`). Open pikapik again to bring the menu bar icon back; ⌥⌘Q (Quit Completely) really quits.
 
-**Nuances:** In the App Store build `Background.isOn` is always false, so Quit always quits.
+**Nuances:** In the App Store build `Background.isOn` is always false, so Quit always quits. On log out, restart and shut down pikapik quits even with this on (`Background.isLoggingOut`), and before anything else it puts back hot corners and the Dock delay from a game, animations, the Dock on one display, key repeat, desktop icons, the main display and hidden files, restarting the Dock at most once (`powerOff` in `App.swift`).
 
 **Edition:** Website only (App Store: cut — an App Store app has to quit when asked).
 
@@ -415,7 +415,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 - Fan speed (slider) — shown for Manual; from the fan’s minimum to its maximum in steps of 50 rpm.
 - This Mac has no fans — what the page says on a Mac without fans (fanless MacBook Air; empty state, `FanSettings.swift:22`).
 
-**Nuances:** Quitting or killing pikapik returns the fans to automatic within seconds (handoff on terminate, `App.swift:195`). The helper is installed and removed through the Administrator access permission row. Needs a Mac with fans.
+**Nuances:** Quitting or killing pikapik returns the fans to automatic within seconds (handoff on terminate, `App.swift:215`). The helper is installed and removed through the Administrator access permission row. Needs a Mac with fans.
 
 **Edition:** Website only (App Store: hidden — needs administrator rights and SMC access).
 
@@ -713,7 +713,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes the pointer move the same distance for the same hand movement, with no speed-up.
 
-**How it works:** Website: the private `IOHIDEventSystemClient` (`HIDPointerAccelerationType`), no permission; restored when pikapik quits (`Sources/pikapik/App.swift:190`) and by `--uninstall` (`Sources/pikapik/Tools/Mouse/PointerTool.swift:216`). App Store: replaced by an animated guide and a row with an Open button to System Settings › Mouse (`SettingsWindow.swift:978-987`, `com.apple.Mouse-Settings.extension`) because an App Store app cannot change it. The guide (`SettingsGuide`, `Sources/pikapik/Settings/SettingsGuide.swift`) shows where to click: Advanced…, then “Pointer acceleration” off; its labels come from your Mac, in its language. System Settings shows the Mouse page only while a mouse is connected.
+**How it works:** Website: the private `IOHIDEventSystemClient` (`HIDPointerAccelerationType`), no permission; restored when pikapik quits (`Sources/pikapik/App.swift:210`) and by `--uninstall` (`Sources/pikapik/Tools/Mouse/PointerTool.swift:216`). App Store: replaced by an animated guide and a row with an Open button to System Settings › Mouse (`SettingsWindow.swift:978-987`, `com.apple.Mouse-Settings.extension`) because an App Store app cannot change it. The guide (`SettingsGuide`, `Sources/pikapik/Settings/SettingsGuide.swift`) shows where to click: Advanced…, then “Pointer acceleration” off; its labels come from your Mac, in its language. System Settings shows the Mouse page only while a mouse is connected.
 
 **Options:**
 - Tracking speed — slider, disabled while the switch is off (`PointerTool.swift:226`). Website only; in the App Store guide it is the system’s own slider.
@@ -885,10 +885,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Keeps the Dock on its display, however fast you move the mouse to the bottom of the other one.
 
-**How it works:** Writes the hidden key `com.apple.dock allow-display-switching` = false and restarts the Dock once (`Sources/pikapik/Tools/Dock/DockDisplayTool.swift:96`, `DockDisplaySwitch.swift`). No permission. The Dock reads it only at start. Turning off (and `--uninstall`) puts back the previous value.
+**How it works:** Writes the hidden key `com.apple.dock allow-display-switching` = false and restarts the Dock once (`Sources/pikapik/Tools/Dock/DockDisplayTool.swift:100`, `DockDisplaySwitch.swift`). No permission. The Dock reads it only at start. Turning off (and `--uninstall`) puts back the previous value.
 
 **Options:**
-- Main display — menu under the switch (two or more displays, enabled only while the switch is on); pick a display and pikapik makes it the main one with `CGConfigureDisplayOrigin`, shifting every display by the same amount so the arrangement keeps its shape, and the Dock goes with it (`DockDisplayTool.swift:108`, `MainDisplayControl` at `:140`, `MainDisplay` in `DockDisplaySwitch.swift`). The first arrangement is remembered by display ID; turning the switch off, `--uninstall` or the next launch with the switch off puts it back.
+- Main display — menu under the switch (two or more displays, enabled only while the switch is on); pick a display and pikapik makes it the main one with `CGConfigureDisplayOrigin`, shifting every display by the same amount so the arrangement keeps its shape, and the Dock goes with it (`DockDisplayTool.swift:112`, `MainDisplayControl` at `:135`, `MainDisplay` in `DockDisplaySwitch.swift`). The first arrangement is remembered by display ID; turning the switch off, `--uninstall` or the next launch with the switch off puts it back.
 
 **Nuances:** Needs two displays and “Displays have separate Spaces” on (System Settings › Desktop & Dock).
 
@@ -1096,7 +1096,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** One slider that sets every effect below at once: As in macOS, Faster, Instant.
 
-**How it works:** `PaceSlider` (`Sources/pikapik/Tools/Animations/AnimationsTool.swift:347`, `AnimationSetting.swift`); “Sets all the effects below at once.”
+**How it works:** `PaceSlider` (`Sources/pikapik/Tools/Animations/AnimationsTool.swift:356`, `AnimationSetting.swift`); “Sets all the effects below at once.”
 
 **Nuances:** Changes bar: “Works in apps after you reopen them”; “Finder picks up the changes after a restart” with a Restart Finder button. The Dock restarts through `/usr/bin/killall`. `--uninstall` puts everything back.
 
@@ -1109,7 +1109,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Hides the Dock until the pointer touches the edge.
 
-**How it works:** Website: `autohide` in `com.apple.dock` (`AnimationsTool.swift:35`). App Store: an animated guide (“Automatically hide and show the Dock” turned on) above an Open row to System Settings › Desktop & Dock (`SettingsWindow.swift:1061-1066`).
+**How it works:** Website: `autohide` in `com.apple.dock` (`AnimationsTool.swift:37`). If you never set it, the key stays missing: pikapik notes that (`animations-autohide-missing`) and removes the key again when it puts things back. The switch stays on the page after you turn it on, and Restore Defaults puts it back too. App Store: an animated guide (“Automatically hide and show the Dock” turned on) above an Open row to System Settings › Desktop & Dock (`SettingsWindow.swift:1061-1066`).
 
 **Edition:** Both; App Store differs: guide and Open button instead of the switch.
 
@@ -1121,11 +1121,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Fine controls for each effect.
 
-**How it works:** Section at `AnimationsTool.swift:152`, `AnimationSetting.swift`, in the defaults named below.
+**How it works:** Section at `AnimationsTool.swift:161`, `AnimationSetting.swift`, in the defaults named below.
 
 **Options:**
-- Delay before the Dock appears — slider, `autohide-delay` in `com.apple.dock` (`AnimationsTool.swift:154`).
-- How fast the Dock slides out — slider, `autohide-time-modifier` (`:201`).
+- Delay before the Dock appears — slider, `autohide-delay` in `com.apple.dock` (`AnimationsTool.swift:163`).
+- How fast the Dock slides out — slider, `autohide-time-modifier` (`:164`).
 - Opening windows — toggle, `NSAutomaticWindowAnimationsEnabled` in the global domain (`:204`).
 - Save dialogs and resizing — slider, `NSWindowResizeTime` (`:205`).
 - Quick Look — slider, `QLPanelAnimationDuration` (`:206`).
@@ -1142,7 +1142,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Chooses Genie, Scale or Suck for minimizing windows.
 
-**How it works:** Website: `mineffect` in `com.apple.dock` (`AnimationsTool.swift:302`). App Store: an animated guide (the effect changes from Genie Effect to Scale Effect) above an Open row (“Choose “Scale Effect” for a quicker animation”, `SettingsWindow.swift:1045-1050`).
+**How it works:** Website: `mineffect` in `com.apple.dock` (`AnimationsTool.swift:323`). App Store: an animated guide (the effect changes from Genie Effect to Scale Effect) above an Open row (“Choose “Scale Effect” for a quicker animation”, `SettingsWindow.swift:1045-1050`).
 
 **Edition:** Both; App Store differs: guide and Open button instead of the picker.
 
@@ -1154,7 +1154,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Turns off the Dock icons’ bounce when an app opens.
 
-**How it works:** Website: `no-bouncing` in `com.apple.dock` (`AnimationsTool.swift:159`). App Store: an animated guide (“Animate opening applications” turned off) above an Open row (`SettingsWindow.swift:1053-1058`).
+**How it works:** Website: `no-bouncing` in `com.apple.dock` (`AnimationsTool.swift:168`). App Store: an animated guide (“Animate opening applications” turned off) above an Open row (`SettingsWindow.swift:1053-1058`).
 
 **Edition:** Both; App Store differs: guide and Open button instead of the switch.
 
@@ -1166,7 +1166,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Opens System Settings › Accessibility › Motion so you can turn on Reduce Motion, and shows where to click.
 
-**How it works:** A row with an Open button (`SystemSettingsRow`, `AnimationsTool.swift:171`; App Store `SettingsWindow.swift:1068`) and the animated guide `SettingsGuide.reduceMotion` (Accessibility › Motion › “Reduce motion” on), in both editions. The link `SettingsGuide.reduceMotionLink` opens the Motion page (anchor `AX_REDUCE_MOTION`) and falls back to Display when this macOS has no such anchor.
+**How it works:** A row with an Open button (`SystemSettingsRow`, `AnimationsTool.swift:180`; App Store `SettingsWindow.swift:1068`) and the animated guide `SettingsGuide.reduceMotion` (Accessibility › Motion › “Reduce motion” on), in both editions. The link `SettingsGuide.reduceMotionLink` opens the Motion page (anchor `AX_REDUCE_MOTION`) and falls back to Display when this macOS has no such anchor.
 
 **Edition:** Both.
 
@@ -1826,7 +1826,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Drops Dock gestures (Mission Control, Spaces and similar swipes) and mouse button shortcuts while a game is in front.
 
-**How it works:** DockSwipe events (`CGEventType` 30, field 110 = 23; field 123 motion, 132 phase) are dropped at the “began” phase (`PointerShortcuts.swift`, `GameRules.dropsSwipe`). Hot corners: `DockEdges` zeroes only the paused corners. The motion codes came from event logging, not from Apple documents.
+**How it works:** DockSwipe events (`CGEventType` 30, field 110 = 23; field 123 motion, 132 phase) are dropped at the “began” phase (`PointerShortcuts.swift`, `GameRules.dropsSwipe`). Hot corners: `DockEdges` zeroes only the paused corners and, when the Dock hides, sets its delay to 1000 seconds. Your own values stay under the game’s in the `game-mode-dock` journal: during a game Settings shows and changes yours (`DockEdges.read`, `DockEdges.write`), and they come back after the game, when pikapik quits, and at log out, restart and shut down (`scripts/test-dock-layers.swift`). The motion codes came from event logging, not from Apple documents.
 
 **Options:**
 - Change… on a hot-corner row — menu of the actions macOS offers for a corner; picking one writes `com.apple.dock wvous-<corner>-corner` and restarts the Dock once (`HotCorners.swift`, `HotCornerMenu` in `SystemShortcutList.swift`). The first value is remembered, and Put Back in the same menu writes it back. Off while a game is in front. Website only; other rows and the App Store build still show Change in System Settings.
