@@ -86,6 +86,7 @@ struct TestKeepAwakeLid {
         answers = [true]
         keep.setLid(true)
         precondition(asked.count == 3 && asked[2] == KeepAwake.lidScript(flag: flag.path) && keep.lidActive && defaults.bool(forKey: marker), "stale flag starts a new watchdog")
+        precondition(KeepAwake.lidScript(flag: flag.path).contains("/bin/launchctl asuser 0 /bin/sh -c "), "the watchdog leaves the login session, so it can still let the Mac sleep after a log out")
 
         precondition(!SettingsFile.keys.contains("keep-awake-lid"))
 
@@ -130,7 +131,7 @@ struct TestKeepAwakeLid {
             let shell = Process()
             let pipe = Pipe()
             shell.executableURL = URL(fileURLWithPath: "/bin/sh")
-            shell.arguments = ["-c", KeepAwake.lidScript(flag: flag.path, pmset: pmset.path, grace: 4) + "\necho $!"]
+            shell.arguments = ["-c", KeepAwake.lidScript(flag: flag.path, pmset: pmset.path, grace: 4, launcher: "/usr/bin/env") + "\necho $!"]
             shell.standardOutput = pipe
             try! shell.run()
             let output = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)

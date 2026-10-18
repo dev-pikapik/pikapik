@@ -278,9 +278,10 @@ final class KeepAwake {
     static var askAdmin: (String, String) -> Bool = { runAsAdmin($0, prompt: $1) }
     static var notificationCenter = NSWorkspace.shared.notificationCenter
 
-    static func lidScript(flag: String, pmset: String = SystemPath.pmset, grace: Int = 60) -> String {
-        let flag = "'" + flag.replacingOccurrences(of: "'", with: "'\\''") + "'"
-        return "f=\(flag); \(pmset) -a disablesleep 1 || exit 1; (trap '\(pmset) -a disablesleep 0; /bin/rm -f \"$f\"; exit 0' TERM HUP; g=0; while [ -e \"$f\" ]; do /usr/bin/touch -c \"$f\"; if /bin/kill -0 \"$(/bin/cat \"$f\")\"; then g=0; else g=$((g+2)); [ $g -ge \(grace) ] && break; fi; /bin/sleep 2; done; \(pmset) -a disablesleep 0; /bin/rm -f \"$f\") >/dev/null 2>&1 &"
+    static func lidScript(flag: String, pmset: String = SystemPath.pmset, grace: Int = 60, launcher: String = SystemPath.launchctl + " asuser 0") -> String {
+        func quoted(_ text: String) -> String { "'" + text.replacingOccurrences(of: "'", with: "'\\''") + "'" }
+        let watchdog = "f=\(quoted(flag)); trap '\(pmset) -a disablesleep 0; /bin/rm -f \"$f\"; exit 0' TERM HUP; g=0; while [ -e \"$f\" ]; do /usr/bin/touch -c \"$f\"; if /bin/kill -0 \"$(/bin/cat \"$f\")\"; then g=0; else g=$((g+2)); [ $g -ge \(grace) ] && break; fi; /bin/sleep 2; done; \(pmset) -a disablesleep 0; /bin/rm -f \"$f\""
+        return "\(pmset) -a disablesleep 1 || exit 1; \(launcher) /bin/sh -c \(quoted(watchdog)) >/dev/null 2>&1 &"
     }
 
     func setLid(_ on: Bool) {
