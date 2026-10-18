@@ -43,6 +43,7 @@ final class KeepAwake {
     private(set) var now = Date.now
     private(set) var lidActive = false
     private(set) var lidError: String?
+    private(set) var lidSleepStuck = false
 
     private(set) var lastMode: Mode {
         didSet { UserDefaults.standard.set(lastMode.rawValue, forKey: PreferenceKey.keepAwakeMode) }
@@ -51,14 +52,14 @@ final class KeepAwake {
     var duration: Int {
         didSet {
             UserDefaults.standard.set(duration, forKey: PreferenceKey.keepAwakeDuration)
-            if mode == .timed, duration != oldValue { set(.timed) }
+            if mode == .timed, duration != oldValue, !loading { set(.timed) }
         }
     }
 
     var keepsDisplayOn: Bool {
         didSet {
             UserDefaults.standard.set(keepsDisplayOn, forKey: PreferenceKey.keepAwakeDisplay)
-            update()
+            if keepsDisplayOn != oldValue { update() }
         }
     }
 
@@ -80,7 +81,8 @@ final class KeepAwake {
 
     @ObservationIgnored private var assertions: [IOPMAssertionID] = []
     @ObservationIgnored private var timer: Timer?
-    @ObservationIgnored private let lidFlag = FileManager.default.temporaryDirectory.appendingPathComponent("pikapik-keep-awake")
+    @ObservationIgnored private var lidAsked = false
+    @ObservationIgnored private var loading = false
 
     private init() {
         let defaults = UserDefaults.standard
@@ -89,13 +91,19 @@ final class KeepAwake {
         keepsDisplayOn = defaults.bool(forKey: PreferenceKey.keepAwakeDisplay)
         lidOption = defaults.bool(forKey: PreferenceKey.keepAwakeLid)
         stopsOnLowBattery = defaults.object(forKey: PreferenceKey.keepAwakeBattery) as? Bool ?? true
+        #if !APPSTORE
+        Self.notificationCenter.addObserver(forName: NSWorkspace.willPowerOffNotification, object: nil, queue: .main) { [self] _ in
+            releaseLid()
+        }
+        #endif
     }
 
     func load() {
         let defaults = UserDefaults.standard
+        loading = true
+        defer { loading = false }
         lastMode = Mode(rawValue: defaults.string(forKey: PreferenceKey.keepAwakeMode) ?? "") ?? .timed
         duration = Self.storedDuration()
-        lidOption = defaults.bool(forKey: PreferenceKey.keepAwakeLid)
         keepsDisplayOn = defaults.bool(forKey: PreferenceKey.keepAwakeDisplay)
         stopsOnLowBattery = defaults.object(forKey: PreferenceKey.keepAwakeBattery) as? Bool ?? true
     }
@@ -263,51 +271,75 @@ final class KeepAwake {
 
     #if APPSTORE
     private func setLid(_ on: Bool) {}
-    func restoreLidSleepIfNeeded() {}
+    @discardableResult func restoreLidSleepIfNeeded() -> Bool { false }
+    func letLidSleep() {}
     #else
-    private func setLid(_ on: Bool) {
+    static var lidFlag = FileManager.default.temporaryDirectory.appendingPathComponent("pikapik-keep-awake")
+    static var askAdmin: (String, String) -> Bool = { runAsAdmin($0, prompt: $1) }
+    static var notificationCenter = NSWorkspace.shared.notificationCenter
+
+    static func lidScript(flag: String, pmset: String = SystemPath.pmset, grace: Int = 60) -> String {
+        let flag = "'" + flag.replacingOccurrences(of: "'", with: "'\\''") + "'"
+        return "f=\(flag); \(pmset) -a disablesleep 1 || exit 1; (trap '\(pmset) -a disablesleep 0; /bin/rm -f \"$f\"; exit 0' TERM HUP; g=0; while [ -e \"$f\" ]; do /usr/bin/touch -c \"$f\"; if /bin/kill -0 \"$(/bin/cat \"$f\")\"; then g=0; else g=$((g+2)); [ $g -ge \(grace) ] && break; fi; /bin/sleep 2; done; \(pmset) -a disablesleep 0; /bin/rm -f \"$f\") >/dev/null 2>&1 &"
+    }
+
+    func setLid(_ on: Bool) {
         guard on != lidActive else { return }
         guard on else {
-            try? FileManager.default.removeItem(at: lidFlag)
             lidActive = false
-            UserDefaults.standard.set(false, forKey: Self.lidFlagKey)
+            restoreLidSleepIfNeeded()
             return
         }
-        let watched = FileManager.default.fileExists(atPath: lidFlag.path) && Self.sleepDisabled
-        FileManager.default.createFile(atPath: lidFlag.path, contents: Data(String(ProcessInfo.processInfo.processIdentifier).utf8))
-        if watched {
+        let path = Self.lidFlag.path
+        let heartbeat = (try? FileManager.default.attributesOfItem(atPath: path))?[.modificationDate] as? Date
+        let watched = heartbeat.map { abs($0.timeIntervalSinceNow) < 10 } == true && Self.sleepDisabled()
+        FileManager.default.createFile(atPath: path, contents: Data(String(ProcessInfo.processInfo.processIdentifier).utf8))
+        if watched || Self.askAdmin(Self.lidScript(flag: path), String(localized: "pikapik wants to keep your Mac awake with the lid closed.")) {
             lidActive = true
-            UserDefaults.standard.set(true, forKey: Self.lidFlagKey)
-            return
-        }
-        let flag = "'" + lidFlag.path.replacingOccurrences(of: "'", with: "'\\''") + "'"
-        let command = "\(Self.pmsetPath) -a disablesleep 1 || exit 1; (g=0; while [ -e \(flag) ]; do if /bin/kill -0 \"$(/bin/cat \(flag))\"; then g=0; else g=$((g+2)); [ $g -ge 60 ] && break; fi; /bin/sleep 2; done; \(Self.pmsetPath) -a disablesleep 0; /bin/rm -f \(flag)) >/dev/null 2>&1 &"
-        if Self.runAsAdmin(command, prompt: String(localized: "pikapik wants to keep your Mac awake with the lid closed.")) {
-            lidActive = true
+            lidSleepStuck = false
             UserDefaults.standard.set(true, forKey: Self.lidFlagKey)
         } else {
-            try? FileManager.default.removeItem(at: lidFlag)
+            try? FileManager.default.removeItem(at: Self.lidFlag)
             lidOption = false
             UserDefaults.standard.set(false, forKey: PreferenceKey.keepAwakeLid)
             lidError = String(localized: "Not turned on: no administrator password")
         }
     }
 
-    func restoreLidSleepIfNeeded() {
-        guard UserDefaults.standard.bool(forKey: Self.lidFlagKey) else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-            guard !self.lidActive else { return }
-            if Self.sleepDisabled {
-                _ = Self.runAsAdmin("\(Self.pmsetPath) -a disablesleep 0", prompt: String(localized: "pikapik wants to let your Mac sleep with the lid closed again."))
-            }
-            UserDefaults.standard.set(false, forKey: Self.lidFlagKey)
-        }
+    @discardableResult func restoreLidSleepIfNeeded() -> Bool {
+        guard !lidActive else { return false }
+        if FileManager.default.fileExists(atPath: Self.lidFlag.path) { UserDefaults.standard.set(true, forKey: Self.lidFlagKey) }
+        guard UserDefaults.standard.bool(forKey: Self.lidFlagKey) else { return false }
+        try? FileManager.default.removeItem(at: Self.lidFlag)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { self.restoreLidSleep() }
+        return true
     }
 
-    private static var sleepDisabled: Bool {
+    func letLidSleep() {
+        restoreLidSleep(asking: true)
+    }
+
+    private func releaseLid() {
+        guard lidActive else { return }
+        lidActive = false
+        try? FileManager.default.removeItem(at: Self.lidFlag)
+    }
+
+    private func restoreLidSleep(asking: Bool = false) {
+        guard !lidActive, MainCopy.shared.role != .passive, UserDefaults.standard.bool(forKey: Self.lidFlagKey) else { return }
+        var restored = !Self.sleepDisabled()
+        if !restored, asking || !lidAsked {
+            lidAsked = true
+            restored = Self.askAdmin("\(Self.pmsetPath) -a disablesleep 0", String(localized: "pikapik wants to let your Mac sleep with the lid closed again."))
+        }
+        lidSleepStuck = !restored
+        if restored { UserDefaults.standard.set(false, forKey: Self.lidFlagKey) }
+    }
+
+    static var sleepDisabled: () -> Bool = {
         let process = Process()
         let pipe = Pipe()
-        process.executableURL = URL(fileURLWithPath: Self.pmsetPath)
+        process.executableURL = URL(fileURLWithPath: pmsetPath)
         process.arguments = ["-g"]
         process.standardOutput = pipe
         guard (try? process.run()) != nil else { return false }

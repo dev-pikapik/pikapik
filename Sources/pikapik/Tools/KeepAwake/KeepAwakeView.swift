@@ -21,6 +21,22 @@ struct KeepAwakeSettings: View {
     var body: some View {
         Form {
             SettingsHeader(tab: .keepAwake, text: String(localized: "Keep your Mac from falling asleep"))
+            if keepAwake.lidSleepStuck {
+                Section {
+                    LabeledContent {
+                        Button("Let It Sleep") { keepAwake.letLidSleep() }
+                            .fixedSize()
+                    } label: {
+                        HStack(alignment: .top, spacing: 10) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.title2)
+                                .foregroundStyle(.orange)
+                                .accessibilityHidden(true)
+                            RowLabel(Text("Your Mac still won’t sleep with the lid closed"), Text("In a bag, it may get hot and drain the battery. macOS will ask for your administrator password."))
+                        }
+                    }
+                }
+            }
             Section {
                 KeepAwakeArt()
                 LabeledContent {

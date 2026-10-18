@@ -21,7 +21,7 @@ struct SettingsFile {
         ToolID.finderOpen, ToolID.finderCut, ToolID.finderDelete,
         ToolID.gameMode, PreferenceKey.gameModeGames, PreferenceKey.gameModeNotGames, PreferenceKey.gameModeSystemShortcuts, PreferenceKey.gameModeFPS, PreferenceKey.gameModeFPSCorner,
         PreferenceKey.keepAwakeMode, PreferenceKey.keepAwakeDuration,
-        PreferenceKey.keepAwakeDisplay, PreferenceKey.keepAwakeLid, PreferenceKey.keepAwakeBattery,
+        PreferenceKey.keepAwakeDisplay, PreferenceKey.keepAwakeBattery,
         PreferenceKey.fansRPM, ToolID.brightnessKeys,
         PreferenceKey.animationsSpeed, PreferenceKey.animationsDockDelay, PreferenceKey.animationsDockSpeed, PreferenceKey.animationsMinimize, PreferenceKey.animationsBounce,
         PreferenceKey.animationsWindowOpen, PreferenceKey.animationsResize, PreferenceKey.animationsQuickLook, PreferenceKey.animationsFinderColumns, PreferenceKey.animationsFinder,

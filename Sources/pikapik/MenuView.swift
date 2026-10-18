@@ -109,6 +109,26 @@ struct MenuView: View {
                                         .accessibilityLabel(Text("Display settings"))
                                         .accessibilityValue(keepAwakeOpen ? Text("Expanded") : Text("Collapsed"))
                                     }
+                                    if keepAwake.lidSleepStuck {
+                                        HStack(spacing: 10) {
+                                            Image(systemName: "exclamationmark.triangle.fill")
+                                                .foregroundStyle(.orange)
+                                                .frame(width: 28)
+                                                .accessibilityHidden(true)
+                                            Text("Your Mac still won’t sleep with the lid closed")
+                                                .font(.caption)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                            Spacer(minLength: 0)
+                                            Button("Let It Sleep") {
+                                                NSApp.keyWindow?.close()
+                                                keepAwake.letLidSleep()
+                                            }
+                                            .controlSize(.small)
+                                            .glassButtons()
+                                        }
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 5)
+                                    }
                                     VStack(spacing: 0) {
                                         if keepAwakeOpen { keepAwakeOptions.transition(.asymmetric(insertion: .opacity, removal: .identity)) }
                                     }

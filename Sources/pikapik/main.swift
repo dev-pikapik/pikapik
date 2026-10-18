@@ -10,6 +10,7 @@ if CommandLine.arguments.contains("--uninstall") {
     DesktopIconsTool.putBack()
     HiddenFilesTool.putBack()
     HotCorners.putBackAll()
+    if KeepAwake.sleepDisabled(), KeepAwake.shared.restoreLidSleepIfNeeded() { RunLoop.main.run(until: .now + 6) }
     #endif
     DockEdges.restore()
     HotKeyTrace().restore()
