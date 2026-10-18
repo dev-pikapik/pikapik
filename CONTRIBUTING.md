@@ -88,7 +88,11 @@ The Mac App Store copy can't switch hot corners off, so the cursor fence of Game
 swiftc -parse-as-library -D APPSTORE $(find Sources -name '*.swift' ! -name main.swift ! -name App.swift ! -name Updater.swift ! -name 'LeftoverPermissions*.swift' ! -name SMC.swift ! -name FanHelperProtocol.swift ! -name FanControl.swift ! -name FanSettings.swift ! -name PointerTool.swift ! -name 'DockDisplay*' ! -path '*/Tools/Animations/*' ! -path '*/Tools/KeyRepeat/*' ! -path '*/Tools/Uninstaller/*') Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift scripts/test-game-appstore.swift -o build/test-game-appstore && build/test-game-appstore
 ```
 
-Quit on last window uses an `AXObserver` per regular app: it tracks standard windows and, half a second after one is destroyed, quits the app if it has no windows left, including minimized ones and ones on other desktops (checked with `CGWindowListCopyWindowInfo`). Finder, pikapik and the apps in the exceptions list are skipped.
+Quit on last window uses an `AXObserver` per regular app: it tracks standard windows and, half a second after one is destroyed, quits the app if it has no windows left, including minimized ones and ones on other desktops (checked with `CGWindowListCopyWindowInfo`). Finder, pikapik and the apps in the exceptions list are skipped. A busy app can take seconds to answer an Accessibility question, and every pikapik tap runs on the main thread, so none of these questions is asked there: the observers live on a thread with its own run loop (`Core/RunLoopThread.swift`), and a click is looked at on a queue, only when it lands in a title bar corner of a normal window (`TitleBarCorner`), by asking that one app, never the whole system, for at most 0.25 s. An app too busy to say whether it has a window in the Dock is not quit. The test checks the corners and the thread:
+
+```bash
+swiftc -parse-as-library Sources/pikapik/Core/RunLoopThread.swift Sources/pikapik/Tools/Windows/TitleBarCorner.swift scripts/test-quit-on-close.swift -o build/test-quit-on-close && build/test-quit-on-close
+```
 
 Hide with a Dock click is a `CGEventTap` on the left mouse button. On a plain click it asks the Dock for the element under the pointer with `AXUIElementCopyElementAtPosition`. If that is the icon of the frontmost app and the app has a visible window, the click is dropped and the app hides. Otherwise the click goes to the Dock as usual.
 
