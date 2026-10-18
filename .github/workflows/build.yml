@@ -25,9 +25,20 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 2
 
       - name: Issue forms list every feature in docs/FEATURES.md
         run: ./scripts/feature-form.sh --check
+
+      - name: docs/FEATURES.md gets no new file:line references
+        run: |
+          refs() { git show "$1:docs/FEATURES.md" 2>/dev/null | grep -oE '[A-Za-z0-9_+-]+\.swift:[0-9]+' | sort; }
+          added=$(comm -13 <(refs HEAD^) <(refs HEAD))
+          if [ -n "$added" ]; then
+            echo "::error file=docs/FEATURES.md::Line numbers go stale as the code moves, name the type or function instead of $(echo $added)"
+            exit 1
+          fi
 
   secrets:
     name: Secrets
