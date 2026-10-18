@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Sudut aktif dan Dock kembali seperti semula setelah bermain game dan saat dimatikan
+
+<sub>1.53.3 · 18 Oktober 2026</sub>
+
+Di versi situs web, sudut aktif dan pengaturan Dock Anda kini selalu kembali persis seperti semula.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Saat bermain game, pikapik mematikan sudut aktif dan mencegah Dock tiba-tiba muncul. Sebelumnya, jika pikapik tertutup saat game berjalan atau beberapa detik setelahnya, pikapik bisa mengira nilai sementara ini sebagai milik Anda: satu sudut tetap mati, atau Dock yang tersembunyi tidak lagi muncul. Kini selama game, pikapik menyimpan nilai Anda secara terpisah, dan Pengaturan menampilkan serta mengubah nilai itu.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Saat Anda keluar, memulai ulang, atau mematikan Mac, setiap salinan pikapik yang terbuka kini lebih dulu mengembalikan semuanya: sudut aktif, Dock, animasi, pengulangan tombol, dan ikon desktop. Sebelumnya, Mac bisa menyala dengan pengaturan Dock dari pikapik dan ikon yang masih tersembunyi.
+
+**Coba:** Pengaturan › Game
+
+**Diperbaiki**
+
+- Animasi: tombol “Sembunyikan Dock secara otomatis” tidak lagi hilang dari halaman, dan “Pulihkan Default” kini juga mengembalikannya.
+
+---
+
 ## <a id="v1.53.1"></a>Film AV1 tetap bisa diputar meski macOS tidak bisa mendekodenya
 
 <sub>1.53.1 · 18 Oktober 2026</sub>

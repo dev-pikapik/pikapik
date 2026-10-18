@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Aktywne narożniki i Dock wracają po grach i przy wyłączaniu
+
+<sub>1.53.3 · 18 października 2026</sub>
+
+W wersji ze strony aktywne narożniki i ustawienia Docka wracają teraz zawsze dokładnie takie, jakie były.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Podczas gry pikapik wyłącza aktywne narożniki i nie pozwala Dockowi wyskakiwać. Wcześniej, jeśli pikapik zamknął się w trakcie gry albo kilka sekund po niej, mógł uznać te tymczasowe wartości za twoje: narożnik zostawał wyłączony, a ukrywający się Dock przestawał się pojawiać. Teraz na czas gry pikapik odkłada twoje wartości na bok, a Ustawienia pokazują i zmieniają właśnie je.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Gdy wylogowujesz się, uruchamiasz Maca ponownie lub go wyłączasz, każda otwarta kopia pikapika najpierw przywraca wszystko: aktywne narożniki, Dock, animacje, powtarzanie klawiszy i ikony na biurku. Wcześniej Mac mógł się uruchomić z ustawieniami Docka z pikapika i z wciąż ukrytymi ikonami.
+
+**Wypróbuj:** Ustawienia › Gry
+
+**Poprawki**
+
+- Animacje: przełącznik „Automatycznie ukrywaj Dock” nie znika już ze strony, a „Przywróć domyślne” przywraca także jego.
+
+---
+
 ## <a id="v1.53.1"></a>Filmy AV1 odtwarzają się, nawet gdy macOS nie potrafi ich zdekodować
 
 <sub>1.53.1 · 18 października 2026</sub>

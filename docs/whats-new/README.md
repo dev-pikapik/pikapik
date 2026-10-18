@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Hot corners and the Dock come back after games and at shutdown
+
+<sub>1.53.3 · October 18, 2026</sub>
+
+In the website version, your hot corners and Dock settings now always come back exactly as you had them.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+During a game, pikapik turns off hot corners and keeps the Dock from popping up. Before, if pikapik quit during a game or a few seconds after it, it could take these temporary values for yours: a corner stayed off, or a Dock that hides stopped appearing. Now pikapik sets your values aside for the game, and Settings shows and changes yours even while you play.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+When you log out, restart or shut down your Mac, every open copy of pikapik now puts everything back first thing: hot corners, the Dock, animations, key repeat and desktop icons. Before, the Mac could sometimes start up with pikapik’s Dock settings still on and the desktop icons still hidden.
+
+**Try it:** Settings › Games
+
+**Fixed**
+
+- Animations: the Hide the Dock automatically switch no longer disappears from the page, and Restore Defaults now puts it back too.
+
+---
+
 ## <a id="v1.53.1"></a>AV1 films play even when macOS can’t decode them
 
 <sub>1.53.1 · October 18, 2026</sub>

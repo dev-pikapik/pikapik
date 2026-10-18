@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Góc nóng và Dock trở lại như cũ sau khi chơi game và khi tắt máy
+
+<sub>1.53.3 · 18 tháng 10 năm 2026</sub>
+
+Trong bản từ trang web, góc nóng và cài đặt Dock của bạn giờ luôn trở lại đúng như trước.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Khi bạn chơi game, pikapik tắt góc nóng và không để Dock bật lên. Trước đây, nếu pikapik đóng trong lúc chơi hoặc vài giây sau đó, nó có thể nhầm các giá trị tạm thời này là của bạn: một góc cứ tắt mãi, hoặc Dock tự ẩn không còn hiện ra nữa. Giờ đây, trong lúc chơi, pikapik cất riêng các giá trị của bạn, và Cài đặt hiển thị và thay đổi đúng các giá trị đó.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Khi bạn đăng xuất, khởi động lại hoặc tắt máy Mac, mỗi bản pikapik đang mở giờ sẽ đưa mọi thứ về như cũ trước tiên: góc nóng, Dock, hoạt ảnh, lặp phím và biểu tượng trên màn hình nền. Trước đây, Mac có thể khởi động với cài đặt Dock của pikapik và các biểu tượng vẫn bị ẩn.
+
+**Thử ngay:** Cài đặt › Trò chơi
+
+**Đã sửa**
+
+- Hoạt ảnh: công tắc “Tự động ẩn Dock” không còn biến mất khỏi trang, và “Khôi phục mặc định” giờ cũng đưa nó về như cũ.
+
+---
+
 ## <a id="v1.53.1"></a>Phim AV1 vẫn phát được ngay cả khi macOS không giải mã được
 
 <sub>1.53.1 · 18 tháng 10 năm 2026</sub>

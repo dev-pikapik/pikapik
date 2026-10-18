@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Aktivní rohy a Dock se vracejí po hrách i při vypnutí
+
+<sub>1.53.3 · 18. října 2026</sub>
+
+Ve verzi z webu se vaše aktivní rohy a nastavení Docku teď vždy vrátí přesně tak, jak jste je měli.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Během hry pikapik vypne aktivní rohy a nedovolí Docku vyskakovat. Když se dřív pikapik ukončil během hry nebo pár sekund po ní, mohl tyto dočasné hodnoty považovat za vaše: roh zůstal vypnutý nebo se skrývající Dock přestal objevovat. Teď si pikapik na dobu hry vaše hodnoty odloží stranou a Nastavení ukazuje a mění právě je.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Když se odhlásíte, restartujete nebo vypnete Mac, každá otevřená kopie pikapiku teď nejdřív všechno vrátí: aktivní rohy, Dock, animace, opakování kláves a ikony na ploše. Dřív mohl Mac naběhnout s nastavením Docku od pikapiku a se stále skrytými ikonami.
+
+**Vyzkoušejte:** Nastavení › Hry
+
+**Opraveno**
+
+- Animace: přepínač „Automaticky skrývat Dock“ už ze stránky nemizí a „Obnovit výchozí“ vrátí i jeho.
+
+---
+
 ## <a id="v1.53.1"></a>Filmy v AV1 se přehrají, i když je macOS neumí dekódovat
 
 <sub>1.53.1 · 18. října 2026</sub>

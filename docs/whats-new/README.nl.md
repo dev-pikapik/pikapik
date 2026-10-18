@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Actieve hoeken en het Dock komen terug na games en bij uitzetten
+
+<sub>1.53.3 · 18 oktober 2026</sub>
+
+In de versie van de website komen je actieve hoeken en Dock-instellingen nu altijd precies terug zoals je ze had.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Tijdens een game zet pikapik de actieve hoeken uit en laat het het Dock niet tevoorschijn springen. Als pikapik eerder tijdens de game of een paar seconden erna stopte, kon het deze tijdelijke waarden voor de jouwe aanzien: een hoek bleef uit, of een Dock dat zich verbergt verscheen niet meer. Nu legt pikapik je waarden zolang de game duurt opzij, en Instellingen toont en wijzigt precies die.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Als je uitlogt, de Mac herstart of uitzet, zet elk geopend exemplaar van pikapik nu eerst alles terug: actieve hoeken, het Dock, animaties, toetsherhaling en symbolen op het bureaublad. Eerder kon de Mac opstarten met de Dock-instellingen van pikapik en met de symbolen nog verborgen.
+
+**Probeer het:** Instellingen › Games
+
+**Opgelost**
+
+- Animaties: de schakelaar ‘Dock automatisch verbergen’ verdwijnt niet meer van de pagina, en ‘Herstel standaardinstellingen’ zet hem ook terug.
+
+---
+
 ## <a id="v1.53.1"></a>AV1-films spelen af, ook als macOS ze niet kan decoderen
 
 <sub>1.53.1 · 18 oktober 2026</sub>

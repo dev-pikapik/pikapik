@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>게임 후와 시스템 종료 시 핫 코너와 Dock이 원래대로 돌아옵니다
+
+<sub>1.53.3 · 2026년 10월 18일</sub>
+
+웹사이트 버전에서 핫 코너와 Dock 설정이 이제 항상 원래 그대로 돌아옵니다.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+게임 중에는 pikapik이 핫 코너를 끄고 Dock이 튀어나오지 않게 합니다. 이전에는 게임 도중이나 게임이 끝난 직후 몇 초 안에 pikapik이 종료되면, 이 임시 값을 사용자의 값으로 착각할 수 있었습니다. 그래서 코너가 꺼진 채로 남거나, 자동으로 가려지는 Dock이 더 이상 나타나지 않았습니다. 이제 pikapik은 게임 중에 원래 값을 따로 보관하고, 설정에서는 바로 그 값을 보여 주고 바꿉니다.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+로그아웃, 재시동, 시스템 종료 시 열려 있는 모든 pikapik이 이제 가장 먼저 모든 것을 원래대로 되돌립니다. 핫 코너, Dock, 애니메이션, 키 반복, 데스크탑 아이콘이 그 대상입니다. 이전에는 Mac이 pikapik의 Dock 설정이 남은 채로, 아이콘도 숨겨진 채로 시동될 수 있었습니다.
+
+**사용해 보기:** 설정 › 게임
+
+**수정 사항**
+
+- 애니메이션: ‘자동으로 Dock 가리기와 보기’ 스위치가 더 이상 페이지에서 사라지지 않으며, ‘기본값으로 복원’으로 이 스위치도 되돌아갑니다.
+
+---
+
 ## <a id="v1.53.1"></a>macOS가 디코딩하지 못해도 AV1 영상이 재생됩니다
 
 <sub>1.53.1 · 2026년 10월 18일</sub>

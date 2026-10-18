@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Les coins actifs et le Dock reviennent après les jeux et à l’extinction
+
+<sub>1.53.3 · 18 octobre 2026</sub>
+
+Dans la version du site, vos coins actifs et les réglages du Dock reviennent maintenant toujours exactement comme vous les aviez.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Pendant un jeu, pikapik désactive les coins actifs et empêche le Dock de surgir. Avant, si pikapik se fermait pendant le jeu ou dans les secondes qui suivaient, il pouvait prendre ces valeurs temporaires pour les vôtres : un coin restait désactivé, ou un Dock masqué n’apparaissait plus. Désormais, pikapik met vos valeurs de côté le temps du jeu, et les Réglages affichent et modifient justement celles-ci.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Quand vous fermez la session, redémarrez ou éteignez le Mac, chaque copie ouverte de pikapik remet maintenant tout en place en premier : coins actifs, Dock, animations, répétition des touches et icônes du bureau. Avant, le Mac pouvait démarrer avec les réglages du Dock de pikapik et les icônes encore masquées.
+
+**Pour essayer :** Réglages › Jeux
+
+**Corrigé**
+
+- Animations : l’interrupteur « Masquer automatiquement le Dock » ne disparaît plus de la page, et « Rétablir les réglages par défaut » le remet aussi.
+
+---
+
 ## <a id="v1.53.1"></a>Les films AV1 se lisent même quand macOS ne sait pas les décoder
 
 <sub>1.53.1 · 18 octobre 2026</sub>

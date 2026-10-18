@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Aktiva hörn och Dock kommer tillbaka efter spel och vid avstängning
+
+<sub>1.53.3 · 18 oktober 2026</sub>
+
+I webbversionen kommer dina aktiva hörn och Dock-inställningar nu alltid tillbaka precis som du hade dem.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Under ett spel stänger pikapik av de aktiva hörnen och hindrar Dock från att dyka upp. Om pikapik tidigare avslutades under spelet eller några sekunder efteråt kunde det ta de tillfälliga värdena för dina: ett hörn förblev avstängt, eller ett Dock som göms slutade visas. Nu lägger pikapik undan dina värden medan du spelar, och Inställningar visar och ändrar just dem.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+När du loggar ut, startar om eller stänger av din Mac återställer nu varje öppen kopia av pikapik allt allra först: aktiva hörn, Dock, animationer, tangentupprepning och skrivbordssymboler. Tidigare kunde datorn starta med pikapiks Dock-inställningar och med symbolerna fortfarande gömda.
+
+**Prova:** Inställningar › Spel
+
+**Åtgärdat**
+
+- Animationer: reglaget ”Göm och visa Dock automatiskt” försvinner inte längre från sidan, och ”Återställ förval” återställer det också.
+
+---
+
 ## <a id="v1.53.1"></a>AV1-filmer spelas upp även när macOS inte kan avkoda dem
 
 <sub>1.53.1 · 18 oktober 2026</sub>

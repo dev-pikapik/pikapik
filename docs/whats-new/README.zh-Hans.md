@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>玩游戏后和关机时，触发角和程序坞都会恢复原样
+
+<sub>1.53.3 · 2026年10月18日</sub>
+
+在网站版中，你的触发角和程序坞设置现在总能完全恢复成原来的样子。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+玩游戏时，pikapik 会关闭触发角，并让程序坞不再弹出。以前，如果 pikapik 在游戏中或游戏结束后的几秒内退出，可能会把这些临时值当成你的设置：某个角一直处于关闭状态，或者自动隐藏的程序坞再也不出现。现在，游戏期间 pikapik 会把你的设置单独保存，“设置”里显示和修改的也正是这些。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+退出登录、重新启动或关机时，每个打开的 pikapik 现在都会先把一切恢复原样：触发角、程序坞、动画、按键重复和桌面图标。以前，Mac 有可能带着 pikapik 的程序坞设置启动，桌面图标也还是隐藏的。
+
+**试试看：** 设置 › 游戏
+
+**修复**
+
+- 动画：“自动隐藏和显示程序坞”开关不会再从页面上消失，“恢复默认”现在也会把它恢复。
+
+---
+
 ## <a id="v1.53.1"></a>macOS 解码不了的 AV1 视频，现在也能播放了
 
 <sub>1.53.1 · 2026年10月18日</sub>

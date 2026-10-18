@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Os cantos ativos e o Dock voltam depois dos jogos e ao desligar
+
+<sub>1.53.3 · 18 de outubro de 2026</sub>
+
+Na versão do site, seus cantos ativos e os ajustes do Dock agora sempre voltam exatamente como você os deixou.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Durante um jogo, o pikapik desativa os cantos ativos e impede que o Dock apareça de repente. Antes, se o pikapik fechava durante o jogo ou nos segundos seguintes, podia confundir esses valores temporários com os seus: um canto ficava desativado, ou um Dock que se oculta parava de aparecer. Agora o pikapik guarda seus valores à parte enquanto você joga, e os Ajustes mostram e mudam justamente esses.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Quando você encerra a sessão, reinicia ou desliga o Mac, cada cópia aberta do pikapik agora devolve tudo antes de qualquer outra coisa: cantos ativos, Dock, animações, repetição de teclas e ícones da Mesa. Antes, o Mac podia ligar com os ajustes do Dock do pikapik e com os ícones ainda ocultos.
+
+**Experimente:** Ajustes › Jogos
+
+**Corrigido**
+
+- Animações: o botão “Ocultar o Dock automaticamente” não some mais da página, e “Restaurar padrões” agora também o devolve.
+
+---
+
 ## <a id="v1.53.1"></a>Filmes em AV1 tocam mesmo quando o macOS não consegue decodificá-los
 
 <sub>1.53.1 · 18 de outubro de 2026</sub>

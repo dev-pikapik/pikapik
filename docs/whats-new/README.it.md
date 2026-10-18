@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Gli angoli attivi e il Dock tornano dopo i giochi e allo spegnimento
+
+<sub>1.53.3 · 18 ottobre 2026</sub>
+
+Nella versione dal sito, i tuoi angoli attivi e le impostazioni del Dock ora tornano sempre esattamente come li avevi.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Durante un gioco, pikapik disattiva gli angoli attivi e impedisce al Dock di spuntare fuori. Prima, se pikapik si chiudeva durante il gioco o nei secondi successivi, poteva scambiare questi valori temporanei per i tuoi: un angolo restava disattivato, oppure un Dock che si nasconde non compariva più. Ora pikapik mette da parte i tuoi valori per la durata del gioco, e Impostazioni mostra e modifica proprio quelli.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Quando esci dalla sessione, riavvii o spegni il Mac, ogni copia aperta di pikapik ora rimette tutto a posto per prima cosa: angoli attivi, Dock, animazioni, ripetizione dei tasti e icone della scrivania. Prima il Mac poteva riaccendersi con le impostazioni del Dock di pikapik e con le icone ancora nascoste.
+
+**Provalo:** Impostazioni › Giochi
+
+**Corretto**
+
+- Animazioni: l’interruttore «Nascondi automaticamente il Dock» non sparisce più dalla pagina, e «Ripristina default» rimette a posto anche lui.
+
+---
+
 ## <a id="v1.53.1"></a>I film AV1 si riproducono anche quando macOS non riesce a decodificarli
 
 <sub>1.53.1 · 18 ottobre 2026</sub>

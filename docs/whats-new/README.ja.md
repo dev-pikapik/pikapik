@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>ゲームのあとやシステム終了時に、ホットコーナーと Dock が元に戻ります
+
+<sub>1.53.3 · 2026年10月18日</sub>
+
+Webサイト版で、ホットコーナーと Dock の設定がいつも元どおりに戻るようになりました。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+ゲーム中、pikapik はホットコーナーをオフにし、Dock が飛び出さないようにします。これまでは、ゲーム中やゲーム終了直後に pikapik が終了すると、この一時的な値を元の設定と取り違えることがあり、コーナーがオフのままになったり、自動的に隠れる Dock が表示されなくなったりしました。いまはゲームのあいだ、元の値を pikapik が別に保管し、設定ではその値を確認・変更できます。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+ログアウト、再起動、システム終了のときは、開いているすべての pikapik がまず最初にすべてを元に戻します。対象はホットコーナー、Dock、アニメーション、キーリピート、デスクトップのアイコンです。これまでは、Mac が pikapik の Dock 設定のまま、アイコンも隠れたまま起動することがありました。
+
+**試してみる：** 設定 › ゲーム
+
+**修正**
+
+- アニメーション：「Dockを自動的に表示/非表示」のスイッチがページから消えなくなり、「デフォルトに戻す」でこのスイッチも元に戻るようになりました。
+
+---
+
 ## <a id="v1.53.1"></a>macOS がデコードできない AV1 動画も再生できるようになりました
 
 <sub>1.53.1 · 2026年10月18日</sub>

@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Las esquinas activas y el Dock vuelven después de jugar y al apagar
+
+<sub>1.53.3 · 18 de octubre de 2026</sub>
+
+En la versión de la web, tus esquinas activas y los ajustes del Dock ahora siempre vuelven exactamente como los tenías.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Durante un juego, pikapik desactiva las esquinas activas y evita que el Dock aparezca de golpe. Antes, si pikapik se cerraba durante el juego o en los segundos siguientes, podía tomar esos valores temporales por los tuyos: una esquina se quedaba desactivada, o un Dock que se oculta dejaba de aparecer. Ahora pikapik guarda tus valores aparte mientras juegas, y Ajustes muestra y cambia justo esos.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Cuando cierras sesión, reinicias o apagas el Mac, cada copia abierta de pikapik ahora lo devuelve todo antes que nada: esquinas activas, Dock, animaciones, repetición de teclas e iconos del escritorio. Antes, el Mac podía arrancar con los ajustes del Dock de pikapik y con los iconos aún ocultos.
+
+**Pruébalo:** Ajustes › Juegos
+
+**Corregido**
+
+- Animaciones: el interruptor «Ocultar el Dock automáticamente» ya no desaparece de la página, y «Restaurar valores por omisión» también lo devuelve.
+
+---
+
 ## <a id="v1.53.1"></a>Las películas en AV1 se reproducen aunque macOS no pueda descodificarlas
 
 <sub>1.53.1 · 18 de octubre de 2026</sub>

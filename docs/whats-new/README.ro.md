@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Colțurile active și Dock-ul revin după jocuri și la oprire
+
+<sub>1.53.3 · 18 octombrie 2026</sub>
+
+În versiunea de pe site, colțurile active și setările Dock-ului revin acum mereu exact cum le aveai.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+În timpul unui joc, pikapik dezactivează colțurile active și nu lasă Dock-ul să apară brusc. Înainte, dacă pikapik se închidea în timpul jocului sau în câteva secunde după el, putea lua aceste valori temporare drept ale tale: un colț rămânea dezactivat, iar un Dock care se ascunde nu mai apărea. Acum, pe durata jocului, pikapik îți pune valorile deoparte, iar Setări le arată și le schimbă exact pe acestea.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Când te deconectezi, repornești sau oprești Mac-ul, fiecare copie deschisă a pikapik pune acum totul la loc înainte de orice: colțurile active, Dock-ul, animațiile, repetarea tastelor și pictogramele de pe desktop. Înainte, Mac-ul putea porni cu setările de Dock ale pikapik și cu pictogramele încă ascunse.
+
+**Încearcă:** Setări › Jocuri
+
+**Reparat**
+
+- Animații: comutatorul „Ascunde automat Dock-ul” nu mai dispare de pe pagină, iar „Restaurați valorile implicite” îl readuce și pe el.
+
+---
+
 ## <a id="v1.53.1"></a>Filmele AV1 se redau chiar și când macOS nu le poate decoda
 
 <sub>1.53.1 · 18 octombrie 2026</sub>

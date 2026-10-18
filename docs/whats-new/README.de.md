@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Aktive Ecken und das Dock kommen nach Spielen und beim Ausschalten zurück
+
+<sub>1.53.3 · 18. Oktober 2026</sub>
+
+In der Version von der Website kommen deine aktiven Ecken und Dock-Einstellungen jetzt immer genau so zurück, wie du sie hattest.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Während eines Spiels schaltet pikapik die aktiven Ecken aus und lässt das Dock nicht aufspringen. Wurde pikapik bisher während des Spiels oder in den Sekunden danach beendet, konnte es diese vorübergehenden Werte für deine halten: Eine Ecke blieb aus, oder ein automatisch ausgeblendetes Dock tauchte nicht mehr auf. Jetzt legt pikapik deine Werte für die Dauer des Spiels beiseite, und die Einstellungen zeigen und ändern genau diese.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Wenn du dich abmeldest, den Mac neu startest oder ausschaltest, stellt jetzt jede geöffnete Kopie von pikapik als Erstes alles zurück: aktive Ecken, Dock, Animationen, Tastenwiederholung und Schreibtischsymbole. Bisher konnte der Mac mit den Dock-Einstellungen von pikapik und ausgeblendeten Symbolen starten.
+
+**Ausprobieren:** Einstellungen › Spiele
+
+**Behoben**
+
+- Animationen: Der Schalter „Dock automatisch ein- und ausblenden“ verschwindet nicht mehr von der Seite, und „Standard wiederherstellen“ stellt auch ihn zurück.
+
+---
+
 ## <a id="v1.53.1"></a>AV1-Filme laufen, auch wenn macOS sie nicht decodieren kann
 
 <sub>1.53.1 · 18. Oktober 2026</sub>

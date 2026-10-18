@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>Etkin köşeler ve Dock, oyunlardan sonra ve kapatırken geri gelir
+
+<sub>1.53.3 · 18 Ekim 2026</sub>
+
+Web sitesi sürümünde etkin köşeleriniz ve Dock ayarlarınız artık her zaman tam olarak bıraktığınız gibi geri gelir.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+Oyun sırasında pikapik etkin köşeleri kapatır ve Dock’un aniden açılmasını engeller. Önceden, pikapik oyun sırasında veya oyundan sonraki birkaç saniye içinde kapanırsa bu geçici değerleri sizinkiler sanabiliyordu: bir köşe kapalı kalıyor ya da gizlenen bir Dock artık görünmüyordu. Artık pikapik oyun süresince değerlerinizi bir kenarda tutar, Ayarlar da tam olarak bunları gösterir ve değiştirir.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+Oturumu kapattığınızda, Mac’i yeniden başlattığınızda veya kapattığınızda pikapik’in açık her kopyası artık her şeyi ilk iş olarak geri yükler: etkin köşeler, Dock, animasyonlar, tuş tekrarı ve masaüstü simgeleri. Önceden Mac, pikapik’in Dock ayarlarıyla ve simgeler hâlâ gizliyken açılabiliyordu.
+
+**Deneyin:** Ayarlar › Oyunlar
+
+**Düzeltilenler**
+
+- Animasyonlar: “Dock’u otomatik olarak gizle” anahtarı artık sayfadan kaybolmuyor ve “Saptanmışlara Dön” onu da geri getiriyor.
+
+---
+
 ## <a id="v1.53.1"></a>AV1 filmler, macOS kodlarını çözemese bile oynatılıyor
 
 <sub>1.53.1 · 18 Ekim 2026</sub>

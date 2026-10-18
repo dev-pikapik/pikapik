@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.3"></a>玩遊戲後和關機時，熱點與 Dock 都會恢復原狀
+
+<sub>1.53.3 · 2026年10月18日</sub>
+
+在網站版中，你的熱點和 Dock 設定現在一定會完整恢復成原來的樣子。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/game-mode-dark.png"><img src="../media/game-mode-light.png" width="340" alt=""></picture>
+
+玩遊戲時，pikapik 會關閉熱點，並讓 Dock 不再彈出。以前，如果 pikapik 在遊戲中或遊戲結束後幾秒內結束，可能會把這些暫時的值當成你的設定：某個角落一直維持關閉，或自動隱藏的 Dock 再也不出現。現在遊戲期間 pikapik 會把你的設定另外保存，「設定」中顯示和修改的也正是這些。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/animations-dark.png"><img src="../media/animations-light.png" width="340" alt=""></picture>
+
+登出、重新開機或關機時，每個開啟的 pikapik 現在都會先把一切恢復原狀：熱點、Dock、動畫、按鍵重複和桌面圖像。以前 Mac 可能帶著 pikapik 的 Dock 設定開機，桌面圖像也仍然隱藏。
+
+**試試看：** 設定 › 遊戲
+
+**修正**
+
+- 動畫：「自動隱藏和顯示 Dock」開關不會再從頁面上消失，「回復預設值」現在也會把它恢復。
+
+---
+
 ## <a id="v1.53.1"></a>macOS 解碼不了的 AV1 影片，現在也能播放了
 
 <sub>1.53.1 · 2026年10月18日</sub>

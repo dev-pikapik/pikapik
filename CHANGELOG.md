@@ -2,6 +2,14 @@
 
 Every update to pikapik, version by version. The same news, told simply with a picture, is in [What’s new](docs/whats-new/README.md), also in your language: [Русский](docs/whats-new/README.ru.md) · [Українська](docs/whats-new/README.uk.md) · [Deutsch](docs/whats-new/README.de.md) · [Français](docs/whats-new/README.fr.md) · [Español](docs/whats-new/README.es.md) · [Italiano](docs/whats-new/README.it.md) · [Português (Brasil)](docs/whats-new/README.pt-BR.md) · [日本語](docs/whats-new/README.ja.md) · [简体中文](docs/whats-new/README.zh-Hans.md) · [한국어](docs/whats-new/README.ko.md) · [Română](docs/whats-new/README.ro.md) · [Polski](docs/whats-new/README.pl.md) · [Türkçe](docs/whats-new/README.tr.md) · [Nederlands](docs/whats-new/README.nl.md) · [Svenska](docs/whats-new/README.sv.md) · [Čeština](docs/whats-new/README.cs.md) · [繁體中文](docs/whats-new/README.zh-Hant.md) · [العربية](docs/whats-new/README.ar.md) · [हिन्दी](docs/whats-new/README.hi.md) · [Bahasa Indonesia](docs/whats-new/README.id.md) · [Tiếng Việt](docs/whats-new/README.vi.md) · [ไทย](docs/whats-new/README.th.md).
 
+## [1.53.3] - Unreleased
+
+### Fixed
+- Game Mode, hot corners and Animations, website version: after a game, your hot corners and the Dock delay always come back as you had them. Before, if pikapik quit during a game or in the few seconds after it, or you changed a hot corner or the Dock delay in Settings while a game was open, pikapik could take the game’s temporary values for yours: a hot corner stayed off, or a Dock that hides stopped appearing. Now the game keeps your values under its own, Settings shows and changes yours, and they come back whichever puts them back first, the game or Settings. A corner you change by hand in System Settings during a game stays as you set it.
+- Log out, restart and shut down, website version: every copy of pikapik now puts your values back first thing, before macOS closes it: hot corners and the Dock delay from a game, animations and whether the Dock hides, the Dock on one display, key repeat and desktop icons, and the Dock restarts at most once. Before, when the Mac shut down with two copies of pikapik open and no window, it could start again with pikapik’s Dock values and with the desktop icons still hidden.
+- Animations, website version: the Hide the Dock automatically switch no longer disappears from the page after you turn it on. Restore Defaults now puts it back too, and you can press it when that switch is the only thing you changed.
+- Animations, website version: if you never changed whether the Dock hides, pikapik leaves that setting unset when it puts things back, instead of setting it to not hide.
+
 ## [1.53.2] - Unreleased
 
 ### Changed
