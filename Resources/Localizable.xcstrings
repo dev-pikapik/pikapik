@@ -1551,6 +1551,12 @@
                   "value": "%lld elemento"
                 }
               },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld elementos"
+                }
+              },
               "other": {
                 "stringUnit": {
                   "state": "translated",
@@ -1567,6 +1573,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld élément"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld éléments"
                 }
               },
               "other": {
@@ -1615,6 +1627,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld elemento"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld elementi"
                 }
               },
               "other": {
@@ -1705,6 +1723,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld item"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld itens"
                 }
               },
               "other": {
@@ -1803,6 +1827,12 @@
         "tr": {
           "variations": {
             "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld öğe"
+                }
+              },
               "other": {
                 "stringUnit": {
                   "state": "translated",
@@ -2000,6 +2030,12 @@
                   "value": "%lld línea por clic"
                 }
               },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld líneas por clic"
+                }
+              },
               "other": {
                 "stringUnit": {
                   "state": "translated",
@@ -2016,6 +2052,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld ligne par cran"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld lignes par cran"
                 }
               },
               "other": {
@@ -2064,6 +2106,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld riga per scatto"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld righe per scatto"
                 }
               },
               "other": {
@@ -2154,6 +2202,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld linha por clique"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld linhas por clique"
                 }
               },
               "other": {
@@ -2252,6 +2306,12 @@
         "tr": {
           "variations": {
             "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Tık başına %lld satır"
+                }
+              },
               "other": {
                 "stringUnit": {
                   "state": "translated",
@@ -84102,6 +84162,12 @@
                   "value": "Se movió %lld elemento (%@) a la Papelera"
                 }
               },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Se movieron %lld elementos (%@) a la Papelera"
+                }
+              },
               "other": {
                 "stringUnit": {
                   "state": "translated",
@@ -84118,6 +84184,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld élément (%@) déplacé vers la Corbeille"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld éléments (%@) déplacés vers la Corbeille"
                 }
               },
               "other": {
@@ -84166,6 +84238,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld elemento (%@) spostato nel Cestino"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld elementi (%@) spostati nel Cestino"
                 }
               },
               "other": {
@@ -84256,6 +84334,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld item (%@) movido para o Lixo"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld itens (%@) movidos para o Lixo"
                 }
               },
               "other": {
@@ -84354,6 +84438,12 @@
         "tr": {
           "variations": {
             "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld öğe (%@) Çöp Sepeti’ne taşındı"
+                }
+              },
               "other": {
                 "stringUnit": {
                   "state": "translated",
@@ -112722,6 +112812,12 @@
                   "value": "Se devolvió %lld elemento a su sitio"
                 }
               },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Se devolvieron %lld elementos a su sitio"
+                }
+              },
               "other": {
                 "stringUnit": {
                   "state": "translated",
@@ -112738,6 +112834,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld élément remis en place"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld éléments remis en place"
                 }
               },
               "other": {
@@ -112786,6 +112888,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld elemento rimesso a posto"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld elementi rimessi a posto"
                 }
               },
               "other": {
@@ -112876,6 +112984,12 @@
                 "stringUnit": {
                   "state": "translated",
                   "value": "%lld item devolvido ao lugar"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld itens devolvidos ao lugar"
                 }
               },
               "other": {
@@ -112974,6 +113088,12 @@
         "tr": {
           "variations": {
             "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld öğe geri konuldu"
+                }
+              },
               "other": {
                 "stringUnit": {
                   "state": "translated",
