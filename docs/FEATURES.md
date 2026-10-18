@@ -338,7 +338,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Gives links you can add to Shortcuts, Control Center and widgets to start Keep Awake in one click.
 
-**How it works:** `pikapik://keep-awake`, `pikapik://display`, `pikapik://lid-closed` handled by `KeepAwake.handle(_:)` (`KeepAwake.swift:482`). The App Store build uses the scheme `pikapik-store` (`scripts/build.sh:181`). Add the Open URLs action in Shortcuts with the link.
+**How it works:** `pikapik://keep-awake`, `pikapik://display`, `pikapik://lid-closed` handled by `KeepAwake.handle(_:)` (`KeepAwake.swift:482`). The App Store build uses the scheme `pikapik-store` (`scripts/build.sh:240`). Add the Open URLs action in Shortcuts with the link.
 
 **Options:**
 - Keep Awake — row with Copy Link (`KeepAwakeSettings` in `KeepAwakeView.swift`).
@@ -1522,7 +1522,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows the licenses of the open-source libraries the player uses, and links to their source code.
 
-**How it works:** The Player Licenses row opens the bundled `Player Licenses.txt` (`PlayerPage.swift:27`), made from `Vendor/ffmpeg/License.txt` by `scripts/fetch-ffmpeg.sh`: FFmpeg under LGPL 2.1 or later, dav1d under BSD 2-Clause, libass under ISC, FreeType under the FreeType License, HarfBuzz under MIT, and FriBidi under LGPL 2.1, which is a separate library you can replace (`libfribidi.0.dylib` in the Frameworks folder of the app; the others are built into the player). The first lines of the file name the DTS and picture-subtitle decoders (`scripts/build.sh:194`). Source Code opens the latest release on GitHub, where the source archives of all six are attached (`PlayerPage.swift:29`).
+**How it works:** The Player Licenses row opens the bundled `Player Licenses.txt` (`PlayerPage.swift:27`), made from `Vendor/ffmpeg/License.txt` by `scripts/fetch-ffmpeg.sh`: FFmpeg under LGPL 2.1 or later, dav1d under BSD 2-Clause, libass under ISC, FreeType under the FreeType License, HarfBuzz under MIT, and FriBidi under LGPL 2.1, which is a separate library you can replace (`libfribidi.0.dylib` in the Frameworks folder of the app; the others are built into the player). The first lines of the file name the DTS and picture-subtitle decoders (`scripts/build.sh:188`). Source Code opens the latest release on GitHub, where the source archives of all six are attached (`PlayerPage.swift:29`).
 
 **Edition:** Website only (App Store: hidden; the player and libass are not in that build).
 
