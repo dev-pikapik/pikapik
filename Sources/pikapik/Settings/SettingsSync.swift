@@ -199,7 +199,11 @@ final class SettingsSync {
 
     private func sync() {
         guard isEnabled, MainCopy.canAct else { return }
-        let remote = read()
+        let remote: SettingsFile?
+        switch read() {
+        case .success(let file): remote = file
+        case .failure(let error): return state = .failed(error.localizedDescription)
+        }
         switch SettingsFile.merge(local: modified, remote: remote, device: device) {
         case .apply:
             guard let remote else { return }
@@ -208,7 +212,7 @@ final class SettingsSync {
             modified = remote.modified
             state = .synced(.now)
         case .upload:
-            if modified == .distantPast { modified = Self.stamp() }
+            if modified == .distantPast { modified = SettingsFile.unclaimed() }
             write(SettingsFile(settings: last, modified: modified, device: device))
         case .none:
             state = .synced(.now)
@@ -221,20 +225,11 @@ final class SettingsSync {
         applying = false
     }
 
-    private func read() -> SettingsFile? {
+    private func read() -> Result<SettingsFile?, Error> {
         #if APPSTORE
-        NSUbiquitousKeyValueStore.default.data(forKey: Self.storeKey).flatMap(SettingsFile.init(data:))
+        .success(NSUbiquitousKeyValueStore.default.data(forKey: Self.storeKey).flatMap(SettingsFile.init(data:)))
         #else
-        var result: SettingsFile?
-        var error: NSError?
-        NSFileCoordinator().coordinate(readingItemAt: Self.file, options: [], error: &error) { url in
-            guard let size = (try? FileManager.default.attributesOfItem(atPath: url.path))?[.size] as? Int,
-                  size <= SettingsFile.maxSize,
-                  let data = try? Data(contentsOf: url)
-            else { return }
-            result = SettingsFile(data: data)
-        }
-        return result
+        SettingsFile.read(Self.file)
         #endif
     }
 
