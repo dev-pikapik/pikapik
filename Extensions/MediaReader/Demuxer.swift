@@ -1,6 +1,24 @@
 import CoreMedia
 import Foundation
 
+/// Times and lengths come from the file, so sums and products of them stop at the largest value instead of crashing.
+extension Int64 {
+    func plus(_ other: Int64) -> Int64 {
+        let (value, overflow) = addingReportingOverflow(other)
+        return overflow ? (other < 0 ? .min : .max) : value
+    }
+
+    func minus(_ other: Int64) -> Int64 {
+        let (value, overflow) = subtractingReportingOverflow(other)
+        return overflow ? (other < 0 ? .max : .min) : value
+    }
+
+    func times(_ other: Int64) -> Int64 {
+        let (value, overflow) = multipliedReportingOverflow(by: other)
+        return overflow ? ((self < 0) == (other < 0) ? .max : .min) : value
+    }
+}
+
 struct PacketKey: Hashable {
     let position: Int64
     let pts: Int64
@@ -99,7 +117,7 @@ final class Track {
             defaultDuration = par.frame_size > 0 && par.sample_rate > 0 ? max(1, av_rescale_q(Int64(par.frame_size), AVRational(num: 1, den: par.sample_rate), timeBase)) : 1
             size = .zero
         }
-        delay = Int64(par.video_delay) * defaultDuration
+        delay = Int64(par.video_delay).times(defaultDuration)
         parser = decodeOrderTimes && par.codec_id == AV_CODEC_ID_H264 ? av_parser_init(Int32(AV_CODEC_ID_H264.rawValue)) : nil
         if let parser {
             parser.pointee.flags |= PARSER_FLAG_COMPLETE_FRAMES
@@ -115,12 +133,12 @@ final class Track {
     }
 
     func time(_ ticks: Int64) -> CMTime {
-        CMTime(value: ticks * Int64(timeBase.num), timescale: timeBase.den)
+        CMTime(value: ticks.times(Int64(timeBase.num)), timescale: timeBase.den)
     }
 
     func ticks(_ time: CMTime) -> Int64 {
         let scaled = CMTimeConvertScale(time, timescale: timeBase.den, method: .roundTowardNegativeInfinity).value
-        return scaled >= 0 ? scaled / Int64(timeBase.num) : -((-scaled + Int64(timeBase.num) - 1) / Int64(timeBase.num))
+        return scaled / Int64(timeBase.num) - (scaled % Int64(timeBase.num) < 0 ? 1 : 0)
     }
 
     fileprivate func pictureOrder(_ packet: AVPacket) -> Int32? {
@@ -135,8 +153,8 @@ final class Track {
         let refresh = packet.flags & AV_PKT_FLAG_KEY != 0 && (Self.instantRefresh(packet) || order.map { poc <= $0.poc } ?? false)
         if var order, !refresh {
             if let guess, guess.index >= 0, poc < order.poc {
-                for earlier in guess.run.packets[guess.index...] where earlier !== added { earlier.pts += defaultDuration }
-                order.pts += defaultDuration
+                for earlier in guess.run.packets[guess.index...] where earlier !== added { earlier.pts = earlier.pts.plus(defaultDuration) }
+                order.pts = order.pts.plus(defaultDuration)
             } else if poc > order.poc {
                 guess?.guessed = false
                 guess = nil
@@ -150,9 +168,9 @@ final class Track {
         guard let order else { return }
         if poc % 2 != 0, pocStep == 2 {
             pocStep = 1
-            for earlier in runs.flatMap(\.packets) where earlier.pts > order.pts { earlier.pts = order.pts + (earlier.pts - order.pts) * 2 }
+            for earlier in runs.flatMap(\.packets) where earlier.pts > order.pts { earlier.pts = order.pts.plus(earlier.pts.minus(order.pts).times(2)) }
         }
-        added.pts = order.pts + Int64((poc - order.poc) / pocStep) * defaultDuration
+        added.pts = order.pts.plus(((Int64(poc) - Int64(order.poc)) / Int64(pocStep)).times(defaultDuration))
     }
 
     private static func instantRefresh(_ packet: AVPacket) -> Bool {
@@ -388,8 +406,8 @@ final class Demuxer {
                 if let run = stream.runs.first(where: { $0.atEnd }) { return run.packets.last }
                 guard let context else { break }
                 let start = context.pointee.start_time == PikaNoTimestamp ? 0 : context.pointee.start_time
-                let end = context.pointee.duration > 0 ? start + context.pointee.duration : start
-                try seek(to: back < 0 ? start : end - back * Int64(AV_TIME_BASE))
+                let end = context.pointee.duration > 0 ? start.plus(context.pointee.duration) : start
+                try seek(to: back < 0 ? start : end.minus(back * Int64(AV_TIME_BASE)))
                 while try readPacket() != nil {}
             }
             return stream.runs.first { $0.atEnd }?.packets.last
@@ -412,7 +430,7 @@ final class Demuxer {
             for _ in 0..<6 {
                 if packet.index > 0 { return packet.run.packets[packet.index - 1] }
                 if packet.run.atStart { return nil }
-                try seek(to: microseconds(min(packet.pts, packet.dts), stream) - back)
+                try seek(to: microseconds(min(packet.pts, packet.dts), stream).minus(back))
                 try read(stream) { $0 === packet || $0.dts > packet.dts }
                 back *= 8
             }
@@ -514,14 +532,14 @@ final class Demuxer {
     }
 
     private func microseconds(_ ticks: Int64, _ stream: Track) -> Int64 {
-        av_rescale_q(ticks + stream.offset, stream.timeBase, AVRational(num: 1, den: AV_TIME_BASE))
+        av_rescale_q(ticks.plus(stream.offset), stream.timeBase, AVRational(num: 1, den: AV_TIME_BASE))
     }
 
     private func reach(_ packet: Packet, _ stream: Track) throws {
         var back: Int64 = 0
         for _ in 0..<6 {
             if stream.head === packet { return }
-            try seek(to: microseconds(min(packet.pts, packet.dts), stream) - back)
+            try seek(to: microseconds(min(packet.pts, packet.dts), stream).minus(back))
             try read(stream) { $0 === packet || $0.dts > packet.dts }
             back = back == 0 ? Int64(AV_TIME_BASE) : back * 8
         }
@@ -584,10 +602,10 @@ final class Demuxer {
             return
         }
         let previous = stream.head.flatMap { $0.index == $0.run.packets.count - 1 ? $0 : nil }
-        let pts = stream.decodeOrderTimes || packet.pts == PikaNoTimestamp ? nil : packet.pts - stream.offset
-        let raw = packet.dts == PikaNoTimestamp ? nil : packet.dts - stream.offset
-        guard var dts = raw ?? previous.map({ $0.dts + $0.duration }) ?? pts.map({ $0 - stream.delay }) else { return }
-        if let previous, dts <= previous.dts { dts = previous.dts + 1 }
+        let pts = stream.decodeOrderTimes || packet.pts == PikaNoTimestamp ? nil : packet.pts.minus(stream.offset)
+        let raw = packet.dts == PikaNoTimestamp ? nil : packet.dts.minus(stream.offset)
+        guard var dts = raw ?? previous.map({ $0.dts.plus($0.duration) }) ?? pts.map({ $0.minus(stream.delay) }) else { return }
+        if let previous, dts <= previous.dts { dts = previous.dts.plus(1) }
         let data = stream.payload(packet)
         let run: Run
         if let previous {

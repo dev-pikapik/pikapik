@@ -1,4 +1,5 @@
 import AppKit
+import CoreMedia
 import Foundation
 
 @main
@@ -120,6 +121,18 @@ enum TestThumbnails {
             engine?.stop()
         }
         (PikaCodec.nativeAV1, videoToolboxDecodesAV1) = (native, true)
+
+        let ntsc = make(ffmpeg, "ntsc.avi", in: folder, ["-f", "lavfi", "-i", "testsrc2=size=320x180:rate=24000/1001:duration=60", "-c:v", "mpeg4", "-g", "24", "-pix_fmt", "yuv420p"])
+        if let engine = try? Engine(ntsc) {
+            engine.muted = true
+            truncate(ntsc.path, 0)
+            engine.seek(to: CMTime(seconds: 50, preferredTimescale: 600), rate: 1)
+            wait(5) { engine.finished != nil }
+            check(engine.finished != nil, "MPEG-4 in AVI at 23.976 fps: a seek after the file stops reading ends the film instead of crashing")
+            engine.stop()
+        } else {
+            check(false, "MPEG-4 in AVI at 23.976 fps opens")
+        }
 
         let tall = make(ffmpeg, "tall.mp4", in: folder, ["-f", "lavfi", "-i", "testsrc2=size=180x320:rate=25:duration=4", "-c:v", "libx264", "-pix_fmt", "yuv420p"])
         let shape = thumbnail(tall, size: CGSize(width: 180, height: 320), duration: 4, at: 0.5)
