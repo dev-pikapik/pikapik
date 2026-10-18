@@ -1572,11 +1572,14 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 - Groups: The app, Saved data, Private storage, Temporary files, Settings, Background helpers, Add-ons, Logs, Installer records.
 - Select All / Deselect All, Quick Look, Copy Path, Cancel.
 
+**Nuances:** Items other apps may still use start unticked. A folder from the app's installer package that another package or another app of the same vendor also uses shows “Also used by …”, and the app's own items inside it are offered instead; while another app of that vendor is installed, only those named after the app start ticked. Homebrew zap items not named after the app or its bundle ID show “Installed with Homebrew”.
+
 **Edition:** Website only.
 
 **Test:**
 1. (Website) In Settings › Uninstaller drop a small test app on the picture and click Move to Trash → the app and its files are in the Trash, and the removal is listed under Recently removed.
 2. An app that is open is asked to quit first; an item that needs an administrator asks for the password once.
+3. (Website) Install two stub packages of one vendor that share a folder (`StubVendor/ProductA`, `StubVendor/ProductB`, `StubVendor/Shared`) and open ProductA's preview → ProductA's folder is ticked, `Shared` is unticked with “Also used by StubVendor ProductB”; Move to Trash leaves ProductB and `Shared` in place.
 
 ### Reset App
 
