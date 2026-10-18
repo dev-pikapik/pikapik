@@ -5,7 +5,7 @@ import SwiftUI
 @Observable
 final class WindowZoomTool: Tool {
     let id = ToolID.windowZoom
-    let icon = "arrow.up.left.and.arrow.down.right"
+    let icon = Symbol.arrowUpLeftAndArrowDownRight
     var title: String { SettingTitle.windowZoom }
     let tab = SettingsTab.windows
 

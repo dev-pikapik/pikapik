@@ -3,7 +3,7 @@ import SwiftUI
 
 protocol Tool: AnyObject {
     var id: String { get }
-    var icon: String { get }
+    var icon: Symbol { get }
     var title: String { get }
     var isEnabled: Bool { get set }
     var isActive: Bool { get }

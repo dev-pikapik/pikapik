@@ -7,7 +7,7 @@ final class AppVolumeTool: Tool {
     static let shared = AppVolumeTool()
 
     let id = ToolID.appVolume
-    let icon = "speaker.wave.2"
+    let icon = Symbol.speakerWave2
     var title: String { SettingTitle.appVolume }
     var tab: SettingsTab { .sound }
     var needs: [Permission] { [.systemAudio] }
@@ -172,7 +172,7 @@ private struct AppVolumeList: View {
                         if adding {
                             Button("Done") { adding = false }
                         } else {
-                            Button("Add App…", systemImage: "plus") { adding = true }
+                            Button("Add App…", symbol: .plus) { adding = true }
                         }
                     }
                 }
@@ -225,7 +225,7 @@ private struct AppVolumeRowView: View {
                 .disabled(muted)
                 .accessibilityLabel(Text("Volume of \(row.title)"))
             Button { tool.toggleMute(row.owner) } label: {
-                Image(systemName: muted ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                Image(muted ? .speakerSlashFill : .speakerWave2Fill)
                     .foregroundStyle(muted ? Color.accentColor : Color.secondary)
                     .frame(width: 20, height: 20)
                     .contentShape(Rectangle())
@@ -236,7 +236,7 @@ private struct AppVolumeRowView: View {
             if inSettings {
                 let kept = tool.memory.keys.contains(key)
                 Button { tool.forget(key) } label: {
-                    Image(systemName: "xmark.circle.fill")
+                    Image(.xmarkCircleFill)
                         .foregroundStyle(.secondary)
                         .frame(width: 20, height: 20)
                         .contentShape(Rectangle())
@@ -260,7 +260,7 @@ private struct AppVolumeIcon: View {
             if let path {
                 Image(nsImage: NSWorkspace.shared.icon(forFile: path)).resizable()
             } else {
-                Image(systemName: "waveform.circle.fill").resizable().foregroundStyle(.secondary)
+                Image(.waveformCircleFill).resizable().foregroundStyle(.secondary)
             }
         }
         .aspectRatio(contentMode: .fit)
@@ -275,8 +275,8 @@ struct AppVolumeArt: View {
 
     private static let durations = [1.2, 1.2, 1.2, 1.2]
     private static let levels: [[CGFloat]] = [[0.9, 0.55, 0.25], [0.9, 0.3, 0.65], [0.6, 0.3, 0.85], [0.6, 0.75, 0.4]]
-    private static let tiles: [(symbol: String, color: Color)] = [
-        ("music.note", Art.red), ("play.rectangle.fill", .accentColor), ("phone.fill", Art.green),
+    private static let tiles: [(symbol: Symbol, color: Color)] = [
+        (.musicNote, Art.red), (.playRectangleFill, .accentColor), (.phoneFill, Art.green),
     ]
 
     var body: some View {
@@ -297,13 +297,13 @@ struct AppVolumeArt: View {
         }
     }
 
-    private func tile(_ tile: (symbol: String, color: Color)) -> some View {
+    private func tile(_ tile: (symbol: Symbol, color: Color)) -> some View {
         let shape = RoundedRectangle(cornerRadius: 9, style: .continuous)
         return shape
             .fill(LinearGradient(colors: [tile.color, tile.color.opacity(0.7)], startPoint: .top, endPoint: .bottom))
             .overlay(shape.hairline(Color.white.opacity(0.25)))
             .overlay {
-                Image(systemName: tile.symbol)
+                Image(tile.symbol)
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(.white)
             }

@@ -3,7 +3,7 @@ import SwiftUI
 
 final class NewFileTool: Tool {
     let id = ToolID.newFile
-    let icon = "doc.badge.plus"
+    let icon = Symbol.docBadgePlus
     var title: String { SettingTitle.newFileInFinder }
     let tab = SettingsTab.finder
     private let finder = FinderExtension(bundle: "NewFile", key: ToolID.newFile)

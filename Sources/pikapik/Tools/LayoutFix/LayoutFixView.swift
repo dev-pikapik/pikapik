@@ -45,7 +45,7 @@ struct LayoutFixServiceSettings: View {
         } else {
             Button { SettingsWindow.show(.keyboard) } label: {
                 HStack(spacing: 10) {
-                    Image(systemName: tool.icon)
+                    Image(tool.icon)
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(tool.isActive ? Color.white : Color.secondary)
                         .frame(width: 28, height: 28)

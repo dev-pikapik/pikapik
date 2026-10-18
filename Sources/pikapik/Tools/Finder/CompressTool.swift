@@ -3,7 +3,7 @@ import SwiftUI
 
 final class CompressTool: Tool {
     let id = ToolID.compress
-    let icon = "arrow.down.right.and.arrow.up.left"
+    let icon = Symbol.arrowDownRightAndArrowUpLeft
     var title: String { SettingTitle.smallerCopyInFinder }
     let tab = SettingsTab.finder
     private let finder = FinderExtension(bundle: "Compress", key: ToolID.compress)

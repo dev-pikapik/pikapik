@@ -56,12 +56,12 @@ struct MenuView: View {
     }
 
     @ViewBuilder
-    private func customizeRow(icon: String, title: String, id: String) -> some View {
+    private func customizeRow(icon: Symbol, title: String, id: String) -> some View {
         Toggle(isOn: binding(id)) {
             Label {
                 Text(title)
             } icon: {
-                Image(systemName: icon).frame(width: 20)
+                Image(icon).frame(width: 20)
             }
         }
         .toggleStyle(.checkbox)
@@ -85,18 +85,18 @@ struct MenuView: View {
                         VStack(spacing: 0) {
                             if isShown(ToolID.keepAwake) {
                                 if customizing {
-                                    customizeRow(icon: "cup.and.saucer", title: TabTitle.keepAwake, id: ToolID.keepAwake)
+                                    customizeRow(icon: .cupAndSaucer, title: TabTitle.keepAwake, id: ToolID.keepAwake)
                                 } else {
                                     HStack(spacing: 0) {
                                         ToggleRow(
-                                            icon: "cup.and.saucer",
+                                            icon: .cupAndSaucer,
                                             title: TabTitle.keepAwake,
                                             subtitle: keepAwake.statusText,
                                             hint: keepAwake.statusText,
                                             isOn: $keepAwake.isOn
                                         )
                                         Button { keepAwakeOpen.toggle() } label: {
-                                            Image(systemName: "chevron.right")
+                                            Image(.chevronRight)
                                                 .font(.system(size: 11, weight: .semibold))
                                                 .rotationEffect(.degrees(keepAwakeOpen ? 90 : 0))
                                                 .animation(.snappy, value: keepAwakeOpen)
@@ -118,7 +118,7 @@ struct MenuView: View {
 
                             if showsBrightness {
                                 if customizing {
-                                    customizeRow(icon: "sun.max", title: TabTitle.brightness, id: ToolID.brightness)
+                                    customizeRow(icon: .sunMax, title: TabTitle.brightness, id: ToolID.brightness)
                                 } else {
                                     BrightnessRow()
                                 }
@@ -126,7 +126,7 @@ struct MenuView: View {
 
                             if isShown(ToolID.speedTest) {
                                 if customizing {
-                                    customizeRow(icon: "speedometer", title: TabTitle.speedTest, id: ToolID.speedTest)
+                                    customizeRow(icon: .speedometer, title: TabTitle.speedTest, id: ToolID.speedTest)
                                 } else {
                                     SpeedTestRow()
                                 }
@@ -135,7 +135,7 @@ struct MenuView: View {
                             #if !APPSTORE
                             if showsFans {
                                 if customizing {
-                                    customizeRow(icon: "fan", title: TabTitle.fans, id: ToolID.fans)
+                                    customizeRow(icon: .fan, title: TabTitle.fans, id: ToolID.fans)
                                 } else {
                                     FanRow()
                                 }
@@ -144,7 +144,7 @@ struct MenuView: View {
 
                             if isShown(ToolID.temperatures) {
                                 if customizing {
-                                    customizeRow(icon: "thermometer.medium", title: TabTitle.temperatures, id: ToolID.temperatures)
+                                    customizeRow(icon: .thermometerMedium, title: TabTitle.temperatures, id: ToolID.temperatures)
                                 } else {
                                     TemperatureRow()
                                 }
@@ -169,7 +169,7 @@ struct MenuView: View {
                         Button {
                             SettingsWindow.show(.permissions)
                         } label: {
-                            Label("Permissions needed", systemImage: "exclamationmark.triangle.fill")
+                            Label("Permissions needed", symbol: .exclamationmarkTriangleFill)
                                 .font(.callout)
                                 .foregroundStyle(.orange)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -183,7 +183,7 @@ struct MenuView: View {
                         Button {
                             FinderRestart.shared.restart()
                         } label: {
-                            Label("Restart Finder", systemImage: "arrow.clockwise")
+                            Label("Restart Finder", symbol: .arrowClockwise)
                                 .font(.callout)
                                 .foregroundStyle(.secondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -212,14 +212,14 @@ struct MenuView: View {
                     Button("Done") { customizing = false }
                         .buttonStyle(.borderedProminent)
                 } else {
-                    Button { SettingsWindow.show() } label: { Label("Settings…", systemImage: "gearshape") }
+                    Button { SettingsWindow.show() } label: { Label("Settings…", symbol: .gearshape) }
                         .keyboardShortcut(",")
                         .help("Settings…")
                         .overlay(alignment: .topTrailing) { if hasNew { NewDot().padding(1) } }
-                    Button { customizing = true } label: { Label("Customize…", systemImage: "pencil") }
+                    Button { customizing = true } label: { Label("Customize…", symbol: .pencil) }
                         .help("Customize…")
                     Spacer(minLength: 8)
-                    Button { NSApp.terminate(nil) } label: { Label("Quit", systemImage: "power") }
+                    Button { NSApp.terminate(nil) } label: { Label("Quit", symbol: .power) }
                         .keyboardShortcut("q")
                         .help("Quit")
                 }
@@ -250,7 +250,7 @@ struct MenuView: View {
                 NSApp.keyWindow?.close()
                 KeepAwake.turnOffDisplay()
             } label: {
-                Label("Turn off the display now", systemImage: "display")
+                Label("Turn off the display now", symbol: .display)
                     .frame(maxWidth: .infinity)
             }
             .glassButtons()
@@ -277,7 +277,7 @@ struct MenuView: View {
             Button {
                 Task { await updater.install() }
             } label: {
-                Label("Update to \(version)", systemImage: "arrow.down.circle.fill")
+                Label("Update to \(version)", symbol: .arrowDownCircleFill)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)

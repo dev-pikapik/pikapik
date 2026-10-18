@@ -4,7 +4,7 @@ import SwiftUI
 @Observable
 final class HideAppTool: Tool {
     let id = ToolID.hideApp
-    let icon = "eye.slash"
+    let icon = Symbol.eyeSlash
     var title: String { SettingTitle.hideApp }
     let tab = SettingsTab.mouse
 

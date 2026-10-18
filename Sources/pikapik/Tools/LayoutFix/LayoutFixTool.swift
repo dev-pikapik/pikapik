@@ -23,7 +23,7 @@ func replace(_ old: String, with new: String, _ proxy: CGEventTapProxy) {
 @Observable
 final class LayoutFixTool: Tool {
     let id = ToolID.layoutFix
-    let icon = "character.cursor.ibeam"
+    let icon = Symbol.characterCursorIbeam
     var title: String { SettingTitle.layoutFix }
 
     static let standard = Shortcut(key: 49, modifiers: 0x60000)

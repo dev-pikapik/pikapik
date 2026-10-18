@@ -3,7 +3,7 @@ import SwiftUI
 @Observable
 final class ScrollDirectionTool: Tool {
     let id = ToolID.wheelDirection
-    let icon = "arrow.up.arrow.down"
+    let icon = Symbol.arrowUpArrowDown
     var title: String { SettingTitle.wheelDirection }
     let tab = SettingsTab.mouse
 
@@ -183,7 +183,7 @@ struct ScrollDirectionArt: View {
                 ArtMouse(wheel: rolling)
                     .artScale(1.6)
                     .position(x: 189, y: 64)
-                Image(systemName: "chevron.down")
+                Image(.chevronDown)
                     .font(.system(size: 10, weight: .bold))
                     .foregroundStyle(Color.accentColor)
                     .opacity(rolling ? 1 : 0)

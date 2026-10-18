@@ -5,7 +5,7 @@ import SwiftUI
 @Observable
 final class DockDisplayTool: Tool {
     let id = ToolID.dockDisplay
-    let icon = "display.2"
+    let icon = Symbol.display2
     var title: String { SettingTitle.dockDisplay }
     let tab = SettingsTab.dock
     let needs: [Permission] = []
