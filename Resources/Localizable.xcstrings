@@ -63819,6 +63819,149 @@
         }
       }
     },
+    "In a bag, it may get hot and drain the battery. macOS will ask for your administrator password.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قد يسخن داخل الحقيبة وتنفد بطاريته. سيطلب macOS كلمة سر المسؤول."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "V tašce se může přehřát a vybít baterii. macOS vás požádá o heslo správce."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In einer Tasche kann er heiß werden und den Akku leeren. macOS fragt nach dem Administratorpasswort."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In a bag, it may get hot and drain the battery. macOS will ask for your administrator password."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En una mochila puede calentarse y agotar la batería. macOS pedirá la contraseña de administrador."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans un sac, il risque de chauffer et de vider la batterie. macOS demandera le mot de passe administrateur."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "बैग में यह गर्म हो सकता है और बैटरी ख़त्म हो सकती है। macOS आपसे एडमिन पासवर्ड माँगेगा।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Di dalam tas, Mac bisa panas dan baterainya cepat habis. macOS akan meminta kata sandi administrator."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In una borsa può scaldarsi e scaricare la batteria. macOS chiederà la password dell’amministratore."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バッグの中で熱くなり、バッテリーを使い切るおそれがあります。macOS が管理者パスワードを求めます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "가방 안에서 뜨거워지고 배터리가 닳을 수 있습니다. macOS가 관리자 암호를 요청합니다."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In een tas kan hij heet worden en de batterij leegtrekken. macOS vraagt om je beheerderswachtwoord."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W torbie może się przegrzać i rozładować baterię. macOS poprosi o hasło administratora."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dentro de uma mochila, ele pode esquentar e descarregar a bateria. O macOS vai pedir a senha de administrador."
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Într-o geantă se poate încălzi și își poate descărca bateria. macOS va cere parola de administrator."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В сумке он может перегреться и разрядить батарею. macOS запросит пароль администратора."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I en väska kan den bli varm och tömma batteriet. macOS frågar efter administratörslösenordet."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ถ้าอยู่ในกระเป๋า เครื่องอาจร้อนและแบตเตอรี่หมด macOS จะขอรหัสผ่านผู้ดูแลระบบ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Çantada ısınabilir ve pilini bitirebilir. macOS yönetici parolanızı isteyecek."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "У сумці він може перегрітися й розрядити батарею. macOS запитає пароль адміністратора."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trong túi, máy có thể nóng lên và hết pin. macOS sẽ hỏi mật khẩu quản trị viên."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "放在包里可能会发热并耗尽电池。macOS 会要求输入管理员密码。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "放在包包裡可能會發熱並耗盡電池。macOS 會要求輸入管理者密碼。"
+          }
+        }
+      }
+    },
     "In text, Home moves the cursor to the start of the line and End to its end. With ⇧ they select up to there, with ⌘ they go to the start or end of the whole text. In terminals, virtual machines and remote desktop apps they work as before.": {
       "extractionState": "manual",
       "localizations": {
@@ -72252,6 +72395,149 @@
           "stringUnit": {
             "state": "translated",
             "value": "傳說"
+          }
+        }
+      }
+    },
+    "Let It Sleep": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "السماح بالسكون"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Povolit spánek"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schlafen lassen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let It Sleep"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permitir reposo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rétablir la veille"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "स्लीप में जाने दें"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Biarkan Tidur"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consenti lo stop"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スリープを許可"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잠자기 허용"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laat sluimeren"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pozwól uśpić"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permitir repouso"
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permite repausul"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Вернуть сон"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Låt den vila"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ให้พักเครื่อง"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uyumasına İzin Ver"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Повернути сон"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cho máy ngủ"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "允许睡眠"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "允許睡眠"
           }
         }
       }
@@ -172106,6 +172392,149 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mac 會照常進入睡眠"
+          }
+        }
+      }
+    },
+    "Your Mac still won’t sleep with the lid closed": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يزال جهاز Mac لا يدخل في وضع السكون عند إغلاق الغطاء"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac pořád nepřejde do režimu spánku se zavřeným víkem"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dein Mac schläft zugeklappt immer noch nicht"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Mac still won’t sleep with the lid closed"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu Mac sigue sin entrar en reposo con la tapa cerrada"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Votre Mac ne se met toujours pas en veille écran rabattu"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ढक्कन बंद होने पर आपका Mac अब भी स्लीप में नहीं जाता"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac Anda masih tidak tidur saat penutup ditutup"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il Mac non va ancora in stop con il coperchio chiuso"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "蓋を閉じてもまだスリープしません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "덮개를 닫아도 아직 잠자기에 들어가지 않습니다"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je Mac gaat nog steeds niet in sluimerstand met het deksel dicht"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac nadal nie usypia się przy zamkniętej pokrywie"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Mac ainda não entra em repouso com a tampa fechada"
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac-ul tot nu intră în repaus cu capacul închis"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac всё ещё не засыпает при закрытой крышке"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Din Mac går fortfarande inte i vila med locket stängt"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac ของคุณยังไม่พักเครื่องเมื่อปิดฝา"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac’iniz kapak kapalıyken hâlâ uyku moduna geçmiyor"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac досі не засинає при закритій кришці"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy Mac vẫn không ngủ khi gập nắp"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "合上盖子后 Mac 仍然不会睡眠"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "蓋上螢幕後 Mac 仍然不會進入睡眠"
           }
         }
       }

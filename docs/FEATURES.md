@@ -283,7 +283,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Stops the Mac from sleeping for a while, or until you turn it off.
 
-**How it works:** IOPMAssertion `PreventUserIdleSystemSleep` (`Sources/pikapik/Tools/KeepAwake/KeepAwake.swift:230`), settings at `KeepAwake.swift:341-470`. Website also starts `/usr/bin/caffeinate -di|-i -t N` in `handOff()` (`:189-220`) so it survives quitting.
+**How it works:** IOPMAssertion `PreventUserIdleSystemSleep` (`Sources/pikapik/Tools/KeepAwake/KeepAwake.swift:238`), settings at `KeepAwake.swift:341-470`. Website also starts `/usr/bin/caffeinate -di|-i -t N` in `handOff()` (`:189-220`) so it survives quitting.
 
 **Options:**
 - Keep your Mac awake — Off / For a while / Indefinitely.
@@ -318,18 +318,21 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Keeps the Mac running with the lid shut (for example with an external display).
 
-**How it works:** `pmset -a disablesleep 1` through `KeepAwake.runAsAdmin` (asks for the administrator password) and a watcher; shows an error label when it fails (`KeepAwake.swift:411`). The row is hidden on Macs without a lid.
+**How it works:** `pmset -a disablesleep 1` through `KeepAwake.runAsAdmin` (asks for the administrator password) and a watcher that runs as root (`KeepAwake.lidScript`, `Sources/pikapik/Tools/KeepAwake/KeepAwake.swift:281`). Every 2 seconds the watcher touches the flag file `pikapik-keep-awake` in the user’s temporary folder, which holds pikapik’s process id. It turns lid sleep back on when the flag is removed, when that process has been gone for a minute, or when the watcher gets TERM or HUP. A relaunched or updated pikapik takes over the watcher without a prompt only if the flag was touched in the last 10 seconds and `pmset -g` shows SleepDisabled 1 (`setLid`, `:286`). Shows an error label when the password prompt fails (`KeepAwakeView.swift:103`). The row is hidden on Macs without a lid.
 
 **Options:**
-- Stop when battery is below %@ — shown as “Stop when battery is below 20%”; turns lid-closed mode off at that charge (`KeepAwake.swift:416`).
+- Stop when battery is below %@ — shown as “Stop when battery is below 20%”; turns lid-closed mode off at that charge (`KeepAwakeView.swift:99`).
 
-**Nuances:** `hasLid` is false in the App Store build, so the row never shows there (`KeepAwake.swift:20,253`).
+**Nuances:** `hasLid` is false in the App Store build, so the row never shows there (`KeepAwake.swift:23`, `KeepAwakeView.swift:91`). The `keep-awake-lid-sleep-disabled` default stays set until `pmset -g` shows SleepDisabled 0; a flag left from an older version sets it too. While it is set, the main copy checks 5 seconds after launch and asks once per launch to turn lid sleep back on (`restoreLidSleepIfNeeded`, `KeepAwake.swift:309`). If that fails, Settings › Keep Awake and the menu bar panel show “Your Mac still won’t sleep with the lid closed” with Let It Sleep, which asks every time (`KeepAwakeView.swift:24`, `MenuView.swift:112`). At log out, restart and shut down pikapik removes the flag as soon as macOS posts `willPowerOffNotification`, so the watcher turns lid sleep back on within 2 seconds, and keeps the default for the next launch (`KeepAwake.swift:95`, `releaseLid` `:322`); if the log out is canceled, the mode stays off until it is turned on again; `--uninstall` turns lid sleep back on as well (`main.swift:13`). The setting is not synced between Macs: it needs each Mac’s own password.
 
 **Edition:** Website only (App Store: cut — needs administrator rights; the sandbox-reachable IOPMrootDomain clamshell switch has no App Store precedent and stays on if the app crashes).
 
 **Test:**
 1. (Website, MacBook) Turn it on → one administrator prompt; close the lid with an external display connected → the Mac keeps running; open the lid, turn it off → `pmset -g | grep SleepDisabled` shows 0.
 2. Turn on Stop when battery is below 20% and unplug the charger → at 20% lid-closed mode switches off by itself.
+3. (Website, MacBook) With it on, force quit pikapik in Activity Monitor → about a minute later SleepDisabled shows 0. With it on, log out and log in again → SleepDisabled shows 0 until Keep Awake turns lid-closed mode back on, which asks for the password again.
+4. (Website, MacBook) With it on, stop the watcher with `sudo pkill -9 -f 'disablesleep 0'`, quit pikapik from its menu and open it again → about 5 seconds later a password prompt; cancel it → Settings › Keep Awake and the menu bar panel show “Your Mac still won’t sleep with the lid closed”. Press Let It Sleep and enter the password → the row goes away and SleepDisabled shows 0.
+5. The logic and the real watcher script against a fake `pmset`: `scripts/test-keep-awake-lid.swift` prints “Keep Awake lid OK”.
 
 ### Buttons in Control Center and widgets
 
