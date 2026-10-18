@@ -216,7 +216,7 @@ final class FanControl {
     private func migrate(_ helper: FanHelperProtocol) {
         guard let old = UserDefaults.standard.stringArray(forKey: Self.oldServicesKey) else { return }
         guard HelperAccess.isAdmin(getuid()) else { return UserDefaults.standard.removeObject(forKey: Self.oldServicesKey) }
-        helper.adopt(labels: old) { _ in DispatchQueue.main.async { UserDefaults.standard.removeObject(forKey: Self.oldServicesKey) } }
+        helper.adopt(labels: old) { ok in DispatchQueue.main.async { if ok || FileManager.default.fileExists(atPath: Self.record) { UserDefaults.standard.removeObject(forKey: Self.oldServicesKey) } } }
     }
 
     static func putBackServices() {
