@@ -29,6 +29,16 @@ jobs:
       - name: Issue forms list every feature in docs/FEATURES.md
         run: ./scripts/feature-form.sh --check
 
+  secrets:
+    name: Secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: No signing keys, certificates, profiles or tokens in the code
+        run: ./scripts/check-secrets.sh
+
   # Direct and Tests both need FFmpeg; building it here once keeps them from building it twice side by side when the cache is empty
   ffmpeg:
     name: FFmpeg
@@ -71,6 +81,19 @@ jobs:
           brew install meson ninja nasm pkg-config
           ./scripts/build.sh
 
+      # The built app has to start, keep running and quit cleanly when asked
+      - name: Start and quit the app
+        run: swiftc -O scripts/smoke-test.swift -o build/smoke-test && build/smoke-test build/pikapik.app
+
+      - name: Keep the crash reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: direct-crash-reports
+          path: ~/Library/Logs/DiagnosticReports
+          if-no-files-found: ignore
+          retention-days: 7
+
   appstore:
     name: App Store
     runs-on: macos-26
@@ -81,11 +104,24 @@ jobs:
       - name: Build
         run: APPSTORE=1 ./scripts/build.sh
 
+      - name: Start and quit the app
+        run: swiftc -O scripts/smoke-test.swift -o build/smoke-test && build/smoke-test build/pikapik.app
+
+      - name: Keep the crash reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: appstore-crash-reports
+          path: ~/Library/Logs/DiagnosticReports
+          if-no-files-found: ignore
+          retention-days: 7
+
   tests:
     name: Tests
     needs: ffmpeg
     runs-on: macos-26
-    timeout-minutes: 45
+    # the tests take about 35 minutes; the rest is room for tests stopped at their own time limit
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v5
 
@@ -97,12 +133,19 @@ jobs:
           key: ffmpeg-${{ hashFiles('scripts/fetch-ffmpeg.sh') }}
           fail-on-cache-miss: true
 
-      # test-thumbnails makes its sample videos with Homebrew's ffmpeg
-      - name: Install the ffmpeg tool
-        run: brew install ffmpeg
+      # test-thumbnails makes its sample videos with Homebrew's ffmpeg; coreutils gives gtimeout, so one stuck test can't stop the rest
+      - name: Install the ffmpeg and timeout tools
+        if: ${{ !cancelled() }}
+        run: brew install ffmpeg coreutils
+
+      # test-archive opens its samples with the app's own 7-Zip
+      - name: Fetch 7-Zip
+        if: ${{ !cancelled() }}
+        run: ./scripts/fetch-7zip.sh
 
       # test-fan-helper signs small programs with a certificate, as the app signs its helper; a throwaway one stands in for "pikapik Dev"
       - name: Make a throwaway signing certificate
+        if: ${{ !cancelled() }}
         run: |
           cd "$RUNNER_TEMP"
           printf '[req]\ndistinguished_name = dn\nx509_extensions = ext\nprompt = no\n[dn]\nCN = pikapik CI\n[ext]\nbasicConstraints = critical, CA:false\nkeyUsage = critical, digitalSignature\nextendedKeyUsage = critical, codeSigning\n' > cert.cnf
@@ -118,40 +161,7 @@ jobs:
           security find-identity -p codesigning "$keychain"
           echo "SIGN_IDENTITY=pikapik CI" >> "$GITHUB_ENV"
 
-      # Every test runs even after one fails, so a single failure can't hide the others
+      # Every test runs even after one fails or a step above fails, so a single failure can't hide the others
       - name: Run the tests from CONTRIBUTING.md
-        run: |
-          listed=$(grep '^swiftc .*scripts/test-' CONTRIBUTING.md || true)
-          missing=0
-          for file in scripts/test-*.swift; do
-            if [[ "$listed" != *"$file"* ]]; then
-              echo "::error::$file has no line in CONTRIBUTING.md, so CI never runs it"
-              missing=$((missing + 1))
-            fi
-          done
-          if [ "$missing" -gt 0 ]; then
-            exit 1
-          fi
-          mkdir -p build
-          ./scripts/fetch-7zip.sh
-          failed=()
-          count=0
-          while IFS= read -r test; do
-            count=$((count + 1))
-            name="${test##*&& build/}"
-            echo "::group::$name"
-            if ! bash -c "$test" < /dev/null; then
-              failed+=("$name")
-              echo "::error title=$name::$name failed"
-            fi
-            echo "::endgroup::"
-          done < <(grep '^swiftc .*scripts/test-' CONTRIBUTING.md)
-          if [ "$count" -eq 0 ]; then
-            echo "::error::No test lines found in CONTRIBUTING.md"
-            exit 1
-          fi
-          if [ ${#failed[@]} -gt 0 ]; then
-            echo "${#failed[@]} tests failed:"
-            printf '  %s\n' "${failed[@]}"
-            exit 1
-          fi
+        if: ${{ !cancelled() }}
+        run: ./scripts/run-tests.sh

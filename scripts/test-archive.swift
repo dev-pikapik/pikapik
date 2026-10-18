@@ -861,15 +861,15 @@ enum TestArchive {
     }
 
     static func rar() {
-        guard let samples = ProcessInfo.processInfo.environment["PIKA_RAR_SAMPLES"] else {
-            print("rar skipped (set PIKA_RAR_SAMPLES to a folder of your own .rar files)")
-            return
-        }
+        let own = ProcessInfo.processInfo.environment["PIKA_RAR_SAMPLES"]
+        let samples = own ?? manager.currentDirectoryPath + "/scripts/rar-corpus"
         let folder = fresh("rar")
         let names = (try! manager.contentsOfDirectory(atPath: samples)).filter { !$0.hasPrefix(".") }.sorted()
         for name in names { try! manager.copyItem(atPath: samples + "/" + name, toPath: folder.path + "/" + name) }
+        let archives = Archive.distinct(names.map { path(folder, $0) }).filter(Archive.isArchive)
+        guard own != nil else { return libarchiveSamples(folder, archives) }
         var opened = 0
-        for first in Archive.distinct(names.map { path(folder, $0) }) where Archive.isArchive(first) {
+        for first in archives {
             do {
                 let info = try Archive.probe(first)
                 precondition(info.entries > 0, "\(first.lastPathComponent) has no entries")
@@ -883,6 +883,29 @@ enum TestArchive {
         }
         precondition(opened > 0, "no archives in \(samples)")
         print("rar ok (\(opened))")
+    }
+
+    static func libarchiveSamples(_ folder: URL, _ archives: [URL]) {
+        func extracted(_ name: String, entries: Int) -> URL {
+            let archive = path(folder, name)
+            do {
+                let found = try Archive.probe(archive).entries
+                precondition(found == entries, "\(name): \(found) entries, expected \(entries)")
+                return try Archive.extract(archive)
+            } catch {
+                preconditionFailure("\(name): \(error)")
+            }
+        }
+        precondition(archives.map(\.lastPathComponent) == ["test_rar_multivolume_single_file.part1.rar", "test_read_format_rar.rar", "test_read_format_rar5_compressed.rar", "test_read_format_rar_encryption_data.rar"])
+        precondition(tree(extracted("test_read_format_rar.rar", entries: 5)) == ["test.txt", "testdir/", "testdir/test.txt", "testemptydir/", "testlink -> test.txt"])
+        precondition(try! Data(contentsOf: extracted("test_read_format_rar5_compressed.rar", entries: 1)).count == 1200)
+        precondition(try! Data(contentsOf: extracted("test_rar_multivolume_single_file.part1.rar", entries: 1)).count == 20111)
+        let locked = path(folder, "test_read_format_rar_encryption_data.rar")
+        precondition(try! Archive.probe(locked).isEncrypted)
+        expect(.needsPassword, "rar without a password") { _ = try Archive.extract(locked) }
+        expect(.wrongPassword, "rar with a wrong password") { _ = try Archive.extract(locked, password: "nope") }
+        precondition(tree(try! Archive.extract(locked, password: "12345678")) == ["bar.txt", "foo.txt"])
+        print("rar ok (libarchive samples)")
     }
 
     static var dosRussian: String.Encoding {

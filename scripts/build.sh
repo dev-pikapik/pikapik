@@ -119,7 +119,7 @@ for ARCH in arm64 x86_64; do
     done
 done
 
-[ -n "${APPSTORE:-}" ] || ./scripts/check-strings.sh build/strings
+./scripts/check-strings.sh build/strings
 rm -rf build/strings
 
 lipo -create build/pikapik-arm64 build/pikapik-x86_64 -output "$APP/Contents/MacOS/pikapik"
