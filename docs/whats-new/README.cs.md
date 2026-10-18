@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>Filmy v AV1 se přehrají, i když je macOS neumí dekódovat
+
+<sub>1.53.1 · 18. října 2026</sub>
+
+Filmy v AV1, které macOS neotevře, teď fungují v přehrávači, přes AirPlay i v náhledech.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Mac někdy hlásí, že AV1 dekódovat umí, ale pak to nezvládne, třeba na virtuálním Macu. Dřív se takový film nepřehrál, teď ho přehrávač dekóduje sám. Nové verze vám navíc přijdou, až když projdou všemi automatickými kontrolami.
+
+**Vyzkoušejte:** Nastavení › Přehrávač
+
+---
+
 ## <a id="v1.53.0"></a>Herní režim: kolečko funguje při plížení
 
 <sub>1.53.0 · 17. října 2026</sub>

@@ -8,9 +8,11 @@ on:
 permissions:
   contents: read
 
+# A newer push cancels an older run of the same pull request, but every commit on main keeps its run:
+# a release waits for the run of its own commit, and a red main shows which commit broke it
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'pull_request' && 'pr' || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 defaults:
   run:
@@ -116,11 +118,40 @@ jobs:
           security find-identity -p codesigning "$keychain"
           echo "SIGN_IDENTITY=pikapik CI" >> "$GITHUB_ENV"
 
+      # Every test runs even after one fails, so a single failure can't hide the others
       - name: Run the tests from CONTRIBUTING.md
         run: |
+          listed=$(grep '^swiftc .*scripts/test-' CONTRIBUTING.md || true)
+          missing=0
+          for file in scripts/test-*.swift; do
+            if [[ "$listed" != *"$file"* ]]; then
+              echo "::error::$file has no line in CONTRIBUTING.md, so CI never runs it"
+              missing=$((missing + 1))
+            fi
+          done
+          if [ "$missing" -gt 0 ]; then
+            exit 1
+          fi
           mkdir -p build
           ./scripts/fetch-7zip.sh
-          grep '^swiftc .*scripts/test-' CONTRIBUTING.md | while IFS= read -r test; do
-            echo "${test##*&& build/}"
-            bash -c "$test" < /dev/null
-          done
+          failed=()
+          count=0
+          while IFS= read -r test; do
+            count=$((count + 1))
+            name="${test##*&& build/}"
+            echo "::group::$name"
+            if ! bash -c "$test" < /dev/null; then
+              failed+=("$name")
+              echo "::error title=$name::$name failed"
+            fi
+            echo "::endgroup::"
+          done < <(grep '^swiftc .*scripts/test-' CONTRIBUTING.md)
+          if [ "$count" -eq 0 ]; then
+            echo "::error::No test lines found in CONTRIBUTING.md"
+            exit 1
+          fi
+          if [ ${#failed[@]} -gt 0 ]; then
+            echo "${#failed[@]} tests failed:"
+            printf '  %s\n' "${failed[@]}"
+            exit 1
+          fi

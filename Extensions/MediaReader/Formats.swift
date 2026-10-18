@@ -9,6 +9,10 @@ struct TrackFormat {
     var audioDecoder: AudioDecoder?
 }
 
+extension PikaCodec {
+    static var nativeAV1 = VTIsHardwareDecodeSupported(kCMVideoCodecType_AV1)
+}
+
 func makeTrackFormat(_ stream: UnsafeMutablePointer<AVStream>, decodeOrderTimes: Bool) -> TrackFormat? {
     let par = stream.pointee.codecpar.pointee
     let extradata = par.extradata.map { Data(bytes: $0, count: Int(par.extradata_size)) } ?? Data()
@@ -37,7 +41,7 @@ private func makeVideoFormat(_ stream: UnsafeMutablePointer<AVStream>, _ par: AV
             return TrackFormat(mediaType: kCMMediaType_Video, description: description, convert: annexBToLengthPrefixed)
         }
         convert = { annexBUnits($0).isEmpty || !isAnnexB($0) ? $0 : annexBToLengthPrefixed($0) }
-    case AV_CODEC_ID_AV1 where extradata.first == 0x81 && VTIsHardwareDecodeSupported(kCMVideoCodecType_AV1):
+    case AV_CODEC_ID_AV1 where PikaCodec.nativeAV1 && extradata.count >= 4 && extradata[0] == 0x81 && extradata[1] >> 5 == 0:
         extensions[kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms] = ["av1C": extradata]
         codec = kCMVideoCodecType_AV1
     default:

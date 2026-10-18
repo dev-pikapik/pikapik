@@ -1,5 +1,6 @@
 import AVFoundation
 import Foundation
+import VideoToolbox
 
 @main
 enum TestPlayerAirplayMedia {
@@ -142,8 +143,20 @@ enum TestPlayerAirplayMedia {
         }
     }
 
-    static func recoded(_ name: String, _ arguments: [String]) async throws {
+    static func videoType(_ url: URL) -> String {
+        let fd = open(url.path, O_RDONLY)
+        defer { close(fd) }
+        let demuxer = try? Demuxer(name: url.lastPathComponent, size: lseek(fd, 0, SEEK_END), memoryLimit: 16 << 20) { buffer, count, offset in
+            let read = pread(fd, buffer, Int(count), offset)
+            return read < 0 ? -EIO : read == 0 ? PikaErrorEOF : Int32(read)
+        }
+        let type = demuxer?.streams.first { $0.format.mediaType == kCMMediaType_Video }.map { CMFormatDescriptionGetMediaSubType($0.format.description) } ?? 0
+        return String(bytes: [24, 16, 8, 0].map { UInt8(type >> $0 & 0xff) }, encoding: .ascii) ?? "?"
+    }
+
+    static func recoded(_ name: String, _ arguments: [String], read type: String? = nil) async throws {
         guard let url = make("\(name).mkv", ["-f", "lavfi", "-i", "color=c=0xd04020:s=160x90:r=24:d=14"] + arguments + ["-g", "48"]) else { return }
+        if let type { check(videoType(url) == type, "\(name): the film is read as \(type) (\(videoType(url)))") }
         let source = try AirPlaySource.open(url)
         let master = source.master()
         check(master.contains("hvc1"), "\(name): the list offers HEVC")
@@ -255,7 +268,17 @@ enum TestPlayerAirplayMedia {
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         await attempt("sparse key frames", sparse)
         if can("libvpx-vp9") { await attempt("VP9") { try await recoded("vp9", ["-c:v", "libvpx-vp9", "-b:v", "300k", "-deadline", "realtime", "-cpu-used", "8"]) } }
-        if can("libsvtav1") { await attempt("AV1") { try await recoded("av1", ["-c:v", "libsvtav1", "-preset", "12", "-pix_fmt", "yuv420p"]) } }
+        if can("libsvtav1") {
+            let av1 = ["-c:v", "libsvtav1", "-preset", "12", "-pix_fmt", "yuv420p"]
+            let native = PikaCodec.nativeAV1
+            print("VTIsHardwareDecodeSupported(AV1): \(VTIsHardwareDecodeSupported(kCMVideoCodecType_AV1))")
+            await attempt("AV1") { try await recoded("av1", av1, read: native ? "av01" : "Pav1") }
+            PikaCodec.nativeAV1 = false
+            await attempt("AV1 on dav1d") { try await recoded("av1-dav1d", av1, read: "Pav1") }
+            (PikaCodec.nativeAV1, videoToolboxDecodesAV1) = (true, false)
+            await attempt("AV1 that VideoToolbox refuses") { try await recoded("av1-refused", av1, read: "av01") }
+            (PikaCodec.nativeAV1, videoToolboxDecodesAV1) = (native, true)
+        }
         await attempt("DTS", dts)
         await attempt("picture subtitles", burned)
         try? FileManager.default.removeItem(at: folder)

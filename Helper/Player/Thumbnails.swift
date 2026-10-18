@@ -23,10 +23,11 @@ private final class ThumbnailReader {
             guard let track = demuxer.streams.first(where: { $0.enabled && $0.format.mediaType == kCMMediaType_Video }) else { throw MediaError.unsupportedFeature }
             self.track = track
             let codec = CMFormatDescriptionGetMediaSubType(track.format.description)
-            software = PikaCodec.video.contains { PikaCodec.fourCC($0.1) == codec } ? try FrameDecoder(track.format.description) : nil
-            if software == nil {
-                guard VTDecompressionSessionCreate(allocator: nil, formatDescription: track.format.description, decoderSpecification: nil, imageBufferAttributes: nil, outputCallback: nil, decompressionSessionOut: &session) == noErr else { throw MediaError.unsupportedFeature }
-            }
+            let own = PikaCodec.video.contains { PikaCodec.fourCC($0.1) == codec }
+            let hardware = own ? nil : videoToolboxSession(track.format.description)
+            let decoder = hardware == nil && (own || codec == kCMVideoCodecType_AV1) ? try FrameDecoder(track.format.description) : nil
+            guard hardware != nil || decoder != nil else { throw MediaError.unsupportedFeature }
+            (software, session) = (decoder, hardware)
         } catch {
             close(fd)
             throw error

@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>I film AV1 si riproducono anche quando macOS non riesce a decodificarli
+
+<sub>1.53.1 · 18 ottobre 2026</sub>
+
+I film AV1 che macOS non riesce ad aprire ora funzionano nel lettore, via AirPlay e nelle anteprime.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+A volte il Mac dice di saper decodificare l’AV1 ma poi non ci riesce, per esempio su un Mac virtuale. Prima un film così non partiva, ora il lettore lo decodifica da solo. Inoltre le nuove versioni ti arrivano solo dopo aver superato tutti i controlli automatici.
+
+**Provalo:** Impostazioni › Lettore
+
+---
+
 ## <a id="v1.53.0"></a>Modalità gioco: la rotella funziona mentre ti accovacci
 
 <sub>1.53.0 · 17 ottobre 2026</sub>

@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.53.1"></a>Filmy AV1 odtwarzają się, nawet gdy macOS nie potrafi ich zdekodować
+
+<sub>1.53.1 · 18 października 2026</sub>
+
+Filmy AV1, których macOS nie potrafi otworzyć, działają teraz w odtwarzaczu, przez AirPlay i w podglądach.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/player-dark.png"><img src="../media/player-light.png" width="340" alt=""></picture>
+
+Czasem Mac zgłasza, że potrafi dekodować AV1, ale potem mu się to nie udaje, na przykład na wirtualnym Macu. Wcześniej taki film się nie odtwarzał, a teraz odtwarzacz sam go dekoduje. Poza tym nowe wersje trafiają do ciebie dopiero wtedy, gdy przejdą wszystkie automatyczne testy.
+
+**Wypróbuj:** Ustawienia › Odtwarzacz
+
+---
+
 ## <a id="v1.53.0"></a>Tryb gry: kółko działa podczas skradania
 
 <sub>1.53.0 · 17 października 2026</sub>

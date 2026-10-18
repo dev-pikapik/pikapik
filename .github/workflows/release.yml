@@ -7,10 +7,12 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   release:
     runs-on: macos-26
+    timeout-minutes: 150
     env:
       GH_TOKEN: ${{ github.token }}
       NOTARIZE: ${{ secrets.NOTARY_KEY != '' || secrets.NOTARY_PASSWORD != '' }}
@@ -85,8 +87,8 @@ jobs:
             AUTH=(--apple-id "$NOTARY_APPLE_ID" --password "$NOTARY_PASSWORD" --team-id "$NOTARY_TEAM_ID")
           fi
           # Both zips hold the same signed bundle, so one ticket covers both.
-          # Apple never holds up a release: no answer in 15 minutes or a rejection
-          # ships the Developer ID signed build as is, without a stapled ticket.
+          # Apple never holds up a release: no answer in 15 minutes ships the
+          # Developer ID signed build as is, without a stapled ticket.
           xcrun notarytool submit build/pikapik.zip "${AUTH[@]}" --wait --timeout 15m --output-format json > build/notary.json || true
           cat build/notary.json
           ID=$(/usr/bin/plutil -extract id raw -o - build/notary.json 2>/dev/null || true)
@@ -94,6 +96,10 @@ jobs:
           rm -f build/notary.json
           if [ "$STATUS" != Accepted ]; then
             [ -n "$ID" ] && xcrun notarytool log "$ID" "${AUTH[@]}" || true
+            if [ "$STATUS" = Invalid ] || [ "$STATUS" = Rejected ]; then
+              echo "::error::Apple refused notarization (status $STATUS), so nothing is published"
+              exit 1
+            fi
             echo "::warning::Notarization ended with status '${STATUS:-no answer}'; publishing the signed build without a ticket"
             exit 0
           fi
@@ -136,6 +142,22 @@ jobs:
         with:
           name: pikapik
           path: build/pikapik.zip
+
+      # Only a commit whose Build run on main passed (both editions and every test in CONTRIBUTING.md) becomes a release.
+      # release.sh pushes the version commit to main with the tag, so that run starts together with this job.
+      - name: Wait for the Build run of this commit
+        if: github.ref_type == 'tag'
+        run: |
+          for attempt in $(seq 1 180); do
+            RESULT=$(gh run list -R "$GITHUB_REPOSITORY" --workflow build.yml --commit "$GITHUB_SHA" --event push --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"')
+            case "$RESULT" in
+              "completed success") echo "Build passed for $GITHUB_SHA"; exit 0 ;;
+              completed*) echo "::error::The Build run for $GITHUB_SHA ended with '${RESULT#completed }'. Make main green, then release a new version." >&2; exit 1 ;;
+            esac
+            sleep 30
+          done
+          echo "::error::No finished Build run for $GITHUB_SHA after an hour and a half" >&2
+          exit 1
 
       - name: Publish release
         if: github.ref_type == 'tag'
