@@ -52,7 +52,8 @@ final class AirPlayPCMReader {
         guard let data = try? demuxer.data(packet, track) else { return }
         let pcm = decoder.decode(data)
         if !started {
-            start = Int((track.time(packet.pts).seconds * rate).rounded())
+            let first = (track.time(packet.pts).seconds * rate).rounded()
+            start = first.isFinite && first.magnitude < 1e15 ? Int(first) : 0
             started = true
         }
         buffer += pcm

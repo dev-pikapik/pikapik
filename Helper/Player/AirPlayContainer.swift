@@ -120,17 +120,17 @@ final class AirPlayContainer {
             let base = source.pointee.time_base
             let shift = av_rescale_q(origin, AVRational(num: 1, den: AV_TIME_BASE), base)
             if index == video {
-                let time = stamp - shift
+                let time = stamp.minus(shift)
                 if packet.pointee.flags & AV_PKT_FLAG_KEY != 0 {
                     close()
                     key = (time, false)
                 } else if let current = key, time < current.time {
                     key?.open = true
                 }
-                result.end = max(result.end, time + max(packet.pointee.duration, 0))
+                result.end = max(result.end, time.plus(max(packet.pointee.duration, 0)))
             } else if let bytes = packet.pointee.data, packet.pointee.size > 0, total < Self.packetLimit {
                 let scale = Double(base.num) / Double(base.den)
-                result.packets[index, default: []].append(AirPlayRawPacket(time: Double(stamp - shift) * scale, duration: Double(max(packet.pointee.duration, 0)) * scale,
+                result.packets[index, default: []].append(AirPlayRawPacket(time: Double(stamp.minus(shift)) * scale, duration: Double(max(packet.pointee.duration, 0)) * scale,
                                                                            data: Data(bytes: bytes, count: Int(packet.pointee.size))))
                 total += Int(packet.pointee.size)
             }

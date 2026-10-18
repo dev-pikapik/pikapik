@@ -27,7 +27,7 @@ final class MediaReader: NSObject, MEFormatReader {
         if demuxer.duration.isValid {
             info.duration = demuxer.duration
         } else if let stream = demuxer.tracks.first, let last = try? demuxer.last(stream) {
-            info.duration = stream.time(last.pts + last.duration)
+            info.duration = stream.time(last.pts.plus(last.duration))
         }
         completionHandler(info, nil)
     }
@@ -128,15 +128,15 @@ final class SampleCursor: NSObject, MESampleCursor {
 
     func stepByDecodeTime(_ deltaDecodeTime: CMTime, completionHandler: @escaping @Sendable (CMTime, Bool, (any Error)?) -> Void) {
         do {
-            let target = packet.dts + stream.ticks(deltaDecodeTime)
+            let target = packet.dts.plus(stream.ticks(deltaDecodeTime))
             var pinned = false
-            if abs(target - packet.dts) > stream.ticks(CMTime(value: 5, timescale: 1)), let found = try demuxer.locate(stream, target) { packet = found }
+            if target.minus(packet.dts).magnitude > stream.ticks(CMTime(value: 5, timescale: 1)).magnitude, let found = try demuxer.locate(stream, target) { packet = found }
             while packet.dts > target {
                 guard let previous = try demuxer.previous(packet, stream) else { pinned = true; break }
                 packet = previous
             }
             while let next = try demuxer.next(packet, stream), next.dts <= target { packet = next }
-            if target >= packet.dts + packet.duration, try demuxer.next(packet, stream) == nil { pinned = true }
+            if target >= packet.dts.plus(packet.duration), try demuxer.next(packet, stream) == nil { pinned = true }
             completionHandler(decodeTimeStamp, pinned, nil)
         } catch {
             completionHandler(decodeTimeStamp, false, error)
@@ -145,10 +145,10 @@ final class SampleCursor: NSObject, MESampleCursor {
 
     func stepByPresentationTime(_ deltaPresentationTime: CMTime, completionHandler: @escaping @Sendable (CMTime, Bool, (any Error)?) -> Void) {
         do {
-            let target = packet.pts + stream.ticks(deltaPresentationTime)
+            let target = packet.pts.plus(stream.ticks(deltaPresentationTime))
             guard let found = try demuxer.locate(stream, target) else { throw MediaError.noSamples }
             packet = found
-            let pinned = try target < packet.pts || (target >= packet.pts + packet.duration && demuxer.next(packet, stream) == nil)
+            let pinned = try target < packet.pts || (target >= packet.pts.plus(packet.duration) && demuxer.next(packet, stream) == nil)
             completionHandler(presentationTimeStamp, pinned, nil)
         } catch {
             completionHandler(presentationTimeStamp, false, error)

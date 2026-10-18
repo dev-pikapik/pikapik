@@ -33,6 +33,30 @@ enum TestMusic {
         return engine.synchronizer.currentTime().seconds
     }
 
+    /// A small Matroska file: two clusters of two blocks, the second cluster at `jump`. With `blockDuration` the track is
+    /// MPEG-2 video whose blocks carry that length, otherwise 8 kHz PCM sound.
+    static func matroska(timestampScale: UInt64, jump: UInt64, blockDuration: UInt64? = nil) -> Data {
+        func element(_ id: [UInt8], _ body: Data) -> Data {
+            Data(id) + Data([0x01] + (1..<8).map { UInt8(UInt64(body.count) >> (56 - 8 * UInt64($0)) & 0xFF) }) + body
+        }
+        func uint(_ id: [UInt8], _ value: UInt64) -> Data { element(id, Data((0..<8).map { UInt8(value >> (56 - 8 * UInt64($0)) & 0xFF) })) }
+        func float(_ id: [UInt8], _ value: Double) -> Data { element(id, Data((0..<8).map { UInt8(value.bitPattern >> (56 - 8 * UInt64($0)) & 0xFF) })) }
+        let block: Data
+        let track: Data
+        if let blockDuration {
+            block = element([0xA0], element([0xA1], Data([0x81, 0x00, 0x00, 0x00]) + Data(count: 64)) + uint([0x9B], blockDuration))
+            track = uint([0x83], 1) + element([0x86], Data("V_MPEG2".utf8)) + element([0xE0], uint([0xB0], 160) + uint([0xBA], 90))
+        } else {
+            block = element([0xA3], Data([0x81, 0x00, 0x00, 0x80]) + Data(count: 1600))
+            track = uint([0x83], 2) + element([0x86], Data("A_PCM/INT/LIT".utf8)) + element([0xE1], float([0xB5], 8000) + uint([0x9F], 1) + uint([0x62, 0x64], 16))
+        }
+        let header = element([0x1A, 0x45, 0xDF, 0xA3], element([0x42, 0x82], Data("matroska".utf8)) + uint([0x42, 0x87], 4) + uint([0x42, 0x85], 2))
+        let info = element([0x15, 0x49, 0xA9, 0x66], uint([0x2A, 0xD7, 0xB1], timestampScale) + float([0x44, 0x89], 4000))
+        let tracks = element([0x16, 0x54, 0xAE, 0x6B], element([0xAE], uint([0xD7], 1) + uint([0x73, 0xC5], 1) + track))
+        let clusters = [0, jump].map { element([0x1F, 0x43, 0xB6, 0x75], uint([0xE7], $0) + block + block) }
+        return header + element([0x18, 0x53, 0x80, 0x67], info + tracks + Data(clusters.joined()))
+    }
+
     static func main() async {
         setvbuf(stdout, nil, _IOLBF, 0)
         guard let ffmpeg = ffmpeg() else {
@@ -105,6 +129,20 @@ enum TestMusic {
             }
         }
         check(true, "\(damaged) damaged copies (cut, empty, random, hit in the middle): \(refused) refused, \(damaged - refused) played what they could, none crashed")
+
+        let extremes: [(String, UInt64, UInt64, UInt64?)] = [
+            ("times that overflow 64-bit ticks", 1_000_001, 10_000_000_000_000, nil),
+            ("a block whose length overflows its time", 1_000_000, 1 << 62, 1 << 62),
+        ]
+        for (name, scale, jump, length) in extremes {
+            let url = folder.appendingPathComponent("extreme.mkv")
+            try! matroska(timestampScale: scale, jump: jump, blockDuration: length).write(to: url)
+            if let engine = try? Engine(url) {
+                _ = await play(engine, for: 0.5)
+                engine.stop()
+            }
+            check(true, "Matroska with \(name) plays or is refused without a crash")
+        }
 
         let notMusic = folder.appendingPathComponent("notes.mp3")
         try! Data("not a song at all".utf8).write(to: notMusic)

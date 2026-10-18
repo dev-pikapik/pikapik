@@ -135,7 +135,7 @@ final class Engine {
     let chapters: [Chapter]
     private let audio = AVSampleBufferAudioRenderer()
     private let demuxer: Demuxer
-    private let file: Int32
+    private var file: Int32
     private let queue = DispatchQueue(label: "pikapik.player")
     private let lock = NSLock()
     private var chosenAudio: Track?
@@ -214,11 +214,12 @@ final class Engine {
         audioTracks = demuxer.tracks.filter { $0.format.mediaType == kCMMediaType_Audio && Self.decodable($0.format.description) }
         demuxer.discard(except: feeds.map(\.track))
         duration = demuxer.duration.isValid ? demuxer.duration : feeds.compactMap { feed in
-            ((try? demuxer.last(feed.track)) ?? nil).map { feed.track.time($0.pts + $0.duration) }
+            ((try? demuxer.last(feed.track)) ?? nil).map { feed.track.time($0.pts.plus($0.duration)) }
         }.max() ?? .zero
         chapters = demuxer.chapters()
         guard !feeds.isEmpty else {
             close(fd)
+            file = -1
             throw MediaError.unsupportedFeature
         }
         layer.videoGravity = .resizeAspect
@@ -243,7 +244,7 @@ final class Engine {
 
     deinit {
         for feed in feeds { feed.renderer.stopRequestingMediaData() }
-        close(file)
+        if file >= 0 { close(file) }
     }
 
     func stop() {
@@ -373,7 +374,7 @@ final class Engine {
             }
             feed.next = (try? demuxer.next(packet, feed.track)) ?? nil
             demuxer.forget(before: packet, feed.track)
-            end = max(end, feed.track.time(packet.pts + packet.duration))
+            end = max(end, feed.track.time(packet.pts.plus(packet.duration)))
             if let decoder = feed.decoder {
                 guard let data = try? demuxer.data(packet, feed.track) else { continue }
                 send(decoder.decode(data, pts: packet.pts, duration: packet.duration, feed.track), feed)
@@ -387,8 +388,8 @@ final class Engine {
     }
 
     private func send(_ samples: [CMSampleBuffer], _ feed: Feed) {
-        let hide = feed.track.time(feed.hide)
-        for sample in samples where feed.hide == .min || CMSampleBufferGetPresentationTimeStamp(sample) >= hide {
+        let hide = feed.hide == .min ? CMTime.negativeInfinity : feed.track.time(feed.hide)
+        for sample in samples where CMSampleBufferGetPresentationTimeStamp(sample) >= hide {
             feed.renderer.enqueue(sample)
         }
     }
