@@ -4,6 +4,9 @@ Every update to pikapik, version by version. The same news, told simply with a p
 
 ## [1.53.2] - Unreleased
 
+### Fixed
+- Game Mode and Protect quitting and closing: a key you hold when you press ⌘, such as W to walk in a game, no longer stays held after you let go of it. Before, if ⌘ was still down when you let go, the game kept the key pressed until you tapped it again. The same went for Tab, H and M in games, and for Q and W anywhere while quitting or closing is protected.
+
 ### Changed
 - Mac App Store version: **Fix words as you type** is held back until the App Store version is approved, because there it can’t see the text field and retypes words without looking. Fix the selected text and the Services command stay.
 
