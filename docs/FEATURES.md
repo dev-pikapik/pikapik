@@ -1,6 +1,6 @@
 # Features
 
-This is the catalog of everything pikapik does, grouped like the Settings sidebar. It is the one place to walk through and test the whole app, and every `###` heading is one feature: `./scripts/feature-form.sh` lists them in the “Which feature?” dropdown of the bug and feature forms. When you add, change, rename or remove a feature, update its entry here and run that script (CI fails otherwise).
+This is the catalog of everything pikapik does, grouped like the Settings sidebar. It is the one place to walk through and test the whole app, and every `###` heading is one feature: `./scripts/feature-form.sh` lists them in the “Which feature?” dropdown of the bug and feature forms. When you add, change, rename or remove a feature, update its entry here and run that script (CI fails otherwise). Name code by its file and its type or function, such as `KeepAwake.update()` in `KeepAwake.swift`, not by line number, so the entries stay right when the code moves.
 
 **Editions.** “Website” is the build from the website, GitHub Releases and Homebrew (bundle `com.pikapik.app.direct`, Developer ID, not sandboxed). “App Store” is the Mac App Store build (`APPSTORE=1 ./scripts/build.sh`, code under `#if APPSTORE`, bundle `com.pikapik.app`, sandboxed). The App Store build has no bundled 7-Zip (Archives in Finder uses the tools built into macOS and has limits), no fan helper, no updater and no Buy me a coffee link. Its Fans, Ports, Dock, Player and Uninstaller tabs are hidden. It cannot change system settings itself (pointer acceleration, Animations, Show hidden files, Background Tasks switches, Left by deleted apps), so there it shows a guide or an Open System Settings button. It has no Green button, Quit when the last window closes, Minimize or hide with a click in the Dock, Enter or Delete in Finder, Key repeat, Trash watcher, lid-closed Keep Awake, sensor temperatures (only the battery temperature), real monitor brightness (it only dims the picture), Fix words as you type and Stay in the background after Quit. It adds the Folders permission, the Say thanks tip section and a Services-based wrong-layout fix.
 
@@ -23,7 +23,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Finds any setting in the Settings window and jumps to it.
 
-**How it works:** SwiftUI `.searchable` over `SettingsItem.allItems` (`Sources/pikapik/Settings/SettingsWindow.swift:103-283`), titles plus synonyms. The App Store build drops the items of hidden tabs and of rows that do not exist there and adds one item for each Privacy & Security list, marked “Other apps’ permissions” (`SettingsWindow.swift:119-143`). Empty result shows **No Results**.
+**How it works:** SwiftUI `.searchable` over `SettingsItem.allItems` (`Sources/pikapik/Settings/SettingsCatalog.swift`), titles plus synonyms. The App Store build drops the items of hidden tabs and of rows that do not exist there and adds one item for each Privacy & Security list, marked “Other apps’ permissions” (`SettingsItem.all` in `SettingsCatalog.swift`). Empty result shows **No Results**.
 
 **Nuances:** The index lists every shortcut of Games › System keyboard shortcuts too. A search hit scrolls to the row and flashes it.
 
@@ -41,7 +41,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Switches between tabs, shows or hides the sidebar, moves back and forward through visited tabs.
 
-**How it works:** `SettingsWindow.swift` (`SettingsTab` enum :4-32, availability :80-88, sidebar rows :421-436, detail routing :516-562). The sidebar has five groups; General is on top with no title, the other four have one: Mac (Battery to Ports); Enhancements (Sound to Animations); Apps (Player to Pet); Info (Permissions and About). The titles are hidden while searching.
+**How it works:** `SettingsTab` enum (`SettingsTab.swift`, availability in `SettingsTab.isAvailable`); sidebar rows in `SettingsView`, detail routing in `SettingsView.detail(_:)` (`SettingsWindow.swift`). The sidebar has five groups; General is on top with no title, the other four have one: Mac (Battery to Ports); Enhancements (Sound to Animations); Apps (Player to Pet); Info (Permissions and About). The titles are hidden while searching.
 
 **Options:**
 - Sidebar — button that hides or shows the sidebar.
@@ -79,7 +79,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Starts pikapik when you log in.
 
-**How it works:** `SMAppService.mainApp` through `LoginItem` (`Sources/pikapik/Core/LoginItem.swift`); toggle at `SettingsWindow.swift:778`. When macOS needs approval the row says “Allow it in System Settings › General › Login Items”, gets an Open button (`BackgroundTasks.openLoginItems`) and shows an animated guide (`SettingsGuide.loginItems`, `Sources/pikapik/Settings/SettingsGuide.swift`) of where to click: Login Items & Extensions, then the pikapik switch. The labels in the guide come from your Mac, in its language; with Reduce Motion on it is one still frame with the click marked. App Store: `LoginItem.swift:26` also keeps the wanted state in a default.
+**How it works:** `SMAppService.mainApp` through `LoginItem` (`Sources/pikapik/Core/LoginItem.swift`); toggle at `GeneralSettings.swift`. When macOS needs approval the row says “Allow it in System Settings › General › Login Items”, gets an Open button (`BackgroundTasks.openLoginItems`) and shows an animated guide (`SettingsGuide.loginItems`, `Sources/pikapik/Settings/SettingsGuide.swift`) of where to click: Login Items & Extensions, then the pikapik switch. The labels in the guide come from your Mac, in its language; with Reduce Motion on it is one still frame with the click marked. App Store: `LoginItem.restore(moved:)` in `LoginItem.swift` also keeps the wanted state in a default.
 
 **Nuances:** Off by default in the App Store build; the Website build turns it on after installing with the one-line command or Homebrew. `--uninstall` turns it off.
 
@@ -94,7 +94,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Lets Quit close the windows while shortcuts and Keep Awake keep working in the background.
 
-**How it works:** Stored under `Background.key`; `Sources/pikapik/Core/Background.swift`, toggle at `SettingsWindow.swift:790` (`#if !APPSTORE`). Open pikapik again to bring the menu bar icon back; ⌥⌘Q (Quit Completely) really quits.
+**How it works:** Stored under `Background.key`; `Sources/pikapik/Core/Background.swift`, toggle at `GeneralSettings.swift` (`#if !APPSTORE`). Open pikapik again to bring the menu bar icon back; ⌥⌘Q (Quit Completely) really quits.
 
 **Nuances:** In the App Store build `Background.isOn` is always false, so Quit always quits.
 
@@ -109,7 +109,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Sets the look of pikapik: System, Light or Dark.
 
-**How it works:** `AppearancePicker` (`SettingsWindow.swift:891`, picker :789) sets `NSApp.appearance`.
+**How it works:** `AppearancePicker` (`GeneralSettings.swift`, picker in `GeneralSettings`) sets `NSApp.appearance`.
 
 **Edition:** Both.
 
@@ -121,7 +121,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Sets the language of the app. 23 languages plus “System”.
 
-**How it works:** `Language.codes` (`SettingsWindow.swift:728`) writes `AppleLanguages` for the app. Languages: en ru uk de fr es it pt-BR nl sv pl cs ro tr ja zh-Hans zh-Hant ko ar hi th vi id.
+**How it works:** `Language.codes` (`GeneralSettings.swift`) writes `AppleLanguages` for the app. Languages: en ru uk de fr es it pt-BR nl sv pl cs ro tr ja zh-Hans zh-Hant ko ar hi th vi id.
 
 **Options:**
 - Restart pikapik to apply — row with a Restart button after a change; relaunches the app and reopens Settings.
@@ -137,11 +137,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Saves all your settings to a file and loads them back, for example on a new Mac.
 
-**How it works:** `SettingsBackup` (`Sources/pikapik/Settings/SettingsFile.swift`), buttons at `SettingsWindow.swift:769-770`, standard open and save panels.
+**How it works:** `SettingsBackup` (`Sources/pikapik/Settings/SettingsFile.swift`), buttons at `GeneralSettings.backupButtons` in `GeneralSettings.swift`, standard open and save panels.
 
 **Options:**
 - Export Settings… — save panel; writes the file.
-- Import Settings… — open panel, then the alert “Replace your settings?” with Replace and Cancel (`SettingsWindow.swift:862`).
+- Import Settings… — open panel, then the alert “Replace your settings?” with Replace and Cancel (`GeneralSettings.swift`).
 
 **Nuances:** The file holds settings only. Pet progress (pet-counts, pet-awards, pet-seen, pet-fresh, pet-outfit) is never exported or imported.
 
@@ -155,7 +155,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Keeps your settings the same on all your Macs through iCloud.
 
-**How it works:** `SettingsSync` (`Sources/pikapik/Settings/SettingsSync.swift`); the row appears only when `SettingsSync.isAvailable`. Website: iCloud Drive files, needs the iCloud Drive permission (`SettingsSync.swift:172`). App Store: `NSUbiquitousKeyValueStore` (`SettingsSync.swift:93,152,226,243`).
+**How it works:** `SettingsSync` (`Sources/pikapik/Settings/SettingsSync.swift`); the row appears only when `SettingsSync.isAvailable`. Website: iCloud Drive files, needs the iCloud Drive permission (`SettingsSync.refresh()` in `SettingsSync.swift`). App Store: `NSUbiquitousKeyValueStore` (`SettingsSync.isAvailable`, `SettingsSync.init()`, `SettingsSync.read()` and `SettingsSync.write(_:)` in `SettingsSync.swift`).
 
 **Options:**
 - Turn on iCloud Drive in System Settings — row with an Open button, Website only, when iCloud Drive is off.
@@ -173,10 +173,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Puts the settings of the open tab (and of General or About) back to their defaults.
 
-**How it works:** `RestoreDefaultsSection` (`SettingsWindow.swift:639-650`) at the bottom of every tool tab and General; alert “Restore default settings?” with Restore Defaults and Cancel. The message differs per edition (`SettingsWindow.swift:871`).
+**How it works:** `RestoreDefaultsSection` (`SettingsWindow.swift`) at the bottom of every tool tab and General; alert “Restore default settings?” with Restore Defaults and Cancel. The message differs per edition (`GeneralSettings.resetMessage` in `GeneralSettings.swift`).
 
 **Options:**
-- About › Restore Defaults… — Website only: turns “Check for updates automatically” back on (`SettingsWindow.swift:1153`).
+- About › Restore Defaults… — Website only: turns “Check for updates automatically” back on (`AboutView.swift`).
 
 **Nuances:** Keeps pet awards and the outfit. On the Finder tab it leaves Hide desktop icons and Show hidden files as they are; in the App Store version it turns the Hide desktop icons curtain off. On About (Website) it only turns “Check for updates automatically” back on.
 
@@ -216,9 +216,9 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 **How it works:** IOKit power-source APIs (`Sources/pikapik/Tools/Battery/Battery.swift`, `BatterySettings.swift`). No permission.
 
 **Options:**
-- Battery Settings… — opens System Settings › Battery (`x-apple.systempreferences:com.apple.Battery-Settings.extension`, `BatterySettings.swift:134`). The row is named Charge Limit on macOS 26.4 or later with Apple silicon and Optimized Battery Charging otherwise; it only explains the macOS setting, nothing in pikapik changes how the Mac charges.
-- Keep It Cool — advice row on how to keep the battery cool (static text, `BatterySettings.swift:139`).
-- Storing Your Mac — advice row on how to leave the Mac for a long time (static text, `BatterySettings.swift:142`).
+- Battery Settings… — opens System Settings › Battery (`x-apple.systempreferences:com.apple.Battery-Settings.extension`, `BatterySettings.tips` in `BatterySettings.swift`). The row is named Charge Limit on macOS 26.4 or later with Apple silicon and Optimized Battery Charging otherwise; it only explains the macOS setting, nothing in pikapik changes how the Mac charges.
+- Keep It Cool — advice row on how to keep the battery cool (static text, `BatterySettings.tips` in `BatterySettings.swift`).
+- Storing Your Mac — advice row on how to leave the Mac for a long time (static text, `BatterySettings.tips` in `BatterySettings.swift`).
 
 **Edition:** Both.
 
@@ -234,13 +234,13 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows the battery’s condition, maximum capacity and cycle count.
 
-**How it works:** Website: `/usr/sbin/system_profiler SPPowerDataType -json`. App Store: the AppleSmartBattery entry of the I/O Registry (`Battery.swift:47,116`), no other program is started. `BatterySettings.swift:84`.
+**How it works:** Website: `/usr/sbin/system_profiler SPPowerDataType -json`. App Store: the AppleSmartBattery entry of the I/O Registry (`BatteryHealth.init(source:registry:pack:)` and `Battery.checkHealth()` in `Battery.swift`), no other program is started. `BatterySettings.health(_:)` in `BatterySettings.swift`.
 
 **Options:**
-- Condition — Normal or Service Recommended (`BatterySettings.swift:59`).
-- Get Service… — link to Apple’s repair page, shown only when service is recommended (`:56`).
-- Maximum Capacity — percent of the design capacity (`:68`).
-- Cycle Count — compared with the rated count (`:79`).
+- Condition — Normal or Service Recommended (`BatterySettings.health(_:)` in `BatterySettings.swift`).
+- Get Service… — link to Apple’s repair page, shown only when service is recommended (`BatterySettings.health(_:)`).
+- Maximum Capacity — percent of the design capacity (`BatterySettings.health(_:)`).
+- Cycle Count — compared with the rated count (`BatterySettings.health(_:)`).
 
 **Nuances:** The Condition row appears only when the battery needs service. On macOS 27 the capacity values live only in the BatteryData of AppleSmartBatteryPack; the App Store build reads it there after the AppleSmartBattery root (`Battery.swift`, test `scripts/test-battery.swift`). The percent may differ by 1% from System Settings, which smooths it over weeks.
 
@@ -255,7 +255,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows the connected power adapter and its watts.
 
-**How it works:** IOKit adapter details (`BatterySettings.swift:102`).
+**How it works:** IOKit adapter details (`BatterySettings.power(_:)` in `BatterySettings.swift`).
 
 **Nuances:** Hidden on battery power.
 
@@ -269,7 +269,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows the live watts going into the battery; on battery it is called Power Use and shows what the Mac draws.
 
-**How it works:** IOKit battery voltage and amperage (`BatterySettings.swift:115`).
+**How it works:** IOKit battery voltage and amperage (`BatterySettings.power(_:)` in `BatterySettings.swift`).
 
 **Edition:** Both.
 
@@ -287,8 +287,8 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Options:**
 - Keep your Mac awake — Off / For a while / Indefinitely.
-- Duration — appears for “For a while”; while Keep Awake is off it also shows “If turned on now, ends …” (`DurationPicker`, `KeepAwake.swift:353`).
-- Display — Always on / Turns off as usual: whether the screen also stays on while the Mac is kept awake (`KeepAwake.swift:390`); Always on adds `PreventUserIdleDisplaySleep` (`:231`).
+- Duration — appears for “For a while”; while Keep Awake is off it also shows “If turned on now, ends …” (`DurationPicker` in `DurationPicker.swift`, `KeepAwakeSettings.until(_:)` in `KeepAwakeView.swift`).
+- Display — Always on / Turns off as usual: whether the screen also stays on while the Mac is kept awake (`KeepAwakeSettings` in `KeepAwakeView.swift`); Always on adds `PreventUserIdleDisplaySleep` (`KeepAwake.update()` in `KeepAwake.swift`).
 
 **Nuances:** The App Store build skips the caffeinate handoff.
 
@@ -305,7 +305,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Switches the screen off right away without sleeping the Mac.
 
-**How it works:** Website: `/usr/bin/pmset displaysleepnow`. App Store: sets `IORequestIdle` to true on `IOService:/IOResources/IODisplayWrangler`, which the app sandbox allows (`KeepAwake.turnOffDisplay` :202; row `KeepAwake.swift:403-408`). Also in the menu bar panel under Keep Awake (`MenuView.swift:234`).
+**How it works:** Website: `/usr/bin/pmset displaysleepnow`. App Store: sets `IORequestIdle` to true on `IOService:/IOResources/IODisplayWrangler`, which the app sandbox allows (`KeepAwake.turnOffDisplay`; row `KeepAwakeSettings` in `KeepAwakeView.swift`). Also in the menu bar panel under Keep Awake (`MenuView.keepAwakeOptions` in `MenuView.swift`).
 
 **Nuances:** macOS 27’s own `pmset` no longer goes through `IORequestIdle`, so the App Store path has not yet been seen to darken an Apple Silicon display; check it on a TestFlight or App Store install.
 
@@ -335,13 +335,13 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Gives links you can add to Shortcuts, Control Center and widgets to start Keep Awake in one click.
 
-**How it works:** `pikapik://keep-awake`, `pikapik://display`, `pikapik://lid-closed` handled by `KeepAwake.handle(_:)` (`KeepAwake.swift:482`). The App Store build uses the scheme `pikapik-store` (`scripts/build.sh:181`). Add the Open URLs action in Shortcuts with the link.
+**How it works:** `pikapik://keep-awake`, `pikapik://display`, `pikapik://lid-closed` handled by `KeepAwake.handle(_:)` (`KeepAwake.swift`). The App Store build uses the scheme `pikapik-store` (`CFBundleURLSchemes` in `scripts/build.sh`). Add the Open URLs action in Shortcuts with the link.
 
 **Options:**
-- Keep Awake — row with Copy Link (`KeepAwake.swift:433`).
-- Keep the display on — row with Copy Link (`:434`).
-- Work with the lid closed — row with Copy Link, Website only in effect (`:436`).
-- Open Shortcuts — opens the Shortcuts app (`:439`).
+- Keep Awake — row with Copy Link (`KeepAwakeSettings` in `KeepAwakeView.swift`).
+- Keep the display on — row with Copy Link (`KeepAwakeSettings` in `KeepAwakeView.swift`).
+- Work with the lid closed — row with Copy Link, Website only in effect (`KeepAwakeSettings` in `KeepAwakeView.swift`).
+- Open Shortcuts — opens the Shortcuts app (`KeepAwakeSettings` in `KeepAwakeView.swift`).
 
 **Edition:** Both; App Store differs: link scheme `pikapik-store`; no lid-closed link.
 
@@ -355,7 +355,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Gives every external monitor that macOS cannot adjust its own brightness slider. The built-in screen and Apple displays are not listed, because macOS adjusts them itself.
 
-**How it works:** `Sources/pikapik/Tools/Brightness/BrightnessSettings.swift:61` (`BrightnessSlider`), `Brightness.swift`, `BrightnessMath.swift`. Website: real brightness over DDC/CI through the private IOAVService link (`MonitorLink`, `Brightness.swift:265`), with a gamma fallback and a poll timer; the level is re-applied after sleep, wake and re-plug. App Store: gamma-only dimming; monitors that macOS adjusts itself are left out (`Brightness.swift:164`); the subtitle reads “Dims the picture.” (`BrightnessSettings.swift:45`). No permission.
+**How it works:** `MonitorSection` in `Sources/pikapik/Tools/Brightness/BrightnessSettings.swift` (`BrightnessSlider`), `Brightness.swift`, `BrightnessMath.swift`. Website: real brightness over DDC/CI through the private IOAVService link (`MonitorLink`, `Brightness.swift`), with a gamma fallback and a poll timer; the level is re-applied after sleep, wake and re-plug. App Store: gamma-only dimming; monitors that macOS adjusts itself are left out (`Brightness.adjustsItself(_:)` in `Brightness.swift`); the subtitle reads “Dims the picture.” (`MonitorSection.mode` in `BrightnessSettings.swift`). No permission.
 
 **Nuances:** With no such monitor the page says “No monitor needs pikapik right now. macOS adjusts the built-in screen and Apple displays itself, with the brightness keys and in Control Center. Connect another monitor and it will appear here.” Some monitors restart when they get a brightness command; if one disappears right after, pikapik turns Dim the picture instead on for it. A Brightness row can be added to the menu bar panel (Customize…); it shows only while a monitor is listed.
 
@@ -373,7 +373,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Switches a monitor that supports real brightness to software dimming, for monitors that do not respond to the slider.
 
-**How it works:** `BrightnessSettings.swift:75` (anchor :23), `#if !APPSTORE`; sets `monitor.hasControl` off and dims with gamma.
+**How it works:** `MonitorSection` in `BrightnessSettings.swift` (anchor), `#if !APPSTORE`; sets `monitor.hasControl` off and dims with gamma.
 
 **Nuances:** The picture gets darker but never black, and text stays readable. Turning the switch off brings the colors back at once.
 
@@ -388,7 +388,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes the brightness keys of your keyboard adjust the monitor under the pointer, with a small sun-and-bar indicator on that screen.
 
-**How it works:** `Sources/pikapik/Tools/Brightness/BrightnessKeysTool.swift:237`; a `.cgSessionEventTap` on system-defined keys, needs Accessibility. 16 steps; hold ⌥⇧ for finer steps (64).
+**How it works:** `BrightnessKeysSettings` in `Sources/pikapik/Tools/Brightness/BrightnessKeysTool.swift`; a `.cgSessionEventTap` on system-defined keys, needs Accessibility. 16 steps; hold ⌥⇧ for finer steps (64).
 
 **Nuances:** Off by default. With the pointer on the built-in screen the keys work as usual. Without Accessibility the toggle looks half-grey, asks for the permission when clicked and does nothing until it is allowed; the sliders, Dim the picture instead and the menu row keep working.
 
@@ -408,14 +408,14 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Lets you set each fan to Auto or to a fixed speed.
 
-**How it works:** `Sources/pikapik/Tools/Fans/FanSettings.swift:66-73`, `FanControl.swift`, `SMC.swift`, helper `Helper/FanHelper/main.swift`. Writes the SMC through a privileged helper installed with the administrator password (`/Library/PrivilegedHelperTools` plus a LaunchDaemon), talking over NSXPC. One card per fan (“Fan 1”, “Fan 2” when there are several).
+**How it works:** `FanCard` in `Sources/pikapik/Tools/Fans/FanSettings.swift`, `FanControl.swift`, `SMC.swift`, helper `Helper/FanHelper/main.swift`. Writes the SMC through a privileged helper installed with the administrator password (`/Library/PrivilegedHelperTools` plus a LaunchDaemon), talking over NSXPC. One card per fan (“Fan 1”, “Fan 2” when there are several).
 
 **Options:**
 - Fan speed (Auto / Manual) — picker per fan.
 - Fan speed (slider) — shown for Manual; from the fan’s minimum to its maximum in steps of 50 rpm.
-- This Mac has no fans — what the page says on a Mac without fans (fanless MacBook Air; empty state, `FanSettings.swift:22`).
+- This Mac has no fans — what the page says on a Mac without fans (fanless MacBook Air; empty state, `FanSettings.swift`).
 
-**Nuances:** Quitting or killing pikapik returns the fans to automatic within seconds (handoff on terminate, `App.swift:195`). The helper is installed and removed through the Administrator access permission row. Needs a Mac with fans.
+**Nuances:** Quitting or killing pikapik returns the fans to automatic within seconds (handoff on terminate, `AppDelegate.stopFeatures(quitting:)` in `App.swift`). The helper is installed and removed through the Administrator access permission row. Needs a Mac with fans.
 
 **Edition:** Website only (App Store: hidden — needs administrator rights and SMC access).
 
@@ -431,7 +431,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Says in plain words how warm the Mac is inside (Normal, Warm, Hot, Very hot) with a short tip.
 
-**How it works:** `ProcessInfo.thermalState` (`Sources/pikapik/Tools/Temperatures/TemperatureSettings.swift`, `Temperatures.swift`); `ThermalScene` picture. Website adds the processor degrees to the summary (`TemperatureSettings.swift:134`). App Store: the page also shows a Battery row on Macs with a battery (see Processor, Graphics, Memory, Storage, Battery and Wi-Fi).
+**How it works:** `ProcessInfo.thermalState` (`Sources/pikapik/Tools/Temperatures/TemperatureSettings.swift`, `Temperatures.swift`); `ThermalScene` picture. Website adds the processor degrees to the summary (`TemperatureRow.summary` in `TemperatureSettings.swift`). App Store: the page also shows a Battery row on Macs with a battery (see Processor, Graphics, Memory, Storage, Battery and Wi-Fi).
 
 **Nuances:** The App Store sandbox refuses the SMC (`IOServiceOpen` on AppleSMC is not permitted), so the other part temperatures are not available there. A desktop Mac in the App Store build shows only the thermal state. Not yet live-checked in the installed App Store app. New in 1.50.0.
 
@@ -446,10 +446,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows the temperature of each part of the Mac with a gauge.
 
-**How it works:** Website: SMC readings (`Sources/pikapik/Tools/Fans/SMC.swift`, read in `Temperatures.refresh`, `Temperatures.swift:60-66`, `#if !APPSTORE`). App Store: only the Battery row, from `Battery.temperature()` (`Battery.swift:141`), the public `kIOPMPSBatteryTemperatureKey` read from the I/O Registry (the sandbox refuses the SMC); shown on Macs with a battery, and a reading outside 1–125 °C is dropped. The rows are listed in `TemperatureSettings.swift:29-34` for `ThermalPart` (`Temperatures.swift:86`). Bars and colors follow the normal range for each part. Parts a Mac does not report are not listed.
+**How it works:** Website: SMC readings (`Sources/pikapik/Tools/Fans/SMC.swift`, read in `Temperatures.refresh`, `Temperatures.swift`, `#if !APPSTORE`). App Store: only the Battery row, from `Battery.temperature()` (`Battery.swift`), the public `kIOPMPSBatteryTemperatureKey` read from the I/O Registry (the sandbox refuses the SMC); shown on Macs with a battery, and a reading outside 1–125 °C is dropped. The rows are listed in `TemperatureSettings.swift` for `ThermalPart` (`Temperatures.swift`). Bars and colors follow the normal range for each part. Parts a Mac does not report are not listed.
 
 **Options:**
-- Processor — chip temperature (`TemperatureSettings.swift:32`).
+- Processor — chip temperature (`TemperatureSettings.swift`).
 - Graphics — graphics chip.
 - Memory — memory.
 - Storage — SSD.
@@ -469,15 +469,15 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Measures your internet download and upload speed, responsiveness and ping.
 
-**How it works:** `Sources/pikapik/Tools/SpeedTest/SpeedTest.swift:208`, `SpeedMeasure.swift`, `SpeedResult.swift`. Website: `/usr/bin/networkQuality` (“Takes about half a minute. The check runs on Apple’s servers.”). App Store: an ephemeral URLSession against speed.cloudflare.com (“Takes about 15 seconds. The check uses speed.cloudflare.com.”). Only the last result is kept, in the app’s preferences. The button turns into Cancel while running.
+**How it works:** `SpeedTestSettings` in `Sources/pikapik/Tools/SpeedTest/SpeedTest.swift`, `SpeedMeasure.swift`, `SpeedResult.swift`. Website: `/usr/bin/networkQuality` (“Takes about half a minute. The check runs on Apple’s servers.”). App Store: an ephemeral URLSession against speed.cloudflare.com (“Takes about 15 seconds. The check uses speed.cloudflare.com.”). Only the last result is kept, in the app’s preferences. The button turns into Cancel while running.
 
 **Options:**
 - Download — Mbit/s.
 - Upload — Mbit/s.
-- Responsiveness — how quickly things react while the internet is busy (`SpeedTest.swift:236`).
+- Responsiveness — how quickly things react while the internet is busy (`SpeedTestSettings` in `SpeedTest.swift`).
 - Ping — how long a signal takes to get there and back.
-- What it’s good for — after a result, a list from the last result (`SpeedTest.swift:249`): Movies and shows in 4K, Video calls, Online games and Big downloads (“A 10 GB game takes about …”), each with a verdict.
-- Speed Test — row with Copy Link under Buttons in Control Center and widgets (`SpeedTest.swift:256`, `SpeedTest.handle(_:)`): a link you can add to Shortcuts, Control Center or a widget to run the check in one click. App Store: scheme `pikapik-store`.
+- What it’s good for — after a result, a list from the last result (`SpeedTestSettings` in `SpeedTest.swift`): Movies and shows in 4K, Video calls, Online games and Big downloads (“A 10 GB game takes about …”), each with a verdict.
+- Speed Test — row with Copy Link under Buttons in Control Center and widgets (`SpeedTestSettings` in `SpeedTest.swift`, `SpeedTest.handle(_:)`): a link you can add to Shortcuts, Control Center or a widget to run the check in one click. App Store: scheme `pikapik-store`.
 
 **Nuances:** A check starts only from Check Speed, from the Speed Test card in the menu bar panel (hidden until added in Customize…) or from a `pikapik://speed-test` link (App Store: `pikapik-store://`). With no connection the page says “No internet connection”.
 
@@ -498,7 +498,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows which program holds a network port, or whether a port is free.
 
-**How it works:** Search field with the hint “Type a number, like 3000” (`Sources/pikapik/Tools/Ports/PortsPage.swift:22`) over `PortScanner` (libproc: `proc_listallpids`, `PROC_PIDLISTFDS`, `PROC_PIDFDSOCKETINFO`; `PortScanner.isFree` test-binds 127.0.0.1 for TCP and UDP). Messages “Port N is free” and “Port N is taken by macOS or another user”.
+**How it works:** Search field with the hint “Type a number, like 3000” (`Sources/pikapik/Tools/Ports/PortsPage.swift`) over `PortScanner` (libproc: `proc_listallpids`, `PROC_PIDLISTFDS`, `PROC_PIDFDSOCKETINFO`; `PortScanner.isFree` test-binds 127.0.0.1 for TCP and UDP). Messages “Port N is free” and “Port N is taken by macOS or another user”.
 
 **Nuances:** On macOS 27 the kernel socket list is filtered for Team-signed code, so the Website build cannot list programs of root or other users (sshd, smbd, screen sharing). That is why a port held by them is reported as “taken by macOS or another user” and the System Settings hints for File Sharing, Screen Sharing and Remote Login may not appear. Local ad-hoc builds see everything, so test with the released app.
 
@@ -514,7 +514,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** A small looping picture under the page title shows what a port is: numbered doors (3000, 5432, 8080) where only one program fits. A program takes door 3000, a second one is refused with a red cross, and takes the door when the first has left. The line under it says “Only one program fits at a door”.
 
-**How it works:** `PortsArt` (`PortsPage.swift:112`) inside `IllustrationRow`. With Reduce Motion on, the picture stays on its first frame.
+**How it works:** `PortsArt` (`PortsPage.swift`) inside `IllustrationRow`. With Reduce Motion on, the picture stays on its first frame.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -538,7 +538,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Lists ports held by macOS or other users. Nothing here can be quit.
 
-**How it works:** Section at `PortsPage.swift:72`; rows have no Free Up button.
+**How it works:** Section at `PortsPage.swift`; rows have no Free Up button.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -549,7 +549,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** A note under the lists explains the port chips: a chip with a globe means other devices on your network can connect, a chip without one means only this Mac can.
 
-**How it works:** `PortLegend` (`PortsPage.swift:328`), shown while at least one program is listed; the same two sentences are the tooltips of the chips.
+**How it works:** `PortLegend` (`PortsPage.swift`), shown while at least one program is listed; the same two sentences are the tooltips of the chips.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -560,7 +560,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Quits the program that holds a port.
 
-**How it works:** Button on a program row (`PortsPage.swift:239`) → alert “Quit “Python”?” with Quit, Force Quit and Cancel; SIGTERM, then SIGKILL after about five seconds if the program ignores it (`PortsModel.swift:175`). An App Store-only page variant with an Open Activity Monitor button (`PortsPage.swift:226`) exists in code but is unreachable because the tab is hidden.
+**How it works:** Button on a program row (`PortRow.control(_:)` in `PortsPage.swift`) → alert “Quit “Python”?” with Quit, Force Quit and Cancel; SIGTERM, then SIGKILL after about five seconds if the program ignores it (`PortsModel.free(_:)` in `PortsModel.swift`). An App Store-only page variant with an Open Activity Monitor button (`PortRow.control(_:)` in `PortsPage.swift`) exists in code but is unreachable because the tab is hidden.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -576,13 +576,13 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Gives every app that plays sound its own volume slider and mute button.
 
-**How it works:** `Sources/pikapik/Tools/AppVolume/AppVolumeTool.swift:131`; levels, mutes and names are kept by `AppVolumeMemory` (`AppVolumeMath.swift:19`) under the bundle ID of the app. A Core Audio process tap (`CATapDescription`, `AudioHardwareCreateProcessTap`) feeds a private tap-only aggregate device, played back through an output-only HAL unit on the app’s output device. Only apps whose slider is below 100% or that are muted get a tap. Sound is processed in memory, never recorded or saved. Needs the System Audio Recording permission. The microphone is never opened.
+**How it works:** `AppVolumeSettings` in `Sources/pikapik/Tools/AppVolume/AppVolumeTool.swift`; levels, mutes and names are kept by `AppVolumeMemory` (`AppVolumeMath.swift`) under the bundle ID of the app. A Core Audio process tap (`CATapDescription`, `AudioHardwareCreateProcessTap`) feeds a private tap-only aggregate device, played back through an output-only HAL unit on the app’s output device. Only apps whose slider is below 100% or that are muted get a tap. Sound is processed in memory, never recorded or saved. Needs the System Audio Recording permission. The microphone is never opened.
 
 **Options:**
-- Slider and Mute — one row per app with its icon, a slider (`AppVolumeTool.swift:222`) and a Mute / Unmute button; it changes or silences one app without touching the others, the Mac’s volume or the output device. Gain = slider squared with 30 ms smoothing so there are no clicks. Level and mute are remembered by app and applied again when the app plays sound after a relaunch of the app or a restart of the Mac. The menu bar panel lists the apps that play sound now. Settings › Sound also keeps every remembered app, dimmed while it is closed; a closed app at 100% that was never added goes after about 30 seconds.
-- Add App… — below the list in Settings › Sound (`AppVolumeTool.swift:175`): a shelf of running and Dock apps to tick, and Other… for any app on the disk; an app can also be dragged onto the page from Finder. The app joins the list at 100%, so its level can be set before it ever plays. Done closes the shelf.
-- ✕ Forget This App — next to a remembered app in Settings (`AppVolumeTool.swift:239`): the level and the mute are dropped, the app is back at 100% and its row goes if the app is closed. Restore Defaults on the Sound page forgets all of them.
-- No apps are playing sound — what the list says when nothing plays, no app is remembered and App Volume is on and allowed (`AppVolumeTool.swift:164`).
+- Slider and Mute — one row per app with its icon, a slider (`AppVolumeRowView` in `AppVolumeTool.swift`) and a Mute / Unmute button; it changes or silences one app without touching the others, the Mac’s volume or the output device. Gain = slider squared with 30 ms smoothing so there are no clicks. Level and mute are remembered by app and applied again when the app plays sound after a relaunch of the app or a restart of the Mac. The menu bar panel lists the apps that play sound now. Settings › Sound also keeps every remembered app, dimmed while it is closed; a closed app at 100% that was never added goes after about 30 seconds.
+- Add App… — below the list in Settings › Sound (`AppVolumeList` in `AppVolumeTool.swift`): a shelf of running and Dock apps to tick, and Other… for any app on the disk; an app can also be dragged onto the page from Finder. The app joins the list at 100%, so its level can be set before it ever plays. Done closes the shelf.
+- ✕ Forget This App — next to a remembered app in Settings (`AppVolumeRowView` in `AppVolumeTool.swift`): the level and the mute are dropped, the app is back at 100% and its row goes if the app is closed. Restore Defaults on the Sound page forgets all of them.
+- No apps are playing sound — what the list says when nothing plays, no app is remembered and App Volume is on and allowed (`AppVolumeList` in `AppVolumeTool.swift`).
 
 **Nuances:** Off by default. Two apps with the same name show their folder in brackets, “Player (Downloads)”. An app removed from disk keeps its saved name and a generic icon, and ✕ forgets it. The saved names sync with the other settings (`app-volume-names`). A copy of pikapik keeps its own list. Hidden on macOS 14.0 and 14.1 (no Sound page and no App Volume row in the menu). Without the permission the row is half-grey and clicking it opens Permissions on the System Audio Recording row; nothing is asked while App Volume is off. The tap aggregate is private, so Audio MIDI Setup and System Settings › Sound show no extra device. Never test with a program you use: start a stub app that plays a quiet tone and keep another app playing sound.
 
@@ -609,7 +609,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Changes the input language with a quick Option and Shift gesture, without the system menu.
 
-**How it works:** `Sources/pikapik/Tools/InputSwitch/InputSwitchTool.swift:176`, `InputSwitchGesture.swift`. Hold ⌥ and tap ⇧ for the next language; ⇧ then ⌥ for the previous. A listen-only `CGEventTap`; needs Input Monitoring. Game Mode can switch the language on every press of the shortcut (see Games › System keyboard shortcuts).
+**How it works:** `InputSwitchSettings` in `Sources/pikapik/Tools/InputSwitch/InputSwitchTool.swift`, `InputSwitchGesture.swift`. Hold ⌥ and tap ⇧ for the next language; ⇧ then ⌥ for the previous. A listen-only `CGEventTap`; needs Input Monitoring. Game Mode can switch the language on every press of the shortcut (see Games › System keyboard shortcuts).
 
 **Nuances:** The App Store build uses the permission only to see the shortcut. Needs at least two input sources. With two copies of pikapik running, both step from the source that was selected when the gesture began (`InputSources.select(_:from:)`, `InputSources.swift`), so they pick the same language instead of switching twice.
 
@@ -624,7 +624,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes a held key repeat the letter instead of showing the accent popup.
 
-**How it works:** Writes the global default `ApplePressAndHoldEnabled` with CFPreferences (`Sources/pikapik/Tools/KeyRepeat/KeyRepeatTool.swift:136`); no permission. `--uninstall` puts it back.
+**How it works:** Writes the global default `ApplePressAndHoldEnabled` with CFPreferences (`KeyRepeatTool.key` and `KeyRepeatTool.write(_:)` in `Sources/pikapik/Tools/KeyRepeat/KeyRepeatTool.swift`); no permission. `--uninstall` puts it back.
 
 **Edition:** Website only (App Store: cut — an App Store app cannot change global defaults).
 
@@ -638,10 +638,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes Home and End move to the start and end of the line in every app, like on Windows.
 
-**How it works:** `.defaultTap` `CGEventTap` (`Sources/pikapik/Tools/HomeEnd/HomeEndTool.swift:100`), needs Accessibility. Website: switches only when a text field has focus (`TextFocus`, :151). Chromium and Electron apps show their text fields only after `TextFocus.watch()` asks them (`TextFocus.unwatch()` sets back only what it turned on when both tools stop or the app quits) (`AXManualAccessibility`, else `AXEnhancedUserInterface`) when they become the front app. App Store: the sandbox cannot see focus, so it switches in every app except browsers (Safari, Chrome, Firefox, Edge, Arc, Brave, Opera, Vivaldi, Zen, Orion, Chromium, DuckDuckGo, Yandex), Finder and Music (`storeExcluded`, :26). Terminals, virtual machines and remote desktop apps are skipped in both (`alwaysExcluded`, :18).
+**How it works:** `.defaultTap` `CGEventTap` (`HomeEndTool.start()` in `Sources/pikapik/Tools/HomeEnd/HomeEndTool.swift`), needs Accessibility. Website: switches only when a text field has focus (`TextFocus`, `HomeEndTool.handle(_:up:)`). Chromium and Electron apps show their text fields only after `TextFocus.watch()` asks them (`TextFocus.unwatch()` sets back only what it turned on when both tools stop or the app quits) (`AXManualAccessibility`, else `AXEnhancedUserInterface`) when they become the front app. App Store: the sandbox cannot see focus, so it switches in every app except browsers (Safari, Chrome, Firefox, Edge, Arc, Brave, Opera, Vivaldi, Zen, Orion, Chromium, DuckDuckGo, Yandex), Finder and Music (`storeExcluded`). Terminals, virtual machines and remote desktop apps are skipped in both (`alwaysExcluded`).
 
 **Options:**
-- Home and End work as usual in these apps — list of apps to leave alone: Add App… / Done, app shelf of open apps, Remove (`HomeEndTool.swift:227`).
+- Home and End work as usual in these apps — list of apps to leave alone: Add App… / Done, app shelf of open apps, Remove (`HomeEndSettings` in `HomeEndTool.swift`).
 
 **Nuances:** The Home and End it sends are tagged (`Sources/pikapik/Core/EventTag.swift`), so another copy of pikapik does not handle them again.
 
@@ -713,10 +713,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes the pointer move the same distance for the same hand movement, with no speed-up.
 
-**How it works:** Website: the private `IOHIDEventSystemClient` (`HIDPointerAccelerationType`), no permission; restored when pikapik quits (`Sources/pikapik/App.swift:190`) and by `--uninstall` (`Sources/pikapik/Tools/Mouse/PointerTool.swift:216`). App Store: replaced by an animated guide and a row with an Open button to System Settings › Mouse (`SettingsWindow.swift:978-987`, `com.apple.Mouse-Settings.extension`) because an App Store app cannot change it. The guide (`SettingsGuide`, `Sources/pikapik/Settings/SettingsGuide.swift`) shows where to click: Advanced…, then “Pointer acceleration” off; its labels come from your Mac, in its language. System Settings shows the Mouse page only while a mouse is connected.
+**How it works:** Website: the private `IOHIDEventSystemClient` (`HIDPointerAccelerationType`), no permission; restored when pikapik quits (`AppDelegate.stopFeatures(quitting:)` in `Sources/pikapik/App.swift`, `PointerTool.restore()` in `Sources/pikapik/Tools/Mouse/PointerTool.swift`), but not by `--uninstall`. App Store: replaced by an animated guide and a row with an Open button to System Settings › Mouse (`ToolsSettings` in `SettingsWindow.swift`, `com.apple.Mouse-Settings.extension`) because an App Store app cannot change it. The guide (`SettingsGuide`, `Sources/pikapik/Settings/SettingsGuide.swift`) shows where to click: Advanced…, then “Pointer acceleration” off; its labels come from your Mac, in its language. System Settings shows the Mouse page only while a mouse is connected.
 
 **Options:**
-- Tracking speed — slider, disabled while the switch is off (`PointerTool.swift:226`). Website only; in the App Store guide it is the system’s own slider.
+- Tracking speed — slider, disabled while the switch is off (`PointerSettings` in `PointerTool.swift`). Website only; in the App Store guide it is the system’s own slider.
 
 **Edition:** Both; App Store differs: shows the animated guide and an Open button instead of the switch.
 
@@ -729,11 +729,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes a mouse wheel scroll a fixed distance per click instead of macOS’s smooth, accelerated scroll.
 
-**How it works:** `.defaultTap` `CGEventTap` (`Sources/pikapik/Tools/Mouse/WheelTool.swift:313`), needs Accessibility.
+**How it works:** `.defaultTap` `CGEventTap` (`WheelSettings` in `Sources/pikapik/Tools/Mouse/WheelTool.swift`), needs Accessibility.
 
 **Options:**
-- Scroll by — two tiles, Lines or Pixels (`WheelTool.swift:323-341`).
-- Distance per click — slider (`:344`).
+- Scroll by — two tiles, Lines or Pixels (`WheelSettings` in `WheelTool.swift`).
+- Distance per click — slider (`WheelSettings`).
 
 **Edition:** Both.
 
@@ -745,11 +745,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Sets the scroll direction of the trackpad and of the mouse wheel separately.
 
-**How it works:** Reads the system’s Natural scrolling (`com.apple.swipescrolldirection`) and flips each scroll event that does not match your choice in the shared scroll tap (`ScrollTap`, `Sources/pikapik/Tools/Mouse/WheelTool.swift:102`; `ScrollDirection.rewrite`, `WheelStep.swift:77`); needs Accessibility. It does not change the System Settings switch (`Sources/pikapik/Tools/Mouse/ScrollDirectionTool.swift:106`). Flipped events are tagged, so a second copy of pikapik does not flip them back.
+**How it works:** Reads the system’s Natural scrolling (`com.apple.swipescrolldirection`) and flips each scroll event that does not match your choice in the shared scroll tap (`ScrollTap`, `Sources/pikapik/Tools/Mouse/WheelTool.swift`; `ScrollDirection.rewrite`, `WheelStep.swift`); needs Accessibility. It does not change the System Settings switch (`ScrollDirectionSettings` in `Sources/pikapik/Tools/Mouse/ScrollDirectionTool.swift`). Flipped events are tagged, so a second copy of pikapik does not flip them back.
 
 **Options:**
-- Trackpad direction — Natural / Classic (`:133-146`).
-- Mouse wheel direction — Natural / Classic (`:135`).
+- Trackpad direction — Natural / Classic (`ScrollDirectionSettings.choice(_:_:_:_:)`).
+- Mouse wheel direction — Natural / Classic (`ScrollDirectionSettings.choice(_:_:_:_:)`).
 
 **Edition:** Both.
 
@@ -762,10 +762,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes the mouse’s side buttons act as Back and Forward in nearly every app: browsers, Finder, apps with a Back arrow in the toolbar or a Back item in a menu, and pikapik’s own Settings.
 
-**How it works:** Accessibility event tap (`Sources/pikapik/Tools/Mouse/SideButtonsTool.swift:88`) finds the app under the pointer (`Sources/pikapik/Tools/Mouse/BackForward.swift:20`) and tries in order: (website) press the app’s own Back or Forward menu item, or the Back or Forward button in its toolbar, found by name in any language or by arrow icon (`BackForward.swift:96`); menu items with a letter shortcut, such as Forward on ⇧⌘F in Mail, are skipped so a mail is not forwarded; then a back or forward swipe in Apple apps, Firefox, Opera and ForkLift; then ⌘[ and ⌘] in a short list of Apple apps (`BackForward.swift:55`); apps that handle buttons 4 and 5 themselves, such as Chrome and the JetBrains apps, get the press unchanged. ⌘[ is never sent blindly: in code editors it moves the text. pikapik’s own windows are skipped by the tap; Settings handles the buttons itself (`Sources/pikapik/Settings/SettingsWindow.swift:392`). Synthetic events are tagged (`Sources/pikapik/Core/EventTag.swift`) and tagged presses are ignored, so with two copies of pikapik the buttons are not swapped twice.
+**How it works:** Accessibility event tap (`SideButtonsTool.handle(_:down:)` in `Sources/pikapik/Tools/Mouse/SideButtonsTool.swift`) finds the app under the pointer (`BackForward.target(at:)` in `Sources/pikapik/Tools/Mouse/BackForward.swift`) and tries in order: (website) press the app’s own Back or Forward menu item, or the Back or Forward button in its toolbar, found by name in any language or by arrow icon (`AXSearch` in `BackForward.swift`); menu items with a letter shortcut, such as Forward on ⇧⌘F in Mail, are skipped so a mail is not forwarded; then a back or forward swipe in Apple apps, Firefox, Opera and ForkLift; then ⌘[ and ⌘] in a short list of Apple apps (`BackForward.fallback(for:)` in `BackForward.swift`); apps that handle buttons 4 and 5 themselves, such as Chrome and the JetBrains apps, get the press unchanged. ⌘[ is never sent blindly: in code editors it moves the text. pikapik’s own windows are skipped by the tap; Settings handles the buttons itself (`SettingsWindow.create()` in `Sources/pikapik/Settings/SettingsWindow.swift`). Synthetic events are tagged (`Sources/pikapik/Core/EventTag.swift`) and tagged presses are ignored, so with two copies of pikapik the buttons are not swapped twice.
 
 **Options:**
-- Swap the side buttons — exchanges Back and Forward (`SideButtonsTool.swift:90`).
+- Swap the side buttons — exchanges Back and Forward (`SideButtonsTool.handle(_:down:)` in `SideButtonsTool.swift`).
 
 **Edition:** Both. In the App Store version the sandbox does not allow looking into other apps, so the menu and toolbar step is website only; there Apple apps and pikapik’s own windows work, and every other app keeps handling the buttons itself.
 
@@ -778,10 +778,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Hides the front app with a mouse button, like ⌘H.
 
-**How it works:** Accessibility event tap holds back the chosen button’s click (`Sources/pikapik/Tools/Mouse/HideAppTool.swift:179`) and calls `NSRunningApplication.hide()`; no keystroke is sent. It ignores events another pikapik copy has sent.
+**How it works:** Accessibility event tap holds back the chosen button’s click (`HideAppSettings` in `Sources/pikapik/Tools/Mouse/HideAppTool.swift`) and calls `NSRunningApplication.hide()`; no keystroke is sent. It ignores events another pikapik copy has sent.
 
 **Options:**
-- Change… — records a mouse button: press Change…, then press a mouse button over the Settings window; the label reads “Middle button” or “Button N”; Cancel stops recording (`HideAppTool.swift:196-203`).
+- Change… — records a mouse button: press Change…, then press a mouse button over the Settings window; the label reads “Middle button” or “Button N”; Cancel stops recording (`HideAppSettings` in `HideAppTool.swift`).
 
 **Edition:** Both.
 
@@ -814,10 +814,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes the green window button fill the screen area (like Windows maximize) instead of entering full screen.
 
-**How it works:** AXUIElement hit-test on the zoom button, sets AXSize and AXPosition, with `AXEnhancedUserInterface` switched off around the move (`Sources/pikapik/Tools/Windows/WindowZoomTool.swift:179`), needs Accessibility.
+**How it works:** AXUIElement hit-test on the zoom button, sets AXSize and AXPosition, with `AXEnhancedUserInterface` switched off around the move (`WindowZoomTool.set(_:on:)` in `Sources/pikapik/Tools/Windows/WindowZoomTool.swift`), needs Accessibility.
 
 **Options:**
-- Green button works as usual in these apps — app exclusion list (Add App… / Done, Remove) (`WindowZoomTool.swift:298`).
+- Green button works as usual in these apps — app exclusion list (Add App… / Done, Remove) (`WindowZoomSettings` in `WindowZoomTool.swift`).
 
 **Edition:** Website only (App Store: cut — needs to move other apps’ windows).
 
@@ -829,7 +829,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Stops accidental ⌘Q and ⌘W: they do nothing alone; ⇧⌘Q quits and ⇧⌘W closes (or your own keys).
 
-**How it works:** `.defaultTap` `CGEventTap` on key down and up (`Sources/pikapik/Tools/Windows/CommandKeysTool.swift:201`, Settings rows :198-230), needs Accessibility. A bare ⌘Q or ⌘W is dropped; the quit and close keys are swallowed and replaced by a fresh ⌘Q or ⌘W tagged (`Sources/pikapik/Core/EventTag.swift`, `eventSourceUserData` 0x70696B61) so a second copy of pikapik lets it through.
+**How it works:** `.defaultTap` `CGEventTap` on key down and up (`CommandKeysTool.start()` in `Sources/pikapik/Tools/Windows/CommandKeysTool.swift`, Settings rows in `CommandKeysSettings`), needs Accessibility. A bare ⌘Q or ⌘W is dropped; the quit and close keys are swallowed and replaced by a fresh ⌘Q or ⌘W tagged (`Sources/pikapik/Core/EventTag.swift`, `eventSourceUserData` 0x70696B61) so a second copy of pikapik lets it through.
 
 **Options:**
 - Quit app — toggle with a shortcut recorder, default ⇧⌘Q (key `command-keys-quit-shortcut`).
@@ -848,10 +848,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Quits an app when you close its last window, like on Windows.
 
-**How it works:** `Sources/pikapik/Tools/Windows/QuitOnCloseTool.swift:320`; needs Accessibility and Input Monitoring (`:11`); private CGS APIs for windows on other Spaces (`:237`). App Store branches (`:213,226`) are dead code.
+**How it works:** `QuitOnCloseSettings` in `Sources/pikapik/Tools/Windows/QuitOnCloseTool.swift`; needs Accessibility and Input Monitoring (`QuitOnCloseTool.needs`); private CGS APIs for windows on other Spaces (`CGSCopySpacesForWindows` and `CGSCopyManagedDisplaySpaces`). App Store branches (`QuitOnCloseTool.hasLiveCGWindow(_:)` and `QuitOnCloseTool.visibleSpaces()`) are dead code.
 
 **Options:**
-- Never quit these apps — app exclusion list (`QuitOnCloseTool.swift:328`).
+- Never quit these apps — app exclusion list (`QuitOnCloseSettings` in `QuitOnCloseTool.swift`).
 
 **Nuances:** The app quits only when no window remains anywhere: other Spaces and minimized windows count.
 
@@ -869,10 +869,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Clicking the icon of the front app in the Dock minimizes its windows or hides the app.
 
-**How it works:** `.defaultTap` event tap plus Accessibility (`Sources/pikapik/Tools/Dock/DockHideTool.swift:376`).
+**How it works:** `.defaultTap` event tap plus Accessibility (`DockHideSettings` in `Sources/pikapik/Tools/Dock/DockHideTool.swift`).
 
 **Options:**
-- A click on the icon — Minimizes the windows / Hides the app (`DockHideTool.swift:388`).
+- A click on the icon — Minimizes the windows / Hides the app (`DockHideSettings` in `DockHideTool.swift`).
 
 **Nuances:** The click it replays is tagged (`EventTag.swift`), so another copy of pikapik does not act on it twice. The choice in the picker is saved the first time it is missing (Hide if the switch was already on, Minimize otherwise), so what the picker shows is what the click does, after any restart or sync.
 
@@ -885,10 +885,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Keeps the Dock on its display, however fast you move the mouse to the bottom of the other one.
 
-**How it works:** Writes the hidden key `com.apple.dock allow-display-switching` = false and restarts the Dock once (`Sources/pikapik/Tools/Dock/DockDisplayTool.swift:96`, `DockDisplaySwitch.swift`). No permission. The Dock reads it only at start. Turning off (and `--uninstall`) puts back the previous value.
+**How it works:** Writes the hidden key `com.apple.dock allow-display-switching` = false and restarts the Dock once (`DockDisplaySettings` in `Sources/pikapik/Tools/Dock/DockDisplayTool.swift`, `DockDisplaySwitch.swift`). No permission. The Dock reads it only at start. Turning off (and `--uninstall`) puts back the previous value.
 
 **Options:**
-- Main display — menu under the switch (two or more displays, enabled only while the switch is on); pick a display and pikapik makes it the main one with `CGConfigureDisplayOrigin`, shifting every display by the same amount so the arrangement keeps its shape, and the Dock goes with it (`DockDisplayTool.swift:108`, `MainDisplayControl` at `:140`, `MainDisplay` in `DockDisplaySwitch.swift`). The first arrangement is remembered by display ID; turning the switch off, `--uninstall` or the next launch with the switch off puts it back.
+- Main display — menu under the switch (two or more displays, enabled only while the switch is on); pick a display and pikapik makes it the main one with `CGConfigureDisplayOrigin`, shifting every display by the same amount so the arrangement keeps its shape, and the Dock goes with it (`MainDisplayRow` and `MainDisplayControl` in `DockDisplayTool.swift`, `MainDisplay` in `DockDisplaySwitch.swift`). The first arrangement is remembered by display ID; turning the switch off, `--uninstall` or the next launch with the switch off puts it back.
 
 **Nuances:** Needs two displays and “Displays have separate Spaces” on (System Settings › Desktop & Dock).
 
@@ -909,7 +909,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Adds New File to Finder’s right-click menu, in a folder or on its background, to make a text file (or other kinds) in place.
 
-**How it works:** Finder Sync extension `Extensions/NewFile/NewFileExtension.swift:13`, switch at `Sources/pikapik/Tools/NewFile/NewFileTool.swift:20-25` through `FinderExtension.swift:257`. Website: `pluginkit -a`, `-e use`, `-e ignore`, `-m` (`FinderExtension.swift:60-66,103-120`). App Store: stores the wanted state in UserDefaults and opens `FIFinderSyncController.showExtensionManagementInterface()` so you turn the extension on in System Settings; the switch checks that this extension’s own process is running (PR #72). Needs the Finder Extensions permission item. Saving into a folder asks once for access to the home folder (App Store: `FolderAccess`, security-scoped bookmark).
+**How it works:** Finder Sync extension `NewFileExtension.menu(for:)` in `Extensions/NewFile/NewFileExtension.swift`, switch at `NewFileTool.settingsView` in `Sources/pikapik/Tools/Finder/NewFileTool.swift` through `FinderExtensionSettings` in `FinderExtension.swift`. Website: `pluginkit -a`, `-e use`, `-e ignore`, `-m` (`FinderExtension.isEnabled`, `FinderExtension.register()`, `FinderExtension.ignoreOtherCopies()` and `FinderExtension.refreshFinderRecord()` in `FinderExtension.swift`). App Store: stores the wanted state in UserDefaults and opens `FIFinderSyncController.showExtensionManagementInterface()` so you turn the extension on in System Settings; the switch checks that this extension’s own process is running (PR #72). Needs the Finder Extensions permission item. Saving into a folder asks once for access to the home folder (App Store: `FolderAccess`, security-scoped bookmark).
 
 **Nuances:** Before 1.50.0 the App Store New File switch looked on while only another extension was enabled, so the menu item could be missing; now each switch shows its own extension’s state. Known gap (App Store): turning a Finder tool off in pikapik does not hide its menu item; disable the extension in System Settings. Not yet live-checked in the App Store branch.
 
@@ -924,7 +924,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Adds Make a Smaller Copy to Finder’s right-click menu for photos and videos; the copy is saved next to the original.
 
-**How it works:** Extension `Extensions/Compress/CompressExtension.swift:17`, switch `Sources/pikapik/Tools/Compress/CompressTool.swift:20-25`, engine `Sources/pikapik/Tools/Finder/Compressor.swift`. Videos are exported with a file-length limit of half the source (about 47–52 percent, same frames, audio kept); photos are re-encoded. If the result would not be smaller than 95 percent the message “Already compact” shows and no copy is made. `FolderAccess.ensure` asks for folder access in the App Store build (`Extensions/Shared/Folders.swift`, `FolderAccess.swift:6`).
+**How it works:** Extension `CompressExtension.menu(for:)` in `Extensions/Compress/CompressExtension.swift`, switch `CompressTool.settingsView` in `Sources/pikapik/Tools/Finder/CompressTool.swift`, engine `Sources/pikapik/Tools/Finder/Compressor.swift`. Videos are exported with a file-length limit of half the source (about 47–52 percent, same frames, audio kept); photos are re-encoded. If the result would not be smaller than 95 percent the message “Already compact” shows and no copy is made. `FolderAccess.ensure` asks for folder access in the App Store build (`Extensions/Shared/Folders.swift`, `FolderAccess.key` in `FolderAccess.swift`).
 
 **Nuances:** AVFoundation will not go below about 1.5 Mbit/s at 1080p30, so a very small video still reports “Already compact”. Before 1.50.0 most videos ended with “Already compact”.
 
@@ -939,7 +939,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Adds Convert To to Finder’s right-click menu: change a file’s format (for example PNG to JPEG or HEIC, or video to “M4A (Audio Only)”).
 
-**How it works:** Extension `Extensions/Convert/ConvertExtension.swift:22`, formats in `ConvertFormats.swift`, switch `Sources/pikapik/Tools/Convert/ConvertTool.swift:26-31`. Same enabling flow and folder access as Smaller Copy. For a PNG the targets are JPEG, HEIC, GIF, TIFF, PDF. There is no size check.
+**How it works:** Extension `ConvertExtension.menu(for:)` in `Extensions/Convert/ConvertExtension.swift`, formats in `ConvertFormats.swift`, switch `ConvertTool.settingsView` in `Sources/pikapik/Tools/Finder/ConvertTool.swift`. Same enabling flow and folder access as Smaller Copy. For a PNG the targets are JPEG, HEIC, GIF, TIFF, PDF. There is no size check.
 
 **Nuances:** Like New File, it showed on while only another extension was enabled before 1.50.0; now it asks for permission until its own extension runs.
 
@@ -953,10 +953,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Adds Extract and Create Archive… to Finder, a preview of archives on Space, and (Website) the option to open ZIP and 7Z with pikapik.
 
-**How it works:** Switch `Sources/pikapik/Tools/Archive/ArchiveTool.swift:40-45`; one `archive` key turns both the Finder extension and the preview on or off (off runs `pluginkit -e ignore`). Bundled 7-Zip 26.04 `7zz` (LGPL; the license file and source ship with releases). Website engine routing: `ditto` for zips with `__MACOSX`, `bsdtar` for legacy code-page zips, `7zz` for the rest. App Store: no `7zz`; `ditto`, `bsdtar`, `gzip` and `bzip2` from macOS do the work (`ArchiveProbe.swift`, `ArchiveCreate.swift`, `ArchiveExtract.swift` under `#if APPSTORE`), and the preview reads headers with the system libarchive.
+**How it works:** Switch `ArchiveSettings` in `Sources/pikapik/Tools/Archive/ArchiveTool.swift`; one `archive` key turns both the Finder extension and the preview on or off (off runs `pluginkit -e ignore`). Bundled 7-Zip 26.04 `7zz` (LGPL; the license file and source ship with releases). Website engine routing: `ditto` for zips with `__MACOSX`, `bsdtar` for legacy code-page zips, `7zz` for the rest. App Store: no `7zz`; `ditto`, `bsdtar`, `gzip` and `bzip2` from macOS do the work (`ArchiveProbe.swift`, `ArchiveCreate.swift`, `ArchiveExtract.swift` under `#if APPSTORE`), and the preview reads headers with the system libarchive.
 
 **Options:**
-- Open archives in pikapik — a switch with “ZIP · 7Z” under it, the same row as the Player switches (`DefaultAppToggle`, `Sources/pikapik/UI/RowStyles.swift:221`); sets the default app for `public.zip-archive` and `org.7-zip.7-zip-archive` (`ArchiveTool.swift:11-17`, row at `ArchiveTool.swift:63`). Changes the Mac’s default apps; do not flip it in tests you do not want to keep. Website only: the App Store row is not shown.
+- Open archives in pikapik — a switch with “ZIP · 7Z” under it, the same row as the Player switches (`DefaultAppToggle`, `Sources/pikapik/UI/RowStyles.swift`); sets the default app for `public.zip-archive` and `org.7-zip.7-zip-archive` (`ArchiveTool.formats` in `ArchiveTool.swift`, row at `ArchiveSettings`). Changes the Mac’s default apps; do not flip it in tests you do not want to keep. Website only: the App Store row is not shown.
 
 **Nuances:** Never create RAR (license). Zips with legacy names and a password may come out garbled. Create Archive… is hidden when the selection spans several folders. Dev builds register the preview only after `pluginkit -a <appex>`. App Store limits: a password only for ZIP (not 7Z); no splitting into parts, and multi-part archives (.001, .part1.rar, .z01 …) cannot be opened; single .xz, .lzma and .zst files cannot be opened (single .gz and .bz2 can); password-protected 7Z and RAR cannot be opened. The first use asks for access to the home folder (the same folder access New File and Smaller Copy use), and the Finder items need the extension turned on in System Settings › General › Login Items & Extensions (the animated guide in Permissions shows where). The App Store package carries the Archive and Preview extensions only when their provisioning profiles are set (`scripts/appstore.sh`); without them the Archives row is absent.
 
@@ -972,7 +972,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Unpacks an archive (ZIP, 7Z, TAR, RAR, and more) next to it from Finder’s right-click menu.
 
-**How it works:** Finder item in `Extensions/Archive/ArchiveExtension.swift:16`, bundled `7zz`, a progress window (`ArchiveQueue.swift`, `ArchiveRun.swift`). Asks for a password with Extract and Cancel when the archive is protected.
+**How it works:** Finder item in `ArchiveExtension.menu(for:)` in `Extensions/Archive/ArchiveExtension.swift`, bundled `7zz`, a progress window (`ArchiveQueue.swift`, `ArchiveRun.swift`). Asks for a password with Extract and Cancel when the archive is protected.
 
 **Edition:** Both; App Store differs: unpacks with the tools built into macOS, so password-protected 7Z and RAR, multi-part archives and single .xz, .lzma and .zst files are refused with a message; asks for folder access the first time.
 
@@ -984,7 +984,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Packs files or a folder into an archive from Finder’s right-click menu.
 
-**How it works:** Finder item `Extensions/Archive/ArchiveExtension.swift:18`; dialog `Sources/pikapik/Tools/Archive/ArchivePrompts.swift`.
+**How it works:** Finder item `ArchiveExtension.menu(for:)` in `Extensions/Archive/ArchiveExtension.swift`; dialog `Sources/pikapik/Tools/Archive/ArchivePrompts.swift`.
 
 **Options:**
 - Name — archive name.
@@ -1017,7 +1017,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes Return and Enter open the selected files, and F2 (fn F2 on a laptop) rename the selected file, like Windows Explorer.
 
-**How it works:** Accessibility event tap (`Sources/pikapik/Tools/Finder/FinderKeysTool.swift:399`), keys ↩, ⌤ and F2; while you type a name or search, the keys act as usual.
+**How it works:** Accessibility event tap (`FinderOpenSettings` in `Sources/pikapik/Tools/Finder/FinderKeysTool.swift`), keys ↩, ⌤ and F2; while you type a name or search, the keys act as usual.
 
 **Edition:** Website only (App Store: cut — without Accessibility it cannot tell renaming a file from browsing, because a click or a menu can start a rename).
 
@@ -1028,9 +1028,9 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** ⌘X cuts files and ⌘V in another folder moves them.
 
-**How it works:** Accessibility event tap (`FinderKeysTool.swift:419`). ⌘X becomes ⌘C so Finder copies the files; ⌘V in a Finder window becomes Finder’s own ⌥⌘V (Move Item Here) while cut files wait; the app only checks whether the clipboard holds files, never reads it. ⌘C cancels. When the copied thing is text (for example a name being edited) it sends ⌘X again. Shortcut text from `SystemShortcuts.finderCutText`.
+**How it works:** Accessibility event tap (`FinderCutSettings` in `FinderKeysTool.swift`). ⌘X becomes ⌘C so Finder copies the files; ⌘V in a Finder window becomes Finder’s own ⌥⌘V (Move Item Here) while cut files wait; the app only checks whether the clipboard holds files, never reads it. ⌘C cancels. When the copied thing is text (for example a name being edited) it sends ⌘X again. Shortcut text from `SystemShortcuts.finderCutText`.
 
-**Nuances:** The App Store build cannot tell rename mode (`FinderKeysTool.swift:147`, `isBrowsing` is always true), so with cut files waiting ⌘V in a name field sends ⌥⌘V; press ⌘C first to cancel. Before 1.50.0 the App Store build only copied. The keys it sends are tagged (`Sources/pikapik/Core/EventTag.swift`), so another copy of pikapik does not turn them again.
+**Nuances:** The App Store build cannot tell rename mode (`FinderKeysTool.swift`, `isBrowsing` is always true), so with cut files waiting ⌘V in a name field sends ⌥⌘V; press ⌘C first to cancel. Before 1.50.0 the App Store build only copied. The keys it sends are tagged (`Sources/pikapik/Core/EventTag.swift`), so another copy of pikapik does not turn them again.
 
 **Edition:** Both; App Store differs: no text-focus check.
 
@@ -1043,7 +1043,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes ⌫ and ⌦ (fn ⌫ on a laptop) move the selected files to the Trash, like ⌘⌫. While you type a name or search, they erase letters as usual.
 
-**How it works:** Accessibility event tap (`FinderKeysTool.swift:438`).
+**How it works:** Accessibility event tap (`FinderDeleteSettings` in `FinderKeysTool.swift`).
 
 **Edition:** Website only (App Store: cut).
 
@@ -1054,7 +1054,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Clears the desktop of files and folders before a call or a screen recording, and brings them back to the same places.
 
-**How it works:** Website: `StandardHideDesktopIcons` in `com.apple.WindowManager` (`Sources/pikapik/Tools/Finder/DesktopTools.swift:61`); no Finder restart; the switch always follows System Settings › Desktop & Dock › Show items › On Desktop; works with Stage Manager. App Store: the sandbox can’t change that setting, so the switch puts a curtain over the icons: one borderless window per screen one level above the desktop icons (`CGWindowLevelForKey(.desktopIconWindow)+1`, ordered back so the pet stays on top), `ignoresMouseEvents` so clicks reach the desktop, showing the wallpaper from `NSWorkspace.desktopImageURL` decoded at screen size with the Fill/Fit/Stretch/Center option (`Sources/pikapik/Tools/Finder/DesktopCurtain.swift`). A wallpaper inside the home folder is read through the home folder access (`FolderAccess.reopen()`); without that access it gets the plain color. A moving (Aerial) wallpaper reports `DefaultDesktop.heic`, so it gets the wallpaper’s fill color or the window background instead; no Screen Recording. Rebuilt on screen and Space changes, when another app becomes active (a new wallpaper) and on wake; gone when turned off or on quit. Below it in Settings: the animated guide (Show items › On Desktop turned off) and an Open button to System Settings › Desktop & Dock, subtitled Turn off “On Desktop” (`DesktopIconsSettings`, `DesktopTools.swift:181`, `SystemSettingsRow`).
+**How it works:** Website: `StandardHideDesktopIcons` in `com.apple.WindowManager` (`DesktopIconsHost` in `Sources/pikapik/Tools/Finder/DesktopIcons.swift`); no Finder restart; the switch always follows System Settings › Desktop & Dock › Show items › On Desktop; works with Stage Manager. App Store: the sandbox can’t change that setting, so the switch puts a curtain over the icons: one borderless window per screen one level above the desktop icons (`CGWindowLevelForKey(.desktopIconWindow)+1`, ordered back so the pet stays on top), `ignoresMouseEvents` so clicks reach the desktop, showing the wallpaper from `NSWorkspace.desktopImageURL` decoded at screen size with the Fill/Fit/Stretch/Center option (`Sources/pikapik/Tools/Finder/DesktopCurtain.swift`). A wallpaper inside the home folder is read through the home folder access (`FolderAccess.reopen()`); without that access it gets the plain color. A moving (Aerial) wallpaper reports `DefaultDesktop.heic`, so it gets the wallpaper’s fill color or the window background instead; no Screen Recording. Rebuilt on screen and Space changes, when another app becomes active (a new wallpaper) and on wake; gone when turned off or on quit. Below it in Settings: the animated guide (Show items › On Desktop turned off) and an Open button to System Settings › Desktop & Dock, subtitled Turn off “On Desktop” (`DesktopIconsSettings`, `DesktopTools.swift`, `SystemSettingsRow`).
 
 **Edition:** Both; App Store differs: the switch covers the icons with the wallpaper instead of hiding them, and a guide with an Open button to System Settings sits below it.
 
@@ -1068,7 +1068,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows the files and folders macOS hides, dimmed, in Finder and on the desktop.
 
-**How it works:** Website: writes `AppleShowAllFiles` in `com.apple.finder` and restarts Finder; Finder’s windows and tabs come back (`DesktopTools.swift:135`, `HiddenFilesTool` :72-141). Waits for copying (“Waiting for Finder to finish copying”) so a copy is never interrupted. App Store: no switch, only a hint (`HiddenFilesHint`, `DesktopTools.swift:206-212`) with the keys ⇧⌘. : “Press in Finder to show or hide”.
+**How it works:** Website: writes `AppleShowAllFiles` in `com.apple.finder` and restarts Finder; Finder’s windows and tabs come back (`DesktopTools.swift`, `HiddenFilesTool`). Waits for copying (“Waiting for Finder to finish copying”) so a copy is never interrupted. App Store: no switch, only a hint (`HiddenFilesHint`, `DesktopTools.swift`) with the keys ⇧⌘. : “Press in Finder to show or hide”.
 
 **Edition:** Both; App Store differs: a hint with the keys instead of the switch.
 
@@ -1081,7 +1081,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Restarts Finder when a change needs it.
 
-**How it works:** `FinderRestartBar` (`Sources/pikapik/Tools/Finder/FinderExtension.swift:228`) at the bottom of the Finder tab; also in the menu bar panel (help: “Restart Finder once to bring back the right-click items”). The App Store `FinderRestart` is a stub (`FinderExtension.swift:164`).
+**How it works:** `FinderRestartBar` (`Sources/pikapik/Tools/Finder/FinderExtension.swift`) at the bottom of the Finder tab; also in the menu bar panel (help: “Restart Finder once to bring back the right-click items”). The App Store `FinderRestart` is a stub (`FinderExtension.swift`).
 
 **Edition:** Both in code; effectively Website only (App Store: the restart does nothing there).
 
@@ -1090,13 +1090,13 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 ## Animations
 
-*Website: full page. App Store: a page of rows with an animated guide and an Open button to System Settings (`AnimationLinksPage`, `SettingsWindow.swift:1036-1075`; the guides are `SettingsGuide` in `Sources/pikapik/Settings/SettingsGuide.swift`, their labels come from your Mac, in its language, and with Reduce Motion on each is one still frame with the click marked).*
+*Website: full page. App Store: a page of rows with an animated guide and an Open button to System Settings (`AnimationLinksPage`, `SettingsWindow.swift`; the guides are `SettingsGuide` in `Sources/pikapik/Settings/SettingsGuide.swift`, their labels come from your Mac, in its language, and with Reduce Motion on each is one still frame with the click marked).*
 
 ### Animation speed
 
 **Does:** One slider that sets every effect below at once: As in macOS, Faster, Instant.
 
-**How it works:** `PaceSlider` (`Sources/pikapik/Tools/Animations/AnimationsTool.swift:347`, `AnimationSetting.swift`); “Sets all the effects below at once.”
+**How it works:** `PaceSlider` (`Sources/pikapik/Tools/Animations/AnimationsTool.swift`, `AnimationSetting.swift`); “Sets all the effects below at once.”
 
 **Nuances:** Changes bar: “Works in apps after you reopen them”; “Finder picks up the changes after a restart” with a Restart Finder button. The Dock restarts through `/usr/bin/killall`. `--uninstall` puts everything back.
 
@@ -1109,7 +1109,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Hides the Dock until the pointer touches the edge.
 
-**How it works:** Website: `autohide` in `com.apple.dock` (`AnimationsTool.swift:35`). App Store: an animated guide (“Automatically hide and show the Dock” turned on) above an Open row to System Settings › Desktop & Dock (`SettingsWindow.swift:1061-1066`).
+**How it works:** Website: `autohide` in `com.apple.dock` (`AnimationsTool.host` in `AnimationsTool.swift`). App Store: an animated guide (“Automatically hide and show the Dock” turned on) above an Open row to System Settings › Desktop & Dock (`AnimationLinksPage` in `SettingsWindow.swift`).
 
 **Edition:** Both; App Store differs: guide and Open button instead of the switch.
 
@@ -1121,16 +1121,16 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Fine controls for each effect.
 
-**How it works:** Section at `AnimationsTool.swift:152`, `AnimationSetting.swift`, in the defaults named below.
+**How it works:** Section at `AnimationsPage` in `AnimationsTool.swift`, `AnimationSetting.swift`, in the defaults named below.
 
 **Options:**
-- Delay before the Dock appears — slider, `autohide-delay` in `com.apple.dock` (`AnimationsTool.swift:154`).
-- How fast the Dock slides out — slider, `autohide-time-modifier` (`:201`).
-- Opening windows — toggle, `NSAutomaticWindowAnimationsEnabled` in the global domain (`:204`).
-- Save dialogs and resizing — slider, `NSWindowResizeTime` (`:205`).
-- Quick Look — slider, `QLPanelAnimationDuration` (`:206`).
-- Columns in Finder — slider, `NSBrowserColumnAnimationSpeedMultiplier` (`:207`).
-- Finder animations — toggle, `DisableAllAnimations` in `com.apple.finder` (`:208`).
+- Delay before the Dock appears — slider, `autohide-delay` in `com.apple.dock` (`AnimationSetting.dockDelay`).
+- How fast the Dock slides out — slider, `autohide-time-modifier` (`AnimationSetting.dockSpeed`).
+- Opening windows — toggle, `NSAutomaticWindowAnimationsEnabled` in the global domain (`AnimationSetting.windowOpen`).
+- Save dialogs and resizing — slider, `NSWindowResizeTime` (`AnimationSetting.resize`).
+- Quick Look — slider, `QLPanelAnimationDuration` (`AnimationSetting.quickLook`).
+- Columns in Finder — slider, `NSBrowserColumnAnimationSpeedMultiplier` (`AnimationSetting.finderColumns`).
+- Finder animations — toggle, `DisableAllAnimations` in `com.apple.finder` (`AnimationSetting.finder`).
 - Minimize effect and Bouncing icons have their own entries below.
 
 **Edition:** Website only (App Store: cut — cannot write these settings).
@@ -1142,7 +1142,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Chooses Genie, Scale or Suck for minimizing windows.
 
-**How it works:** Website: `mineffect` in `com.apple.dock` (`AnimationsTool.swift:302`). App Store: an animated guide (the effect changes from Genie Effect to Scale Effect) above an Open row (“Choose “Scale Effect” for a quicker animation”, `SettingsWindow.swift:1045-1050`).
+**How it works:** Website: `mineffect` in `com.apple.dock` (`MinimizeRow` in `AnimationsTool.swift`). App Store: an animated guide (the effect changes from Genie Effect to Scale Effect) above an Open row (“Choose “Scale Effect” for a quicker animation”, `AnimationLinksPage` in `SettingsWindow.swift`).
 
 **Edition:** Both; App Store differs: guide and Open button instead of the picker.
 
@@ -1154,7 +1154,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Turns off the Dock icons’ bounce when an app opens.
 
-**How it works:** Website: `no-bouncing` in `com.apple.dock` (`AnimationsTool.swift:159`). App Store: an animated guide (“Animate opening applications” turned off) above an Open row (`SettingsWindow.swift:1053-1058`).
+**How it works:** Website: `no-bouncing` in `com.apple.dock` (`AnimationsPage` in `AnimationsTool.swift`). App Store: an animated guide (“Animate opening applications” turned off) above an Open row (`AnimationLinksPage` in `SettingsWindow.swift`).
 
 **Edition:** Both; App Store differs: guide and Open button instead of the switch.
 
@@ -1166,7 +1166,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Opens System Settings › Accessibility › Motion so you can turn on Reduce Motion, and shows where to click.
 
-**How it works:** A row with an Open button (`SystemSettingsRow`, `AnimationsTool.swift:171`; App Store `SettingsWindow.swift:1068`) and the animated guide `SettingsGuide.reduceMotion` (Accessibility › Motion › “Reduce motion” on), in both editions. The link `SettingsGuide.reduceMotionLink` opens the Motion page (anchor `AX_REDUCE_MOTION`) and falls back to Display when this macOS has no such anchor.
+**How it works:** A row with an Open button (`SystemSettingsRow` on `AnimationsPage` in `AnimationsTool.swift`; App Store `AnimationLinksPage` in `SettingsWindow.swift`) and the animated guide `SettingsGuide.reduceMotion` (Accessibility › Motion › “Reduce motion” on), in both editions. The link `SettingsGuide.reduceMotionLink` opens the Motion page (anchor `AX_REDUCE_MOTION`) and falls back to Display when this macOS has no such anchor.
 
 **Edition:** Both.
 
@@ -1182,10 +1182,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Plays videos that QuickTime can’t open, such as MKV, WebM, AVI, WMV and FLV, in their own window. The button opens one file and never changes which app opens your videos; the switch below does that.
 
-**How it works:** The button is on Settings › Player (`Sources/pikapik/Tools/Player/PlayerPage.swift:14`) and opens the file in the small separate app `pikapik Player` (`Helper/Player`), which never reaches the internet and has only the right to read and write files you choose (and, for AirPlay, to serve one film to your own network while it plays). The same app also appears under Open With when you right-click a video. A video that is already open comes to the front instead of opening twice (`Helper/Player/main.swift:35`). You can also drop a video on the player window. Space plays and pauses, ↑ and ↓ change the volume, F and Esc enter and leave full screen. Sound tracks and subtitles are described below.
+**How it works:** The button is on Settings › Player (`Sources/pikapik/Tools/Player/PlayerPage.swift`) and opens the file in the small separate app `pikapik Player` (`Helper/Player`), which never reaches the internet and has only the right to read and write files you choose (and, for AirPlay, to serve one film to your own network while it plays). The same app also appears under Open With when you right-click a video. A video that is already open comes to the front instead of opening twice (`AppDelegate.show(_:)` in `Helper/Player/main.swift`). You can also drop a video on the player window. Space plays and pauses, ↑ and ↓ change the volume, F and Esc enter and leave full screen. Sound tracks and subtitles are described below.
 
 **Options:**
-- Formats — the lists of formats on the same page, Video and Music; hover a format to see its file extensions (`PlayerPage.swift:23`, `PlayerPage.swift:24`).
+- Formats — each switch lists the formats it covers under its name (`PlayerPage.formats(_:)` in `PlayerPage.swift`, shown by `DefaultAppToggle`).
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1201,7 +1201,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Settings › Player has three switches, made like **Open archives in pikapik** on Settings › Finder: **Open videos in pikapik**, **Open music in pikapik** and **Open pictures in pikapik**. Each row lists its formats under the title (MKV · WebM · AVI …). Turning a switch on makes pikapik Player the app for all of its formats (macOS asks about each one); turning it off gives every format back to the app it had before. While a switch is off and some of its formats already open in pikapik, the row says how many: “Already in pikapik: 5 of 11”.
 
-**How it works:** One row for all four switches, `DefaultAppToggle` (`Sources/pikapik/UI/RowStyles.swift:221`), on Settings › Player (`PlayerPage.swift:25-27`) and Settings › Finder (`ArchiveTool.swift:63`). Each switch has its own `DefaultApps` and its own memory of previous apps (`PlayerPage.swift:9-11`, `ArchiveTool.swift:12`). The formats are `PlayerFormats.video`, `PlayerFormats.music` and `ImageFormats.all`, with their types from `PlayerFormats.types(of:)` (`PlayerLogic.swift:27`). The switch calls `DefaultApps.set` (`Sources/pikapik/Core/DefaultApps.swift:51`). Turning on remembers each type’s current app, then assigns `pikapik Player` (`Contents/Helpers/pikapik Player.app`) with the system call for default apps, one type at a time: the next type is asked only after the answer to the previous one (`DefaultApps.swift:75`). macOS asks about every type with the buttons “Use pikapik Player” and “Keep …”. No answer for 60 seconds, or a refusal, stops the run. Turning off sends each type back to its remembered app; if that app is gone, to the next app that can open it, never pikapik; a type that was not remembered goes to the system app for it when that app can open it (Music for songs, Preview for pictures, Archive Utility for archives) and is otherwise left alone, and a type that stayed with the player keeps its remembered app for next time. The switch is on only when every type opens in pikapik; the count under it is per format (a format counts when all its types do). Both are read from the system (`urlForApplication(toOpen:)`) after every answer and whenever pikapik comes forward, so a “Keep …” or a change made in Finder shows correctly; the switch is disabled while questions are open.
+**How it works:** One row for all four switches, `DefaultAppToggle` (`Sources/pikapik/UI/RowStyles.swift`), on Settings › Player (`PlayerPage.swift`) and Settings › Finder (`ArchiveSettings` in `ArchiveTool.swift`). Each switch has its own `DefaultApps` and its own memory of previous apps (`PlayerPage.swift`, `ArchiveTool.defaultApp` in `ArchiveTool.swift`). The formats are `PlayerFormats.video`, `PlayerFormats.music` and `ImageFormats.all`, with their types from `PlayerFormats.types(of:)` (`PlayerLogic.swift`). The switch calls `DefaultApps.set` (`Sources/pikapik/Core/DefaultApps.swift`). Turning on remembers each type’s current app, then assigns `pikapik Player` (`Contents/Helpers/pikapik Player.app`) with the system call for default apps, one type at a time: the next type is asked only after the answer to the previous one (`DefaultApps.assign(_:to:)` in `DefaultApps.swift`). macOS asks about every type with the buttons “Use pikapik Player” and “Keep …”. No answer for 60 seconds, or a refusal, stops the run. Turning off sends each type back to its remembered app; if that app is gone, to the next app that can open it, never pikapik; a type that was not remembered goes to the system app for it when that app can open it (Music for songs, Preview for pictures, Archive Utility for archives) and is otherwise left alone, and a type that stayed with the player keeps its remembered app for next time. The switch is on only when every type opens in pikapik; the count under it is per format (a format counts when all its types do). Both are read from the system (`urlForApplication(toOpen:)`) after every answer and whenever pikapik comes forward, so a “Keep …” or a change made in Finder shows correctly; the switch is disabled while questions are open.
 
 **Nuances:** macOS asks again when turning off, with “Use …” for the old app and “Keep pikapik Player”. The system reports “Keep …” as a cancel error; that leaves the type as it is and the next types are still asked. A format with several types (WMV and ASF, MPEG-TS, MP4 and M4V) asks once for each type. A type that already opens in the player is not asked again. Apps are matched by their identifier, so a second copy of pikapik elsewhere on the Mac counts as the same player. One format alone is changed in Finder › Get Info › Open with › Change All…; the count under the switch shows it. Resetting or removing pikapik does not change default apps by itself, as with archives; turn the switches off first.
 
@@ -1220,7 +1220,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Plays songs in the same player window: MP3, AAC, M4A, ALAC, FLAC, WAV, AIFF, CAF, Ogg Vorbis, Opus, WMA, APE and DSD. A song shows its cover (or a note), title, artist and album; the title bar keeps the file name. Songs without tags show the file name.
 
-**How it works:** MP3, AAC, FLAC, ALAC, Opus and PCM go to the system sound renderer as they are; WMA, Vorbis, APE and DSD are decoded by FFmpeg first (`Extensions/MediaReader/AudioDecoder.swift`). Tags and the cover picture come from the file (`Extensions/MediaReader/Demuxer.swift:289`, `Helper/Player/Engine.swift:238`) and fill `Helper/Player/MusicView.swift:79`: the cover over a blurred copy of itself, or a note over the window material when there is no cover. The window sizes itself for a song (`Helper/Player/PlayerWindow.swift:356`). The same app appears under Open With for every song format (`Helper/Player/Info.plist`). Drop a song on the window or choose it with Settings › Player › Open Video…; a file that cannot be read shows the same “can’t play” message as a video.
+**How it works:** MP3, AAC, FLAC, ALAC, Opus and PCM go to the system sound renderer as they are; WMA, Vorbis, APE and DSD are decoded by FFmpeg first (`Extensions/MediaReader/AudioDecoder.swift`). Tags and the cover picture come from the file (`Demuxer.tags()` in `Extensions/MediaReader/Demuxer.swift`, `Engine.tags()` in `Helper/Player/Engine.swift`) and fill `MusicView.show(title:subtitle:cover:)` in `Helper/Player/MusicView.swift`: the cover over a blurred copy of itself, or a note over the window material when there is no cover. The window sizes itself for a song (`PlayerController.fitMusic()` in `Helper/Player/PlayerWindow.swift`). The same app appears under Open With for every song format (`Helper/Player/Info.plist`). Drop a song on the window or choose it with Settings › Player › Open Video…; a file that cannot be read shows the same “can’t play” message as a video.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1235,9 +1235,9 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Opening a folder (or a song) lets the player go through the songs next to it. N or ⇧> goes to the next song, P or ⇧< to the previous one (the same as in the Playback menu, “Next in Folder” and “Previous in Folder”, and the two buttons in the panel). When a song ends, the next one starts by itself; after the last one the player stops. Previous restarts the current song if it has played for more than 3 seconds. Songs go with songs and videos with videos; videos never move on by themselves.
 
-**How it works:** The order is the one Finder shows, with numbers compared as numbers, so “2” comes before “10” (`Sources/pikapik/Tools/Player/PlayerLogic.swift:42`, neighbour at `:50`). The player is sandboxed, so for the folder of a song opened with a double-click it asks once: a sheet on the window, “To play the next file, allow access to this folder.”, with a standard Open panel (`Helper/Player/FolderAccess.swift:41`). The answer is kept as a bookmark in the player’s own storage, so the same folder is not asked again after the next launch (`FolderAccess.swift:18`, `:65`). When the player starts and when a new folder is saved, the entries of folders that were deleted, moved to the Trash or can no longer be opened are dropped, so deleted folders leave nothing behind; a disk that is not plugged in keeps its entry for when it comes back (`FolderAccess.swift:28`, `:56`; `scripts/test-folder-access.swift`). The window collects the playable files of the folder (`Helper/Player/PlayerWindow.swift:295`, `:507`) and moves on when a song ends (`PlayerWindow.swift:370`). Choosing a folder in Settings › Player › Open Video… or dropping a folder on the window already gives access, so nothing is asked. Without access the song plays alone, with no error.
+**How it works:** The order is the one Finder shows, with numbers compared as numbers, so “2” comes before “10” (`PlaylistOrder` in `Sources/pikapik/Tools/Player/PlayerLogic.swift`, neighbour at `PlaylistOrder.neighbour(of:kind:among:step:)`). The player is sandboxed, so for the folder of a song opened with a double-click it asks once: a sheet on the window, “To play the next file, allow access to this folder.”, with a standard Open panel (`FolderAccess.ask(_:in:message:_:)` in `Helper/Player/FolderAccess.swift`). The answer is kept as a bookmark in the player’s own storage, so the same folder is not asked again after the next launch (`FolderAccess.remember(_:)` in `FolderAccess.swift`, `FolderAccess.restore(_:)`). When the player starts and when a new folder is saved, the entries of folders that were deleted, moved to the Trash or can no longer be opened are dropped, so deleted folders leave nothing behind; a disk that is not plugged in keeps its entry for when it comes back (`FolderAccess.prune()` in `FolderAccess.swift`, `FolderAccess.offline(_:)`; `scripts/test-folder-access.swift`). The window collects the playable files of the folder (`PlayerController.openFolder(_:)` in `Helper/Player/PlayerWindow.swift`, `PlayerController.go(_:explicit:advancing:)` in `PlayerControls.swift`) and moves on when a song ends (`PlayerController.tick()` in `PlayerWindow.swift`). Choosing a folder in Settings › Player › Open Video… or dropping a folder on the window already gives access, so nothing is asked. Without access the song plays alone, with no error.
 
-**Nuances:** A folder with no playable files says “There is nothing to play in this folder.” A file that cannot be opened is skipped when the player moves on by itself; with the N key it shows the “can’t play” message. After Cancel the player does not ask again when a song ends, but N asks again. An allowed folder also covers the folders inside it (`PlayerLogic.swift:62`).
+**Nuances:** A folder with no playable files says “There is nothing to play in this folder.” A file that cannot be opened is skipped when the player moves on by itself; with the N key it shows the “can’t play” message. After Cancel the player does not ask again when a song ends, but N asks again. An allowed folder also covers the folders inside it (`PlaylistFolders` in `PlayerLogic.swift`).
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1253,7 +1253,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** While a song or video plays, macOS shows it in Control Center and on the lock screen: title, artist, album, cover, time. Play, Pause, Next, Previous and the position slider there control the player, and so do the keyboard media keys. When the window closes, the entry disappears.
 
-**How it works:** `Helper/Player/NowPlaying.swift:26` fills `MPNowPlayingInfoCenter` after a file opens and on every pause, play or jump (`PlayerWindow.swift:408`); the commands come from `MPRemoteCommandCenter` and call the same actions as the keys. A song without a title tag shows its file name. A video shows its title, or its file name, and its length, with no cover.
+**How it works:** `NowPlaying.publish(_:playing:for:)` in `Helper/Player/NowPlaying.swift` fills `MPNowPlayingInfoCenter` after a file opens and on every pause, play or jump (`PlayerController.publishNowPlaying()` in `PlayerWindow.swift`); the commands come from `MPRemoteCommandCenter` and call the same actions as the keys. A song without a title tag shows its file name. A video shows its title, or its file name, and its length, with no cover.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1267,10 +1267,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Opens pictures in almost any format in their own dark window: JPEG, PNG, HEIC, AVIF, WebP, JPEG XL, camera RAW (DNG, CR2, CR3, NEF, ARW, RAF, ORF, RW2), PSD, TIFF, GIF, APNG, SVG, ICO, ICNS, BMP, TGA, EXR, HDR and JPEG 2000. The picture fits the window; pinch or ⌘+ (with or without Shift) and ⌘− zoom, ⌘0 fits it again, ⌘9 or a double click shows 100 %, dragging moves a zoomed picture, ⌘R and ⌘L turn it, ← and → show the next and previous picture, Space or ⇧⌘F starts a slideshow (3 seconds each, Esc or the same key stops it), F and ⌃⌘F enter full screen. GIF, APNG and WebP move. The window has no grey title bar (the same `WindowChrome` as the video window, so a double click on the thin top strip zooms or minimizes like any window): the window buttons, the file name with “3 of 12” and the glass panel at the bottom have the same buttons, appear when the mouse moves and fade together like the video panel; dragging an unzoomed picture moves the window. The switch **Open pictures in pikapik** on Settings › Player makes the player the app for all of these formats and gives them back when turned off.
 
-**How it works:** `pikapik Player` sends pictures to `ImageController` (`Helper/Player/ImageWindow.swift:123`) and everything else to the video window (`Helper/Player/main.swift:50`); files and folders are sorted into pictures and the rest by `ImageList.split` (`Sources/pikapik/Tools/Player/ImageLogic.swift:24`). Pictures are read with ImageIO and SVG with `NSImage` (`Helper/Player/ImageDecoder.swift:16`). The EXIF turn is applied while decoding. A picture is first decoded to the size of the screen; the full size, at most 16384 pixels on a side and 128 million pixels in all, is decoded about 0.15 seconds after you zoom in beyond that (`ImageWindow.swift:469`, sizes in `ImageDetail.pixels`, `ImageLogic.swift:91`), and an SVG is drawn again sharp at the size shown. Older requests are dropped when you move on, so nothing piles up. Moving pictures are drawn by ImageIO’s animation call; closing the window or hiding it stops the animation. The keys are one table (`ImageAction.bindings`, `ImageLogic.swift:66`) shared by the window and the menu. The pictures switch uses the same `DefaultApps` class as the videos with its own saved list (`PlayerPage.swift:11`); if no app was remembered for a type, turning it off gives it to Preview (`com.apple.Preview`). `Info.plist` lists the picture types as Alternate, so pikapik Player appears in Open With without taking over a type.
+**How it works:** `pikapik Player` sends pictures to `ImageController` (`Helper/Player/ImageWindow.swift`) and everything else to the video window (`AppDelegate.open(_:)` in `Helper/Player/main.swift`); files and folders are sorted into pictures and the rest by `ImageList.split` (`Sources/pikapik/Tools/Player/ImageLogic.swift`). Pictures are read with ImageIO and SVG with `NSImage` (`ImageDecoder.probe(_:)` in `Helper/Player/ImageDecoder.swift`). The EXIF turn is applied while decoding. A picture is first decoded to the size of the screen; the full size, at most 16384 pixels on a side and 128 million pixels in all, is decoded about 0.15 seconds after you zoom in beyond that (`ImageController.scheduleDetail()` in `ImageWindow.swift`, sizes in `ImageDetail.pixels`, `ImageLogic.swift`), and an SVG is drawn again sharp at the size shown. Older requests are dropped when you move on, so nothing piles up. Moving pictures are drawn by ImageIO’s animation call; closing the window or hiding it stops the animation. The keys are one table (`ImageAction.bindings`, `ImageLogic.swift`) shared by the window and the menu. The pictures switch uses the same `DefaultApps` class as the videos with its own saved list (`PlayerPage.pictures` in `PlayerPage.swift`); if no app was remembered for a type, turning it off gives it to Preview (`com.apple.Preview`). `Info.plist` lists the picture types as Alternate, so pikapik Player appears in Open With without taking over a type.
 
 **Options:**
-- Open pictures in pikapik on Settings › Player (`PlayerPage.swift:27`).
+- Open pictures in pikapik on Settings › Player (`PlayerPage.swift`).
 - The Go menu: Previous Image, Next Image, Start Slideshow. View menu: Zoom In, Zoom Out, Actual Size, Fit to Window.
 
 **Nuances:** A damaged or unsupported picture shows “Can’t open this image” in the window and the arrows still work. Opening one picture from Finder shows the paging buttons too; the first → or ← (or Space) asks once to allow access to the folder, as the music player does, and then pages through the pictures next to it in Finder’s order (`expandFolder` in `ImageWindow.swift`). Select several pictures or a folder to page through exactly those; a folder without pictures opens a window that says so. Only the pictures you open go to File › Open Recent, not every one you page to. A tiny file that claims billions of pixels still opens, at screen size, and is never decoded beyond 128 million pixels. EXR files written by some tools use a float format that macOS can’t read and show the message. Camera RAW depends on the macOS RAW decoder; a new camera model may not open until macOS knows it. Resetting or removing pikapik does not change default apps by itself; turn Open pictures in pikapik off first.
@@ -1296,7 +1296,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Controls the player the way QuickTime Player does. Every key also has a menu item with the same shortcut.
 
-**How it works:** One table maps keys to actions (`Sources/pikapik/Tools/Player/PlayerLogic.swift:28`); the window and the menu both read it (`Helper/Player/PlayerWindow.swift:287`, `Helper/Player/main.swift`). On pause ← and → step one frame, while playing they jump 5 seconds; ⇧← and ⇧→ always jump 5, J and L jump 10, K plays and pauses, , and . step a frame, ⌥← and ⌥→ go to the start and the end, M mutes, ↑ and ↓ change the volume. A frame step looks for the nearest picture time in the file, so it also works on videos with B-frames (`Helper/Player/Engine.swift:232`). Scrolling up and down changes the volume, scrolling sideways or Shift and the wheel skips; a light touch under a small threshold does nothing (`PlayerLogic.swift:65`, `PlayerWindow.swift:404`).
+**How it works:** One table maps keys to actions (`PlayerAction.bindings` in `Sources/pikapik/Tools/Player/PlayerLogic.swift`); the window and the menu both read it (`PlayerController.perform(_:)` in `Helper/Player/PlayerControls.swift`, `Helper/Player/main.swift`). On pause ← and → step one frame, while playing they jump 5 seconds; ⇧← and ⇧→ always jump 5, J and L jump 10, K plays and pauses, , and . step a frame, ⌥← and ⌥→ go to the start and the end, M mutes, ↑ and ↓ change the volume. A frame step looks for the nearest picture time in the file, so it also works on videos with B-frames (`Engine.step(_:)` in `Helper/Player/Engine.swift`). Scrolling up and down changes the volume, scrolling sideways or Shift and the wheel skips; a light touch under a small threshold does nothing (`PlayerWheel` in `PlayerLogic.swift`, `PlayerController.scroll(_:)` in `PlayerControls.swift`).
 
 **Nuances:** Holding a key keeps skipping from where the last jump is going, not from where the picture still is.
 
@@ -1313,9 +1313,9 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** A video with several sound tracks lets you pick one, and the picture can show subtitles, from inside the file (text, ASS with its animation and karaoke, and the picture subtitles of Blu-ray, DVD and DVB broadcasts) or from a .srt, .vtt or .ass file. Switching the sound track keeps your place and the pause. The choice is remembered for that video and used the next time you open it.
 
-**How it works:** The **Audio** and **Subtitles** menus and the button with the speech bubble on the panel list the tracks by language and name, or **Track 2** when the file gives neither (`Helper/Player/TrackMenus.swift:32`, `Helper/Player/main.swift:149`). Choosing a sound track stops only the audio, opens the new track at the clock time and starts it again; the picture and the clock are not touched (`Helper/Player/Engine.swift:247`). Subtitles inside the file (SubRip, ASS/SSA, WebVTT, mov_text and the pictures of PGS, VobSub and DVB) are read by a second reader in the background, ten minutes ahead of the picture at a time and again after a jump, so a long film is never read to the end for its subtitles; the list of tracks appears at once and the lines fill in a moment after the video starts (`Helper/Player/Subtitles.swift:159`). Files with the video’s name next to it are found by themselves once the folder is allowed; a file can also be dropped on the window or added with **Subtitles › Add Subtitle File…**; UTF-8, UTF-16 and Windows Cyrillic text are understood (`Sources/pikapik/Tools/Player/SubtitleParser.swift:204`). Plain text is white with a shadow, at the bottom in the middle, rises above the panel while it is visible, and its size follows the window height (`Helper/Player/Subtitles.swift:392`). ASS and SSA are drawn by libass, the engine of IINA and mpv, so styles, karaoke, moves, fades, clips, drawings and animation all work, and right-to-left and complex scripts are shaped correctly; the fonts attached to an MKV are used first, then the fonts of the Mac through CoreText, and nothing is downloaded (`Helper/Player/Ass.swift:25`, `:71`, `:82`). libass draws on its own queue, never on the main thread, into one picture per change, which the view lays over the video at the size and place the film gives it, also with black bars; the **Larger** and **Smaller** keys scale it (`Helper/Player/Subtitles.swift:564`, `:787`). Each track keeps at most 24 MB of lines and the attached fonts at most 96 MB (32 MB each), a moment with more than 400 lines at once is not drawn, and a damaged script cannot take the player down (`Helper/Player/Ass.swift:26`, `:207`). A picture subtitle is decoded by FFmpeg into a bitmap and drawn over the video at the place and scale the film gives it, also with black bars, for exactly as long as it should be shown, and it rises above the panel too; each track keeps at most 32 MB of pictures, so a long film does not fill the memory (`Helper/Player/Subtitles.swift:94`, `:172`, `:527`). With no choice made, the player picks a subtitle file next to the video, or else a track in the language of the Mac when it differs from the sound track’s language (`Helper/Player/Subtitles.swift:749`).
+**How it works:** The **Audio** and **Subtitles** menus and the button with the speech bubble on the panel list the tracks by language and name, or **Track 2** when the file gives neither (`PlayerController.audioItems()` in `Helper/Player/TrackMenus.swift`, `AppDelegate.makeMenu()` in `Helper/Player/main.swift`). Choosing a sound track stops only the audio, opens the new track at the clock time and starts it again; the picture and the clock are not touched (`Engine.selectAudio(_:)` and `Engine.switchAudio(to:)` in `Helper/Player/Engine.swift`). Subtitles inside the file (SubRip, ASS/SSA, WebVTT, mov_text and the pictures of PGS, VobSub and DVB) are read by a second reader in the background, ten minutes ahead of the picture at a time and again after a jump, so a long film is never read to the end for its subtitles; the list of tracks appears at once and the lines fill in a moment after the video starts (`Helper/Player/SubtitleScanner.swift`). Files with the video’s name next to it are found by themselves once the folder is allowed; a file can also be dropped on the window or added with **Subtitles › Add Subtitle File…**; UTF-8, UTF-16 and Windows Cyrillic text are understood (`SubtitleParser.decode(_:)` in `Sources/pikapik/Tools/Player/SubtitleParser.swift`). Plain text is white with a shadow, at the bottom in the middle, rises above the panel while it is visible, and its size follows the window height (`SubtitleView` in `Helper/Player/Subtitles.swift`). ASS and SSA are drawn by libass, the engine of IINA and mpv, so styles, karaoke, moves, fades, clips, drawings and animation all work, and right-to-left and complex scripts are shaped correctly; the fonts attached to an MKV are used first, then the fonts of the Mac through CoreText, and nothing is downloaded (`AssEngine` in `Helper/Player/Ass.swift`, `AssEngine.addFont(name:data:)`, `AssEngine.finishFonts()`). libass draws on its own queue, never on the main thread, into one picture per change, which the view lays over the video at the size and place the film gives it, also with black bars; the **Larger** and **Smaller** keys scale it (`SubtitleView.layoutAss(_:)` in `Helper/Player/Subtitles.swift`, `Subtitles.drawAss(_:)`). Each track keeps at most 24 MB of lines and the attached fonts at most 96 MB (32 MB each), a moment with more than 400 lines at once is not drawn, and a damaged script cannot take the player down (`AssEngine.fontLimit` in `Helper/Player/Ass.swift`, `AssTrack`). A picture subtitle is decoded by FFmpeg into a bitmap and drawn over the video at the place and scale the film gives it, also with black bars, for exactly as long as it should be shown, and it rises above the panel too; each track keeps at most 32 MB of pictures, so a long film does not fill the memory (`PictureDecoder` in `Helper/Player/PictureSubtitles.swift`, `SubtitleScanner.pictureBudget` in `SubtitleScanner.swift`, `SubtitleView.layoutPictures(_:)` in `Subtitles.swift`). With no choice made, the player picks a subtitle file next to the video, or else a track in the language of the Mac when it differs from the sound track’s language (`Subtitles.decide()` in `Helper/Player/Subtitles.swift`).
 
-**Keys:** V next subtitles (the last step is off), ⇧3 (#) next sound track, found by the place of the key so it works on any keyboard layout, Z and X move subtitles 0.1 s earlier and later, ⇧F and ⇧G make them larger and smaller. The same items are in the Audio and Subtitles menus (`Sources/pikapik/Tools/Player/PlayerLogic.swift:108`).
+**Keys:** V next subtitles (the last step is off), ⇧3 (#) next sound track, found by the place of the key so it works on any keyboard layout, Z and X move subtitles 0.1 s earlier and later, ⇧F and ⇧G make them larger and smaller. The same items are in the Audio and Subtitles menus (`PlayerAction.bindings` in `Sources/pikapik/Tools/Player/PlayerLogic.swift`).
 
 **Nuances:** A script with a crowd of animated signs can draw slowly: the lines then appear a little late, while the video and the sound are not held up. The size key does not change picture subtitles, because they are already pictures. Subtitle formats that are not text or one of these pictures are in the list but greyed out, with “(can’t be shown)”. The clock that redraws the subtitles stops while the video is paused. A subtitle file that can’t be read shows a short note and nothing else changes. The track choice and the delay are remembered for each of the last 200 videos; the size is the same for all.
 
@@ -1338,7 +1338,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Plays faster or slower, from 0.5× to 2×, with the voice at the same pitch.
 
-**How it works:** The Speed menu has 0.5×, 0.75×, 1×, 1.25×, 1.5× and 2× (`Helper/Player/main.swift`); Slower and Faster step along the same list (`PlayerLogic.swift:57`). The audio is set to keep its pitch (`Helper/Player/Engine.swift:191`). The speed stays after a skip, a frame step and when the video is opened again; the panel shows it when it is not 1×.
+**How it works:** The Speed menu has 0.5×, 0.75×, 1×, 1.25×, 1.5× and 2× (`Helper/Player/main.swift`); Slower and Faster step along the same list (`PlayerSpeed` in `PlayerLogic.swift`). The audio is set to keep its pitch (`Engine.init(_:)` in `Helper/Player/Engine.swift`). The speed stays after a skip, a frame step and when the video is opened again; the panel shows it when it is not 1×.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1351,7 +1351,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Saves the picture on the screen as a PNG, named after the video and the time, for example `Holiday 1.23.png`.
 
-**How it works:** File › Save Frame… (S) pauses, takes the picture the player is showing (`Helper/Player/Engine.swift:238`) and writes it where you choose in the Save panel (`Helper/Player/PlayerWindow.swift:418`). Needs no Screen Recording permission; the player may write only in the place you picked. Needs macOS 14.4 or later; on an older macOS it says it could not save the frame.
+**How it works:** File › Save Frame… (S) pauses, takes the picture the player is showing (`Engine.frameImage()` in `Helper/Player/Engine.swift`) and writes it where you choose in the Save panel (`PlayerController.saveFrame()` in `Helper/Player/PlayerControls.swift`). Needs no Screen Recording permission; the player may write only in the place you picked. Needs macOS 14.4 or later; on an older macOS it says it could not save the frame.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1363,7 +1363,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Keeps the player above other windows, and moves it to another screen.
 
-**How it works:** Window › Float on Top (T) switches the window level (`Helper/Player/PlayerWindow.swift:310`). Window › Move to Display lists the screens and appears only when there are two or more (`Helper/Player/main.swift:23`).
+**How it works:** Window › Float on Top (T) switches the window level (`PlayerController.perform(_:)` in `Helper/Player/PlayerControls.swift`). Window › Move to Display lists the screens and appears only when there are two or more (`AppDelegate.menuNeedsUpdate(_:)` in `Helper/Player/main.swift`).
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1375,7 +1375,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** When you open a video again, it continues from the place where you stopped, with no question.
 
-**How it works:** The player saves the position every 10 seconds, on pause, on close and on quit, under a key made from the path, the size and the date of the file (`Helper/Player/PlayerWindow.swift:465`). It saves only after more than 60 seconds were watched, forgets the video within the last 30 seconds, and keeps the last 200 videos (`PlayerLogic.swift:88`). Playback › Start Over begins from the start.
+**How it works:** The player saves the position every 10 seconds, on pause, on close and on quit, under a key made from the path, the size and the date of the file (`PlayerController.remember()` in `Helper/Player/PlayerControls.swift`). It saves only after more than 60 seconds were watched, forgets the video within the last 30 seconds, and keeps the last 200 videos (`PlayerResume` in `PlayerLogic.swift`). Playback › Start Over begins from the start.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1388,7 +1388,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** The control panel is frosted glass that stays readable on a bright picture, and it gets out of the way while you watch.
 
-**How it works:** On macOS 26 and later the panel is a Liquid Glass view with a dark tint, on macOS 14 and 15 a blurred HUD view; both are dark, so the buttons keep their contrast on a white frame (`Helper/Player/PlayerWindow.swift:80`). One rule decides what is visible: the panel stays while the video is paused or the pointer is over it, and while playing it hides after 2.5 seconds without mouse movement; in full screen the pointer hides with it (`Sources/pikapik/Tools/Player/PlayerLogic.swift:134`, `PlayerWindow.swift:538`). Any key or a move of the mouse shows both again.
+**How it works:** On macOS 26 and later the panel is a Liquid Glass view with a dark tint, on macOS 14 and 15 a blurred HUD view; both are dark, so the buttons keep their contrast on a white frame (`PlayerController.controls` in `Helper/Player/PlayerWindow.swift`). One rule decides what is visible: the panel stays while the video is paused or the pointer is over it, and while playing it hides after 2.5 seconds without mouse movement; in full screen the pointer hides with it (`PlayerChrome` in `Sources/pikapik/Tools/Player/PlayerLogic.swift`, `PlayerController.showControls()` in `PlayerControls.swift`). Any key or a move of the mouse shows both again.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1402,7 +1402,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** The player window has no grey title bar: the video fills the whole window, and the three round buttons sit on top of it, hidden together with the control panel.
 
-**How it works:** The window stays a normal titled window, so it keeps its rounded corners, shadow, ⌘W and the Window menu, but its content runs under a transparent, title-less bar (`Helper/Player/WindowChrome.swift:67`; the title is still set for the Window menu and VoiceOver). The three buttons are shown and hidden by the same rule as the panel (`PlayerWindow.swift:696`; the pointer resting on a button counts as being over the controls, `WindowChrome.swift:95`, and only when the window under the pointer is the player itself, `WindowChrome.swift:101`, so a window lying over its corner does not keep them on screen; the pointer is also followed over a window that is not the active one, `WindowChrome.swift:65`; hidden buttons do not react to the mouse until it moves, and an unchanged state starts no new fade), with a thin dark gradient under them, over a video only, so they stay readable on a bright picture; a song gets the buttons without the shade (`WindowChrome.swift:118`; with VoiceOver on, the hidden buttons stay in the accessibility tree and VoiceOver can press them, while a transparent overlay sends a mouse click on them to the video, `WindowChrome.swift:7`; the dev build of the player can be started with `-PikaForceVoiceOver` to check that branch, the release build ignores it, `WindowChrome.swift:113`). The panel waits for what is open on top of it: while a sheet of the player (the request for access to the folder) is open, the buttons and the panel stay wherever the pointer is, and a menu holds the hide timer, which does not fire while a menu is tracked. When the sheet ends or the menu closes, the 2.5 seconds count again from that moment (`WindowChrome.swift:29`, the timer in `:51`), so the panel does not vanish at once. Only a sheet of this window and a menu count as open over it (`WindowChrome.swift:105`, one answer for everything in `WindowChrome.swift:109`): a second player window, a child window of the player, a window of the player kept on top (its always-on-top mode) and, in full screen, the window the Mac keeps the buttons in do not, or the panel would never hide there. A timer that comes round with the pointer still on the controls or a sheet still open starts over (`PlayerWindow.swift:685`, `:702`). A pointer that goes up to the menu bar leaves the player window, and the panel hides as for any pointer leaving it. A drag on the video or on the thin strip at the very top moves the window with the system's own window drag, started by the mouse-down so the window follows the pointer exactly from the first pixel (`PlayerWindow.swift:39`, rule in `WindowChrome.swift:91`), except on the control panel, and it works from the first click even when the window is not the active one (`PlayerWindow.swift:12`); a double-click on the video still goes full screen (`PlayerWindow.swift:35`). A double-click on the thin strip at the very top does what System Settings says for a title bar: the window's own zoom (`zoom`, also behind Window › Zoom, not the green-button `performZoom`), which a second double-click undoes, minimize or nothing (`WindowChrome.swift:73`). In full screen the Mac handles the menu bar and the buttons (`PlayerWindow.swift:753`). `scripts/test-player-window.swift` checks the window style, that the buttons and the gradient hide and show together, who gets a click on a hidden button with and without VoiceOver, the “window under the pointer is ours” rule, that an open sheet or menu keeps the controls while a second player window, a child window that holds the buttons as in full screen, windows at other levels (a player kept on top among them) and a second window’s sheet do not, that the hide timer waits while a menu is tracked and counts its delay again from the moment a menu closes or a sheet of this window ends (not for the sheet of another window, a panel that is already hidden or a window that closed), that the controller is freed when its window goes away even while its timer waits, that in full screen the system title bar stays and the dark shade goes away, that a click 10 pt below the top edge reaches the real `VideoView` and not the system title bar, that a mouse-down on it starts the system window drag (on the picture and on the strip, not on the control panel, not in full screen, not on the second click of a double-click) and that two double-clicks on the strip zoom with the window's own `zoom` and put the frame back, with the Window menu on the same action, that the test shows no window (after each of its eleven ok lines it checks the window server’s list and its own stand-in windows), and the dev-only argument.
+**How it works:** The window stays a normal titled window, so it keeps its rounded corners, shadow, ⌘W and the Window menu, but its content runs under a transparent, title-less bar (`WindowChrome.style(_:)` in `Helper/Player/WindowChrome.swift`; the title is still set for the Window menu and VoiceOver). The three buttons are shown and hidden by the same rule as the panel (`PlayerController.refreshControls(idle:)` in `PlayerControls.swift`; the pointer resting on a button counts as being over the controls, `WindowChrome.overButtons(_:in:)` in `WindowChrome.swift`, and only when the window under the pointer is the player itself, `WindowChrome.pointerOver(_:windowNumberAt:)` in `WindowChrome.swift`, so a window lying over its corner does not keep them on screen; the pointer is also followed over a window that is not the active one, `WindowChrome.trackingOptions` in `WindowChrome.swift`; hidden buttons do not react to the mouse until it moves, and an unchanged state starts no new fade), with a thin dark gradient under them, over a video only, so they stay readable on a bright picture; a song gets the buttons without the shade (`WindowChrome.setVisible(_:video:voiceOver:)` in `WindowChrome.swift`; with VoiceOver on, the hidden buttons stay in the accessibility tree and VoiceOver can press them, while a transparent overlay sends a mouse click on them to the video, `ButtonShield` in `WindowChrome.swift`; the dev build of the player can be started with `-PikaForceVoiceOver` to check that branch, the release build ignores it, `WindowChrome.voiceOver(arguments:bundleID:system:)` in `WindowChrome.swift`). The panel waits for what is open on top of it: while a sheet of the player (the request for access to the folder) is open, the buttons and the panel stay wherever the pointer is, and a menu holds the hide timer, which does not fire while a menu is tracked. When the sheet ends or the menu closes, the 2.5 seconds count again from that moment (`WindowChrome.init(_:over:)` in `WindowChrome.swift`, the timer in `WindowChrome.hideAfterIdle(_:_:)`), so the panel does not vanish at once. Only a sheet of this window and a menu count as open over it (`WindowChrome.opened(over:)` in `WindowChrome.swift`, one answer for everything in `WindowChrome.overControls(_:at:panel:windowNumberAt:)` in `WindowChrome.swift`): a second player window, a child window of the player, a window of the player kept on top (its always-on-top mode) and, in full screen, the window the Mac keeps the buttons in do not, or the panel would never hide there. A timer that comes round with the pointer still on the controls or a sheet still open starts over (`PlayerController.armHideTimer()` in `PlayerControls.swift`, `PlayerController.refreshControls(idle:)`). A pointer that goes up to the menu bar leaves the player window, and the panel hides as for any pointer leaving it. A drag on the video or on the thin strip at the very top moves the window with the system's own window drag, started by the mouse-down so the window follows the pointer exactly from the first pixel (`VideoView.mouseDown(with:)` in `PlayerWindow.swift`, rule in `WindowChrome.startsDrag(_:in:at:panel:)` in `WindowChrome.swift`), except on the control panel, and it works from the first click even when the window is not the active one (`VideoView.acceptsFirstMouse(for:)` in `PlayerWindow.swift`); a double-click on the video still goes full screen (`VideoView.mouseDown(with:)` in `PlayerWindow.swift`). A double-click on the thin strip at the very top does what System Settings says for a title bar: the window's own zoom (`zoom`, also behind Window › Zoom, not the green-button `performZoom`), which a second double-click undoes, minimize or nothing (`WindowChrome.stripAction(_:)` in `WindowChrome.swift`). In full screen the Mac handles the menu bar and the buttons (`PlayerController.windowDidEnterFullScreen(_:)` in `PlayerControls.swift`). `scripts/test-player-window.swift` checks the window style, that the buttons and the gradient hide and show together, who gets a click on a hidden button with and without VoiceOver, the “window under the pointer is ours” rule, that an open sheet or menu keeps the controls while a second player window, a child window that holds the buttons as in full screen, windows at other levels (a player kept on top among them) and a second window’s sheet do not, that the hide timer waits while a menu is tracked and counts its delay again from the moment a menu closes or a sheet of this window ends (not for the sheet of another window, a panel that is already hidden or a window that closed), that the controller is freed when its window goes away even while its timer waits, that in full screen the system title bar stays and the dark shade goes away, that a click 10 pt below the top edge reaches the real `VideoView` and not the system title bar, that a mouse-down on it starts the system window drag (on the picture and on the strip, not on the control panel, not in full screen, not on the second click of a double-click) and that two double-clicks on the strip zoom with the window's own `zoom` and put the frame back, with the Window menu on the same action, that the test shows no window (after each of its eleven ok lines it checks the window server’s list and its own stand-in windows), and the dev-only argument.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1417,7 +1417,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows a small picture of the video, with its time, above the time bar where you point.
 
-**How it works:** A second reader opens the same file, jumps to the nearest key frame, decodes one picture (VideoToolbox for H.264 and HEVC, the bundled decoder for the rest) and shrinks it to about 160 × 90 (`Helper/Player/Thumbnails.swift:5`). The first hover starts filling 100 pictures, one for each hundredth of the video, in the background; a spot whose picture is not ready yet shows the nearest ready one (`Thumbnails.swift:79`, `PlayerLogic.swift:143`). The pictures are freed when the window closes or another video opens (`PlayerWindow.swift:562`). The time is shown above the picture; for a sound-only file or a picture that can’t be made, only the time is shown.
+**How it works:** A second reader opens the same file, jumps to the nearest key frame, decodes one picture (VideoToolbox for H.264 and HEVC, the bundled decoder for the rest) and shrinks it to about 160 × 90 (`ThumbnailReader` in `Helper/Player/Thumbnails.swift`). The first hover starts filling 100 pictures, one for each hundredth of the video, in the background; a spot whose picture is not ready yet shows the nearest ready one (`Thumbnails.swift`, `PlayerThumbnail` in `PlayerLogic.swift`). The pictures are freed when the window closes or another video opens (`PlayerController.stop()` in `PlayerWindow.swift`). The time is shown above the picture; for a sound-only file or a picture that can’t be made, only the time is shown.
 
 **Edition:** Website only (App Store: hidden).
 
@@ -1430,7 +1430,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** A button on the control panel, next to full screen, sends the playing video to an Apple TV, a smart TV or any other AirPlay device. The picture continues from the same second, the panel keeps showing the time and the keys keep working, and when you disconnect the video comes back to the Mac at the second where the device stopped. It is shown only for videos.
 
-**How it works:** The button is the system AirPlay picker (`Helper/Player/PlayerWindow.swift:229`). When the list of devices closes, the helper opens a server on the Mac’s own address (`AirPlayLink.begin`, `Helper/Player/AirPlay.swift:86`; `AirPlaySession`, `Helper/Player/AirPlaySession.swift:9`; `AirPlayServer`, `Helper/Player/AirPlayServer.swift:109`). The film itself is read (`AirPlaySource`, `Helper/Player/AirPlaySource.swift:99`) only when the first request arrives, and is served as HLS. The film is cut at real key frames into pieces of about six seconds; a film whose key frames are more than 30 seconds apart is cut at fixed six-second marks and re-encoded (`AirPlayPlan.plan`, `Helper/Player/AirPlayPlaylists.swift:70`). Each piece is built only when the device asks for it (`AirPlaySegmentWriter.build`, `Helper/Player/AirPlaySegments.swift:63`), so a jump anywhere in the film is immediate. H.264 and HEVC, HDR included, are passed on unchanged. VP9 and AV1 are re-encoded to HEVC with an H.264 version next to it. The sound goes as separate tracks, so the device offers the languages: AAC, AC-3, E-AC-3 and ALAC unchanged, FLAC as ALAC, Opus, Vorbis, DTS and MP3 as AAC. Text subtitles go as WebVTT; picture subtitles (PGS, VobSub) are burnt into the picture while their track is chosen, and until the menu for choosing a subtitle track arrives the one marked forced or default is used. macOS gives no earlier sign that a device was chosen, so if no device takes the film within 20 seconds (40 if one has asked for it) the server closes again. It also closes, and the built pieces (up to 128 MiB) are freed, when the film ends, when you switch back, when the Mac goes to sleep, with the window and when pikapik quits. Every showing has a new 128-bit secret in the address. The server answers only the exact paths it knows, never a path from the request, and only a device from the Mac’s own networks (`AirPlayRouter`, `AirPlayNetwork`, `AirPlayServer.swift:21`, `:65`). A connection that sends no valid request in 5 seconds or stays silent for 15 is dropped, at most 16 connections are served, 16 wait and 6 come from one address, and a connection without the secret in its path is closed at once and takes no place (`AirPlayServer.Limits`, `AirPlayServer.swift:112`). The sandbox of the player (and only the player) gets the rights to serve and to connect (`Helper/Player/Player.entitlements`). If the device never asks for the film, the player says so in plain words and says what to do when the firewall has **Block all incoming connections** on; it does not change that setting (`AirPlayAdvice`, `AirPlayPlaylists.swift:292`). If the Mac has no network address to serve from, the player says that too. macOS may ask once whether the player may use the local network; the question has text in all 23 languages (`Helper/Player/Info.plist`), but the Permissions tab cannot show or ask for it, because macOS has no way to read or request it for another program. In the Mac App Store version the player is not there, so neither is this button.
+**How it works:** The button is the system AirPlay picker (`PlayerController.build(_:)` in `Helper/Player/PlayerWindow.swift`). When the list of devices closes, the helper opens a server on the Mac’s own address (`AirPlayLink.begin`, `Helper/Player/AirPlay.swift`; `AirPlaySession`, `Helper/Player/AirPlaySession.swift`; `AirPlayServer`, `Helper/Player/AirPlayServer.swift`). The film itself is read (`AirPlaySource`, `Helper/Player/AirPlaySource.swift`) only when the first request arrives, and is served as HLS. The film is cut at real key frames into pieces of about six seconds; a film whose key frames are more than 30 seconds apart is cut at fixed six-second marks and re-encoded (`AirPlayPlan.plan`, `Helper/Player/AirPlayPlaylists.swift`). Each piece is built only when the device asks for it (`AirPlaySegmentWriter.build`, `Helper/Player/AirPlaySegments.swift`), so a jump anywhere in the film is immediate. H.264 and HEVC, HDR included, are passed on unchanged. VP9 and AV1 are re-encoded to HEVC with an H.264 version next to it. The sound goes as separate tracks, so the device offers the languages: AAC, AC-3, E-AC-3 and ALAC unchanged, FLAC as ALAC, Opus, Vorbis, DTS and MP3 as AAC. Text subtitles go as WebVTT; picture subtitles (PGS, VobSub) are burnt into the picture while their track is chosen, and until the menu for choosing a subtitle track arrives the one marked forced or default is used. macOS gives no earlier sign that a device was chosen, so if no device takes the film within 20 seconds (40 if one has asked for it) the server closes again. It also closes, and the built pieces (up to 128 MiB) are freed, when the film ends, when you switch back, when the Mac goes to sleep, with the window and when pikapik quits. Every showing has a new 128-bit secret in the address. The server answers only the exact paths it knows, never a path from the request, and only a device from the Mac’s own networks (`AirPlayRouter`, `AirPlayNetwork`, `AirPlayServer.swift`). A connection that sends no valid request in 5 seconds or stays silent for 15 is dropped, at most 16 connections are served, 16 wait and 6 come from one address, and a connection without the secret in its path is closed at once and takes no place (`AirPlayServer.Limits`, `AirPlayServer.swift`). The sandbox of the player (and only the player) gets the rights to serve and to connect (`Helper/Player/Player.entitlements`). If the device never asks for the film, the player says so in plain words and says what to do when the firewall has **Block all incoming connections** on; it does not change that setting (`AirPlayAdvice`, `AirPlayPlaylists.swift`). If the Mac has no network address to serve from, the player says that too. macOS may ask once whether the player may use the local network; the question has text in all 23 languages (`Helper/Player/Info.plist`), but the Permissions tab cannot show or ask for it, because macOS has no way to read or request it for another program. In the Mac App Store version the player is not there, so neither is this button.
 
 **Options:**
 - The choice of the device and the language of the sound are made on the device; there is nothing to set in pikapik.
@@ -1451,7 +1451,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows the video in a small floating window above your other windows, with play, pause and skip buttons, while you work in other apps.
 
-**How it works:** The player gives the video layer to `AVPictureInPictureController` (`Helper/Player/PictureInPicture.swift:3`). While the small window is open macOS asks the player for the length of the video and whether it is paused, and tells it when you press play, pause or skip; the player answers from its own state (`PictureInPicture.swift:76`). The button on the control panel, **Window › Picture in Picture** and ⌘⌥P start and stop it (`Helper/Player/PlayerWindow.swift:656`). While it runs the player window is hidden, and it comes back when the small window is closed or restored, and when the video is closed or another file is opened (`PlayerWindow.swift:649`). A video has the button from the start, dimmed, so the time bar does not move when macOS says the video can be shown that way; only then the button and the menu item turn on (`PlayerWindow.swift:635`).
+**How it works:** The player gives the video layer to `AVPictureInPictureController` (`Helper/Player/PictureInPicture.swift`). While the small window is open macOS asks the player for the length of the video and whether it is paused, and tells it when you press play, pause or skip; the player answers from its own state (`PictureInPicture.pictureInPictureControllerIsPlaybackPaused(_:)` in `PictureInPicture.swift`). The button on the control panel, **Window › Picture in Picture** and ⌘⌥P start and stop it (`PlayerController.togglePictureInPicture(_:)` in `Helper/Player/PlayerControls.swift`). While it runs the player window is hidden, and it comes back when the small window is closed or restored, and when the video is closed or another file is opened (`PlayerController.returnFromPictureInPicture()` in `PlayerControls.swift`). A video has the button from the start, dimmed, so the time bar does not move when macOS says the video can be shown that way; only then the button and the menu item turn on (`PlayerController.refreshPictureInPicture()` in `PlayerControls.swift`).
 
 **Nuances:** In full screen the player window stays where it is. A file with no picture, such as music, has no button.
 
@@ -1467,7 +1467,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows the chapters of a video on the time bar and in a **Chapters** menu, names the chapter under the preview, and lets you jump from chapter to chapter.
 
-**How it works:** The reader lists the file’s chapters with their titles and moves them onto the same clock as the picture (`Extensions/MediaReader/Demuxer.swift:294`). The window turns them into marks on the time bar (`Helper/Player/TimeMarks.swift:3`, `PlayerWindow.swift:675`) and into the **Chapters** menu, where the chapter you are in has a check mark (`Helper/Player/main.swift:62`). Page Down goes to the start of the next chapter and stays put in the last one; Page Up goes to the start of the chapter you are in, or to the one before it when you are within 3 seconds of its start (`Sources/pikapik/Tools/Player/PlayerMarks.swift:3`, `PlayerWindow.swift:660`). The chapter name is shown under the small picture when you point at the time bar (`Helper/Player/Thumbnails.swift:157`). A chapter without a title is called “Chapter” and its number.
+**How it works:** The reader lists the file’s chapters with their titles and moves them onto the same clock as the picture (`Demuxer.chapters()` in `Extensions/MediaReader/Demuxer.swift`). The window turns them into marks on the time bar (`Helper/Player/TimeMarks.swift`, `PlayerController.refreshMarks()` in `PlayerControls.swift`) and into the **Chapters** menu, where the chapter you are in has a check mark (`AppDelegate.menuNeedsUpdate(_:)` in `Helper/Player/main.swift`). Page Down goes to the start of the next chapter and stays put in the last one; Page Up goes to the start of the chapter you are in, or to the one before it when you are within 3 seconds of its start (`PlayerChapters` in `Sources/pikapik/Tools/Player/PlayerMarks.swift`, `PlayerController.jumpChapter(_:)` in `PlayerControls.swift`). The chapter name is shown under the small picture when you point at the time bar (`ThumbnailPreview.chapter` in `Helper/Player/Thumbnails.swift`). A chapter without a title is called “Chapter” and its number.
 
 **Nuances:** A video without chapters has no marks, and the menu says “No Chapters”. Marks at the very start or end of the bar are not drawn.
 
@@ -1485,7 +1485,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Repeats a part of the video again and again, from a spot you mark to another.
 
-**How it works:** The A key is pressed three times: the first press marks the start (A) at the current time, the second marks the end (B), the third clears both (`Sources/pikapik/Tools/Player/PlayerMarks.swift:34`, `Helper/Player/PlayerWindow.swift:668`). Two yellow marks and a yellow strip between them show the part on the time bar. Every tick of the player checks the time, and when it reaches B the video seeks back to A and goes on playing at the same speed (`PlayerWindow.swift:432`, `PlayerMarks.swift:46`). The Playback menu item changes its name between **Set Loop Start**, **Set Loop End** and **Clear Loop**.
+**How it works:** The A key is pressed three times: the first press marks the start (A) at the current time, the second marks the end (B), the third clears both (`PlayerLoop.press(at:)` in `Sources/pikapik/Tools/Player/PlayerMarks.swift`, `PlayerController.markLoop()` in `Helper/Player/PlayerControls.swift`). Two yellow marks and a yellow strip between them show the part on the time bar. Every tick of the player checks the time, and when it reaches B the video seeks back to A and goes on playing at the same speed (`PlayerController.tick()` in `PlayerWindow.swift`, `PlayerLoop.wrap(at:)` in `PlayerMarks.swift`). The Playback menu item changes its name between **Set Loop Start**, **Set Loop End** and **Clear Loop**.
 
 **Nuances:** If the second mark comes before the first, they swap places. A second mark less than half a second from the first is ignored. Opening another video clears the loop.
 
@@ -1502,7 +1502,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Sends the sound of the player, and only of the player, to another speaker, headphones or other sound output, without changing the output of your Mac.
 
-**How it works:** The list is the Mac’s sound outputs that are not hidden (`Sources/pikapik/Tools/Player/PlayerOutput.swift:8`), read each time the Playback menu opens (`Helper/Player/main.swift:44`). Choosing one gives its identifier to the sound renderer of every open player (`Helper/Player/PlayerWindow.swift:158`, `Helper/Player/Engine.swift:143`); videos opened later use it too. **System Output** gives the player back to whatever the Mac uses, and follows it when you change it in System Settings. When the chosen output is unplugged or switched off, the player goes back to the system output by itself (`Helper/Player/main.swift:31`, `PlayerOutput.swift:33`). The choice is not kept after the player quits.
+**How it works:** The list is the Mac’s sound outputs that are not hidden (`PlayerOutput.all()` in `Sources/pikapik/Tools/Player/PlayerOutput.swift`), read each time the Playback menu opens (`AppDelegate.menuWillOpen(_:)` in `Helper/Player/main.swift`). Choosing one gives its identifier to the sound renderer of every open player (`PlayerController.setOutput(_:)` in `Helper/Player/PlayerWindow.swift`, `Engine.route(to:)` in `Helper/Player/Engine.swift`); videos opened later use it too. **System Output** gives the player back to whatever the Mac uses, and follows it when you change it in System Settings. When the chosen output is unplugged or switched off, the player goes back to the system output by itself (`AppDelegate.outputsChanged()` in `Helper/Player/main.swift`, `PlayerOutput.choice(_:among:)` in `PlayerOutput.swift`). The choice is not kept after the player quits.
 
 **Nuances:** The item is hidden while the Mac has only one sound output. AirPlay for video is not offered: the system AirPlay button works only with Apple’s own player, which cannot play MKV, WebM and the other formats this player is for. The sound of a video can still go to an AirPlay speaker when the Mac itself uses it as its output.
 
@@ -1519,7 +1519,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows the licenses of the open-source libraries the player uses, and links to their source code.
 
-**How it works:** The Player Licenses row opens the bundled `Player Licenses.txt` (`PlayerPage.swift:27`), made from `Vendor/ffmpeg/License.txt` by `scripts/fetch-ffmpeg.sh`: FFmpeg under LGPL 2.1 or later, dav1d under BSD 2-Clause, libass under ISC, FreeType under the FreeType License, HarfBuzz under MIT, and FriBidi under LGPL 2.1, which is a separate library you can replace (`libfribidi.0.dylib` in the Frameworks folder of the app; the others are built into the player). The first lines of the file name the DTS and picture-subtitle decoders (`scripts/build.sh:194`). Source Code opens the latest release on GitHub, where the source archives of all six are attached (`PlayerPage.swift:29`).
+**How it works:** The Player Licenses row opens the bundled `Player Licenses.txt` (`PlayerPage.swift`), made from `Vendor/ffmpeg/License.txt` by `scripts/fetch-ffmpeg.sh`: FFmpeg under LGPL 2.1 or later, dav1d under BSD 2-Clause, libass under ISC, FreeType under the FreeType License, HarfBuzz under MIT, and FriBidi under LGPL 2.1, which is a separate library you can replace (`libfribidi.0.dylib` in the Frameworks folder of the app; the others are built into the player). The first lines of the file name the DTS and picture-subtitle decoders (written by `scripts/build.sh`). Source Code opens the latest release on GitHub, where the source archives of all six are attached (`PlayerPage.swift`).
 
 **Edition:** Website only (App Store: hidden; the player and libass are not in that build).
 
@@ -1535,7 +1535,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** When you drag an app to the Trash in Finder, offers to remove its leftovers too. Nothing is removed until you choose.
 
-**How it works:** `Sources/pikapik/Tools/Uninstaller/TrashWatchTool.swift:48` watches `~/.Trash`; needs Full Disk Access.
+**How it works:** `Sources/pikapik/Tools/Uninstaller/TrashWatchTool.swift` watches `~/.Trash`; needs Full Disk Access.
 
 **Edition:** Website only (App Store: cut).
 
@@ -1549,8 +1549,8 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 **How it works:** List in `UninstallerPage.swift`; context menu Show in Finder; empty state “No apps found”; you can also drop a test app on the picture.
 
 **Options:**
-- Search apps — search field that filters the list by name (`Sources/pikapik/Tools/Uninstaller/UninstallerPage.swift:70`); “No apps found” when nothing matches.
-- Sort by — picker: Name, Size or Last used (`UninstallerPage.swift:76`).
+- Search apps — search field that filters the list by name (`UninstallerPage.searchRow` in `Sources/pikapik/Tools/Uninstaller/UninstallerPage.swift`); “No apps found” when nothing matches.
+- Sort by — picker: Name, Size or Last used (`UninstallerPage.searchRow` in `UninstallerPage.swift`).
 
 **Edition:** Website only.
 
@@ -1563,7 +1563,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Moves an app and its leftovers to the Trash after a preview where you tick what goes.
 
-**How it works:** Preview sheet (`UninstallerPreview.swift`, `UninstallerSections.swift`) with checkbox groups; removal through `trashItem` (`AppRemover.swift:392`); items that need an administrator ask for the password once (“Needs your password” marker). An app that is running is asked to quit first (Quit / Force Quit alert). The result lists “These stayed where they are” with Put Back and Done.
+**How it works:** Preview sheet (`UninstallerPreview.swift`, `UninstallerSections.swift`) with checkbox groups; removal through `trashItem` (`AppRemover.move(_:)` in `AppRemover.swift`); items that need an administrator ask for the password once (“Needs your password” marker). An app that is running is asked to quit first (Quit / Force Quit alert). The result lists “These stayed where they are” with Put Back and Done.
 
 **Options:**
 - Groups: The app, Saved data, Private storage, Temporary files, Settings, Background helpers, Add-ons, Logs, Installer records.
@@ -1639,13 +1639,13 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Lists launch agents and daemons that run or are loaded now.
 
-**How it works:** Reads property lists in `/Library` and `~/Library`, `SMAppService.statusForLegacyPlist`, and runs `/bin/launchctl print` for the gui/<uid>, user/<uid> and system domains, read-only (`BackgroundPage.swift:121`, `BackgroundTasks.swift`). Each row shows the app, a green dot when running and the file path; clicking the path shows the file in Finder. Empty state: “Nothing runs in the background”.
+**How it works:** Reads property lists in `/Library` and `~/Library`, `SMAppService.statusForLegacyPlist`, and runs `/bin/launchctl print` for the gui/<uid>, user/<uid> and system domains, read-only (`BackgroundPage.swift`, `BackgroundTasks.swift`). Each row shows the app, a green dot when running and the file path; clicking the path shows the file in Finder. Empty state: “Nothing runs in the background”.
 
 **Options:**
 - Turn Off / Turn Back On — button on each launch agent in `~/Library/LaunchAgents` or `/Library/LaunchAgents`, and on each old login item (Website): an agent is switched off and on again without deleting it, with `launchctl disable|enable` plus bootout and bootstrap; a login item is taken out of the list and put back (see Open at Login). The row shows the new state at once; if it fails, a red line under the row says so. Nothing on disk is deleted. Needs no password; it survives a restart. App Store: view only, no button.
 - Turn Off / Turn Back On on daemons (Website): a daemon whose property list sits directly in `/Library/LaunchDaemons`, and Remote Login (`com.openssh.sshd`) and Screen Sharing (`com.apple.screensharing`), switch with `launchctl disable` plus `bootout` and `enable` plus `bootstrap` for `system/<label>`, run by the root helper (`HelperServices` in `FanHelperProtocol.swift:13`, `setService` in `Helper/FanHelper/main.swift:96`, `FanControl.setService`). The helper accepts only labels of 1 to 128 letters, digits, dot, underscore and hyphen, never `com.apple.*` or pikapik’s own helpers, and finds the file itself by its Label; nothing else is run. Without Administrator access the button asks for it in Permissions, and a bar at the bottom says so (`BackgroundPage.swift:153`). pikapik remembers a sharing service it turned off in the `background-turned-off-services` key (`BackgroundTasks.swift:304-321`), so its row stays, dimmed, with Turn Back On; the key is pruned when macOS no longer lists the service as disabled. Turning back on restores exactly what pikapik turned off, nothing else. File Sharing is not offered: on macOS 27 launchd has no disabled entry for it (`com.apple.smbd`), so there is no switch pikapik could check.
 - Turn Off… / Turn On… — button on the tasks pikapik cannot change, shown instead of the switch: daemons outside the shared Library folder and agents and helpers an app registered itself (macOS has no way to switch another app’s off). It opens System Settings › Login Items so you can change the item yourself; nothing on disk changes, and a line under the row says why. Website: Turn On… for an item that is off there; App Store: Turn Off… on running tasks, the only action there, with no line under the row. When any such task is listed, an animated guide at the top (`SettingsGuide.loginItems`, `BackgroundPage.swift:115-117`, `BackgroundTasks.swift:86`) shows where to click: Login Items & Extensions, then the pikapik switch; its labels come from your Mac, in its language.
-- Show in Finder — on every task in every group: clicking the file path, the Show in Finder context-menu item (`BackgroundPage.swift:201`) or the path’s help (`:195`) reveals the task’s file in Finder.
+- Show in Finder — on every task in every group: clicking the file path, the Show in Finder context-menu item (`TaskRow` in `BackgroundPage.swift`) or the path’s help (`TaskRow`) reveals the task’s file in Finder.
 
 **Edition:** Both; App Store differs: view only, shorter header text, home-folder tasks only after Folders access.
 
@@ -1662,7 +1662,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Groups tasks whose app is gone, so you can find them.
 
-**How it works:** Group in `BackgroundPage.swift:122`.
+**How it works:** Group in `BackgroundPage.swift`.
 
 **Edition:** Both.
 
@@ -1673,7 +1673,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Lets the App Store build see the tasks in `~/Library/LaunchAgents` once you allow it.
 
-**How it works:** Security-scoped home-folder bookmark (`FolderAccess`, `BackgroundPage.swift:34,46,93`) with a Folders permission bar. The page says “To see the tasks in your home folder, allow access to it.”; Allow shows the Open panel at the home folder with the button Allow Access. Turn Off on the Folders row of Permissions forgets the access.
+**How it works:** Security-scoped home-folder bookmark (`FolderAccess` in `Sources/pikapik/Core/FolderAccess.swift`; `BackgroundModel.home`, `BackgroundModel.refresh(rescan:)` and `BackgroundPage` in `BackgroundPage.swift`) with a Folders permission bar. The page says “To see the tasks in your home folder, allow access to it.”; Allow shows the Open panel at the home folder with the button Allow Access. Turn Off on the Folders row of Permissions forgets the access.
 
 **Edition:** App Store only.
 
@@ -1686,12 +1686,12 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** While a game from your list is in front, your Mac’s shortcuts, swipes and keys do not pull you out of it.
 
-**How it works:** `Sources/pikapik/Tools/Games/GameModeTool.swift:854`. An Accessibility `.defaultTap` event tap (`gameModeCallback` :613) swallows or passes keys by the rules below, reads the full system shortcut catalogue of this Mac (`SystemShortcutCatalog.swift`, about 235 shortcuts, including your own assignments) and pauses actions that would interrupt the game. The footer says “To leave a game, press …” (the quit and close keys from Protect quitting and closing); ⌥⌘Esc always works. Screen-lock handling differs in the App Store build (`GameModeTool.swift:299,391-401`). Shortcuts with Control or without Command pass through as game input.
+**How it works:** `GameModeSettings` in `Sources/pikapik/Tools/Games/GameModePage.swift`. An Accessibility `.defaultTap` event tap (`gameModeCallback` in `GameModeTool.swift`) swallows or passes keys by the rules below, reads the full system shortcut catalogue of this Mac (`SystemShortcutCatalog.swift`, about 235 shortcuts, including your own assignments) and pauses actions that would interrupt the game. The footer says “To leave a game, press …” (the quit and close keys from Protect quitting and closing); ⌥⌘Esc always works. Screen-lock handling differs in the App Store build (`GameModeTool.received(_:)` and `GameModeTool.locked` in `GameModeTool.swift`). Shortcuts with Control or without Command pass through as game input.
 
 **Options:**
-- More game settings — disclosure group (`GameModeTool.swift:729`) that opens the detailed game settings: System keyboard shortcuts, Other apps watching keys and Game safeguards (see their entries).
+- More game settings — disclosure group (`GameModePage.swift`) that opens the detailed game settings: System keyboard shortcuts, Other apps watching keys and Game safeguards (see their entries).
 
-**Nuances:** While a game is in front the menu bar status shows Game Mode. After you quit the game or lock the screen the shortcuts work again at once; after the Mac wakes or you switch back to your user account Game Mode turns on again by itself (1.50.0). The sandbox hides `com.apple.symbolichotkeys`, so the App Store build reads the shortcuts with the public `CopySymbolicHotKeys`: on macOS 27 its records are matched to IDs by position, on other versions through Apple’s `DefaultShortcutsTable.xml`, which misses shortcuts you changed (`GameRules.swift:230`). It swallows ⌘ shortcuts in the tap instead of private calls (`GameRules.swift:284`, `GameModeTool.swift:668`); mouse-button shortcuts aren’t listed there, because its tap doesn’t see extra mouse buttons, and it shows only the rules whose shortcuts it can read (`GameModeTool.swift:829`); Dock corners and hiding are untouched there, and the pointer fence keeps 16 points away from the screen corners instead (1.50.0). With two copies of pikapik running, ⇧⌘Q and ⇧⌘W in a game used to do nothing; fixed in 1.50.0. Swipe and hot-corner pausing was only covered by unit tests, never by real gestures.
+**Nuances:** While a game is in front the menu bar status shows Game Mode. After you quit the game or lock the screen the shortcuts work again at once; after the Mac wakes or you switch back to your user account Game Mode turns on again by itself (1.50.0). The sandbox hides `com.apple.symbolichotkeys`, so the App Store build reads the shortcuts with the public `CopySymbolicHotKeys`: on macOS 27 its records are matched to IDs by position, on other versions through Apple’s `DefaultShortcutsTable.xml`, which misses shortcuts you changed (`SymbolicHotKeys.table(native:defaults:ids:)` in `GameRules.swift`). It swallows ⌘ shortcuts in the tap instead of private calls (`SymbolicHotKeys.swallows(key:flags:)` and `SymbolicHotKeys.set(_:_:)` in `GameRules.swift`, `gameModeCallback(proxy:type:event:refcon:)` in `GameModeTool.swift`); mouse-button shortcuts aren’t listed there, because its tap doesn’t see extra mouse buttons, and it shows only the rules whose shortcuts it can read (`GameModePage.rules(_:_:footer:)` in `GameModePage.swift`); Dock corners and hiding are untouched there, and the pointer fence keeps 16 points away from the screen corners instead (1.50.0). With two copies of pikapik running, ⇧⌘Q and ⇧⌘W in a game used to do nothing; fixed in 1.50.0. Swipe and hot-corner pausing was only covered by unit tests, never by real gestures.
 
 **Edition:** Both; App Store differs: fewer rules (those it can read), no Dock or hot-corner calming.
 
@@ -1706,10 +1706,10 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** The list of games Game Mode protects. pikapik suggests games it finds.
 
-**How it works:** `Sources/pikapik/Tools/Games/GameList.swift:16`; detection `looksLikeGame`. “Open your game, and it shows up here”.
+**How it works:** `Sources/pikapik/Tools/Games/GameList.swift`; detection `looksLikeGame`. “Open your game, and it shows up here”.
 
 **Options:**
-- Add a Game… — opens a shelf of open apps and Dock apps; you can also drag an app from Finder; Done closes it (`GameList.swift:13`).
+- Add a Game… — opens a shelf of open apps and Dock apps; you can also drag an app from Finder; Done closes it (`GameList.swift`).
 - Ignore — a quiet button that dismisses a suggestion.
 - Add — accepts a suggestion.
 
@@ -1723,11 +1723,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows a small frame-rate pill in a corner of the game window.
 
-**How it works:** `Sources/pikapik/Tools/Games/FrameRateArt.swift:27`, `FrameRateMeter.swift`, `FrameRate.swift`. Website on macOS 27: `/usr/bin/metalperftrace listen --json --pid PID` (Metal games only; no permission). After 3 seconds of silence, and on macOS 14–26 and in the App Store build: a ScreenCaptureKit display stream at one-eighth size, counting changed frames; needs Screen Recording and shows the system recording indicator. No picture is stored. A game drawing 30 frames a second shows about 30, a frozen picture shows a dimmed 0, and no number goes above the screen’s refresh rate.
+**How it works:** `FrameRateSettings` in `Sources/pikapik/Tools/Games/FrameRateArt.swift`, `FrameRateMeter.swift`, `FrameRate.swift`. Website on macOS 27: `/usr/bin/metalperftrace listen --json --pid PID` (Metal games only; no permission). After 3 seconds of silence, and on macOS 14–26 and in the App Store build: a ScreenCaptureKit display stream at one-eighth size, counting changed frames; needs Screen Recording and shows the system recording indicator. No picture is stored. A game drawing 30 frames a second shows about 30, a frozen picture shows a dimmed 0, and no number goes above the screen’s refresh rate.
 
 **Options:**
-- Corner for FPS — four corner buttons in the picture; hovering a corner shows its name (`FrameRateArt.swift:26`).
-- Allow — under “Needs a permission. Click to allow it.”: asks Screen Recording and opens Permissions on the row (`FrameRateArt.swift:39`).
+- Corner for FPS — four corner buttons in the picture; hovering a corner shows its name (`FrameRateSettings` in `FrameRateArt.swift`).
+- Allow — under “Needs a permission. Click to allow it.”: asks Screen Recording and opens Permissions on the row (`FrameRateSettings` in `FrameRateArt.swift`).
 
 **Nuances:** pikapik never prompts during a game. On macOS 27 the Screen Recording row and the line appear only after a game the system could not count (an OpenGL one); they stay on later launches until allowed. If macOS asks to reopen pikapik after you allow it, do that. Never live-checked: the real Screen Recording grant flow, the relaunch after granting, and the handoff from trace to capture with the permission granted.
 
@@ -1752,7 +1752,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 - Switch language on every press — only for the input-language shortcut.
 - Allow in games — the shortcut works as usual.
 
-**Nuances:** Settings search finds each shortcut. The shortcuts are read again when pikapik becomes active. A shortcut without keys shows “No key assigned”: clicking it opens System Settings › Keyboard › Keyboard Shortcuts… on its section; when pikapik cannot click there itself, a popover shows the animated guide (Keyboard Shortcuts… → the section) (`ShortcutAssignmentLink`, `SystemShortcutList.swift:235`; `SystemShortcuts.open`, `ShortcutField.swift:98`).
+**Nuances:** Settings search finds each shortcut. The shortcuts are read again when pikapik becomes active. A shortcut without keys shows “No key assigned”: clicking it opens System Settings › Keyboard › Keyboard Shortcuts… on its section; when pikapik cannot click there itself, a popover shows the animated guide (Keyboard Shortcuts… → the section) (`ShortcutAssignmentLink`, `SystemShortcutList.swift`; `SystemShortcuts.open`, `ShortcutField.swift`).
 
 **Edition:** Both.
 
@@ -1775,7 +1775,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Switches the individual protections of Game Mode on or off, each with a small picture.
 
-**How it works:** `GameModeTool.swift:739`, `GameRules.swift`, art in `GameRuleArt.swift`. In the App Store build rules whose hotkeys cannot be read are filtered out (`GameModeTool.swift:804`).
+**How it works:** `GameModePage.swift`, `GameRules.swift`, art in `GameRuleArt.swift`. In the App Store build rules whose hotkeys cannot be read are filtered out (`GameModePage.rules(_:_:footer:)` in `GameModePage.swift`).
 
 **Options:**
 - The game doesn’t close — ⌘Q does not quit the game (Closing the game).
@@ -1831,7 +1831,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 **Options:**
 - Change… on a hot-corner row — menu of the actions macOS offers for a corner; picking one writes `com.apple.dock wvous-<corner>-corner` and restarts the Dock once (`HotCorners.swift`, `HotCornerMenu` in `SystemShortcutList.swift`). The first value is remembered, and Put Back in the same menu writes it back. Off while a game is in front. Website only; other rows and the App Store build still show Change in System Settings.
 
-**Nuances:** Not covered: shake to locate the pointer, zoom with a modifier key and scrolling, clicking the wallpaper to show the desktop. Never verified by hand with real gestures. App Store: `PointerShortcuts.buttons` is empty (`PointerShortcuts.swift:42`) and hot-corner reading is Website only (`:145`).
+**Nuances:** Not covered: shake to locate the pointer, zoom with a modifier key and scrolling, clicking the wallpaper to show the desktop. Never verified by hand with real gestures. App Store: `PointerShortcuts.buttons` is empty (`PointerShortcuts.swift`) and hot-corner reading is Website only (`PointerShortcuts.rows(read:names:journal:)`).
 
 **Edition:** Both; App Store differs: no mouse buttons and no hot-corner reading.
 
@@ -1927,11 +1927,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows each permission, whether it is granted, and one button: Allow or Turn Off.
 
-**How it works:** `Sources/pikapik/Permissions/Permissions.swift` (`PermissionsView` :404, `PermissionRow` :504, `PermissionBar` :385). The header reads “All set” when everything is on, “Both permissions are on” when the two main ones are on but a tool still lacks another, and otherwise “pikapik needs two permissions” (Website) or “Permissions for some tools” (App Store). pikapik rechecks every 1.5 seconds. A tool that needs a missing permission is half-grey and does nothing; clicking it opens this tab on the row (Accessibility, Input Monitoring and Screen Recording also show the macOS prompt in the App Store build). A bar on each tool tab shows when its tools need a missing permission, and names that permission and what it is for. While Accessibility (on macOS 27: Device Control and Data Access), Input Monitoring or Screen & System Audio Recording is shown and not granted, an animated guide at the top of the first section walks through System Settings: Privacy & Security, that list, then turn on pikapik (`Permissions.swift:65-71,435-437`, `Sources/pikapik/Settings/SettingsGuide.swift`; both editions).
+**How it works:** `Sources/pikapik/Permissions/Permissions.swift` (`PermissionsView`, `PermissionRow` and `PermissionBar` in `PermissionsView.swift`). The header reads “All set” when everything is on, “Both permissions are on” when the two main ones are on but a tool still lacks another, and otherwise “pikapik needs two permissions” (Website) or “Permissions for some tools” (App Store). pikapik rechecks every 1.5 seconds. A tool that needs a missing permission is half-grey and does nothing; clicking it opens this tab on the row (Accessibility, Input Monitoring and Screen Recording also show the macOS prompt in the App Store build). A bar on each tool tab shows when its tools need a missing permission, and names that permission and what it is for. While Accessibility (on macOS 27: Device Control and Data Access), Input Monitoring or Screen & System Audio Recording is shown and not granted, an animated guide at the top of the first section walks through System Settings: Privacy & Security, that list, then turn on pikapik (`Permission.guidePage` in `Permissions.swift`, `PermissionsView` in `PermissionsView.swift`, `Sources/pikapik/Settings/SettingsGuide.swift`; both editions).
 
 **Options:**
 - Allow — asks, or opens System Settings with an arrow icon when the permission can only be granted there.
-- Turn Off — Website: an alert “pikapik will restart, and the tools that need it will turn grey until you allow it again.”, then resets the permission with `tccutil` (`Permissions.swift:263-264,289,548`). App Store: opens the matching System Settings list, because the app cannot revoke permissions itself; the footer says “macOS lets you turn these off only in System Settings…”.
+- Turn Off — Website: an alert “pikapik will restart, and the tools that need it will turn grey until you allow it again.”, then resets the permission with `tccutil` (`Permissions.request(_:)` and `Permissions.reset(_:)` in `Permissions.swift`, `PermissionRow` in `PermissionsView.swift`). App Store: opens the matching System Settings list, because the app cannot revoke permissions itself; the footer says “macOS lets you turn these off only in System Settings…”.
 
 **Edition:** Both; App Store differs: Turn Off opens System Settings.
 
@@ -2003,7 +2003,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows whether New File, Smaller Copy, Convert (and Archives) are enabled in System Settings.
 
-**How it works:** Row shown when an extension is active or waiting. Allow opens System Settings › Login Items & Extensions › Finder; Turn Off opens the same list (App Store). While the Finder permission is missing, an animated guide above the row shows Login Items & Extensions → pikapik’s info button → the switch on (`SettingsGuide.finderExtensions`, `Permissions.swift:458`).
+**How it works:** Row shown when an extension is active or waiting. Allow opens System Settings › Login Items & Extensions › Finder; Turn Off opens the same list (App Store). While the Finder permission is missing, an animated guide above the row shows Login Items & Extensions → pikapik’s info button → the switch on (`SettingsGuide.finderExtensions`, `PermissionsView.swift`).
 
 **Edition:** Both.
 
@@ -2014,7 +2014,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Lets the App Store build save new files next to yours and see background tasks.
 
-**How it works:** `FolderAccess` (`Permissions.swift:11,43,117,181,217,250`), a security-scoped bookmark. Allow shows the home folder panel; Turn Off forgets the saved folders and the next file action asks again.
+**How it works:** `FolderAccess` (`Permission.folders`, `Permission.info`, `Permission.isGranted`, `Permission.allow()`, `Permission.turnOff()` and `Permissions.hasFileAccess` in `Permissions.swift`), a security-scoped bookmark. Allow shows the home folder panel; Turn Off forgets the saved folders and the next file action asks again.
 
 **Edition:** App Store only.
 
@@ -2047,7 +2047,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Website: lists permissions still held by apps you deleted, and removes them. App Store: the section “Other apps’ permissions” shows, for each Privacy & Security list, how many apps in /Applications can ask for it, and opens the list.
 
-**How it works:** Website: `LeftoverPermissionsSection` (`Sources/pikapik/Permissions/LeftoverPermissions.swift`) scans the system TCC database (needs Full Disk Access) and removes entries of apps that no longer exist (no copy outside the Trash, no helper, launch agent or system extension). App Store: one row for each list (`Permissions.privacyLists`, `Permissions.swift:340,468-475`, `PrivacyListRow` in `Sources/pikapik/Permissions/PrivacyAsksView.swift`) with an Open button, because the app cannot remove anything. For Camera, Microphone, Automation, Files and Folders and Bluetooth the row reads “Can ask for it: N” or “No app can ask for it”, with up to four app icons and “+N”; clicking the icons opens a list of the apps (`PrivacyAsks.scan`, `Sources/pikapik/Permissions/PrivacyAsks.swift`). The count comes from the usage-description keys (`NSCameraUsageDescription` and similar) in each app’s Info.plist in /Applications, so it means “can ask”, never “has the permission”. Accessibility, Screen Recording, Input Monitoring, Full Disk Access, App Management and Developer Tools have no such key: their rows say “Only System Settings shows who has it”. The footer says “Deleted apps keep their permissions: select one in the list and press − or turn it off.”
+**How it works:** Website: `LeftoverPermissionsSection` (`Sources/pikapik/Permissions/LeftoverPermissions.swift`) scans the system TCC database (needs Full Disk Access) and removes entries of apps that no longer exist (no copy outside the Trash, no helper, launch agent or system extension). App Store: one row for each list (`Permissions.privacyLists` in `Permissions.swift`, `PermissionsView` in `PermissionsView.swift`, `PrivacyListRow` in `Sources/pikapik/Permissions/PrivacyAsksView.swift`) with an Open button, because the app cannot remove anything. For Camera, Microphone, Automation, Files and Folders and Bluetooth the row reads “Can ask for it: N” or “No app can ask for it”, with up to four app icons and “+N”; clicking the icons opens a list of the apps (`PrivacyAsks.scan`, `Sources/pikapik/Permissions/PrivacyAsks.swift`). The count comes from the usage-description keys (`NSCameraUsageDescription` and similar) in each app’s Info.plist in /Applications, so it means “can ask”, never “has the permission”. Accessibility, Screen Recording, Input Monitoring, Full Disk Access, App Management and Developer Tools have no such key: their rows say “Only System Settings shows who has it”. The footer says “Deleted apps keep their permissions: select one in the list and press − or turn it off.”
 
 **Options:**
 - Open — opens the matching Privacy & Security list in System Settings (`Permissions.openSettings`).
@@ -2069,12 +2069,12 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Header with the app icon and “Small tools that make your Mac nicer to use”.
 
-**How it works:** `SettingsWindow.swift:1108` (`AboutView` :1078-1222).
+**How it works:** `AboutView` in `Sources/pikapik/Settings/AboutView.swift`.
 
 **Options:**
-- GitHub — link to the source code (`SettingsWindow.swift:1138`); bundled `github.svg`; the URL differs per edition (App Store opens the App Store source folder). Website: opening it also earns the Open Source pet award.
-- What’s New — opens the localized `docs/whats-new` page in the app’s language (`SettingsWindow.swift:1139`).
-- License (MIT) — link to the LICENSE file on GitHub (`SettingsWindow.swift:1141`).
+- GitHub — link to the source code (`AboutView.swift`); bundled `github.svg`; the URL differs per edition (App Store opens the App Store source folder). Website: opening it also earns the Open Source pet award.
+- What’s New — opens the localized `docs/whats-new` page in the app’s language (`AboutView.swift`).
+- License (MIT) — link to the LICENSE file on GitHub (`AboutView.swift`).
 
 **Edition:** Both.
 
@@ -2088,14 +2088,14 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Lets pikapik look for new versions and install them itself.
 
-**How it works:** In-app `Updater` (`Sources/pikapik/Core/Updater.swift`, key `check-updates`, `SettingsSync.swift:21`); no Sparkle. Downloads the release, checks it, replaces the app and relaunches. A copy named pikapik.app renames itself to pikapik.app on launch and when updating; Homebrew copies stay until `brew upgrade`.
+**How it works:** In-app `Updater` (`Sources/pikapik/Core/Updater.swift`, key `check-updates`, `SettingsBackup.apply(_:)` in `SettingsSync.swift`); no Sparkle. Downloads the release, checks it, replaces the app and relaunches. A copy named pikapik.app renames itself to pikapik.app on launch and when updating; Homebrew copies stay until `brew upgrade`.
 
 **Options:**
-- Check Now — checks right away (`SettingsWindow.swift:1122`).
+- Check Now — checks right away (`AboutView.swift`).
 - Update to %@ — prominent button when a newer version exists; also in the menu bar panel and the icon menu.
-- Version — the installed version. Website: a row in the Updates section that also shows the updater state; App Store: a version-only row (`SettingsWindow.swift:1111`).
+- Version — the installed version. Website: a row in the Updates section that also shows the updater state; App Store: a version-only row (`AboutView.swift`).
 
-**Nuances:** In the menu bar panel, Update to %@ is a prominent footer button (`updateFooter`, `MenuView.swift:257`), Website only, shown while a newer version exists; the icon’s right-click menu has the same item.
+**Nuances:** In the menu bar panel, Update to %@ is a prominent footer button (`updateFooter`, `MenuView.swift`), Website only, shown while a newer version exists; the icon’s right-click menu has the same item.
 
 **Edition:** Both; App Store differs: no updater, switch, Check Now or Update button (updates come from the App Store); only the Version row.
 
@@ -2109,7 +2109,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Tip buttons (Small, Medium, Large) with local prices. Nothing unlocks.
 
-**How it works:** StoreKit (`Sources/pikapik/Core/TipJar.swift`, `SettingsWindow.swift:1133`). Hidden while no tip products exist. Error “The tip did not go through.”
+**How it works:** StoreKit (`Sources/pikapik/Core/TipJar.swift`, `AboutView.swift`). Hidden while no tip products exist. Error “The tip did not go through.”
 
 **Edition:** App Store only.
 
@@ -2120,7 +2120,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Opens the bug form on GitHub with the edition and version already filled in.
 
-**How it works:** Link to `issues/new?template=bug_report.yml` with `edition` and `version` (`SettingsWindow.swift:1140`); the “Which feature?” list comes from this file.
+**How it works:** Link to `issues/new?template=bug_report.yml` with `edition` and `version` (`AboutView.swift`); the “Which feature?” list comes from this file.
 
 **Edition:** Both.
 
@@ -2131,7 +2131,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Link to support the author, with the footer “Made with care”.
 
-**How it works:** `CoffeeLine` (`SettingsWindow.swift:1185`) to buymeacoffee.com/pikapik.
+**How it works:** `CoffeeLine` (`AboutView.swift`) to buymeacoffee.com/pikapik.
 
 **Edition:** Website only (App Store: cut — the tip jar replaces it).
 
@@ -2144,11 +2144,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** The icon next to the clock opens pikapik’s panel (330 pt wide) with quick switches.
 
-**How it works:** SwiftUI `MenuBarExtra` window (`Sources/pikapik/App.swift:30-34`, `MenuView.swift:63`) and the status item (`Core/StatusMenu.swift`). On macOS 27 the status button opens the panel on press through a swizzled `accessibilityPerformPress` (`StatusMenu.swift:57,66`, Website only). Default hidden rows are in `defaultHidden` (`MenuView.swift:4`).
+**How it works:** SwiftUI `MenuBarExtra` window (`PikapikApp` in `Sources/pikapik/App.swift`, `MenuView.swift`) and the status item (`Core/StatusMenu.swift`). On macOS 27 the status button opens the panel on press through a swizzled `accessibilityPerformPress` (`StatusMenu.start()` and `StatusMenu.openPanelOnPress()` in `StatusMenu.swift`, Website only). Default hidden rows are in `defaultHidden` (`MenuView.swift`).
 
 **Options:**
-- Settings… — icon button at the bottom of the panel that opens Settings (⌘,; `MenuView.swift:198`).
-- Quit — icon button at the bottom of the panel that quits pikapik (⌘Q; `MenuView.swift:203`). Website: with Stay in the background after Quit on it only closes windows.
+- Settings… — icon button at the bottom of the panel that opens Settings (⌘,; `MenuView.swift`).
+- Quit — icon button at the bottom of the panel that quits pikapik (⌘Q; `MenuView.swift`). Website: with Stay in the background after Quit on it only closes windows.
 
 **Nuances:** Nothing is asked at launch; Settings opens on first launch, later from the menu.
 
@@ -2163,7 +2163,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** A short classic menu from the icon.
 
-**How it works:** `StatusMenu.swift:95-120`: Keep Awake (checkmark), Settings…, Permissions needed, Update to %@ or Check for Updates (Website, `:104-108`), About, Open at Login, Quit, Quit Completely (⌥⌘Q alternate, Website, `:116`).
+**How it works:** `StatusMenu.menu()` in `StatusMenu.swift`: Keep Awake (checkmark), Settings…, Permissions needed, Update to %@ or Check for Updates (Website), About, Open at Login, Quit, Quit Completely (⌥⌘Q alternate, Website).
 
 **Edition:** Both; App Store differs: no update items and no Quit Completely.
 
@@ -2174,11 +2174,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** The Keep Awake row of the panel: a switch with a chevron that expands.
 
-**How it works:** `MenuView.swift:81`; the subtitle shows the status.
+**How it works:** `MenuView.swift`; the subtitle shows the status.
 
 **Options:**
-- Display — Always on / Turns off as usual (`MenuView.swift:222-228`).
-- Turn off the display now — button (`MenuView.swift:234`).
+- Display — Always on / Turns off as usual (`MenuView.keepAwakeOptions` in `MenuView.swift`).
+- Turn off the display now — button (`MenuView.keepAwakeOptions` in `MenuView.swift`).
 
 **Edition:** Both.
 
@@ -2189,7 +2189,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** A slider row per listed monitor.
 
-**How it works:** `MenuView.swift:31` (`BrightnessRow`); hidden by default and visible only when a monitor is controllable.
+**How it works:** `MenuView.showsBrightness` in `MenuView.swift` (`BrightnessRow`); hidden by default and visible only when a monitor is controllable.
 
 **Edition:** Both.
 
@@ -2211,7 +2211,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** A slider row for the fan speed.
 
-**How it works:** `MenuView.swift:120` (`FanRow`); `showsFans` is false in the App Store build (`MenuView.swift:25`).
+**How it works:** `MenuView.swift` (`FanRow`); `showsFans` is false in the App Store build (`MenuView.swift`).
 
 **Edition:** Website only (App Store: hidden).
 
@@ -2233,7 +2233,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** One switch per tool, grouped by tab, with the status Active, Off, Needs Access or Game Mode.
 
-**How it works:** `MenuView.swift:138-147`, `Tool.swift:27`; only the tools registered in the edition appear; a row whose tool needs a permission is half-grey.
+**How it works:** `MenuView.swift`, `ToolStatus` in `Tool.swift`; only the tools registered in the edition appear; a row whose tool needs a permission is half-grey.
 
 **Edition:** Both; App Store differs: fewer tools.
 
@@ -2255,7 +2255,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** A button that appears only while a tool you switched on lacks a permission, and opens the Permissions tab. With nothing switched on it stays hidden, so a new install shows no warning.
 
-**How it works:** `MenuView.swift:153-165`; the same condition (`ToolRegistry.needsPermission`) decides whether the right-click menu on the menu bar icon has a Permissions needed item (`StatusMenu.swift:101`).
+**How it works:** `MenuView.swift`; the same condition (`ToolRegistry.needsPermission`) decides whether the right-click menu on the menu bar icon has a Permissions needed item (`StatusMenu.menu()` in `StatusMenu.swift`).
 
 **Edition:** Both.
 
@@ -2267,7 +2267,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** A button that restarts Finder to bring back the right-click items.
 
-**How it works:** `MenuView.swift:167-180`; shown when needed.
+**How it works:** `MenuView.swift`; shown when needed.
 
 **Edition:** Both in code; effectively Website only.
 
@@ -2278,7 +2278,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Chooses which rows the panel shows.
 
-**How it works:** `MenuView.swift:200`; rows turn into checkboxes under “Choose what this menu shows”; Done ends.
+**How it works:** `MenuView.swift`; rows turn into checkboxes under “Choose what this menu shows”; Done ends.
 
 **Edition:** Both.
 
@@ -2289,7 +2289,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Settings… (⌘,) and Quit Completely (⌥⌘Q, shown while Stay in the background after Quit is on).
 
-**How it works:** `App.swift:35-50`; Help menu is empty; Quit Completely is Website only.
+**How it works:** `PikapikApp` in `App.swift`; Help menu is empty; Quit Completely is Website only.
 
 **Edition:** Both; App Store differs: no Quit Completely.
 
