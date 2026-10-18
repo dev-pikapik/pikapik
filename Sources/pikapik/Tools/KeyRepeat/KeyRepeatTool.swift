@@ -50,7 +50,7 @@ final class KeyRepeatTool: Tool {
         write(false as CFBoolean)
     }
 
-    private static func putBack() {
+    static func putBack() {
         guard let saved = UserDefaults.standard.array(forKey: savedKey) as? [Bool],
               CFPreferencesCopyValue(key, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as? Bool == false
         else { return }

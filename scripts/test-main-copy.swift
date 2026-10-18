@@ -476,6 +476,100 @@ struct TestMainCopy {
         AnimationsEngine.uninstall(k.host)
         precondition(!alone.autohide && alone.journalEmpty && alone.kills == [.putBack("A")], "uninstall where only autohide comes back: \(alone.kills)")
         print("when only autohide comes back, on quit and on uninstall, the Dock restarts once: ok")
+        for missing in [true, false] {
+            let mac = Mac(system: original)
+            mac.dockAutohide = missing ? nil : false
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            a.engine.setAutohide(true)
+            precondition(mac.dockAutohide == true && (mac.journal.object(forKey: "animations-autohide-missing") != nil) == missing, "missing \(missing): the marker is there only when the key was missing")
+            mac.elapse()
+            mac.kills = []
+            mac.quit(a)
+            precondition(mac.dockAutohide == (missing ? nil : false) && mac.journalEmpty && mac.kills == [.putBack("A")], "missing \(missing): \(mac.kills)")
+            let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
+            precondition(again.engine.holdsAutohide, "missing \(missing): the wish survives the quit")
+            mac.become(again)
+            mac.elapse()
+            precondition(mac.autohide, "missing \(missing): the next launch hides the Dock again")
+            again.engine.setAutohide(false)
+            precondition(mac.dockAutohide == (missing ? nil : false) && mac.journal.object(forKey: "animations-autohide-missing") == nil, "missing \(missing): turning autohide off leaves the key as it was")
+        }
+        print("a missing autohide key stays missing on quit and when autohide is turned off, and the wish comes back at the next launch: ok")
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            a.engine.setAutohide(true)
+            mac.elapse()
+            mac.kills = []
+            mac.dockAutohide = false
+            mac.quit(a)
+            precondition(mac.kills.isEmpty && mac.dockAutohide == false && mac.journalEmpty, "the user turned autohide off by hand: \(mac.kills)")
+            let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
+            precondition(!again.engine.holdsAutohide, "the wish is forgotten")
+        }
+        print("autohide the user turned off by hand stays off on quit and the wish is forgotten: ok")
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            a.engine.setAutohide(true)
+            precondition(a.engine.holdsAutohide, "autohide alone counts as a change")
+            mac.elapse()
+            mac.kills = []
+            a.engine.reset()
+            mac.elapse()
+            precondition(mac.kills == [.restart("A")] && mac.journalEmpty && !mac.autohide && !a.engine.holdsAutohide, "Restore Defaults puts autohide back: \(mac.kills)")
+        }
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, wantsA), b = mac.party("B", "\(tools).b", 20, wantsB)
+            mac.become(a)
+            a.engine.setAutohide(true)
+            mac.elapse()
+            mac.kills = []
+            b.engine.reset()
+            precondition(mac.system == original.merging(wantsA) { $1 } && mac.autohide && mac.kills.isEmpty && mac.queue.isEmpty, "a passive copy's Restore Defaults leaves the main copy's values: \(mac.kills)")
+        }
+        print("Restore Defaults puts autohide back with one Dock restart, and in a passive copy it leaves the main copy alone: ok")
+        for first in ["A", "B"] {
+            for waiting in [false, true] {
+                let mac = Mac(system: original)
+                let a = mac.party("A", "\(tools).a", 10, wantsA), b = mac.party("B", "\(tools).b", 20, wantsB)
+                mac.become(a)
+                a.engine.setAutohide(true)
+                if !waiting { mac.elapse() }
+                mac.kills = []
+                mac.poweringOff = true
+                let (one, two) = first == "A" ? (a, b) : (b, a)
+                func off(_ party: Party) -> Bool {
+                    let seen = mac.lookups
+                    let dock = party.engine.powerOff()
+                    precondition(mac.lookups == seen, "\(party.name) asks nobody about other copies before everything is back")
+                    return dock
+                }
+                precondition(off(one) && mac.system == original && mac.dockAutohide == false && mac.journalEmpty && mac.kills.isEmpty, "first \(first), waiting \(waiting): the first copy puts everything back at once")
+                mac.quit(one)
+                precondition(!off(two), "first \(first), waiting \(waiting): the second copy has nothing left")
+                mac.quit(two)
+                precondition(mac.kills.isEmpty && mac.system == original && mac.journalEmpty && mac.queue.allSatisfy(\.isCancelled), "first \(first), waiting \(waiting): \(mac.kills)")
+                mac.poweringOff = false
+                let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
+                mac.become(again)
+                mac.elapse()
+                precondition(mac.system == original.merging(wantsA) { $1 } && mac.autohide, "first \(first), waiting \(waiting): after the restart the main copy brings its values back")
+            }
+        }
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            precondition(!a.engine.powerOff(), "nothing to put back and no Dock restart waiting")
+            a.engine.restartDock()
+            precondition(a.engine.powerOff() && !mac.flag && mac.queue.allSatisfy(\.isCancelled), "a Dock restart that waits is done at power off instead")
+        }
+        print("when the Mac shuts down, the first copy to hear it puts everything back before it asks about other copies, the Dock restart is left to the caller, the other copy has nothing left, and after the restart the main copy brings its values back: ok")
         for uninstall in [false, true] {
             let mac = Mac(system: original)
             let a = mac.party("A", "\(tools).a", 10, wantsB)
@@ -818,7 +912,8 @@ struct TestMainCopy {
 
         let journal = UserDefaults(suiteName: Mac.journalName)!
         var system: [AnimationSetting: Double]
-        var autohide = false, poweringOff = false, withoutJournal = false
+        var dockAutohide: Bool? = false, poweringOff = false, withoutJournal = false
+        var lookups = 0
         var queue: [DispatchWorkItem] = []
         var kills: [Kill] = []
         var running: [Party] = []
@@ -834,27 +929,31 @@ struct TestMainCopy {
             journal.set([String: Double](), forKey: "animations-ours")
         }
 
+        var autohide: Bool { dockAutohide ?? false }
         var flag: Bool { journal.bool(forKey: DockRestart.key) }
         var own: [String: Double] { journal.dictionary(forKey: "animations-own") as? [String: Double] ?? [:] }
         var ours: [String: Double] { journal.dictionary(forKey: "animations-ours") as? [String: Double] ?? [:] }
-        var journalEmpty: Bool { own.isEmpty && ours.isEmpty && OriginalValue.load(Self.autohideKey, journal: journal) == nil && !flag }
+        var journalEmpty: Bool { own.isEmpty && ours.isEmpty && OriginalValue.load(Self.autohideKey, journal: journal) == nil && journal.object(forKey: "animations-autohide-missing") == nil && !flag }
         var leaving: [String] { journal.dictionaryRepresentation().keys.filter { $0.hasPrefix("animations-leaving-") }.sorted() }
 
-        func party(_ name: String, _ bundleID: String, _ pid: Int32, _ wants: [AnimationSetting: Double]) -> Party {
+        func party(_ name: String, _ bundleID: String, _ pid: Int32, _ wants: [AnimationSetting: Double], keep: Bool = false) -> Party {
             let suite = "test-main-copy.local.\(name)"
             let local = UserDefaults(suiteName: suite)!
-            local.removePersistentDomain(forName: suite)
+            if !keep { local.removePersistentDomain(forName: suite) }
             let party = Party(name, bundleID, pid, wants)
             party.host = AnimationsHost(
                 me: party.running,
                 canAct: { self.leader === party },
-                peers: { MainCopyChoice.peers(of: party.running, in: self.running.map(\.running) + self.strangers) },
+                peers: {
+                    self.lookups += 1
+                    return MainCopyChoice.peers(of: party.running, in: self.running.map(\.running) + self.strangers)
+                },
                 poweringOff: { self.poweringOff },
                 journal: { self.journal },
                 local: local,
                 read: { self.system[$0] },
                 write: { self.write($0, $1, by: party) },
-                readAutohide: { self.autohide },
+                readAutohide: { self.dockAutohide },
                 writeAutohide: { self.writeAutohide($0, by: party) },
                 later: { self.queue.append($0) },
                 kill: {
@@ -931,10 +1030,10 @@ struct TestMainCopy {
             system[setting] = value
         }
 
-        private func writeAutohide(_ on: Bool, by party: Party) {
+        private func writeAutohide(_ on: Bool?, by party: Party) {
             precondition(OriginalValue.load(Self.autohideKey, journal: journal) != nil, "\(party.name): the journal holds the original autohide before it is written")
             precondition(flag, "\(party.name): the Dock restart is pending before autohide is written")
-            autohide = on
+            dockAutohide = on
         }
     }
 }

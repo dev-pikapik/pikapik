@@ -151,7 +151,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         let background = Background.shared
-        background.poweringOff = Background.isLoggingOut
+        if Background.isLoggingOut { powerOff() }
         if background.quitting || Background.isOutsideQuit { return .terminateNow }
         guard Background.isOn, MainCopy.shared.role != .passive, !NSEvent.modifierFlags.contains(.option) else {
             if MainCopy.canAct { KeepAwake.shared.set(.off) }
@@ -170,6 +170,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         #endif
         MainCopy.shared.retire()
         if #available(macOS 14.2, *) { AppVolumeEngine.shared.shutdown() }
+    }
+
+    @MainActor private func powerOff() {
+        Background.shared.poweringOff = true
+        #if !APPSTORE
+        var restart = false
+        let dock = DockHost.offline { restart = true }
+        DockEdges.restore(dock)
+        HotCorners.putBackAll(dock)
+        if AnimationsTool.shared.powerOff() { restart = true }
+        if DockDisplayTool.powerOff() { restart = true }
+        KeyRepeatTool.putBack()
+        DesktopIconsTool.putBack()
+        UserDefaults.standard.synchronize()
+        if restart { AnimationsTool.killall("Dock") }
+        MainDisplayControl.restore()
+        HiddenFilesTool.putBack()
+        #endif
     }
 
     @MainActor private func startFeatures() {

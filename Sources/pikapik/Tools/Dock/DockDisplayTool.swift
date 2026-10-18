@@ -40,6 +40,10 @@ final class DockDisplayTool: Tool {
         MainDisplayControl.restore()
     }
 
+    static func powerOff() -> Bool {
+        apply(false)
+    }
+
     private static func apply(_ on: Bool) -> Bool {
         CFPreferencesAppSynchronize(dock)
         return DockDisplaySwitch.apply(on, current: CFPreferencesCopyAppValue(key, dock) as? Bool) { value in

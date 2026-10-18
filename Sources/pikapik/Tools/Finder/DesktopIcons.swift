@@ -19,7 +19,7 @@ struct DesktopIconsHost {
         writeIcons: {
             CFPreferencesSetAppValue(iconsKey, $0 as CFBoolean, windowManager)
             CFPreferencesAppSynchronize(windowManager)
-            for app in NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.WindowManager") { kill(app.processIdentifier, SIGTERM) }
+            _ = try? Process.run(URL(fileURLWithPath: SystemPath.killall), arguments: ["WindowManager"])
         },
         desktopMade: {
             guard let finder = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first else { return false }
