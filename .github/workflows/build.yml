@@ -124,7 +124,9 @@ jobs:
           mkdir -p build
           ./scripts/fetch-7zip.sh
           failed=()
+          count=0
           while IFS= read -r test; do
+            count=$((count + 1))
             name="${test##*&& build/}"
             echo "::group::$name"
             if ! bash -c "$test" < /dev/null; then
@@ -133,6 +135,10 @@ jobs:
             fi
             echo "::endgroup::"
           done < <(grep '^swiftc .*scripts/test-' CONTRIBUTING.md)
+          if [ "$count" -eq 0 ]; then
+            echo "::error::No test lines found in CONTRIBUTING.md"
+            exit 1
+          fi
           if [ ${#failed[@]} -gt 0 ]; then
             echo "${#failed[@]} tests failed:"
             printf '  %s\n' "${failed[@]}"
