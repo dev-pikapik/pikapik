@@ -121,6 +121,17 @@ jobs:
       # Every test runs even after one fails, so a single failure can't hide the others
       - name: Run the tests from CONTRIBUTING.md
         run: |
+          listed=$(grep '^swiftc .*scripts/test-' CONTRIBUTING.md || true)
+          missing=0
+          for file in scripts/test-*.swift; do
+            if [[ "$listed" != *"$file"* ]]; then
+              echo "::error::$file has no line in CONTRIBUTING.md, so CI never runs it"
+              missing=$((missing + 1))
+            fi
+          done
+          if [ "$missing" -gt 0 ]; then
+            exit 1
+          fi
           mkdir -p build
           ./scripts/fetch-7zip.sh
           failed=()
