@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Il Mac torna in stop con il coperchio chiuso
+
+<sub>1.53.2 · 18 ottobre 2026</sub>
+
+Dopo «Funziona con il coperchio chiuso», il Mac torna sempre in stop quando chiudi il coperchio.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Prima, un logout, un riavvio o una richiesta di password annullata potevano lasciare il Mac senza stop con il coperchio chiuso, anche in borsa. Ora pikapik ripristina lo stop quando «Resta sveglio» si ferma, un minuto dopo l’uscita da pikapik, al logout, al riavvio e allo spegnimento, e quando rimuovi l’app. Se non ci riesce comunque, Impostazioni › Resta sveglio mostra «Il Mac non va ancora in stop con il coperchio chiuso» e il pulsante «Consenti lo stop». «Funziona con il coperchio chiuso» ora si imposta su ogni Mac separatamente. Inoltre «Riscrivi le parole digitate nella lingua sbagliata» non fa più chiedere l’accesso a macOS all’avvio: consentilo nella scheda «Permessi».
+
+**Provalo:** Impostazioni › Resta sveglio
+
+**Corretto**
+
+- Un tasto che tieni premuto in un gioco, come W per camminare, non resta più premuto dopo ⌘.
+- Il lettore non si chiude più con alcuni film danneggiati o quando scolleghi il disco con il film.
+- «Esci alla chiusura dell’ultima finestra» non blocca più mouse e tastiera mentre un’app è occupata.
+- Attivare «Sincronizza le impostazioni con iCloud» su un altro Mac non reimposta più le impostazioni degli altri Mac.
+- Rimuovi app non spunta più una cartella che un’altra app dello stesso sviluppatore usa ancora, né i componenti condivisi dell’elenco di rimozione completa di Homebrew, come il programma di aggiornamento di Google.
+
+---
+
 ## <a id="v1.53.1"></a>I film AV1 si riproducono anche quando macOS non riesce a decodificarli
 
 <sub>1.53.1 · 18 ottobre 2026</sub>

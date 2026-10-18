@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Mac’iniz kapak kapalıyken yeniden uyuyor
+
+<sub>1.53.2 · 18 Ekim 2026</sub>
+
+“Kapak kapalıyken çalış” kullandıktan sonra Mac’iniz kapak kapalıyken her zaman yeniden uyku moduna geçer.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Önceden oturumu kapatmak, yeniden başlatmak ya da iptal edilen bir parola isteği, Mac’in kapak kapalıyken hiç uyumamasına yol açabiliyordu, çantadayken bile. Artık pikapik, “Uyanık Tut” durduğunda, pikapik’ten çıktıktan bir dakika sonra, oturumu kapattığınızda, yeniden başlattığınızda veya kapattığınızda ve uygulamayı kaldırdığınızda uyku modunu geri getiriyor. Yine de olmazsa Ayarlar › Uyanık Tut, “Mac’iniz kapak kapalıyken hâlâ uyku moduna geçmiyor” mesajını ve “Uyumasına İzin Ver” düğmesini gösterir. “Kapak kapalıyken çalış” artık her Mac’te ayrı ayarlanıyor. Ayrıca “Yanlış dilde yazılan sözcükleri yeniden yaz”, açılışta macOS’in erişim istemesine artık yol açmıyor: erişimi “İzinler” sekmesinden verin.
+
+**Deneyin:** Ayarlar › Uyanık Tut
+
+**Düzeltilenler**
+
+- Oyunda basılı tuttuğunuz bir tuş, örneğin yürümek için W, ⌘ tuşuna bastıktan sonra artık basılı kalmıyor.
+- Oynatıcı artık bazı bozuk filmlerde ya da filmin bulunduğu disk çıkarıldığında çökmüyor.
+- “Son pencere kapanınca çık”, bir uygulama meşgulken artık fareyi ve klavyeyi dondurmuyor.
+- “Ayarları iCloud ile eşzamanla” seçeneğini bir Mac’te daha açmak artık diğer Mac’lerinizdeki ayarları sıfırlamıyor.
+- Uygulamaları Kaldır, aynı geliştiricinin başka bir uygulamasının hâlâ kullandığı bir klasörü ya da Homebrew’un tamamen kaldırma listesindeki, Google’ın güncelleyicisi gibi ortak parçaları artık işaretlemiyor.
+
+---
+
 ## <a id="v1.53.1"></a>AV1 filmler, macOS kodlarını çözemese bile oynatılıyor
 
 <sub>1.53.1 · 18 Ekim 2026</sub>

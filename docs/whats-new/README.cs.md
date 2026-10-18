@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Mac se se zavřeným víkem zase uspí
+
+<sub>1.53.2 · 18. října 2026</sub>
+
+Po režimu „Pracovat se zavřeným víkem“ Mac se zavřeným víkem vždy znovu přejde do spánku.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Dříve mohlo odhlášení, restart nebo zrušená žádost o heslo způsobit, že Mac se zavřeným víkem už nikdy neusnul, ani v tašce. Teď pikapik spánek vrátí, když „Bez spánku“ skončí, minutu po ukončení pikapik, při odhlášení, restartu a vypnutí a při odstranění aplikace. Pokud se to přesto nepovede, Nastavení › Bez spánku ukáže „Mac pořád nepřejde do režimu spánku se zavřeným víkem“ a tlačítko „Povolit spánek“. „Pracovat se zavřeným víkem“ se teď nastavuje na každém Macu zvlášť. A „Přepsat slova napsaná ve špatném jazyce“ už při spuštění nenutí macOS žádat o přístup: povolte ho na kartě „Oprávnění“.
+
+**Vyzkoušejte:** Nastavení › Bez spánku
+
+**Opraveno**
+
+- Klávesa, kterou ve hře držíte, například W pro chůzi, už po stisknutí ⌘ nezůstane stisknutá.
+- Přehrávač už nespadne u některých poškozených filmů ani po odpojení disku s filmem.
+- „Ukončit po zavření posledního okna“ už nezmrazí myš a klávesnici, když je aplikace zaneprázdněná.
+- Zapnutí „Synchronizovat nastavení přes iCloud“ na dalším Macu už neresetuje nastavení na vašich ostatních Macích.
+- Odinstalace aplikací už nezaškrtává složku, kterou ještě používá jiná aplikace od stejného vývojáře, ani sdílené části ze seznamu pro úplné odstranění přes Homebrew, například aktualizační program od Googlu.
+
+---
+
 ## <a id="v1.53.1"></a>Filmy v AV1 se přehrají, i když je macOS neumí dekódovat
 
 <sub>1.53.1 · 18. října 2026</sub>

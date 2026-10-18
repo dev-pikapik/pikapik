@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Votre Mac se remet en veille écran rabattu
+
+<sub>1.53.2 · 18 octobre 2026</sub>
+
+Après « Fonctionner écran rabattu », votre Mac se remet toujours en veille quand vous le refermez.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Avant, une fermeture de session, un redémarrage ou une demande de mot de passe annulée pouvaient empêcher le Mac de se mettre en veille écran rabattu, même dans un sac. Maintenant, pikapik rétablit la veille quand « Rester éveillé » s’arrête, une minute après la fermeture de pikapik, quand vous fermez la session, redémarrez ou éteignez le Mac, et quand vous supprimez l’app. Si cela échoue encore, Réglages › Rester éveillé affiche « Votre Mac ne se met toujours pas en veille écran rabattu » avec le bouton « Rétablir la veille ». « Fonctionner écran rabattu » se règle désormais sur chaque Mac séparément. Et « Retaper les mots saisis dans la mauvaise langue » ne fait plus demander d’accès par macOS au démarrage : autorisez-le dans l’onglet « Autorisations ».
+
+**Pour essayer :** Réglages › Rester éveillé
+
+**Corrigé**
+
+- Une touche que vous maintenez dans un jeu, comme W pour marcher, ne reste plus enfoncée après ⌘.
+- Le lecteur ne plante plus sur certains films endommagés ni quand le disque du film est débranché.
+- « Quitter à la fermeture de la dernière fenêtre » ne fige plus la souris et le clavier pendant qu’une app est occupée.
+- Activer « Synchroniser les réglages avec iCloud » sur un Mac de plus ne réinitialise plus les réglages de vos autres Mac.
+- L’outil Supprimer des apps ne coche plus un dossier qu’une autre app du même développeur utilise encore, ni les éléments partagés de la liste de suppression complète de Homebrew, comme le programme de mise à jour de Google.
+
+---
+
 ## <a id="v1.53.1"></a>Les films AV1 se lisent même quand macOS ne sait pas les décoder
 
 <sub>1.53.1 · 18 octobre 2026</sub>

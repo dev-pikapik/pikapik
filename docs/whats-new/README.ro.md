@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Mac-ul intră din nou în repaus cu capacul închis
+
+<sub>1.53.2 · 18 octombrie 2026</sub>
+
+După „Funcționează cu capacul închis”, Mac-ul intră mereu din nou în repaus când închizi capacul.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Înainte, o deconectare, o repornire sau o cerere de parolă anulată puteau lăsa Mac-ul fără repaus cu capacul închis, chiar și în geantă. Acum pikapik readuce repausul când „Menține activ” se oprește, la un minut după ce pikapik se închide, la deconectare, repornire și oprire, și când ștergi aplicația. Dacă tot nu reușește, Setări › Menține activ arată „Mac-ul tot nu intră în repaus cu capacul închis” și butonul „Permite repausul”. „Funcționează cu capacul închis” se setează acum separat pe fiecare Mac. Iar „Retastează cuvintele scrise în limba greșită” nu mai face macOS să ceară acces la pornire: permite-l în fila „Permisiuni”.
+
+**Încearcă:** Setări › Menține activ
+
+**Reparat**
+
+- O tastă pe care o ții apăsată într-un joc, de exemplu W pentru mers, nu mai rămâne apăsată după ⌘.
+- Player-ul nu se mai închide brusc la unele filme deteriorate sau când discul cu filmul este deconectat.
+- „Ieșire când se închide ultima fereastră” nu mai blochează mouse-ul și tastatura cât timp o aplicație e ocupată.
+- Activarea „Sincronizează configurările cu iCloud” pe încă un Mac nu mai resetează configurările de pe celelalte Mac-uri.
+- Eliminare aplicații nu mai bifează un dosar pe care încă îl folosește altă aplicație de la același dezvoltator și nici părțile comune din lista Homebrew de eliminare completă, cum ar fi programul de actualizare de la Google.
+
+---
+
 ## <a id="v1.53.1"></a>Filmele AV1 se redau chiar și când macOS nu le poate decoda
 
 <sub>1.53.1 · 18 octombrie 2026</sub>

@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.53.2"></a>Máy Mac lại ngủ khi gập nắp
+
+<sub>1.53.2 · 18 tháng 10 năm 2026</sub>
+
+Sau khi dùng “Hoạt động khi gập nắp”, máy Mac luôn ngủ lại khi bạn gập nắp.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/keep-awake-dark.png"><img src="../media/keep-awake-light.png" width="340" alt=""></picture>
+
+Trước đây, đăng xuất, khởi động lại hoặc hủy yêu cầu mật khẩu có thể khiến máy Mac không bao giờ ngủ khi gập nắp nữa, kể cả khi nằm trong túi. Giờ đây pikapik trả lại chế độ ngủ khi “Giữ máy thức” dừng, một phút sau khi thoát pikapik, khi bạn đăng xuất, khởi động lại hoặc tắt máy, và khi bạn xóa ứng dụng. Nếu vẫn không được, Cài đặt › Giữ máy thức sẽ hiện “Máy Mac vẫn không ngủ khi gập nắp” cùng nút “Cho máy ngủ”. “Hoạt động khi gập nắp” giờ được đặt riêng trên từng máy Mac. Ngoài ra, “Gõ lại những từ đã gõ sai ngôn ngữ” không còn khiến macOS xin quyền truy cập khi khởi động: hãy cho phép trong thẻ “Quyền”.
+
+**Thử ngay:** Cài đặt › Giữ máy thức
+
+**Đã sửa**
+
+- Phím bạn giữ trong trò chơi, chẳng hạn W để đi bộ, không còn bị kẹt sau khi bấm ⌘.
+- Trình phát không còn bị thoát đột ngột với một số phim bị hỏng hoặc khi ổ chứa phim bị rút ra.
+- “Thoát khi đóng cửa sổ cuối cùng” không còn làm đơ chuột và bàn phím khi một ứng dụng đang bận.
+- Bật “Đồng bộ hóa cài đặt với iCloud” trên thêm một máy Mac không còn đặt lại cài đặt trên các máy Mac khác của bạn.
+- Gỡ ứng dụng không còn đánh dấu chọn thư mục mà một ứng dụng khác của cùng nhà phát triển vẫn đang dùng, hay các thành phần dùng chung trong danh sách gỡ hoàn toàn của Homebrew, như trình cập nhật của Google.
+
+---
+
 ## <a id="v1.53.1"></a>Phim AV1 vẫn phát được ngay cả khi macOS không giải mã được
 
 <sub>1.53.1 · 18 tháng 10 năm 2026</sub>
