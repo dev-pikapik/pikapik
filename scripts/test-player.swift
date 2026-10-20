@@ -237,96 +237,95 @@ enum TestPlayer {
 
     static func checkDefaultApps() async {
         let folder = FileManager.default.temporaryDirectory.appending(path: "pika-default-apps-\(UUID().uuidString)")
-        defer { try? FileManager.default.removeItem(at: folder) }
-        func app(_ name: String) -> URL {
-            let url = folder.appending(path: "\(name).app")
+        let suite = "pika-default-apps-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer {
+            try? FileManager.default.removeItem(at: folder)
+            defaults.removePersistentDomain(forName: suite)
+        }
+        func app(_ name: String, id: String? = nil, in directory: URL? = nil) -> URL {
+            let url = (directory ?? folder).appending(path: "\(name).app")
             try? FileManager.default.createDirectory(at: url.appending(path: "Contents"), withIntermediateDirectories: true)
-            NSDictionary(dictionary: ["CFBundleIdentifier": "test.\(name)", "CFBundleName": name]).write(to: url.appending(path: "Contents/Info.plist"), atomically: true)
+            NSDictionary(dictionary: ["CFBundleIdentifier": id ?? "test.\(name)", "CFBundleName": name]).write(to: url.appending(path: "Contents/Info.plist"), atomically: true)
             return url
         }
-        let (ours, old, gone, next, fallback) = (app("Ours"), app("Old"), app("Gone"), app("Next"), app("Fallback"))
-        let (a, b, c, d) = (UTType.avi, UTType.mpeg4Movie, UTType.quickTimeMovie, UTType.mpeg2TransportStream)
+        let build = folder.appending(path: "build")
+        let (ours, old, next) = (app("pikapik Player", id: "test.Ours"), app("Old"), app("Next"))
+        let (renamed, twin) = (app("pikapik Player copy", id: "test.Ours", in: build), app("Old", in: build))
+        let (stale, gone) = (build.appending(path: "Debug/pikapik Player.app"), folder.appending(path: "Gone.app"))
+        let (a, b, c, d, e) = (UTType.avi, UTType.mpeg4Movie, UTType.quickTimeMovie, UTType.mpeg2TransportStream, UTType.mpeg)
 
-        let system = FakeSystem(installed: [ours, old, gone, next, fallback])
-        system.candidates = [a.identifier: [old, ours], b.identifier: [gone, next, ours], c.identifier: [ours, next]]
-        let defaults = UserDefaults(suiteName: "pika-default-apps-\(UUID().uuidString)")!
-        let videos = DefaultApps(types: [a, b, c, d], target: ours, previousKey: "previous", system: system, defaults: defaults)
-        precondition(!videos.isOn)
+        let system = FakeSystem(installed: [renamed, ours, old, next, twin])
+        func fresh() -> DefaultApps {
+            system.assigns = 0
+            return DefaultApps(types: [a, b, c, d, e], target: ours, system: system, defaults: defaults)
+        }
 
-        await videos.set(true).value
-        precondition(videos.isOn && [a, b, c, d].allSatisfy { system.handler(of: $0) == ours }, "every type should go to the player")
-        precondition(defaults.dictionary(forKey: "previous") as? [String: String] == [a.identifier: "test.Old", b.identifier: "test.Gone"], "the old apps are not remembered, or the player itself was")
-        print("turning on remembers each type's old app and gives every type to the player: ok")
+        for key in DefaultApps.retiredKeys + ["other"] { defaults.set(["x": "y"], forKey: key) }
+        _ = fresh()
+        precondition(!DefaultApps.retiredKeys.isEmpty && DefaultApps.retiredKeys.allSatisfy { defaults.object(forKey: $0) == nil }, "the keys of the old switch must be removed")
+        precondition(defaults.object(forKey: "other") != nil, "only the retired keys may be removed")
+        print("the stored keys of the old switch are removed, other keys stay: ok")
 
-        try? FileManager.default.removeItem(at: gone)
-        system.installed.removeAll { $0 == gone }
-        system.candidates[b.identifier]?.removeAll { $0 == gone }
-        await videos.set(false).value
-        precondition(system.handler(of: a) == old, "the remembered app is not back")
-        precondition(system.handler(of: b) == next, "an app that is gone should give way to the next one that opens the type, not to the player")
-        precondition(system.handler(of: c) == ours && system.handler(of: d) == ours, "a type the player already had, or nobody had, must stay as it was")
-        precondition(!videos.isOn && defaults.object(forKey: "previous") == nil)
-        print("turning off returns the old apps, the next one if an app is gone, and leaves types that had no other app: ok")
+        system.candidates = [a.identifier: [old, ours], b.identifier: [next, ours, old], c.identifier: [ours, next], e.identifier: [ours]]
+        var apps = fresh()
+        precondition(apps.owner(of: [a]) == old && apps.owner(of: [b]) == next, "a format shows the app that opens it now")
+        precondition(apps.owner(of: [c]) == ours && apps.owner(of: [c, e]) == ours, "when every type is the player's, the player owns the format")
+        precondition(apps.owner(of: [a, c]) == old && apps.owner(of: [c, a]) == old && apps.owner(of: [c, b]) == next, "another app wins over the player when the types disagree")
+        precondition(apps.owner(of: [d]) == nil, "a format nobody opens has no app")
+        system.candidates[a.identifier] = [next]
+        precondition(apps.owner(of: [a]) == old, "the answer stays until refresh")
+        apps.refresh()
+        precondition(apps.owner(of: [a]) == next, "refresh must read the system again")
+        print("owner: the app that opens the format, another app wins on a mix, nobody gives none, refresh reads again: ok")
 
-        system.candidates = [a.identifier: [old, ours]]
-        system.failAfter = 0
-        await videos.set(true).value
-        precondition(system.handler(of: a) == old && !videos.isOn, "a refused change should stop quietly and show the real state")
-        system.failAfter = nil
-        await videos.set(true).value
-        await videos.set(true).value
-        await videos.set(false).value
-        precondition(system.handler(of: a) == old, "turning on twice must not forget the old app")
-        print("a refused change stops quietly, and turning on again keeps the old apps: ok")
+        system.candidates[a.identifier] = [old, ours]
+        apps.refresh()
+        precondition(apps.choices(for: [a]) == [ours, old] && apps.choices(for: [b]) == [ours, next, old], "the player goes first, then the other apps that open the type")
+        precondition(apps.choices(for: [a, b]) == [ours, old] && apps.choices(for: [b, a]) == [ours, old], "a group offers only apps that open every type")
+        precondition(apps.choices(for: [a, b, c]) == [ours] && apps.choices(for: [d]) == [ours] && apps.choices(for: []).isEmpty, "the player is always offered, and nothing is offered for no types")
+        print("choices: apps that open every type, the player first, none twice: ok")
 
-        let e = UTType.mpeg
-        let plain = DefaultApps(types: [a, d, e], target: ours, previousKey: "plain", fallback: "test.Fallback", system: system, defaults: defaults)
-        await plain.set(true).value
-        system.candidates[d.identifier] = [ours, fallback]
-        await plain.set(false).value
-        precondition(system.handler(of: a) == old && system.handler(of: d) == fallback, "a system app should take a type that had none and that it can open")
-        precondition(system.handler(of: e) == ours, "a system app that can’t open the type must not take it")
-        print("a system fallback takes only the types it can open and that had no other app: ok")
+        system.candidates = [a.identifier: [stale, old], b.identifier: [renamed, next], c.identifier: [gone, next], d.identifier: [gone], e.identifier: [twin, old, ours]]
+        apps = fresh()
+        precondition(apps.owner(of: [a]) == ours && apps.choices(for: [a]) == [ours, old], "a deleted copy of the player, still listed, is the player and is not offered twice")
+        precondition(apps.owner(of: [b]) == ours && apps.choices(for: [b]) == [ours, next], "a copy of the player elsewhere, with its bundle ID, is the player")
+        precondition(apps.owner(of: [c]) == nil && apps.choices(for: [c]) == [ours, next] && apps.choices(for: [d]) == [ours], "a deleted copy of another app is gone, not offered")
+        precondition(apps.owner(of: [e]) == old && apps.choices(for: [e]) == [ours, old], "two copies of one app are one app, the one macOS prefers")
+        await apps.open([a, b], with: ours).value
+        precondition(system.assigns == 0, "macOS must not be asked to switch the player to the player")
+        print("copies of the player count as the player, a deleted copy of another app is gone, two copies of an app are one: ok")
 
-        system.candidates = [a.identifier: [old, ours], b.identifier: [next, ours], c.identifier: [next, ours]]
-        let formats = DefaultApps(types: [a, b, c], target: ours, previousKey: "formats", system: system, defaults: defaults)
+        system.candidates = [a.identifier: [old, ours], b.identifier: [next, ours], c.identifier: [ours, next], e.identifier: [stale]]
+        apps = fresh()
+        await apps.open([a, b, c, e], with: ours).value
+        precondition(system.assigns == 2 && [a, b, c, e].allSatisfy { apps.owner(of: [$0]) == ours } && !apps.busy, "only the types that are not with the player are sent to macOS: \(system.assigns)")
+        precondition(system.handler(of: c) == ours && system.handler(of: e) == stale, "a type already with the app must stay as it was")
+        print("open: asks macOS only for the types that are not with the app yet: ok")
+
+        system.candidates = [a.identifier: [old, ours], b.identifier: [next, ours], c.identifier: [old, ours]]
+        apps = fresh()
         system.keep = [b.identifier]
-        await formats.set(true).value
-        precondition(system.handler(of: a) == ours && system.handler(of: b) == next && system.handler(of: c) == ours && !formats.busy, "Keep on one format must not stop the next ones")
-        precondition(formats.isOn([a]) && formats.isOn([c]) && !formats.isOn([b]) && !formats.isOn, "the switch stays off and counts two of three formats")
-        system.keep = [a.identifier]
-        await formats.set(false).value
-        precondition(system.handler(of: a) == ours && system.handler(of: c) == next, "Keep on turning off must not stop the next ones")
-        precondition((defaults.dictionary(forKey: "formats") as? [String: String])?[a.identifier] == "test.Old", "a format that stayed with the player must keep its old app")
+        await apps.open([a, b, c], with: ours).value
+        precondition(system.handler(of: a) == ours && system.handler(of: b) == next && system.handler(of: c) == ours && system.assigns == 3 && !apps.busy, "Keep on one format must not stop the next ones")
         system.keep = []
-        await formats.set(false).value
-        precondition(system.handler(of: a) == old && defaults.object(forKey: "formats") == nil)
-        print("Keep moves on to the next format and keeps the old app for later: ok")
+        print("open: Keep moves on to the next format: ok")
 
-        system.candidates = [a.identifier: [old, ours], b.identifier: [next, ours], c.identifier: [ours, next]]
-        let picks = DefaultApps(types: [a, b, c, d], target: ours, previousKey: "picks", system: system, defaults: defaults)
-        precondition(picks.owner(of: [a]) == old && picks.owner(of: [b]) == next, "a format shows the app that opens it now")
-        precondition(picks.owner(of: [c]) == ours && picks.owner(of: [a, c]) == old && picks.owner(of: [c, b]) == next, "a group of the player's own types shows the player, a mixed one shows the other app")
-        precondition(picks.owner(of: [d]) == nil && picks.owner(of: [d, c]) == nil, "a format nobody opens has no app")
-        await picks.set(true, only: [a]).value
-        precondition(system.handler(of: a) == ours && system.handler(of: b) == next && picks.owner(of: [a]) == ours, "one format must move alone")
-        precondition(defaults.dictionary(forKey: "picks") as? [String: String] == [a.identifier: "test.Old"], "only the moved format's old app is remembered")
-        await picks.set(true, only: [b]).value
-        precondition(defaults.dictionary(forKey: "picks") as? [String: String] == [a.identifier: "test.Old", b.identifier: "test.Next"], "a second format adds its old app")
-        await picks.set(false, only: [a]).value
-        precondition(system.handler(of: a) == old && system.handler(of: b) == ours && system.handler(of: c) == ours, "giving one format back must leave the others")
-        precondition(defaults.dictionary(forKey: "picks") as? [String: String] == [b.identifier: "test.Next"], "only the returned format is forgotten")
-        precondition(picks.canGiveBack([c]) && picks.canGiveBack([d, c]) && !picks.canGiveBack([d]), "a format can go back only if another app opens it")
-        await picks.set(false, only: [c]).value
-        precondition(system.handler(of: c) == next && defaults.dictionary(forKey: "picks") as? [String: String] == [b.identifier: "test.Next"], "a format the player always had goes to another app that opens it")
-        await picks.set(false, only: [b]).value
-        precondition(system.handler(of: b) == next && defaults.object(forKey: "picks") == nil, "the last format given back clears the memory")
-        print("one format moves to the player and back alone, even one the player always had, and the app that opens a format is known: ok")
+        system.candidates = [a.identifier: [old, ours], b.identifier: [next, ours], c.identifier: [old, ours]]
+        apps = fresh()
+        system.failAfter = 1
+        await apps.open([a, b, c], with: ours).value
+        precondition(system.handler(of: a) == ours && system.handler(of: b) == next && system.handler(of: c) == old && system.assigns == 2 && !apps.busy, "a refusal must stop and leave the rest")
+        system.failAfter = nil
+        print("open: a refusal stops, the formats before it stay moved: ok")
 
+        system.candidates = [a.identifier: [old, ours], b.identifier: [next, ours]]
+        apps = fresh()
         system.silent = true
-        await formats.set(true).value
-        precondition(formats.isOn, "a system that never answers but changes the app must not stall")
-        print("no answer from the system, but the app changed: ok")
+        await apps.open([a, b], with: ours).value
+        precondition(system.handler(of: a) == ours && system.handler(of: b) == ours && !apps.busy, "a system that never answers but changes the app must not stall")
+        system.silent = false
+        print("open: no answer from the system, but the app changed: ok")
 
         let starts = [0.0, 60, 150, 300]
         precondition(PlayerChapters.current(starts, at: 0) == 0 && PlayerChapters.current(starts, at: 59.9) == 0)
