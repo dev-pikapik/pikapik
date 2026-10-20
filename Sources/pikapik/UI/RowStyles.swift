@@ -238,8 +238,8 @@ struct DefaultAppToggle: View {
                     DefaultAppName(app: group.app)
                     ChipFlow {
                         ForEach(group.formats, id: \.name) { format in
-                            FormatChip(name: format.name, app: DefaultAppName.name(of: group.app), ours: ours) {
-                                if MainCopy.canAct { apps.set(!ours, only: format.types) }
+                            FormatChip(name: format.name, app: DefaultAppName.name(of: group.app), ours: ours, fixed: ours && !apps.canGiveBack(format.types)) {
+                                if MainCopy.canAct, !ours || apps.canGiveBack(format.types) { apps.set(!ours, only: format.types) }
                             }
                             .matchedGeometryEffect(id: format.name, in: chips)
                         }
@@ -305,11 +305,12 @@ private struct FormatChip: View {
     let name: String
     let app: String
     let ours: Bool
+    let fixed: Bool
     let action: () -> Void
     @State private var hover = false
 
     var body: some View {
-        let help = ours ? String(localized: "Stop opening \(name) in pikapik") : String(localized: "Open \(name) in pikapik")
+        let help = fixed ? String(localized: "Only pikapik can open \(name) on this Mac") : ours ? String(localized: "Stop opening \(name) in pikapik") : String(localized: "Open \(name) in pikapik")
         Button(action: action) {
             Text(verbatim: name)
                 .font(.subheadline.weight(.medium))
@@ -319,7 +320,8 @@ private struct FormatChip: View {
                 .contentShape(Capsule())
         }
         .buttonStyle(.plain)
-        .onHover { hover = $0 }
+        .onHover { hover = $0 && !fixed }
+        .accessibilityRemoveTraits(fixed ? .isButton : [])
         .help(help)
         .accessibilityValue(Text(verbatim: app))
         .accessibilityHint(Text(verbatim: help))

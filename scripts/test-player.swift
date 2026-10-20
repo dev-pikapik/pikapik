@@ -316,11 +316,12 @@ enum TestPlayer {
         await picks.set(false, only: [a]).value
         precondition(system.handler(of: a) == old && system.handler(of: b) == ours && system.handler(of: c) == ours, "giving one format back must leave the others")
         precondition(defaults.dictionary(forKey: "picks") as? [String: String] == [b.identifier: "test.Next"], "only the returned format is forgotten")
+        precondition(picks.canGiveBack([c]) && picks.canGiveBack([d, c]) && !picks.canGiveBack([d]), "a format can go back only if another app opens it")
         await picks.set(false, only: [c]).value
-        precondition(system.handler(of: c) == ours && defaults.dictionary(forKey: "picks") as? [String: String] == [b.identifier: "test.Next"], "a format the player always had stays with it")
+        precondition(system.handler(of: c) == next && defaults.dictionary(forKey: "picks") as? [String: String] == [b.identifier: "test.Next"], "a format the player always had goes to another app that opens it")
         await picks.set(false, only: [b]).value
         precondition(system.handler(of: b) == next && defaults.object(forKey: "picks") == nil, "the last format given back clears the memory")
-        print("one format moves to the player and back alone, and the app that opens a format is known: ok")
+        print("one format moves to the player and back alone, even one the player always had, and the app that opens a format is known: ok")
 
         system.silent = true
         await formats.set(true).value

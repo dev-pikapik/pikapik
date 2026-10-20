@@ -5,7 +5,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 ## [1.54.0] - Unreleased
 
 ### Changed
-- Player and Finder, website version: under **Open videos in pikapik**, **Open music in pikapik**, **Open pictures in pikapik** and **Open archives in pikapik** you now see which app opens each format, with its icon, instead of only a count. The formats pikapik opens are highlighted. Click one format to open just that one in pikapik, or click it again to give it back to the app that had it. The note that macOS will ask about each format now shows when you point at the switch and while macOS is asking.
+- Player and Finder, website version: under **Open videos in pikapik**, **Open music in pikapik**, **Open pictures in pikapik** and **Open archives in pikapik** you now see which app opens each format, with its icon, instead of only a count. The formats pikapik opens are highlighted. Click one format to open just that one in pikapik, or click it again to give it back to the app that had it, or to another app that can open it. A format no other app on your Mac can open stays with pikapik and tells you so when you point at it. The note that macOS will ask about each format now shows when you point at the switch and while macOS is asking.
 
 ## [1.53.2] - 2026-10-18
 
