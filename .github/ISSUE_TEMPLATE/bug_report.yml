@@ -189,6 +189,7 @@ body:
       default: 0
       options:
         - Latest version
+        - "1.54.0"
         - "1.53.2"
         - "1.53.1"
         - "1.53.0"

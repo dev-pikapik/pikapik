@@ -2,7 +2,7 @@
 
 Every update to pikapik, version by version. The same news, told simply with a picture, is in [What’s new](docs/whats-new/README.md), also in your language: [Русский](docs/whats-new/README.ru.md) · [Українська](docs/whats-new/README.uk.md) · [Deutsch](docs/whats-new/README.de.md) · [Français](docs/whats-new/README.fr.md) · [Español](docs/whats-new/README.es.md) · [Italiano](docs/whats-new/README.it.md) · [Português (Brasil)](docs/whats-new/README.pt-BR.md) · [日本語](docs/whats-new/README.ja.md) · [简体中文](docs/whats-new/README.zh-Hans.md) · [한국어](docs/whats-new/README.ko.md) · [Română](docs/whats-new/README.ro.md) · [Polski](docs/whats-new/README.pl.md) · [Türkçe](docs/whats-new/README.tr.md) · [Nederlands](docs/whats-new/README.nl.md) · [Svenska](docs/whats-new/README.sv.md) · [Čeština](docs/whats-new/README.cs.md) · [繁體中文](docs/whats-new/README.zh-Hant.md) · [العربية](docs/whats-new/README.ar.md) · [हिन्दी](docs/whats-new/README.hi.md) · [Bahasa Indonesia](docs/whats-new/README.id.md) · [Tiếng Việt](docs/whats-new/README.vi.md) · [ไทย](docs/whats-new/README.th.md).
 
-## [1.54.0] - Unreleased
+## [1.54.0] - 2026-10-20
 
 ### Changed
 - Player and Finder, website version: under **Open videos in pikapik**, **Open music in pikapik**, **Open pictures in pikapik** and **Open archives in pikapik** you now see which app opens each format, with its icon, instead of only a count. The formats pikapik opens are highlighted. Click one format to open just that one in pikapik, or click it again to give it back to the app that had it, or to another app that can open it. A format no other app on your Mac can open stays with pikapik and tells you so when you point at it. The note that macOS will ask about each format now shows when you point at the switch and while macOS is asking.
@@ -1103,6 +1103,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - Built-in updates from GitHub Releases.
 - Install with Homebrew, an install script or a dmg.
 
+[1.54.0]: https://github.com/dev-pikapik/pikapik/releases/tag/v1.54.0
 [1.53.2]: https://github.com/dev-pikapik/pikapik/releases/tag/v1.53.2
 [1.53.1]: https://github.com/dev-pikapik/pikapik/releases/tag/v1.53.1
 [1.53.0]: https://github.com/dev-pikapik/pikapik/releases/tag/v1.53.0
