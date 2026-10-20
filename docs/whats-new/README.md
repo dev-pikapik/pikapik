@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>See which app opens each format
+
+<sub>1.54.0 · October 20, 2026</sub>
+
+Settings now show which app opens each format, and you can move one format at a time.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+Under “Open videos in pikapik”, the formats are grouped by the app that opens them now, each group with its app icon. The formats pikapik opens are highlighted. Click one format to open just that one in pikapik, or click it again to give it back to the app that had it.
+
+Turning the switch off still gives every format back to the app that had it. “Open music in pikapik”, “Open pictures in pikapik” and “Open archives in pikapik” work the same way.
+
+**Try it:** Settings › Player
+
+---
+
 ## <a id="v1.53.2"></a>Your Mac sleeps with the lid closed again
 
 <sub>1.53.2 · October 18, 2026</sub>

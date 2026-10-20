@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>Lihat app mana yang membuka tiap format
+
+<sub>1.54.0 · 20 Oktober 2026</sub>
+
+Pengaturan kini menampilkan app mana yang membuka tiap format, dan Anda bisa memindahkan format satu per satu.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+Di bawah “Buka video di pikapik”, format dikelompokkan menurut app yang membukanya saat ini, tiap kelompok dengan ikon app-nya. Format yang dibuka pikapik diberi sorotan. Klik satu format untuk membuka hanya format itu di pikapik, atau klik lagi untuk mengembalikannya ke app yang tadinya memegangnya.
+
+Saat sakelar dimatikan, setiap format tetap dikembalikan ke app yang tadinya membukanya. “Buka musik di pikapik”, “Buka gambar di pikapik”, dan “Buka arsip di pikapik” bekerja dengan cara yang sama.
+
+**Coba:** Pengaturan › Pemutar
+
+---
+
 ## <a id="v1.53.2"></a>Mac Anda kembali tidur saat penutup ditutup
 
 <sub>1.53.2 · 18 Oktober 2026</sub>

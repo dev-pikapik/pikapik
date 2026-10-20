@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>Zie welke app elk formaat opent
+
+<sub>1.54.0 · 20 oktober 2026</sub>
+
+In de instellingen zie je nu welke app elk formaat opent, en je kunt formaten één voor één verplaatsen.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+Onder “Open video’s in pikapik” zijn de formaten gegroepeerd per app die ze nu opent, elke groep met het symbool van zijn app. De formaten die pikapik opent, zijn gemarkeerd. Klik op één formaat om alleen dat in pikapik te openen, of klik nog eens om het terug te geven aan de app die het had.
+
+Als je de schakelaar uitzet, krijgt elke app haar formaten nog steeds terug. “Open muziek in pikapik”, “Open afbeeldingen in pikapik” en “Open archieven in pikapik” werken op dezelfde manier.
+
+**Probeer het:** Instellingen › Speler
+
+---
+
 ## <a id="v1.53.2"></a>Je Mac gaat met het deksel dicht weer in sluimerstand
 
 <sub>1.53.2 · 18 oktober 2026</sub>

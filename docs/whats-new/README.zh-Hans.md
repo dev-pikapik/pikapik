@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>一眼看出每种格式由哪个 App 打开
+
+<sub>1.54.0 · 2026年10月20日</sub>
+
+设置里现在会显示每种格式由哪个 App 打开，还能一次只改一种格式。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+在“用 pikapik 打开视频”下面，格式会按当前打开它们的 App 分组，每组带有该 App 的图标，pikapik 打开的格式会高亮显示。点按某个格式，就只用 pikapik 打开它；再点按一次，就还给原来的 App。
+
+关闭这个开关，所有格式仍会还给原来的 App。“用 pikapik 打开音乐”“用 pikapik 打开图片”和“用 pikapik 打开压缩文件”的用法相同。
+
+**试试看：** 设置 › 播放器
+
+---
+
 ## <a id="v1.53.2"></a>合上盖子后，Mac 又能睡眠了
 
 <sub>1.53.2 · 2026年10月18日</sub>

@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>Uvidíte, která aplikace otevírá který formát
+
+<sub>1.54.0 · 20. října 2026</sub>
+
+Nastavení teď ukazuje, která aplikace otevírá který formát, a formáty můžete přesouvat po jednom.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+Pod „Otevírat videa v pikapik“ jsou formáty seskupené podle aplikace, která je teď otevírá, a každá skupina má ikonu své aplikace. Formáty, které otevírá pikapik, jsou zvýrazněné. Kliknutím na jeden formát ho otevřete jen v pikapik, dalším kliknutím ho vrátíte aplikaci, která ho měla.
+
+Po vypnutí přepínače se všechny formáty stále vrátí aplikacím, které je měly. „Otevírat hudbu v pikapik“, „Otevírat obrázky v pikapik“ a „Otevírat archivy v pikapik“ fungují stejně.
+
+**Vyzkoušejte:** Nastavení › Přehrávač
+
+---
+
 ## <a id="v1.53.2"></a>Mac se se zavřeným víkem zase uspí
 
 <sub>1.53.2 · 18. října 2026</sub>

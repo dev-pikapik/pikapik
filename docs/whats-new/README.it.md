@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>Vedi quale app apre ogni formato
+
+<sub>1.54.0 · 20 ottobre 2026</sub>
+
+Le impostazioni ora mostrano quale app apre ogni formato, e puoi spostare un formato alla volta.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+Sotto «Apri i video in pikapik» i formati sono raggruppati per l’app che li apre adesso, ogni gruppo con l’icona della sua app. I formati che apre pikapik sono evidenziati. Fai clic su un formato per aprire solo quello in pikapik, o fai di nuovo clic per restituirlo all’app che lo aveva.
+
+Se disattivi l’interruttore, ogni formato torna comunque all’app che lo aveva. «Apri la musica in pikapik», «Apri le immagini in pikapik» e «Apri gli archivi in pikapik» funzionano allo stesso modo.
+
+**Provalo:** Impostazioni › Lettore
+
+---
+
 ## <a id="v1.53.2"></a>Il Mac torna in stop con il coperchio chiuso
 
 <sub>1.53.2 · 18 ottobre 2026</sub>

@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>각 형식을 여는 앱을 한눈에 볼 수 있습니다
+
+<sub>1.54.0 · 2026년 10월 20일</sub>
+
+이제 설정에서 각 형식을 어떤 앱이 여는지 보이고, 형식을 하나씩 옮길 수 있습니다.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+“비디오를 pikapik에서 열기” 아래에서는 형식이 현재 여는 앱별로 묶여 있고, 각 묶음에 그 앱의 아이콘이 표시됩니다. pikapik이 여는 형식은 강조됩니다. 형식 하나를 클릭하면 그것만 pikapik에서 열고, 다시 클릭하면 원래 앱으로 돌려줍니다.
+
+스위치를 끄면 이전처럼 모든 형식이 원래 앱으로 돌아갑니다. “음악을 pikapik에서 열기”, “이미지를 pikapik에서 열기”, “압축 파일을 pikapik에서 열기”도 같은 방식으로 동작합니다.
+
+**사용해 보기:** 설정 › 플레이어
+
+---
+
 ## <a id="v1.53.2"></a>덮개를 닫으면 Mac이 다시 잠자기에 들어갑니다
 
 <sub>1.53.2 · 2026년 10월 18일</sub>

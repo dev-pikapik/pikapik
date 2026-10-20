@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>Zobacz, która aplikacja otwiera każdy format
+
+<sub>1.54.0 · 20 października 2026</sub>
+
+Ustawienia pokazują teraz, która aplikacja otwiera każdy format, a formaty możesz przenosić pojedynczo.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+Pod „Otwieraj wideo w pikapik” formaty są pogrupowane według aplikacji, która otwiera je teraz, a każda grupa ma ikonę swojej aplikacji. Formaty, które otwiera pikapik, są wyróżnione. Kliknij jeden format, aby otwierać w pikapik tylko ten, albo kliknij go ponownie, aby oddać go aplikacji, która go miała.
+
+Po wyłączeniu przełącznika wszystkie formaty nadal wracają do aplikacji, które je miały. „Otwieraj muzykę w pikapik”, „Otwieraj obrazy w pikapik” i „Otwieraj archiwa w pikapik” działają tak samo.
+
+**Wypróbuj:** Ustawienia › Odtwarzacz
+
+---
+
 ## <a id="v1.53.2"></a>Mac znów usypia się przy zamkniętej pokrywie
 
 <sub>1.53.2 · 18 października 2026</sub>

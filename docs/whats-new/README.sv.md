@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>Se vilken app som öppnar varje format
+
+<sub>1.54.0 · 20 oktober 2026</sub>
+
+Inställningarna visar nu vilken app som öppnar varje format, och du kan flytta ett format i taget.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+Under «Öppna videor i pikapik» är formaten grupperade efter appen som öppnar dem just nu, varje grupp med sin apps ikon. Formaten som pikapik öppnar är markerade. Klicka på ett format för att öppna bara det i pikapik, eller klicka igen för att ge tillbaka det till appen som hade det.
+
+När du stänger av reglaget får varje format fortfarande tillbaka sin tidigare app. «Öppna musik i pikapik», «Öppna bilder i pikapik» och «Öppna arkiv i pikapik» fungerar på samma sätt.
+
+**Prova:** Inställningar › Spelare
+
+---
+
 ## <a id="v1.53.2"></a>Din Mac går i vila med locket stängt igen
 
 <sub>1.53.2 · 18 oktober 2026</sub>

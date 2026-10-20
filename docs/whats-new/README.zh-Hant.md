@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>一眼看出每種格式由哪個 App 打開
+
+<sub>1.54.0 · 2026年10月20日</sub>
+
+設定裡現在會顯示每種格式由哪個 App 打開，還能一次只改一種格式。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+在「用 pikapik 打開影片」下面，格式會依目前打開它們的 App 分組，每組帶有該 App 的圖示，pikapik 打開的格式會醒目標示。點按某個格式，就只用 pikapik 打開它；再點按一次，就還給原來的 App。
+
+關閉這個開關，所有格式仍會還給原來的 App。「用 pikapik 打開音樂」「用 pikapik 打開圖片」和「用 pikapik 打開壓縮檔」的用法相同。
+
+**試試看：** 設定 › 播放器
+
+---
+
 ## <a id="v1.53.2"></a>蓋上螢幕後，Mac 又能進入睡眠了
 
 <sub>1.53.2 · 2026年10月18日</sub>
