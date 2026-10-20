@@ -5,6 +5,27 @@
 
 ---
 
+## <a id="v1.55.0"></a>每种格式都能自己选 App
+
+<sub>1.55.0 · 2026年10月21日</sub>
+
+在设置里，现在可以像访达那样，用菜单为每种格式选择 App。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+在“用 pikapik 打开视频”下面点按某个格式，会打开菜单“MKV 的打开方式”。菜单里列出能打开这种格式的 App，每个都带图标，当前使用的那个带有勾选标记。选一个，就只有这个格式改用它。点按某个 App 的名称，可以一次移动它的整组格式。
+
+“用 pikapik 打开视频”、“用 pikapik 打开音乐”、“用 pikapik 打开图片”和“用 pikapik 打开压缩文件”不再有开关，改为自己选择 App。每有一种格式要更换，macOS 仍会询问一次；如果回答继续使用原来的 App，这个格式就保持不变。
+
+**试试看：** 设置 › 播放器
+
+**修复**
+
+- macOS 不会再询问是用“pikapik Player”打开某种格式，还是继续使用“pikapik Player”。播放器的旧副本现在算作同一个 App。
+- 在 设置 › 温度 中，温度条不能再像滑块那样被拖动了。
+
+---
+
 ## <a id="v1.54.0"></a>一眼看出每种格式由哪个 App 打开
 
 <sub>1.54.0 · 2026年10月20日</sub>

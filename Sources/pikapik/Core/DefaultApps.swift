@@ -17,66 +17,59 @@ extension NSWorkspace: DefaultAppSystem {
 
 @Observable
 final class DefaultApps {
+    static let retiredKeys = ["player-video-previous-apps", "player-music-previous-apps", "player-image-previous-apps", "archive-previous-apps"]
+
     private let types: [UTType]
     let target: URL
-    private let previousKey: String
-    private let fallback: String?
     private let system: DefaultAppSystem
-    private let defaults: UserDefaults
 
     private var current: [String: URL] = [:]
-    private var shared: Set<String> = []
+    private var choices: [String: [URL]] = [:]
     private(set) var busy = false
 
-    init(types: [UTType], target: URL, previousKey: String, fallback: String? = nil, system: DefaultAppSystem = NSWorkspace.shared, defaults: UserDefaults = .standard) {
+    init(types: [UTType], target: URL, system: DefaultAppSystem = NSWorkspace.shared, defaults: UserDefaults = .standard) {
         self.types = types
         self.target = target
-        self.previousKey = previousKey
-        self.fallback = fallback
         self.system = system
-        self.defaults = defaults
+        Self.retiredKeys.forEach(defaults.removeObject)
         refresh()
     }
 
-    var isOn: Bool { isOn(types) }
-
-    func isOn(_ types: [UTType]) -> Bool {
-        types.allSatisfy { current[$0.identifier].map(isTarget) == true }
-    }
-
+    /// The app that opens these types now. pikapik only when it opens all of them, so a type it lacks is never hidden.
     func owner(of types: [UTType]) -> URL? {
-        types.lazy.compactMap { self.current[$0.identifier] }.first { !self.isTarget($0) } ?? (isOn(types) ? target : nil)
+        let apps = types.map { current[$0.identifier] }
+        if let other = apps.lazy.compactMap({ $0 }).first(where: { $0 != self.target }) { return other }
+        return apps.isEmpty || apps.contains(nil) ? nil : target
     }
 
-    func canGiveBack(_ types: [UTType]) -> Bool {
-        types.contains { shared.contains($0.identifier) }
+    /// The apps that can open every one of these types, pikapik first.
+    func choices(for types: [UTType]) -> [URL] {
+        guard let first = types.first else { return [] }
+        return (choices[first.identifier] ?? []).filter { app in types.allSatisfy { choices[$0.identifier]?.contains(app) == true } }
     }
 
     func refresh() {
-        current = Dictionary(types.compactMap { type in system.handler(of: type).map { (type.identifier, $0) } }, uniquingKeysWith: { first, _ in first })
-        shared = Set(types.filter { system.handlers(of: $0).contains { !isTarget($0) } }.map(\.identifier))
+        var current: [String: URL] = [:]
+        var choices: [String: [URL]] = [:]
+        for type in types {
+            current[type.identifier] = system.handler(of: type).flatMap(app)
+            var apps = [target]
+            for app in system.handlers(of: type).compactMap(app) where !apps.contains(app) { apps.append(app) }
+            choices[type.identifier] = apps
+        }
+        self.current = current
+        self.choices = choices
     }
 
+    /// macOS asks about each type: a refusal stops here, "Keep" moves on to the next one.
     @discardableResult
-    func set(_ on: Bool, only subset: [UTType]? = nil) -> Task<Void, Never> {
-        let types = subset ?? self.types
-        var previous = remembered
-        if on {
-            for type in types {
-                guard let id = system.handler(of: type).flatMap({ Bundle(url: $0)?.bundleIdentifier }), id != targetID else { continue }
-                previous[type.identifier] = id
-            }
-            defaults.set(previous, forKey: previousKey)
-        }
-        let apps = types.map { on ? target : restoring($0, previous, anyApp: subset != nil) }
-        return Task { @MainActor in
+    func open(_ types: [UTType], with app: URL) -> Task<Void, Never> {
+        Task { @MainActor in
             busy = true
-            for (type, app) in zip(types, apps) {
-                guard let app, !handles(type, app) else { continue }
+            for type in types where current[type.identifier] != app {
                 guard await assign(app, to: type) else { break }
                 refresh()
             }
-            if !on { forget(types.filter { !handles($0, target) }) }
             busy = false
             refresh()
         }
@@ -96,30 +89,15 @@ final class DefaultApps {
         return answer ?? handles(type, app)
     }
 
-    private func forget(_ types: [UTType]) {
-        var previous = remembered
-        types.forEach { previous[$0.identifier] = nil }
-        defaults.set(previous.isEmpty ? nil : previous, forKey: previousKey)
-    }
-
-    private var remembered: [String: String] {
-        defaults.dictionary(forKey: previousKey) as? [String: String] ?? [:]
-    }
+    private func handles(_ type: UTType, _ app: URL) -> Bool { system.handler(of: type).flatMap(self.app) == app }
 
     private var targetID: String? { Bundle(url: target)?.bundleIdentifier }
 
-    private func isTarget(_ url: URL) -> Bool { same(url, target) }
-
-    private func handles(_ type: UTType, _ app: URL) -> Bool { system.handler(of: type).map { same($0, app) } == true }
-
-    private func same(_ a: URL, _ b: URL) -> Bool {
-        a.resolvingSymlinksInPath() == b.resolvingSymlinksInPath() || Bundle(url: a)?.bundleIdentifier.map { $0 == Bundle(url: b)?.bundleIdentifier } == true
-    }
-
-    private func restoring(_ type: UTType, _ previous: [String: String], anyApp: Bool) -> URL? {
-        let id = previous[type.identifier]
-        let capable = fallback.flatMap(system.app(withID:)).flatMap { app in system.handlers(of: type).contains { same($0, app) } ? app : nil }
-        if let app = id.flatMap(system.app(withID:)) ?? capable { return app }
-        return id == nil && !anyApp ? nil : system.handlers(of: type).first { !isTarget($0) }
+    /// One URL per app. Every copy of the player is the player itself, even one deleted from a build folder that
+    /// LaunchServices still lists; a deleted copy of another app is gone; other copies become the one macOS prefers.
+    private func app(_ url: URL) -> URL? {
+        guard FileManager.default.fileExists(atPath: url.path) else { return url.lastPathComponent == target.lastPathComponent ? target : nil }
+        guard let id = Bundle(url: url)?.bundleIdentifier else { return url }
+        return id == targetID ? target : system.app(withID: id) ?? url
     }
 }

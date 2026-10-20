@@ -9,12 +9,7 @@ final class ArchiveTool: Tool {
     let tab = SettingsTab.finder
     private let finder = FinderExtension(bundle: "Archive", key: ToolID.archive, preview: true)
     static let formats: [(name: String, types: [UTType])] = [("ZIP", [.zip]), ("7Z", [UTType("org.7-zip.7-zip-archive")].compactMap { $0 })]
-    private let defaultApp = DefaultApps(
-        types: ArchiveTool.formats.flatMap(\.types),
-        target: Bundle.main.bundleURL,
-        previousKey: "archive-previous-apps",
-        fallback: "com.apple.archiveutility"
-    )
+    private let defaultApp = DefaultApps(types: ArchiveTool.formats.flatMap(\.types), target: Bundle.main.bundleURL)
 
     var isActive: Bool { finder.isActive }
     var needs: [Permission] { finder.needsSettings ? [.finder] : [] }
@@ -60,7 +55,7 @@ private struct ArchiveSettings: View {
         ) { AnyView(ArchiveArt(on: $0)) }
         #if !APPSTORE
         if inSettings {
-            DefaultAppToggle(title: SettingTitle.openArchivesInPikapik, formats: ArchiveTool.formats, apps: defaultApp)
+            OpenWithRow(title: SettingTitle.openArchivesInPikapik, formats: ArchiveTool.formats, apps: defaultApp)
         }
         #endif
     }

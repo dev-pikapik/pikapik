@@ -138,9 +138,6 @@ enum PreferenceKey {
     static let systemAudioGranted = "system-audio-granted"
     static let systemAudioAsked = "system-audio-asked"
 
-    static let playerVideoPreviousApps = "player-video-previous-apps"
-    static let playerMusicPreviousApps = "player-music-previous-apps"
-    static let playerImagePreviousApps = "player-image-previous-apps"
     static let uninstallRemoved = "uninstaller-removed"
 
     static let animationsSpeed = "animations-speed"

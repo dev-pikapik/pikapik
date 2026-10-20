@@ -5,6 +5,27 @@
 
 ---
 
+## <a id="v1.55.0"></a>Alege aplicația pentru fiecare format
+
+<sub>1.55.0 · 21 octombrie 2026</sub>
+
+În Setări alegi acum dintr-un meniu aplicația pentru fiecare format, ca în Finder.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Fă clic pe un format sub „Deschide videoclipurile în pikapik” și se deschide meniul „Deschide MKV cu”. Acesta arată aplicațiile care pot deschide formatul, fiecare cu pictograma ei, iar cea care îl deschide acum are o bifă. Alege una și se mută doar acel format. Fă clic pe numele unei aplicații ca să muți tot grupul deodată.
+
+Comutatorul a dispărut de la „Deschide videoclipurile în pikapik”, „Deschide muzica în pikapik”, „Deschide imaginile în pikapik” și „Deschide arhivele în pikapik”: aplicația o alegi tu. macOS tot întreabă o dată pentru fiecare format care se schimbă; dacă răspunzi că vrei să păstrezi aplicația actuală, formatul rămâne cum era.
+
+**Încearcă:** Setări › Player
+
+**Reparat**
+
+- macOS nu mai întreabă dacă să deschidă un format în „pikapik Player” sau să folosească în continuare „pikapik Player”. Copiile vechi ale playerului se socotesc acum aceeași aplicație.
+- Barele de temperatură din Setări › Temperatură nu mai pot fi trase ca niște cursoare.
+
+---
+
 ## <a id="v1.54.0"></a>Vezi ce aplicație deschide fiecare format
 
 <sub>1.54.0 · 20 octombrie 2026</sub>

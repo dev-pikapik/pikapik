@@ -9,8 +9,6 @@ enum ImageFormats {
         ("SVG", ["svg"]), ("ICO", ["ico"]), ("ICNS", ["icns"]), ("BMP", ["bmp"]), ("TGA", ["tga"]), ("EXR", ["exr"]), ("HDR", ["hdr"]), ("JPEG 2000", ["jp2"]),
     ]
 
-    static let previewApp = "com.apple.Preview"
-
     static var extensions: [String] { all.flatMap(\.extensions) }
 
     static var types: [UTType] { PlayerFormats.types(of: extensions) }

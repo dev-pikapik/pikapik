@@ -25698,6 +25698,149 @@
         }
       }
     },
+    "Click a format or an app to choose which app opens it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "انقر على صيغة أو تطبيق لاختيار التطبيق الذي يفتحها."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kliknutím na formát nebo aplikaci vyberete, ve které aplikaci se otevře."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klick auf ein Format oder eine App, um zu wählen, welche App es öffnet."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Click a format or an app to choose which app opens it."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haz clic en un formato o en una app para elegir qué app lo abre."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cliquez sur un format ou une app pour choisir l’app qui l’ouvre."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "किसी फ़ॉर्मैट या ऐप पर क्लिक करके चुनें कि उसे कौन-सा ऐप खोले।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klik format atau app untuk memilih app yang membukanya."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fai clic su un formato o su un’app per scegliere quale app lo apre."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "フォーマットまたはアプリをクリックして、開くアプリを選びます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "형식이나 앱을 클릭하여 여는 앱을 선택하십시오."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klik op een formaat of een app om te kiezen welke app het opent."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kliknij format lub aplikację, aby wybrać, która aplikacja go otwiera."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clique em um formato ou em um app para escolher qual app o abre."
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faceți clic pe un format sau pe o aplicație pentru a alege aplicația care îl deschide."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нажмите на формат или программу, чтобы выбрать, в какой программе открывать."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klicka på ett format eller en app för att välja vilken app som öppnar det."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "คลิกรูปแบบหรือแอปเพื่อเลือกแอปที่จะเปิดรูปแบบนั้น"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hangi uygulamanın açacağını seçmek için bir biçime veya uygulamaya tıklayın."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Натисніть формат або програму, щоб вибрати, в якій програмі його відкривати."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bấm vào định dạng hoặc ứng dụng để chọn ứng dụng sẽ mở nó."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点按格式或 App，即可选择用哪个 App 打开。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "點按格式或 App，即可選擇用哪個 App 開啟。"
+          }
+        }
+      }
+    },
     "Click again to bring it back": {
       "extractionState": "manual",
       "localizations": {
@@ -95246,149 +95389,6 @@
         }
       }
     },
-    "Only pikapik can open %@ on this Mac": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "لا يفتح %@ على هذا الـMac سوى pikapik"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ na tomto Macu umí otevřít jen pikapik"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nur pikapik kann %@ auf diesem Mac öffnen"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Only pikapik can open %@ on this Mac"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Solo pikapik puede abrir %@ en este Mac"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Seul pikapik peut ouvrir %@ sur ce Mac"
-          }
-        },
-        "hi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "इस Mac पर %@ केवल pikapik खोल सकता है"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hanya pikapik yang bisa membuka %@ di Mac ini"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Solo pikapik può aprire %@ su questo Mac"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "この Mac で %@ を開けるのは pikapik だけです"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이 Mac에서 %@ 파일은 pikapik만 열 수 있습니다"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alleen pikapik kan %@ openen op deze Mac"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Na tym Macu tylko pikapik otwiera %@"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Só o pikapik abre %@ neste Mac"
-          }
-        },
-        "ro": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Doar pikapik poate deschide %@ pe acest Mac"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "На этом Mac %@ открывает только pikapik"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bara pikapik kan öppna %@ på den här Macen"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "บน Mac เครื่องนี้มีเพียง pikapik ที่เปิด %@ ได้"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bu Mac’te %@ dosyalarını yalnızca pikapik açabilir"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "На цьому Mac %@ відкриває лише pikapik"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trên máy Mac này chỉ pikapik mở được %@"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "这台 Mac 上只有 pikapik 能打开 %@"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "這台 Mac 上只有 pikapik 能打開 %@"
-          }
-        }
-      }
-    },
     "Only some tools need these permissions, and the rest work without them": {
       "extractionState": "manual",
       "localizations": {
@@ -96247,145 +96247,145 @@
         }
       }
     },
-    "Open %@ in pikapik": {
+    "Open %@ with": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "فتح %@ في pikapik"
+            "value": "فتح %@ باستخدام"
           }
         },
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Otevírat %@ v pikapik"
+            "value": "Otevírat %@ v aplikaci"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ in pikapik öffnen"
+            "value": "%@ öffnen mit"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open %@ in pikapik"
+            "value": "Open %@ with"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abrir %@ en pikapik"
+            "value": "Abrir %@ con"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvrir %@ dans pikapik"
+            "value": "Ouvrir %@ avec"
           }
         },
         "hi": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ pikapik में खोलें"
+            "value": "%@ इसके साथ खोलें"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Buka %@ di pikapik"
+            "value": "Buka %@ dengan"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Apri %@ in pikapik"
+            "value": "Apri %@ con"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ を pikapik で開く"
+            "value": "%@ を開くアプリ"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik에서 %@ 열기"
+            "value": "%@ 파일을 열 앱"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Open %@ in pikapik"
+            "value": "Open %@ met"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Otwieraj %@ w pikapik"
+            "value": "Otwieraj %@ w aplikacji"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abrir %@ no pikapik"
+            "value": "Abrir %@ com"
           }
         },
         "ro": {
           "stringUnit": {
             "state": "translated",
-            "value": "Deschide %@ în pikapik"
+            "value": "Deschide %@ cu"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Открывать %@ в pikapik"
+            "value": "Открывать %@ в программе"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Öppna %@ i pikapik"
+            "value": "Öppna %@ med"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เปิด %@ ใน pikapik"
+            "value": "เปิด %@ ด้วย"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%@ dosyalarını pikapik’te aç"
+            "value": "%@ dosyalarını şununla aç"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Відкривати %@ в pikapik"
+            "value": "Відкривати %@ в програмі"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mở %@ bằng pikapik"
+            "value": "Mở %@ bằng"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "用 pikapik 打开 %@"
+            "value": "%@ 的打开方式"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "用 pikapik 打開 %@"
+            "value": "%@ 的打開方式"
           }
         }
       }
@@ -98245,6 +98245,149 @@
           "stringUnit": {
             "state": "translated",
             "value": "用 pikapik 打開圖片"
+          }
+        }
+      }
+    },
+    "Open these formats with": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فتح هذه الصيغ باستخدام"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otevírat tyto formáty v aplikaci"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Formate öffnen mit"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open these formats with"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir estos formatos con"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir ces formats avec"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ये फ़ॉर्मैट इसके साथ खोलें"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buka format ini dengan"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri questi formati con"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "これらのフォーマットを開くアプリ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 형식을 열 앱"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open deze formaten met"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otwieraj te formaty w aplikacji"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir estes formatos com"
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deschide aceste formate cu"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Открывать эти форматы в программе"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öppna de här formaten med"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปิดรูปแบบเหล่านี้ด้วย"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu biçimleri şununla aç"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Відкривати ці формати в програмі"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở các định dạng này bằng"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "这些格式的打开方式"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這些格式的打開方式"
           }
         }
       }
@@ -138621,149 +138764,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "停止幻燈片秀"
-          }
-        }
-      }
-    },
-    "Stop opening %@ in pikapik": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "إيقاف فتح %@ في pikapik"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Přestat otevírat %@ v pikapik"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ nicht mehr in pikapik öffnen"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stop opening %@ in pikapik"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dejar de abrir %@ en pikapik"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ne plus ouvrir %@ dans pikapik"
-          }
-        },
-        "hi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ को pikapik में खोलना बंद करें"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Berhenti membuka %@ di pikapik"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Smetti di aprire %@ in pikapik"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ を pikapik で開かない"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik에서 %@ 열지 않기"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stop met %@ openen in pikapik"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Przestań otwierać %@ w pikapik"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parar de abrir %@ no pikapik"
-          }
-        },
-        "ro": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nu mai deschide %@ în pikapik"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Больше не открывать %@ в pikapik"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sluta öppna %@ i pikapik"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "เลิกเปิด %@ ใน pikapik"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ dosyalarını artık pikapik’te açma"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Більше не відкривати %@ в pikapik"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ngừng mở %@ bằng pikapik"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "不再用 pikapik 打开 %@"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "不再用 pikapik 打開 %@"
           }
         }
       }

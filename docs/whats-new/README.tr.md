@@ -5,6 +5,27 @@
 
 ---
 
+## <a id="v1.55.0"></a>Her biçim için uygulamayı siz seçin
+
+<sub>1.55.0 · 21 Ekim 2026</sub>
+
+Ayarlar’da artık her biçimin uygulamasını Finder’daki gibi bir menüden seçiyorsunuz.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+“Videoları pikapik’te aç” altındaki bir biçime tıklayın, “MKV dosyalarını şununla aç” menüsü açılır. Menü, o biçimi açabilen uygulamaları simgeleriyle sıralar; şu anda açan uygulamanın yanında onay işareti bulunur. Birini seçin, yalnızca o biçim taşınır. Bir uygulamanın adına tıklarsanız grubun tamamı tek seferde taşınır.
+
+“Videoları pikapik’te aç”, “Müziği pikapik’te aç”, “Resimleri pikapik’te aç” ve “Arşivleri pikapik’te aç” satırlarındaki anahtar kalktı; uygulamayı artık siz seçiyorsunuz. macOS, değişen her biçim için yine bir kez sorar; mevcut uygulamayı korumak istediğinizi söylerseniz o biçim olduğu gibi kalır.
+
+**Deneyin:** Ayarlar › Oynatıcı
+
+**Düzeltilenler**
+
+- macOS artık bir biçim için “pikapik Player” ile “pikapik Player” arasında seçim yapmanızı istemiyor. Oynatıcının eski kopyaları artık aynı uygulama sayılıyor.
+- Ayarlar › Sıcaklık içindeki sıcaklık çubukları artık kaydırıcı gibi sürüklenemiyor.
+
+---
+
 ## <a id="v1.54.0"></a>Her biçimi hangi uygulamanın açtığını görün
 
 <sub>1.54.0 · 20 Ekim 2026</sub>

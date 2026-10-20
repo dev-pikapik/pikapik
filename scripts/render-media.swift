@@ -72,6 +72,7 @@ enum RenderMedia {
         ("whats-new/1.43.0/background", BackgroundCard.length, AnyView(BackgroundCard())),
         ("whats-new/1.45.0/app-volume", AppVolumeMixerCard.length, AnyView(AppVolumeMixerCard())),
         ("whats-new/1.54.0/format-owners", FormatOwnersCard.length, AnyView(FormatOwnersCard())),
+        ("whats-new/1.55.0/open-with", OpenWithCard.length, AnyView(OpenWithCard())),
     ]
 
     static func main() {
@@ -1616,6 +1617,145 @@ private struct FormatOwnersScene: View {
             .overlay(shape.hairline(Color.white.opacity(0.25)))
             .overlay(Image(systemName: symbol).font(.system(size: 10, weight: .semibold)).foregroundStyle(.white))
             .frame(width: 22, height: 22)
+            .shadow(color: .black.opacity(0.18), radius: 2, y: 1)
+    }
+
+    private func chip(_ name: String, ours: Double) -> some View {
+        Text(verbatim: name)
+            .font(.system(size: 10.5, weight: .medium))
+            .frame(width: Self.chipWidth, height: 20)
+            .background(Capsule().fill(Color.primary.opacity(0.07 * (1 - ours))))
+            .background(Capsule().fill(Color.accentColor.opacity(0.22 * ours)))
+    }
+}
+
+private struct OpenWithCard: View {
+    static let length = 9.0
+
+    var body: some View {
+        IllustrationRow {
+            ArtTimeline { time in
+                OpenWithScene(t: time.map { GameStory.mod($0, Self.length) } ?? 3.4)
+            }
+        }
+    }
+}
+
+private struct OpenWithScene: View {
+    let t: Double
+
+    private static let chipWidth: CGFloat = 38
+    private static let rowsY: [CGFloat] = [27, 59]
+    private static let menu = CGRect(x: 138, y: 38, width: 118, height: 80)
+    private static let itemsY: [CGFloat] = [26, 45, 64]
+    private static let captions: [CGFloat] = [30, 24, 34]
+    private static let start = CGPoint(x: 268, y: 118)
+    private static let chipTip = CGPoint(x: 160, y: 31)
+    private static let itemTip = CGPoint(x: 212, y: 83)
+    private static let route: [(Double, CGPoint)] = [
+        (0, start), (0.6, start), (1.6, chipTip), (3.0, chipTip), (3.9, itemTip), (5.0, itemTip), (6.4, start),
+    ]
+
+    private var open: Double { GameStory.ramp(t, 1.95, 0.2) * (1 - GameStory.ramp(t, 4.65, 0.2)) }
+    private var clicking: Bool { (1.8..<1.94).contains(t) || (4.4..<4.54).contains(t) }
+    private var reset: Bool { t >= 7.7 }
+    private var shown: Double { reset ? GameStory.ramp(t, 7.9, 0.5) : 1 - GameStory.ramp(t, 7.2, 0.5) }
+    private var ours: Double { reset ? 1 : 1 - GameStory.ramp(t, 5.3, 0.4) }
+
+    private func x(_ index: Int) -> CGFloat { 113 + CGFloat(index) * (Self.chipWidth + 6) }
+
+    private var tip: CGPoint {
+        var tip = Self.route[Self.route.count - 1].1
+        if let next = Self.route.firstIndex(where: { t < $0.0 }) {
+            let (t0, from) = Self.route[max(next - 1, 0)], (t1, to) = Self.route[next]
+            let e = next > 0 ? CGFloat(GameStory.ramp(t, t0, t1 - t0)) : 0
+            tip = CGPoint(x: from.x + (to.x - from.x) * e, y: from.y + (to.y - from.y) * e)
+        }
+        return tip
+    }
+
+    private var hot: Int? {
+        guard open > 0.5, (Self.menu.minX...Self.menu.maxX).contains(tip.x) else { return nil }
+        return Self.itemsY.indices.first { abs(tip.y - Self.menu.minY - Self.itemsY[$0]) < 9.5 }
+    }
+
+    private var mkv: CGPoint {
+        let across = reset ? 0 : CGFloat(GameStory.ramp(t, 4.85, 0.5)), down = reset ? 0 : CGFloat(GameStory.ramp(t, 5.15, 0.5))
+        return CGPoint(x: x(1) + (x(3) - x(1)) * across, y: Self.rowsY[0] + (Self.rowsY[1] - Self.rowsY[0]) * down)
+    }
+
+    var body: some View {
+        let panel = RoundedRectangle(cornerRadius: 12, style: .continuous)
+        Stage {
+            panel.fill(Color(nsColor: .windowBackgroundColor))
+                .shadow(color: .black.opacity(0.15), radius: 5, y: 2)
+                .overlay(panel.hairline(Color.primary.opacity(0.12)))
+                .frame(width: 252, height: 70)
+                .position(x: 150, y: 43)
+            row(y: Self.rowsY[0], caption: 26) { Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 22, height: 22) }
+            row(y: Self.rowsY[1], caption: 22) { tile("play.fill", size: 22, colors: [Color(white: 0.42), Color(white: 0.24)]) }
+            chip("WebM", ours: 1).position(x: x(0), y: Self.rowsY[0])
+            ForEach(0..<3, id: \.self) { chip(["MP4", "MOV", "AVI"][$0], ours: 0).position(x: x($0), y: Self.rowsY[1]) }
+            chip("MKV", ours: ours).opacity(shown).position(mkv)
+            menu
+                .opacity(open)
+                .scaleEffect(0.94 + 0.06 * open, anchor: .topLeading)
+                .position(x: Self.menu.midX, y: Self.menu.midY)
+            ArtCursor(pressed: clicking)
+                .position(x: tip.x + 6, y: tip.y + 9)
+        }
+    }
+
+    private var menu: some View {
+        let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
+        return ZStack {
+            shape.fill(Color(nsColor: .controlBackgroundColor))
+                .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
+                .overlay(shape.hairline(Color.primary.opacity(0.2)))
+            Capsule().fill(Color.primary.opacity(0.3)).frame(width: 44, height: 5).position(x: 34, y: 9)
+            ForEach(0..<3, id: \.self) { item in
+                let lit = hot == item, y = Self.itemsY[item]
+                RoundedRectangle(cornerRadius: 5, style: .continuous).fill(Color.accentColor)
+                    .opacity(lit ? 1 : 0)
+                    .frame(width: 110, height: 19)
+                    .position(x: 59, y: y)
+                if item == 0 {
+                    Image(systemName: "checkmark").font(.system(size: 8, weight: .bold))
+                        .foregroundStyle(lit ? Color.white : Color.primary)
+                        .position(x: 13, y: y)
+                }
+                Group {
+                    switch item {
+                    case 0: Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 14, height: 14)
+                    case 1: tile("play.fill", size: 14, colors: [Color(white: 0.42), Color(white: 0.24)])
+                    default: tile("film", size: 14, colors: [Color(red: 0.35, green: 0.6, blue: 1), Color(red: 0.15, green: 0.35, blue: 0.85)])
+                    }
+                }
+                .position(x: 30, y: y)
+                Capsule().fill(lit ? Color.white.opacity(0.9) : Color.primary.opacity(0.3))
+                    .frame(width: Self.captions[item], height: 5)
+                    .position(x: 42 + Self.captions[item] / 2, y: y)
+            }
+        }
+        .frame(width: Self.menu.width, height: Self.menu.height)
+    }
+
+    private func row<Icon: View>(y: CGFloat, caption: CGFloat, @ViewBuilder icon: () -> Icon) -> some View {
+        ZStack {
+            icon().position(x: 44, y: y)
+            Capsule().fill(Color.primary.opacity(0.3))
+                .frame(width: caption, height: 5)
+                .position(x: 62 + caption / 2, y: y)
+        }
+    }
+
+    private func tile(_ symbol: String, size: CGFloat, colors: [Color]) -> some View {
+        let shape = RoundedRectangle(cornerRadius: size * 0.27, style: .continuous)
+        return shape
+            .fill(LinearGradient(colors: colors, startPoint: .top, endPoint: .bottom))
+            .overlay(shape.hairline(Color.white.opacity(0.25)))
+            .overlay(Image(systemName: symbol).font(.system(size: size * 0.45, weight: .semibold)).foregroundStyle(.white))
+            .frame(width: size, height: size)
             .shadow(color: .black.opacity(0.18), radius: 2, y: 1)
     }
 

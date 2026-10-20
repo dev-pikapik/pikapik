@@ -218,7 +218,7 @@ struct RowChevron: View {
     }
 }
 
-struct DefaultAppToggle: View {
+struct OpenWithRow: View {
     let title: String
     let formats: [(name: String, types: [UTType])]
     @Bindable var apps: DefaultApps
@@ -228,19 +228,20 @@ struct DefaultAppToggle: View {
     var body: some View {
         let groups = groups
         VStack(alignment: .leading, spacing: 8) {
-            Toggle(isOn: Binding(get: { apps.isOn }, set: { if MainCopy.canAct { apps.set($0) } })) {
-                RowLabel(Text(verbatim: title))
-            }
-            .help(String(localized: "macOS will ask about each format."))
+            RowLabel(Text(verbatim: title))
             ForEach(groups, id: \.app) { group in
-                let ours = group.app == apps.target
+                let types = group.formats.flatMap(\.types)
                 HStack(alignment: .top, spacing: 10) {
-                    DefaultAppName(app: group.app)
+                    AppMenu(header: Text("Open these formats with"), owner: group.app, choices: choices(for: types), choose: { apps.open(types, with: $0) }) { hover in
+                        AppName(app: group.app, chevron: choices(for: types).contains { $0 != group.app }, hover: hover)
+                    }
                     ChipFlow {
                         ForEach(group.formats, id: \.name) { format in
-                            FormatChip(name: format.name, app: DefaultAppName.name(of: group.app), ours: ours, fixed: ours && !apps.canGiveBack(format.types)) {
-                                if MainCopy.canAct, !ours || apps.canGiveBack(format.types) { apps.set(!ours, only: format.types) }
+                            AppMenu(header: Text("Open \(format.name) with"), owner: group.app, choices: choices(for: format.types), choose: { apps.open(format.types, with: $0) }) { hover in
+                                FormatChip(name: format.name, ours: group.app == apps.target, hover: hover)
                             }
+                            .accessibilityLabel(Text(verbatim: format.name))
+                            .accessibilityValue(Text(verbatim: AppName.name(of: group.app)))
                             .matchedGeometryEffect(id: format.name, in: chips)
                         }
                     }
@@ -259,6 +260,13 @@ struct DefaultAppToggle: View {
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in apps.refresh() }
     }
 
+    /// pikapik first, then the other apps by name.
+    private func choices(for types: [UTType]) -> [URL] {
+        apps.choices(for: types).sorted { a, b in
+            a == apps.target || b != apps.target && AppName.name(of: a).localizedStandardCompare(AppName.name(of: b)) == .orderedAscending
+        }
+    }
+
     private var groups: [(app: URL?, formats: [(name: String, types: [UTType])])] {
         let formats = formats.filter { !$0.types.isEmpty }
         let owners = formats.map { apps.owner(of: $0.types) }
@@ -273,19 +281,57 @@ struct DefaultAppToggle: View {
     }
 }
 
-private struct DefaultAppName: View {
+/// "Open with" menu like Finder's: the app that opens the formats now is checked, choosing another one moves them.
+private struct AppMenu<Label: View>: View {
+    let header: Text
+    let owner: URL?
+    let choices: [URL]
+    let choose: (URL) -> Void
+    @ViewBuilder let label: (Bool) -> Label
+    @State private var hover = false
+
+    var body: some View {
+        Menu {
+            Section {
+                Picker(selection: Binding(get: { owner }, set: { app in if let app, app != owner, MainCopy.canAct { choose(app) } })) {
+                    ForEach(choices, id: \.self) { app in
+                        SwiftUI.Label { Text(verbatim: AppName.name(of: app)) } icon: { Image(nsImage: AppName.icon(of: app, size: 16)) }
+                            .tag(Optional(app))
+                    }
+                } label: { header }
+                .pickerStyle(.inline)
+                .labelsHidden()
+            } header: { header }
+        } label: {
+            label(hover)
+        }
+        .menuStyle(.button)
+        .buttonStyle(.plain)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .onHover { hover = $0 }
+    }
+}
+
+private struct AppName: View {
     let app: URL?
+    let chevron: Bool
+    let hover: Bool
 
     static func name(of app: URL?) -> String {
         app.map { FileManager.default.displayName(atPath: $0.path).replacingOccurrences(of: ".app", with: "", options: [.anchored, .backwards]) } ?? String(localized: "No app")
     }
 
+    static func icon(of app: URL, size: CGFloat) -> NSImage {
+        let icon = NSWorkspace.shared.icon(forFile: app.path)
+        icon.size = NSSize(width: size, height: size)
+        return icon
+    }
+
     var body: some View {
         HStack(spacing: 6) {
             if let app {
-                Image(nsImage: NSWorkspace.shared.icon(forFile: app.path))
-                    .resizable()
-                    .frame(width: 16, height: 16)
+                Image(nsImage: Self.icon(of: app, size: 16))
             } else {
                 Image(systemName: "questionmark.app.dashed")
                     .frame(width: 16, height: 16)
@@ -293,38 +339,32 @@ private struct DefaultAppName: View {
             Text(verbatim: Self.name(of: app))
                 .lineLimit(1)
                 .truncationMode(.middle)
+            if chevron {
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+            }
         }
         .font(.subheadline)
-        .foregroundStyle(.secondary)
+        .foregroundStyle(chevron && hover ? .primary : .secondary)
         .frame(width: 150, height: 22, alignment: .leading)
+        .contentShape(Rectangle())
         .help(Self.name(of: app))
     }
 }
 
 private struct FormatChip: View {
     let name: String
-    let app: String
     let ours: Bool
-    let fixed: Bool
-    let action: () -> Void
-    @State private var hover = false
+    let hover: Bool
 
     var body: some View {
-        let help = fixed ? String(localized: "Only pikapik can open \(name) on this Mac") : ours ? String(localized: "Stop opening \(name) in pikapik") : String(localized: "Open \(name) in pikapik")
-        Button(action: action) {
-            Text(verbatim: name)
-                .font(.subheadline.weight(.medium))
-                .padding(.horizontal, 8)
-                .frame(height: 22)
-                .background(ours ? Color.accentColor.opacity(hover ? 0.32 : 0.2) : Color.primary.opacity(hover ? 0.14 : 0.07), in: Capsule())
-                .contentShape(Capsule())
-        }
-        .buttonStyle(.plain)
-        .onHover { hover = $0 && !fixed }
-        .accessibilityRemoveTraits(fixed ? .isButton : [])
-        .help(help)
-        .accessibilityValue(Text(verbatim: app))
-        .accessibilityHint(Text(verbatim: help))
+        Text(verbatim: name)
+            .font(.subheadline.weight(.medium))
+            .padding(.horizontal, 8)
+            .frame(height: 22)
+            .background(ours ? Color.accentColor.opacity(hover ? 0.32 : 0.2) : Color.primary.opacity(hover ? 0.14 : 0.07), in: Capsule())
+            .contentShape(Capsule())
     }
 }
 
