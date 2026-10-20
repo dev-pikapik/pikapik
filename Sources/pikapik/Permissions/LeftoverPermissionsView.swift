@@ -275,34 +275,6 @@ private struct PermissionChips: View {
     }
 }
 
-private struct ChipFlow: Layout {
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let frames = place(subviews, width: proposal.width ?? .infinity)
-        return CGSize(width: frames.map(\.maxX).max() ?? 0, height: frames.map(\.maxY).max() ?? 0)
-    }
-
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        for (subview, frame) in zip(subviews, place(subviews, width: bounds.width)) {
-            subview.place(at: CGPoint(x: bounds.minX + frame.minX, y: bounds.minY + frame.minY), proposal: ProposedViewSize(frame.size))
-        }
-    }
-
-    private func place(_ subviews: Subviews, width: CGFloat) -> [CGRect] {
-        var point = CGPoint.zero
-        var line: CGFloat = 0
-        return subviews.map { subview in
-            let size = subview.sizeThatFits(.unspecified)
-            if point.x > 0, point.x + size.width > width {
-                point = CGPoint(x: 0, y: point.y + line + 4)
-                line = 0
-            }
-            defer { point.x += size.width + 4 }
-            line = max(line, size.height)
-            return CGRect(origin: point, size: size)
-        }
-    }
-}
-
 struct LeftoversArt: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 

@@ -18,7 +18,7 @@ extension NSWorkspace: DefaultAppSystem {
 @Observable
 final class DefaultApps {
     private let types: [UTType]
-    private let target: URL
+    let target: URL
     private let previousKey: String
     private let fallback: String?
     private let system: DefaultAppSystem
@@ -43,12 +43,17 @@ final class DefaultApps {
         types.allSatisfy { current[$0.identifier].map(isTarget) == true }
     }
 
+    func owner(of types: [UTType]) -> URL? {
+        types.lazy.compactMap { self.current[$0.identifier] }.first { !self.isTarget($0) } ?? (isOn(types) ? target : nil)
+    }
+
     func refresh() {
         current = Dictionary(types.compactMap { type in system.handler(of: type).map { (type.identifier, $0) } }, uniquingKeysWith: { first, _ in first })
     }
 
     @discardableResult
-    func set(_ on: Bool) -> Task<Void, Never> {
+    func set(_ on: Bool, only subset: [UTType]? = nil) -> Task<Void, Never> {
+        let types = subset ?? self.types
         var previous = remembered
         if on {
             for type in types {
