@@ -6,9 +6,9 @@ struct PlayerPage: View {
     static let helper = Bundle.main.bundleURL.appending(path: "Contents/Helpers/pikapik Player.app")
     private static let license = Bundle.main.url(forResource: "Player Licenses", withExtension: "txt")
     private static let source = AppConstants.githubReleasesURL
-    private static let videos = DefaultApps(types: PlayerFormats.videoTypes, target: helper, previousKey: PreferenceKey.playerVideoPreviousApps)
-    private static let songs = DefaultApps(types: PlayerFormats.musicTypes, target: helper, previousKey: PreferenceKey.playerMusicPreviousApps, fallback: "com.apple.Music")
-    private static let pictures = DefaultApps(types: ImageFormats.types, target: helper, previousKey: PreferenceKey.playerImagePreviousApps, fallback: ImageFormats.previewApp)
+    private static let videos = DefaultApps(types: PlayerFormats.videoTypes, target: helper)
+    private static let songs = DefaultApps(types: PlayerFormats.musicTypes, target: helper)
+    private static let pictures = DefaultApps(types: ImageFormats.types, target: helper)
 
     var body: some View {
         Form {
@@ -22,9 +22,14 @@ struct PlayerPage: View {
                     .settingAnchor(SettingTitle.openVideo)
             }
             Section {
-                DefaultAppToggle(title: SettingTitle.openVideosInPikapik, formats: Self.formats(PlayerFormats.video), apps: Self.videos)
-                DefaultAppToggle(title: SettingTitle.openMusicInPikapik, formats: Self.formats(PlayerFormats.music), apps: Self.songs)
-                DefaultAppToggle(title: SettingTitle.openPicturesInPikapik, formats: Self.formats(ImageFormats.all), apps: Self.pictures)
+                OpenWithRow(title: SettingTitle.openVideosInPikapik, formats: Self.formats(PlayerFormats.video), apps: Self.videos)
+                OpenWithRow(title: SettingTitle.openMusicInPikapik, formats: Self.formats(PlayerFormats.music), apps: Self.songs)
+                OpenWithRow(title: SettingTitle.openPicturesInPikapik, formats: Self.formats(ImageFormats.all), apps: Self.pictures)
+            } footer: {
+                Text("Click a format or an app to choose which app opens it.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             Section {
                 if let license = Self.license {
