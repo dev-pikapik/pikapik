@@ -5,6 +5,27 @@
 
 ---
 
+## <a id="v1.55.0"></a>Chọn ứng dụng cho từng định dạng
+
+<sub>1.55.0 · 20 tháng 10 năm 2026</sub>
+
+Trong Cài đặt, giờ bạn chọn ứng dụng cho từng định dạng từ một menu, giống như trong Finder.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Nhấp vào một định dạng bên dưới “Mở video bằng pikapik” và menu “Mở MKV bằng” sẽ mở ra. Menu liệt kê các ứng dụng có thể mở định dạng đó, mỗi ứng dụng kèm biểu tượng, và ứng dụng đang mở nó có dấu tích. Chọn một ứng dụng, chỉ định dạng đó được chuyển. Nhấp vào tên một ứng dụng để chuyển cả nhóm cùng lúc.
+
+Công tắc không còn ở “Mở video bằng pikapik”, “Mở nhạc bằng pikapik”, “Mở hình ảnh bằng pikapik” và “Mở tệp lưu trữ bằng pikapik”: bạn tự chọn ứng dụng. macOS vẫn hỏi một lần cho mỗi định dạng thay đổi; nếu bạn trả lời muốn giữ ứng dụng hiện tại, định dạng đó vẫn như cũ.
+
+**Thử ngay:** Cài đặt › Trình phát
+
+**Đã sửa**
+
+- macOS không còn hỏi nên mở định dạng bằng “pikapik Player” hay tiếp tục dùng “pikapik Player” nữa. Các bản sao cũ của trình phát giờ được tính là cùng một ứng dụng.
+- Các thanh nhiệt độ trong Cài đặt › Nhiệt độ không còn kéo được như thanh trượt nữa.
+
+---
+
 ## <a id="v1.54.0"></a>Xem ứng dụng nào mở từng định dạng
 
 <sub>1.54.0 · 20 tháng 10 năm 2026</sub>

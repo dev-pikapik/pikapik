@@ -5,6 +5,27 @@
 
 ---
 
+## <a id="v1.55.0"></a>Escolha o app de cada formato
+
+<sub>1.55.0 · 20 de outubro de 2026</sub>
+
+Nos ajustes, você agora escolhe o app de cada formato em um menu, como no Finder.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Clique em um formato em “Abrir vídeos no pikapik” e um menu se abre: “Abrir MKV com”. Ele lista os apps que podem abrir esse formato, cada um com seu ícone, e o que o abre agora fica marcado. Escolha um, e só esse formato muda. Clique no nome de um app para mover o grupo inteiro de uma vez.
+
+A chave não existe mais em “Abrir vídeos no pikapik”, “Abrir músicas no pikapik”, “Abrir imagens no pikapik” e “Abrir arquivos compactados no pikapik”: agora você escolhe o app. O macOS continua perguntando uma vez para cada formato que muda; se você responder que quer manter o app atual, esse formato fica como estava.
+
+**Experimente:** Ajustes › Player
+
+**Corrigido**
+
+- O macOS não pergunta mais se deve abrir um formato no “pikapik Player” ou continuar usando o “pikapik Player”. Cópias antigas do player agora contam como o mesmo app.
+- As barras de temperatura em Ajustes › Temperatura não podem mais ser arrastadas como controles deslizantes.
+
+---
+
 ## <a id="v1.54.0"></a>Veja qual app abre cada formato
 
 <sub>1.54.0 · 20 de outubro de 2026</sub>

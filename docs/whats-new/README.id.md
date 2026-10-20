@@ -5,6 +5,27 @@
 
 ---
 
+## <a id="v1.55.0"></a>Pilih app untuk setiap format
+
+<sub>1.55.0 · 20 Oktober 2026</sub>
+
+Di Pengaturan, Anda kini memilih app untuk setiap format dari sebuah menu, seperti di Finder.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Klik sebuah format di bawah “Buka video di pikapik” dan menu “Buka MKV dengan” terbuka. Menu itu menampilkan app yang bisa membuka format tersebut, masing-masing dengan ikonnya, dan app yang membukanya saat ini diberi tanda centang. Pilih salah satu, dan hanya format itu yang berpindah. Klik nama sebuah app untuk memindahkan seluruh kelompoknya sekaligus.
+
+Sakelar sudah tidak ada di “Buka video di pikapik”, “Buka musik di pikapik”, “Buka gambar di pikapik”, dan “Buka arsip di pikapik”: Anda memilih app-nya sendiri. macOS tetap bertanya satu kali untuk setiap format yang berubah; jika Anda menjawab ingin tetap memakai app yang sekarang, format itu tetap seperti semula.
+
+**Coba:** Pengaturan › Pemutar
+
+**Diperbaiki**
+
+- macOS tidak lagi bertanya apakah suatu format dibuka di “pikapik Player” atau tetap memakai “pikapik Player”. Salinan lama pemutar kini dihitung sebagai app yang sama.
+- Batang suhu di Pengaturan › Suhu tidak bisa lagi digeser seperti penggeser.
+
+---
+
 ## <a id="v1.54.0"></a>Lihat app mana yang membuka tiap format
 
 <sub>1.54.0 · 20 Oktober 2026</sub>

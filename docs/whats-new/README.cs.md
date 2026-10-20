@@ -5,6 +5,27 @@
 
 ---
 
+## <a id="v1.55.0"></a>Vyberte aplikaci pro každý formát
+
+<sub>1.55.0 · 20. října 2026</sub>
+
+V nastavení teď aplikaci pro každý formát vybíráte z nabídky, stejně jako ve Finderu.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Klikněte na formát pod „Otevírat videa v pikapik“ a otevře se nabídka „Otevírat MKV v aplikaci“. Vypíše aplikace, které formát umějí otevřít, každou s její ikonou, a ta, která ho otevírá teď, má zaškrtnutí. Vyberte jednu a přesune se jen tento formát. Kliknutím na název aplikace přesunete celou skupinu najednou.
+
+Přepínač u „Otevírat videa v pikapik“, „Otevírat hudbu v pikapik“, „Otevírat obrázky v pikapik“ a „Otevírat archivy v pikapik“ zmizel: aplikaci si vybíráte sami. macOS se dál zeptá jednou na každý formát, který se mění; pokud odpovíte, že chcete ponechat stávající aplikaci, formát zůstane, jak byl.
+
+**Vyzkoušejte:** Nastavení › Přehrávač
+
+**Opraveno**
+
+- macOS se už neptá, jestli formát otevřít v „pikapik Player“, nebo dál používat „pikapik Player“. Staré kopie přehrávače se teď počítají jako stejná aplikace.
+- Pruhy teploty v Nastavení › Teplota už nejde přetahovat jako posuvníky.
+
+---
+
 ## <a id="v1.54.0"></a>Uvidíte, která aplikace otevírá který formát
 
 <sub>1.54.0 · 20. října 2026</sub>
