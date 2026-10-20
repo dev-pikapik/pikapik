@@ -61,6 +61,7 @@ private struct PartRow: View {
                     .gaugeStyle(.linearCapacity)
                     .tint(ThermalScene.tint(level))
                     .frame(width: 80)
+                    .allowsHitTesting(false)
                 Text(degrees(celsius))
                     .monospacedDigit()
                     .frame(minWidth: 40, alignment: .trailing)
