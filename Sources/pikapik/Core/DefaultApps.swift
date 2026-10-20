@@ -35,10 +35,11 @@ final class DefaultApps {
         refresh()
     }
 
-    /// The app that opens these types now. When they disagree, another app wins over pikapik, so nothing is hidden.
+    /// The app that opens these types now. pikapik only when it opens all of them, so a type it lacks is never hidden.
     func owner(of types: [UTType]) -> URL? {
-        let apps = types.compactMap { current[$0.identifier] }
-        return apps.first { $0 != target } ?? apps.first
+        let apps = types.map { current[$0.identifier] }
+        if let other = apps.lazy.compactMap({ $0 }).first(where: { $0 != self.target }) { return other }
+        return apps.isEmpty || apps.contains(nil) ? nil : target
     }
 
     /// The apps that can open every one of these types, pikapik first.

@@ -272,7 +272,7 @@ enum TestPlayer {
         precondition(apps.owner(of: [a]) == old && apps.owner(of: [b]) == next, "a format shows the app that opens it now")
         precondition(apps.owner(of: [c]) == ours && apps.owner(of: [c, e]) == ours, "when every type is the player's, the player owns the format")
         precondition(apps.owner(of: [a, c]) == old && apps.owner(of: [c, a]) == old && apps.owner(of: [c, b]) == next, "another app wins over the player when the types disagree")
-        precondition(apps.owner(of: [d]) == nil, "a format nobody opens has no app")
+        precondition(apps.owner(of: [d]) == nil && apps.owner(of: [c, d]) == nil && apps.owner(of: [d, a]) == old, "a format nobody opens has no app, and the player does not hide a type it lacks")
         system.candidates[a.identifier] = [next]
         precondition(apps.owner(of: [a]) == old, "the answer stays until refresh")
         apps.refresh()
