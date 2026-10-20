@@ -494,4 +494,4 @@ pikapik подписано разработчиком и проходит про
 
 <p align="center">☕ Если pikapik вам нравится, можете <a href="https://buymeacoffee.com/pikapik">угостить меня кофе</a> — всё пойдёт на развитие и поддержку приложения.</p>
 
-<p align="center"><sub><a href="../whats-new/README.ru.md">Что нового</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Тап Homebrew</a> · <a href="../../CONTRIBUTING.md">Сборка из исходников</a> · <a href="../../LICENSE">Лицензия MIT</a> · © 2026 pikapik</sub></p> ¶NL¶
+<p align="center"><sub><a href="../whats-new/README.ru.md">Что нового</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Тап Homebrew</a> · <a href="../../CONTRIBUTING.md">Сборка из исходников</a> · <a href="../../LICENSE">Лицензия MIT</a> · © 2026 pikapik</sub></p>
