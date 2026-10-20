@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>Voyez quelle app ouvre chaque format
+
+<sub>1.54.0 · 20 octobre 2026</sub>
+
+Les réglages montrent maintenant quelle app ouvre chaque format, et vous pouvez en changer un seul à la fois.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+Sous « Ouvrir les vidéos dans pikapik », les formats sont regroupés par l’app qui les ouvre actuellement, chaque groupe avec l’icône de son app. Les formats que pikapik ouvre sont mis en évidence. Cliquez sur un format pour ouvrir seulement celui-là dans pikapik, ou cliquez à nouveau pour le rendre à l’app qui l’avait.
+
+Désactiver l’interrupteur rend toujours chaque format à l’app qui l’avait. « Ouvrir la musique dans pikapik », « Ouvrir les images dans pikapik » et « Ouvrir les archives dans pikapik » fonctionnent de la même façon.
+
+**Pour essayer :** Réglages › Lecteur
+
+---
+
 ## <a id="v1.53.2"></a>Votre Mac se remet en veille écran rabattu
 
 <sub>1.53.2 · 18 octobre 2026</sub>

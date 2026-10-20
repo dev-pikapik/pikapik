@@ -71,6 +71,7 @@ enum RenderMedia {
         ("whats-new/1.40.1/dock-minimize", DockMinimizeCard.length, AnyView(DockMinimizeCard())),
         ("whats-new/1.43.0/background", BackgroundCard.length, AnyView(BackgroundCard())),
         ("whats-new/1.45.0/app-volume", AppVolumeMixerCard.length, AnyView(AppVolumeMixerCard())),
+        ("whats-new/1.54.0/format-owners", FormatOwnersCard.length, AnyView(FormatOwnersCard())),
     ]
 
     static func main() {
@@ -1538,6 +1539,92 @@ private struct AppVolumeMixerScene: View {
         }
         .font(.system(size: 12))
         .frame(width: 20, height: 20)
+    }
+}
+
+private struct FormatOwnersCard: View {
+    static let length = 8.0
+
+    var body: some View {
+        IllustrationRow {
+            ArtTimeline { time in
+                FormatOwnersScene(t: time.map { GameStory.mod($0, Self.length) } ?? 3.4)
+            }
+        }
+    }
+}
+
+private struct FormatOwnersScene: View {
+    let t: Double
+
+    private static let chipWidth: CGFloat = 38
+    private static let rowsY: [CGFloat] = [40, 88]
+    private static let ours = ["MKV", "WebM"]
+    private static let theirs = ["MP4", "MOV", "AVI"]
+    private static let start = CGPoint(x: 268, y: 120)
+    private static let route: [(Double, CGPoint)] = [
+        (0, start), (1.5, CGPoint(x: 189, y: 88)), (4.0, CGPoint(x: 189, y: 88)), (4.8, CGPoint(x: 189, y: 40)), (6.0, CGPoint(x: 189, y: 40)), (7.4, start),
+    ]
+
+    private var moved: Double { GameStory.ramp(t, 2.1, 0.7) * (1 - GameStory.ramp(t, 5.2, 0.7)) }
+    private var clicking: Bool { (1.8..<1.94).contains(t) || (5.0..<5.14).contains(t) }
+
+    private func x(_ index: Int) -> CGFloat { 123 + CGFloat(index) * (Self.chipWidth + 6) }
+
+    private var pointer: some View {
+        var tip = Self.route[Self.route.count - 1].1
+        if let next = Self.route.firstIndex(where: { t < $0.0 }) {
+            let (t0, from) = Self.route[max(next - 1, 0)], (t1, to) = Self.route[next]
+            let e = next > 0 ? CGFloat(GameStory.ramp(t, t0, t1 - t0)) : 0
+            tip = CGPoint(x: from.x + (to.x - from.x) * e, y: from.y + (to.y - from.y) * e)
+        }
+        return ArtCursor(pressed: clicking)
+            .position(x: tip.x + 6, y: tip.y + 9)
+    }
+
+    var body: some View {
+        let panel = RoundedRectangle(cornerRadius: 12, style: .continuous)
+        Stage {
+            panel.fill(Color(nsColor: .windowBackgroundColor))
+                .shadow(color: .black.opacity(0.15), radius: 5, y: 2)
+                .overlay(panel.hairline(Color.primary.opacity(0.12)))
+                .frame(width: 252, height: 104)
+                .position(x: 150, y: 64)
+            row(y: Self.rowsY[0], caption: 30) { Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 22, height: 22) }
+            row(y: Self.rowsY[1], caption: 24) { tile("play.fill") }
+            ForEach(0..<Self.ours.count, id: \.self) { chip(Self.ours[$0], ours: 1).position(x: x($0), y: Self.rowsY[0]) }
+            ForEach(0..<2, id: \.self) { chip(Self.theirs[$0], ours: 0).position(x: x($0), y: Self.rowsY[1]) }
+            chip(Self.theirs[2], ours: moved)
+                .position(x: x(2), y: Self.rowsY[1] + (Self.rowsY[0] - Self.rowsY[1]) * CGFloat(moved))
+            pointer
+        }
+    }
+
+    private func row<Icon: View>(y: CGFloat, caption: CGFloat, @ViewBuilder icon: () -> Icon) -> some View {
+        ZStack {
+            icon().position(x: 46, y: y)
+            Capsule().fill(Color.primary.opacity(0.3))
+                .frame(width: caption, height: 5)
+                .position(x: 66 + caption / 2, y: y)
+        }
+    }
+
+    private func tile(_ symbol: String) -> some View {
+        let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
+        return shape
+            .fill(LinearGradient(colors: [Color(white: 0.42), Color(white: 0.24)], startPoint: .top, endPoint: .bottom))
+            .overlay(shape.hairline(Color.white.opacity(0.25)))
+            .overlay(Image(systemName: symbol).font(.system(size: 10, weight: .semibold)).foregroundStyle(.white))
+            .frame(width: 22, height: 22)
+            .shadow(color: .black.opacity(0.18), radius: 2, y: 1)
+    }
+
+    private func chip(_ name: String, ours: Double) -> some View {
+        Text(verbatim: name)
+            .font(.system(size: 10.5, weight: .medium))
+            .frame(width: Self.chipWidth, height: 20)
+            .background(Capsule().fill(Color.primary.opacity(0.07 * (1 - ours))))
+            .background(Capsule().fill(Color.accentColor.opacity(0.22 * ours)))
     }
 }
 

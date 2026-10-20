@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>Vezi ce aplicație deschide fiecare format
+
+<sub>1.54.0 · 20 octombrie 2026</sub>
+
+Setările arată acum ce aplicație deschide fiecare format, iar formatele pot fi mutate pe rând.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+Sub „Deschide videoclipurile în pikapik”, formatele sunt grupate după aplicația care le deschide acum, fiecare grup cu pictograma aplicației sale. Formatele pe care le deschide pikapik sunt evidențiate. Fă clic pe un format ca să-l deschizi doar pe el în pikapik sau fă din nou clic ca să-l dai înapoi aplicației care îl avea.
+
+Dacă oprești comutatorul, fiecare format tot se întoarce la aplicația care îl avea. „Deschide muzica în pikapik”, „Deschide imaginile în pikapik” și „Deschide arhivele în pikapik” funcționează la fel.
+
+**Încearcă:** Setări › Player
+
+---
+
 ## <a id="v1.53.2"></a>Mac-ul intră din nou în repaus cu capacul închis
 
 <sub>1.53.2 · 18 octombrie 2026</sub>

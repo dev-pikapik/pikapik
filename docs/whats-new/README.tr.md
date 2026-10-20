@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>Her biçimi hangi uygulamanın açtığını görün
+
+<sub>1.54.0 · 20 Ekim 2026</sub>
+
+Ayarlar artık her biçimi hangi uygulamanın açtığını gösteriyor ve biçimleri tek tek taşıyabilirsiniz.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+“Videoları pikapik’te aç” altında biçimler, onları şu anda açan uygulamaya göre gruplanır ve her grubun yanında uygulamasının simgesi bulunur. pikapik’in açtığı biçimler vurgulanır. Yalnızca tek bir biçimi pikapik’te açmak için ona tıklayın, onu önceki uygulamaya geri vermek için yeniden tıklayın.
+
+Anahtarı kapatmak yine her biçimi onu açan eski uygulamaya geri verir. “Müziği pikapik’te aç”, “Resimleri pikapik’te aç” ve “Arşivleri pikapik’te aç” de aynı şekilde çalışır.
+
+**Deneyin:** Ayarlar › Oynatıcı
+
+---
+
 ## <a id="v1.53.2"></a>Mac’iniz kapak kapalıyken yeniden uyuyor
 
 <sub>1.53.2 · 18 Ekim 2026</sub>

@@ -18,13 +18,14 @@ extension NSWorkspace: DefaultAppSystem {
 @Observable
 final class DefaultApps {
     private let types: [UTType]
-    private let target: URL
+    let target: URL
     private let previousKey: String
     private let fallback: String?
     private let system: DefaultAppSystem
     private let defaults: UserDefaults
 
     private var current: [String: URL] = [:]
+    private var shared: Set<String> = []
     private(set) var busy = false
 
     init(types: [UTType], target: URL, previousKey: String, fallback: String? = nil, system: DefaultAppSystem = NSWorkspace.shared, defaults: UserDefaults = .standard) {
@@ -43,12 +44,22 @@ final class DefaultApps {
         types.allSatisfy { current[$0.identifier].map(isTarget) == true }
     }
 
+    func owner(of types: [UTType]) -> URL? {
+        types.lazy.compactMap { self.current[$0.identifier] }.first { !self.isTarget($0) } ?? (isOn(types) ? target : nil)
+    }
+
+    func canGiveBack(_ types: [UTType]) -> Bool {
+        types.contains { shared.contains($0.identifier) }
+    }
+
     func refresh() {
         current = Dictionary(types.compactMap { type in system.handler(of: type).map { (type.identifier, $0) } }, uniquingKeysWith: { first, _ in first })
+        shared = Set(types.filter { system.handlers(of: $0).contains { !isTarget($0) } }.map(\.identifier))
     }
 
     @discardableResult
-    func set(_ on: Bool) -> Task<Void, Never> {
+    func set(_ on: Bool, only subset: [UTType]? = nil) -> Task<Void, Never> {
+        let types = subset ?? self.types
         var previous = remembered
         if on {
             for type in types {
@@ -57,7 +68,7 @@ final class DefaultApps {
             }
             defaults.set(previous, forKey: previousKey)
         }
-        let apps = types.map { on ? target : restoring($0, previous) }
+        let apps = types.map { on ? target : restoring($0, previous, anyApp: subset != nil) }
         return Task { @MainActor in
             busy = true
             for (type, app) in zip(types, apps) {
@@ -105,10 +116,10 @@ final class DefaultApps {
         a.resolvingSymlinksInPath() == b.resolvingSymlinksInPath() || Bundle(url: a)?.bundleIdentifier.map { $0 == Bundle(url: b)?.bundleIdentifier } == true
     }
 
-    private func restoring(_ type: UTType, _ previous: [String: String]) -> URL? {
+    private func restoring(_ type: UTType, _ previous: [String: String], anyApp: Bool) -> URL? {
         let id = previous[type.identifier]
         let capable = fallback.flatMap(system.app(withID:)).flatMap { app in system.handlers(of: type).contains { same($0, app) } ? app : nil }
         if let app = id.flatMap(system.app(withID:)) ?? capable { return app }
-        return id == nil ? nil : system.handlers(of: type).first { !isTarget($0) }
+        return id == nil && !anyApp ? nil : system.handlers(of: type).first { !isTarget($0) }
     }
 }

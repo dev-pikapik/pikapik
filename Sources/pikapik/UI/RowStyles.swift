@@ -222,20 +222,136 @@ struct DefaultAppToggle: View {
     let title: String
     let formats: [(name: String, types: [UTType])]
     @Bindable var apps: DefaultApps
+    @Namespace private var chips
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        let formats = formats.filter { !$0.types.isEmpty }
-        Toggle(isOn: Binding(get: { apps.isOn }, set: { if MainCopy.canAct { apps.set($0) } })) {
-            RowLabel(Text(verbatim: title), Text(verbatim: formats.map(\.name).joined(separator: "\u{00A0}· ") + note(on: formats.filter { apps.isOn($0.types) }.count, of: formats.count)))
+        let groups = groups
+        VStack(alignment: .leading, spacing: 8) {
+            Toggle(isOn: Binding(get: { apps.isOn }, set: { if MainCopy.canAct { apps.set($0) } })) {
+                RowLabel(Text(verbatim: title))
+            }
+            .help(String(localized: "macOS will ask about each format."))
+            ForEach(groups, id: \.app) { group in
+                let ours = group.app == apps.target
+                HStack(alignment: .top, spacing: 10) {
+                    DefaultAppName(app: group.app)
+                    ChipFlow {
+                        ForEach(group.formats, id: \.name) { format in
+                            FormatChip(name: format.name, app: DefaultAppName.name(of: group.app), ours: ours, fixed: ours && !apps.canGiveBack(format.types)) {
+                                if MainCopy.canAct, !ours || apps.canGiveBack(format.types) { apps.set(!ours, only: format.types) }
+                            }
+                            .matchedGeometryEffect(id: format.name, in: chips)
+                        }
+                    }
+                }
+                .accessibilityElement(children: .contain)
+            }
+            if apps.busy {
+                Text("macOS will ask about each format.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         }
+        .animation(reduceMotion ? nil : .snappy, value: groups.map { "\($0.app?.path ?? "")\($0.formats.map(\.name))" })
         .disabled(apps.busy)
         .settingAnchor(title)
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in apps.refresh() }
     }
 
-    private func note(on: Int, of count: Int) -> String {
-        guard !apps.isOn else { return "" }
-        let state = on > 0 ? String(localized: "Already in pikapik: \(on) of \(count)") + "\n" : ""
-        return "\n" + state + String(localized: "macOS will ask about each format.")
+    private var groups: [(app: URL?, formats: [(name: String, types: [UTType])])] {
+        let formats = formats.filter { !$0.types.isEmpty }
+        let owners = formats.map { apps.owner(of: $0.types) }
+        var order: [URL?] = []
+        for owner in owners where !order.contains(owner) { order.append(owner) }
+        let groups = order.map { app in (app: app, formats: zip(formats, owners).filter { $0.1 == app }.map(\.0)) }
+        func rank(_ index: Int) -> (Int, Int, Int) {
+            let app = groups[index].app
+            return (app == apps.target ? 0 : app == nil ? 2 : 1, -groups[index].formats.count, index)
+        }
+        return groups.indices.sorted { rank($0) < rank($1) }.map { groups[$0] }
+    }
+}
+
+private struct DefaultAppName: View {
+    let app: URL?
+
+    static func name(of app: URL?) -> String {
+        app.map { FileManager.default.displayName(atPath: $0.path).replacingOccurrences(of: ".app", with: "", options: [.anchored, .backwards]) } ?? String(localized: "No app")
+    }
+
+    var body: some View {
+        HStack(spacing: 6) {
+            if let app {
+                Image(nsImage: NSWorkspace.shared.icon(forFile: app.path))
+                    .resizable()
+                    .frame(width: 16, height: 16)
+            } else {
+                Image(systemName: "questionmark.app.dashed")
+                    .frame(width: 16, height: 16)
+            }
+            Text(verbatim: Self.name(of: app))
+                .lineLimit(1)
+                .truncationMode(.middle)
+        }
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+        .frame(width: 150, height: 22, alignment: .leading)
+        .help(Self.name(of: app))
+    }
+}
+
+private struct FormatChip: View {
+    let name: String
+    let app: String
+    let ours: Bool
+    let fixed: Bool
+    let action: () -> Void
+    @State private var hover = false
+
+    var body: some View {
+        let help = fixed ? String(localized: "Only pikapik can open \(name) on this Mac") : ours ? String(localized: "Stop opening \(name) in pikapik") : String(localized: "Open \(name) in pikapik")
+        Button(action: action) {
+            Text(verbatim: name)
+                .font(.subheadline.weight(.medium))
+                .padding(.horizontal, 8)
+                .frame(height: 22)
+                .background(ours ? Color.accentColor.opacity(hover ? 0.32 : 0.2) : Color.primary.opacity(hover ? 0.14 : 0.07), in: Capsule())
+                .contentShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .onHover { hover = $0 && !fixed }
+        .accessibilityRemoveTraits(fixed ? .isButton : [])
+        .help(help)
+        .accessibilityValue(Text(verbatim: app))
+        .accessibilityHint(Text(verbatim: help))
+    }
+}
+
+struct ChipFlow: Layout {
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let frames = place(subviews, width: proposal.width ?? .infinity)
+        return CGSize(width: frames.map(\.maxX).max() ?? 0, height: frames.map(\.maxY).max() ?? 0)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        for (subview, frame) in zip(subviews, place(subviews, width: bounds.width)) {
+            subview.place(at: CGPoint(x: bounds.minX + frame.minX, y: bounds.minY + frame.minY), proposal: ProposedViewSize(frame.size))
+        }
+    }
+
+    private func place(_ subviews: Subviews, width: CGFloat) -> [CGRect] {
+        var point = CGPoint.zero
+        var line: CGFloat = 0
+        return subviews.map { subview in
+            let size = subview.sizeThatFits(.unspecified)
+            if point.x > 0, point.x + size.width > width {
+                point = CGPoint(x: 0, y: point.y + line + 4)
+                line = 0
+            }
+            defer { point.x += size.width + 4 }
+            line = max(line, size.height)
+            return CGRect(origin: point, size: size)
+        }
     }
 }

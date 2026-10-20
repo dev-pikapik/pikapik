@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.54.0"></a>Xem ứng dụng nào mở từng định dạng
+
+<sub>1.54.0 · 20 tháng 10 năm 2026</sub>
+
+Cài đặt giờ cho biết ứng dụng nào mở từng định dạng, và bạn có thể chuyển từng định dạng một.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.54.0/format-owners-dark.png"><img src="../media/whats-new/1.54.0/format-owners-light.png" width="340" alt=""></picture>
+
+Bên dưới “Mở video bằng pikapik”, các định dạng được gom theo ứng dụng đang mở chúng, mỗi nhóm kèm biểu tượng của ứng dụng đó. Những định dạng pikapik mở được làm nổi bật. Nhấp vào một định dạng để chỉ mở riêng định dạng đó bằng pikapik, hoặc nhấp lần nữa để trả lại cho ứng dụng đã có nó.
+
+Khi tắt công tắc, mọi định dạng vẫn được trả về ứng dụng trước đó. “Mở nhạc bằng pikapik”, “Mở hình ảnh bằng pikapik” và “Mở tệp lưu trữ bằng pikapik” hoạt động tương tự.
+
+**Thử ngay:** Cài đặt › Trình phát
+
+---
+
 ## <a id="v1.53.2"></a>Máy Mac lại ngủ khi gập nắp
 
 <sub>1.53.2 · 18 tháng 10 năm 2026</sub>
