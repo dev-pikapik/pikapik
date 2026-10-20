@@ -37,13 +37,13 @@ sha256() {
 }
 
 download() {
-    [ -f "$TMP/$1" ] || curl -fsSL --retry 3 -o "$TMP/$1" "$2/$1"
+    [ -f "$TMP/$1" ] || curl -fsSL --retry 3 -o "$TMP/$1" "$2/$1" || { [ -n "${4:-}" ] && curl -fsSL --retry 3 -o "$TMP/$1" "$4/$1"; }
     [ "$(sha256 "$TMP/$1")" = "$3" ] || { echo "$1 does not match its checksum" >&2; exit 1; }
 }
 
 fetch() {
     download "$FFMPEG.tar.xz" https://ffmpeg.org/releases "$FFMPEG_SHA"
-    download "$DAV1D.tar.xz" "https://downloads.videolan.org/pub/videolan/dav1d/${DAV1D#dav1d-}" "$DAV1D_SHA"
+    download "$DAV1D.tar.xz" "https://downloads.videolan.org/pub/videolan/dav1d/${DAV1D#dav1d-}" "$DAV1D_SHA" "https://ftp.osuosl.org/pub/videolan/dav1d/${DAV1D#dav1d-}"
     download "$LIBASS.tar.xz" "https://github.com/libass/libass/releases/download/${LIBASS#libass-}" "$LIBASS_SHA"
     download "$FREETYPE.tar.xz" https://download.savannah.gnu.org/releases/freetype "$FREETYPE_SHA"
     download "$HARFBUZZ.tar.xz" "https://github.com/harfbuzz/harfbuzz/releases/download/${HARFBUZZ#harfbuzz-}" "$HARFBUZZ_SHA"
