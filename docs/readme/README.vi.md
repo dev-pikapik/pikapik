@@ -494,4 +494,4 @@ Trong **Cài đặt hệ thống › Quyền riêng tư & Bảo mật**, xóa pi
 
 <p align="center">☕ Nếu bạn thích pikapik, bạn có thể <a href="https://buymeacoffee.com/pikapik">mời mình một ly cà phê</a> — tất cả sẽ dành cho việc phát triển và duy trì ứng dụng.</p>
 
-<p align="center"><sub><a href="../whats-new/README.vi.md">Có gì mới</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Tap Homebrew</a> · <a href="../../CONTRIBUTING.md">Tự biên dịch</a> · <a href="../../LICENSE">Giấy phép MIT</a> · © 2026 pikapik</sub></p> ¶NL¶
+<p align="center"><sub><a href="../whats-new/README.vi.md">Có gì mới</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Tap Homebrew</a> · <a href="../../CONTRIBUTING.md">Tự biên dịch</a> · <a href="../../LICENSE">Giấy phép MIT</a> · © 2026 pikapik</sub></p>

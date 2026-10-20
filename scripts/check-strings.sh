@@ -214,6 +214,8 @@ for lang in langs:
     readme = 'README.md' if lang == 'en' else f'docs/readme/README.{lang}.md'
     if not os.path.exists(readme):
         fail(f'{readme} is missing')
+    elif '¶' in open(readme, encoding='utf-8').read():
+        fail(f'{readme} has a leftover ¶ marker')
 
 if problems:
     print('\n'.join(problems[:60]))

@@ -494,4 +494,4 @@ pikapik은 개발자가 서명했고 Apple의 악성 소프트웨어 검사를 �
 
 <p align="center">☕ pikapik이 마음에 드셨다면 앱 개발과 지원에 쓰일 <a href="https://buymeacoffee.com/pikapik">커피 한 잔을 사 주세요</a>.</p>
 
-<p align="center"><sub><a href="../whats-new/README.ko.md">새로운 기능</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Homebrew tap</a> · <a href="../../CONTRIBUTING.md">소스에서 빌드</a> · <a href="../../LICENSE">MIT 라이선스</a> · © 2026 pikapik</sub></p> ¶NL¶
+<p align="center"><sub><a href="../whats-new/README.ko.md">새로운 기능</a> · <a href="https://github.com/dev-pikapik/homebrew-pikapik">Homebrew tap</a> · <a href="../../CONTRIBUTING.md">소스에서 빌드</a> · <a href="../../LICENSE">MIT 라이선스</a> · © 2026 pikapik</sub></p>
