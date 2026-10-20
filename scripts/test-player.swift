@@ -303,6 +303,25 @@ enum TestPlayer {
         precondition(system.handler(of: a) == old && defaults.object(forKey: "formats") == nil)
         print("Keep moves on to the next format and keeps the old app for later: ok")
 
+        system.candidates = [a.identifier: [old, ours], b.identifier: [next, ours], c.identifier: [ours, next]]
+        let picks = DefaultApps(types: [a, b, c, d], target: ours, previousKey: "picks", system: system, defaults: defaults)
+        precondition(picks.owner(of: [a]) == old && picks.owner(of: [b]) == next, "a format shows the app that opens it now")
+        precondition(picks.owner(of: [c]) == ours && picks.owner(of: [a, c]) == old && picks.owner(of: [c, b]) == next, "a group of the player's own types shows the player, a mixed one shows the other app")
+        precondition(picks.owner(of: [d]) == nil && picks.owner(of: [d, c]) == nil, "a format nobody opens has no app")
+        await picks.set(true, only: [a]).value
+        precondition(system.handler(of: a) == ours && system.handler(of: b) == next && picks.owner(of: [a]) == ours, "one format must move alone")
+        precondition(defaults.dictionary(forKey: "picks") as? [String: String] == [a.identifier: "test.Old"], "only the moved format's old app is remembered")
+        await picks.set(true, only: [b]).value
+        precondition(defaults.dictionary(forKey: "picks") as? [String: String] == [a.identifier: "test.Old", b.identifier: "test.Next"], "a second format adds its old app")
+        await picks.set(false, only: [a]).value
+        precondition(system.handler(of: a) == old && system.handler(of: b) == ours && system.handler(of: c) == ours, "giving one format back must leave the others")
+        precondition(defaults.dictionary(forKey: "picks") as? [String: String] == [b.identifier: "test.Next"], "only the returned format is forgotten")
+        await picks.set(false, only: [c]).value
+        precondition(system.handler(of: c) == ours && defaults.dictionary(forKey: "picks") as? [String: String] == [b.identifier: "test.Next"], "a format the player always had stays with it")
+        await picks.set(false, only: [b]).value
+        precondition(system.handler(of: b) == next && defaults.object(forKey: "picks") == nil, "the last format given back clears the memory")
+        print("one format moves to the player and back alone, and the app that opens a format is known: ok")
+
         system.silent = true
         await formats.set(true).value
         precondition(formats.isOn, "a system that never answers but changes the app must not stall")
