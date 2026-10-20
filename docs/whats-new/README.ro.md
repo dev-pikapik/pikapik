@@ -7,7 +7,7 @@
 
 ## <a id="v1.55.0"></a>Alege aplicația pentru fiecare format
 
-<sub>1.55.0 · 20 octombrie 2026</sub>
+<sub>1.55.0 · 21 octombrie 2026</sub>
 
 În Setări alegi acum dintr-un meniu aplicația pentru fiecare format, ca în Finder.
 

@@ -7,7 +7,7 @@
 
 ## <a id="v1.55.0"></a>Chọn ứng dụng cho từng định dạng
 
-<sub>1.55.0 · 20 tháng 10 năm 2026</sub>
+<sub>1.55.0 · 21 tháng 10 năm 2026</sub>
 
 Trong Cài đặt, giờ bạn chọn ứng dụng cho từng định dạng từ một menu, giống như trong Finder.
 

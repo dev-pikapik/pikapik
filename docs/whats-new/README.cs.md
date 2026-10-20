@@ -7,7 +7,7 @@
 
 ## <a id="v1.55.0"></a>Vyberte aplikaci pro každý formát
 
-<sub>1.55.0 · 20. října 2026</sub>
+<sub>1.55.0 · 21. října 2026</sub>
 
 V nastavení teď aplikaci pro každý formát vybíráte z nabídky, stejně jako ve Finderu.
 

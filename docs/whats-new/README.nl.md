@@ -7,7 +7,7 @@
 
 ## <a id="v1.55.0"></a>Kies de app voor elk formaat
 
-<sub>1.55.0 · 20 oktober 2026</sub>
+<sub>1.55.0 · 21 oktober 2026</sub>
 
 In de instellingen kies je de app voor elk formaat nu uit een menu, net als in de Finder.
 

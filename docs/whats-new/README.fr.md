@@ -7,7 +7,7 @@
 
 ## <a id="v1.55.0"></a>Choisissez l’app de chaque format
 
-<sub>1.55.0 · 20 octobre 2026</sub>
+<sub>1.55.0 · 21 octobre 2026</sub>
 
 Dans les réglages, vous choisissez maintenant l’app de chaque format dans un menu, comme dans le Finder.
 

@@ -7,7 +7,7 @@
 
 ## <a id="v1.55.0"></a>Choose the app for each format
 
-<sub>1.55.0 · October 20, 2026</sub>
+<sub>1.55.0 · October 21, 2026</sub>
 
 In Settings, you now pick the app for each format from a menu, the way Finder does.
 

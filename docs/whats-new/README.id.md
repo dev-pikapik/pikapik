@@ -7,7 +7,7 @@
 
 ## <a id="v1.55.0"></a>Pilih app untuk setiap format
 
-<sub>1.55.0 · 20 Oktober 2026</sub>
+<sub>1.55.0 · 21 Oktober 2026</sub>
 
 Di Pengaturan, Anda kini memilih app untuk setiap format dari sebuah menu, seperti di Finder.
 

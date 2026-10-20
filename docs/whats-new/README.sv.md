@@ -7,7 +7,7 @@
 
 ## <a id="v1.55.0"></a>Välj appen för varje format
 
-<sub>1.55.0 · 20 oktober 2026</sub>
+<sub>1.55.0 · 21 oktober 2026</sub>
 
 I inställningarna väljer du nu appen för varje format i en meny, som i Finder.
 

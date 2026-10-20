@@ -7,7 +7,7 @@
 
 ## <a id="v1.55.0"></a>Her biçim için uygulamayı siz seçin
 
-<sub>1.55.0 · 20 Ekim 2026</sub>
+<sub>1.55.0 · 21 Ekim 2026</sub>
 
 Ayarlar’da artık her biçimin uygulamasını Finder’daki gibi bir menüden seçiyorsunuz.
 
