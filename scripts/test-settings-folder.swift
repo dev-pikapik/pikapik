@@ -23,7 +23,7 @@ enum TestSettingsFolder {
     }
 
     static func move(_ root: URL, old: Double, new: Double?, extra: Bool = false) -> (old: URL, new: URL) {
-        let from = root.appendingPathComponent("pikapik"), to = root.appendingPathComponent("pikapik")
+        let from = root.appendingPathComponent("previous"), to = root.appendingPathComponent("pikapik")
         save(from, old)
         if let new { save(to, new) }
         if extra { try! Data("notes".utf8).write(to: from.appendingPathComponent("notes.txt")) }
@@ -34,6 +34,11 @@ enum TestSettingsFolder {
     static func main() {
         let root = manager.temporaryDirectory.appendingPathComponent("test-settings-folder-\(UUID().uuidString)")
         defer { try? manager.removeItem(at: root) }
+
+        let unchanged = root.appendingPathComponent("unchanged")
+        save(unchanged, 100)
+        SettingsFile.moveFolder(from: unchanged, to: unchanged)
+        precondition(stamp(unchanged) == 100)
 
         var folders = move(root.appendingPathComponent("only-old"), old: 100, new: nil)
         precondition(!manager.fileExists(atPath: folders.old.path) && stamp(folders.new) == 100)

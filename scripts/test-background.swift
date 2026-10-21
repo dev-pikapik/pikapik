@@ -80,7 +80,7 @@ enum BackgroundTests {
         precondition(BackgroundTasks.developer(owner: nil, label: "homebrew.mxcl.pika-missing", target: "/opt/homebrew/opt/pika-missing/bin/x") == "Homebrew")
         precondition(BackgroundTasks.developer(owner: nil, label: "org.example.x", target: "/usr/local/Cellar/pika-missing/1.0/bin/x") == "Homebrew")
         precondition(BackgroundTasks.developer(owner: nil, label: "org.example.x", target: "relative") == "")
-        precondition(BackgroundTasks.isOwn("com.pikapik.app.direct.fans") && BackgroundTasks.isOwn("com.pikapik.app.helper") && !BackgroundTasks.isOwn("com.pesotchi.other"))
+        precondition(BackgroundTasks.isOwn("com.pikapik.app.direct.fans") && BackgroundTasks.isOwn("COM.PIKAPIK.APP.helper") && !BackgroundTasks.isOwn("com.vendor.other"))
     }
 
     static func timings() {

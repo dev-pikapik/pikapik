@@ -5,6 +5,16 @@
 
 ---
 
+## <a id="v1.56.0"></a>Rumah baru untuk pikapik
+
+<sub>1.56.0 · 2026-10-22</sub>
+
+Proyek dan unduhan kini memiliki alamat baru. Ini adalah pemasangan baru: izin dan pengaturan tidak dipindahkan secara otomatis.
+
+<img src="../media/icon.png" width="128" height="128" alt="pikapik">
+
+---
+
 ## <a id="v1.55.1"></a>Pemutar tidak lagi muncul dua kali di Pengaturan
 
 <sub>1.55.1 · 21 Oktober 2026</sub>

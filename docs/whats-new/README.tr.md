@@ -5,6 +5,16 @@
 
 ---
 
+## <a id="v1.56.0"></a>pikapik için yeni bir adres
+
+<sub>1.56.0 · 2026-10-22</sub>
+
+Projenin ve indirmelerin artık yeni bir adresi var. Bu yeni bir kurulumdur: izinler ve ayarlar otomatik olarak aktarılmaz.
+
+<img src="../media/icon.png" width="128" height="128" alt="pikapik">
+
+---
+
 ## <a id="v1.55.1"></a>Oynatıcı artık ayarlarda iki kez görünmüyor
 
 <sub>1.55.1 · 21 Ekim 2026</sub>

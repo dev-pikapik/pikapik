@@ -21,11 +21,6 @@ cask "pikapik" do
 
   postflight_steps do
     run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/pikapik.app"], must_succeed: false
-    remove "{{appdir}}/pikapik.app", recursive: true
-  end
-
-  uninstall_postflight_steps do
-    remove "{{appdir}}/pikapik.app", recursive: true
   end
 
   uninstall quit:   "com.pikapik.app.direct",

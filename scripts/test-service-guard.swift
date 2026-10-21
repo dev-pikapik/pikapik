@@ -19,7 +19,7 @@ enum TestServiceGuard {
         }
         let rejected = [
             "", String(repeating: "a", count: 129), "a/b", "../etc/passwd", "a b", "a;b", "a\nb", "com.vendor.daemon\n", "com.vendör.daemon", "$(id)",
-            "com.apple.mdmclient", "COM.APPLE.x", "com.apple.", "com.pikapik.app.direct.fans", "com.pikapik.app.dev.fans", "com.pikapik.app.helper",
+            "com.apple.mdmclient", "COM.APPLE.x", "com.apple.", "com.pikapik.app.direct.fans", "com.pikapik.app.dev.fans", "Com.Pikapik.App.helper",
         ]
         for label in rejected { precondition(!HelperServices.allows(label), "accepted \(label.debugDescription)") }
 

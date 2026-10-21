@@ -171,7 +171,6 @@ final class SettingsSync {
         #if !APPSTORE
         let manager = FileManager.default
         guard manager.fileExists(atPath: Self.drive.path) else { return state = .noDrive }
-        SettingsFile.moveFolder(from: Self.drive.appendingPathComponent("pikapik" + Self.suffix), to: Self.folder)
         do {
             try manager.createDirectory(at: Self.folder, withIntermediateDirectories: true)
             _ = try manager.contentsOfDirectory(atPath: Self.folder.path)

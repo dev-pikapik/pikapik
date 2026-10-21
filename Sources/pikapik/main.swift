@@ -18,7 +18,6 @@ if CommandLine.arguments.contains("--uninstall") {
 }
 
 #if !APPSTORE
-if Updater.moveToNewName() { exit(0) }
 #endif
 
 PikapikApp.main()

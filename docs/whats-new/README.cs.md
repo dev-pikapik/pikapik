@@ -5,6 +5,16 @@
 
 ---
 
+## <a id="v1.56.0"></a>Nový domov pro pikapik
+
+<sub>1.56.0 · 2026-10-22</sub>
+
+Projekt a soubory ke stažení mají novou adresu. Jde o novou instalaci: oprávnění a nastavení se automaticky nepřenášejí.
+
+<img src="../media/icon.png" width="128" height="128" alt="pikapik">
+
+---
+
 ## <a id="v1.55.1"></a>Přehrávač se v nastavení už nezobrazuje dvakrát
 
 <sub>1.55.1 · 21. října 2026</sub>

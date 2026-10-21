@@ -2,6 +2,11 @@
 
 Every update to pikapik, version by version. The same news, told simply with a picture, is in [What’s new](docs/whats-new/README.md), also in your language: [Русский](docs/whats-new/README.ru.md) · [Українська](docs/whats-new/README.uk.md) · [Deutsch](docs/whats-new/README.de.md) · [Français](docs/whats-new/README.fr.md) · [Español](docs/whats-new/README.es.md) · [Italiano](docs/whats-new/README.it.md) · [Português (Brasil)](docs/whats-new/README.pt-BR.md) · [日本語](docs/whats-new/README.ja.md) · [简体中文](docs/whats-new/README.zh-Hans.md) · [한국어](docs/whats-new/README.ko.md) · [Română](docs/whats-new/README.ro.md) · [Polski](docs/whats-new/README.pl.md) · [Türkçe](docs/whats-new/README.tr.md) · [Nederlands](docs/whats-new/README.nl.md) · [Svenska](docs/whats-new/README.sv.md) · [Čeština](docs/whats-new/README.cs.md) · [繁體中文](docs/whats-new/README.zh-Hant.md) · [العربية](docs/whats-new/README.ar.md) · [हिन्दी](docs/whats-new/README.hi.md) · [Bahasa Indonesia](docs/whats-new/README.id.md) · [Tiếng Việt](docs/whats-new/README.vi.md) · [ไทย](docs/whats-new/README.th.md).
 
+## [1.56.0] - 2026-10-22
+
+- The project, downloads and update links now use pikapik throughout.
+- A fresh application identity with matching helpers and extensions. Permissions and settings do not transfer automatically from previous installations.
+
 ## [1.55.1] - 2026-10-21
 
 ### Fixed
@@ -1242,3 +1247,5 @@ Every update to pikapik, version by version. The same news, told simply with a p
 [1.0.2]: https://github.com/dev-pikapik/pikapik/releases/tag/v1.0.2
 [1.0.1]: https://github.com/dev-pikapik/pikapik/releases/tag/v1.0.1
 [1.0.0]: https://github.com/dev-pikapik/pikapik/releases/tag/v1.0.0
+
+[1.56.0]: https://github.com/dev-pikapik/pikapik/releases/tag/v1.56.0

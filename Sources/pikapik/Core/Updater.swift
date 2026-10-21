@@ -12,7 +12,6 @@ final class Updater {
     static let shared = Updater()
     static let repo = "dev-pikapik/pikapik"
     nonisolated static let appName = "pikapik.app"
-    nonisolated static let oldAppName = "pikapik.app"
 
     let current = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
     private(set) var state = State.idle
@@ -70,7 +69,7 @@ final class Updater {
     func install() async {
         guard let assetURL else { return }
         let appURL = Bundle.main.bundleURL
-        let target = Self.destination(of: appURL, brewManaged: Self.isBrewManaged())
+        let target = appURL
         guard FileManager.default.isWritableFile(atPath: appURL.deletingLastPathComponent().path) else {
             state = .failed(String(localized: "Can’t write to the app’s folder. Update with brew or install.sh"))
             return
@@ -108,7 +107,6 @@ final class Updater {
                                 String(ProcessInfo.processInfo.processIdentifier),
                                 newApp.path, target.path, appURL.path]
             try helper.run()
-            if target != appURL { LoginItem.shared.apply(false) }
             Background.quit()
         } catch {
             state = .failed(String(localized: "Download failed. Try again later"))
@@ -117,15 +115,6 @@ final class Updater {
 
     private nonisolated static func ensureSuccess(_ response: URLResponse) throws {
         guard let status = (response as? HTTPURLResponse)?.statusCode, (200..<300).contains(status) else { throw URLError(.badServerResponse) }
-    }
-
-    nonisolated static func destination(of app: URL, brewManaged: Bool, ownID: String? = Bundle.main.bundleIdentifier) -> URL {
-        guard !brewManaged, app.lastPathComponent == oldAppName else { return app }
-        let renamed = app.deletingLastPathComponent().appendingPathComponent(appName)
-        guard FileManager.default.fileExists(atPath: renamed.path) else { return renamed }
-        // A pikapik.app that isn't ours, such as the App Store version, stays untouched: keep the old name and update in place.
-        guard let id = NSDictionary(contentsOf: renamed.appendingPathComponent("Contents/Info.plist"))?["CFBundleIdentifier"] as? String, id == ownID else { return app }
-        return renamed
     }
 
     nonisolated static func isNewPlace(_ path: String, last: String?, launchedBefore: Bool) -> Bool {
@@ -138,25 +127,8 @@ final class Updater {
 
     nonisolated static func isBrewManaged(prefixes: [String] = ["/opt/homebrew", "/usr/local"]) -> Bool {
         prefixes.contains { prefix in
-            ["pikapik", "pikapik"].contains { FileManager.default.fileExists(atPath: "\(prefix)/Caskroom/\($0)") }
+            FileManager.default.fileExists(atPath: "\(prefix)/Caskroom/pikapik")
         }
-    }
-
-    nonisolated static func moveToNewName() -> Bool {
-        let app = Bundle.main.bundleURL
-        let target = destination(of: app, brewManaged: isBrewManaged())
-        guard target != app, !CommandLine.arguments.contains("--keep-name"), !FileManager.default.fileExists(atPath: target.path),
-              FileManager.default.isWritableFile(atPath: app.deletingLastPathComponent().path)
-        else { return false }
-        let helper = Process()
-        helper.executableURL = URL(fileURLWithPath: "/bin/bash")
-        helper.arguments = ["-c", """
-            while kill -0 "$1" 2>/dev/null; do sleep 0.2; done
-            mv "$2" "$3" && open "$3" || open "$2" --args --keep-name
-            """, "pika-move", String(ProcessInfo.processInfo.processIdentifier), app.path, target.path]
-        guard (try? helper.run()) != nil else { return false }
-        LoginItem.shared.apply(false)
-        return true
     }
 
     private func run(_ path: String, _ args: [String]) throws {

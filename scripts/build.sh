@@ -229,7 +229,7 @@ group_entitlements() {
     local OUT="build/$2.entitlements"
     cp "$1" "$OUT"
     local BUNDLE_ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$3/Contents/Info.plist")"
-    [ "$2" = Preview ] || /usr/libexec/PlistBuddy -c "Add :com.apple.security.application-groups array" -c "Add :com.apple.security.application-groups:0 string $TEAM_ID.com.pikapik.app.direct" "$OUT"
+    [ "$2" = Preview ] || /usr/libexec/PlistBuddy -c "Add :com.apple.security.application-groups array" -c "Add :com.apple.security.application-groups:0 string $TEAM_ID.com.pikapik.app" "$OUT"
     /usr/libexec/PlistBuddy -c "Add :com.apple.application-identifier string $TEAM_ID.$BUNDLE_ID" -c "Add :com.apple.developer.team-identifier string $TEAM_ID" "$OUT"
     echo "$OUT"
 }
@@ -252,13 +252,13 @@ elif [ -n "$DEV" ]; then
     for EXT in $EXTENSIONS; do
         PLIST="$APP/Contents/PlugIns/$EXT.appex/Contents/Info.plist"
         ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$PLIST")"
-        /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ${ID/pikapik./pikapik.dev.}" "$PLIST"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ${ID/com.pikapik.app.direct./com.pikapik.app.dev.}" "$PLIST"
         [ "$EXT" = Preview ] || /usr/libexec/PlistBuddy -c "Set :PikapikURLScheme pikapik-dev" "$PLIST"
     done
     for EXT in $MEDIA_EXTENSIONS; do
         PLIST="$APP/Contents/Extensions/$EXT.appex/Contents/Info.plist"
         ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$PLIST")"
-        /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ${ID/pikapik./pikapik.dev.}" -c "Set :EXAppExtensionAttributes:ClassImplementationID ${ID/pikapik./pikapik.dev.}" "$PLIST"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ${ID/com.pikapik.app.direct./com.pikapik.app.dev.}" -c "Set :EXAppExtensionAttributes:ClassImplementationID ${ID/com.pikapik.app.direct./com.pikapik.app.dev.}" "$PLIST"
     done
     /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.pikapik.app.dev.player" "$PLAYER/Contents/Info.plist"
 fi

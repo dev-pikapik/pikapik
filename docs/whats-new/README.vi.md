@@ -5,6 +5,16 @@
 
 ---
 
+## <a id="v1.56.0"></a>Ngôi nhà mới cho pikapik
+
+<sub>1.56.0 · 2026-10-22</sub>
+
+Dự án và các bản tải xuống nay có địa chỉ mới. Đây là bản cài đặt mới: quyền và cài đặt không được chuyển tự động.
+
+<img src="../media/icon.png" width="128" height="128" alt="pikapik">
+
+---
+
 ## <a id="v1.55.1"></a>Trình phát không còn hiện hai lần trong Cài đặt
 
 <sub>1.55.1 · 21 tháng 10 năm 2026</sub>

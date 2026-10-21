@@ -6,7 +6,6 @@ GITHUB_USER="dev-pikapik"
 REPO="https://github.com/$GITHUB_USER/pikapik"
 APP_NAME="pikapik.app"
 DEST="/Applications/$APP_NAME"
-OLD="/Applications/pikapik.app"
 
 say() { printf '\033[1m→ %s\033[0m\n' "$1"; }
 fail() { printf '\033[31m✗ %s\033[0m\n' "$1" >&2; exit 1; }
@@ -67,7 +66,7 @@ fi
 say "Copying to /Applications"
 SUDO=""
 [ -w /Applications ] || SUDO="sudo"
-for app in "$DEST" "$OLD"; do
+for app in "$DEST"; do
     if ours "$app"; then $SUDO rm -rf "$app"; fi
 done
 $SUDO ditto "$NEW_APP" "$DEST"

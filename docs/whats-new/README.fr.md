@@ -5,6 +5,16 @@
 
 ---
 
+## <a id="v1.56.0"></a>Une nouvelle adresse pour pikapik
+
+<sub>1.56.0 · 2026-10-22</sub>
+
+Le projet et les téléchargements ont une nouvelle adresse. Il s’agit d’une nouvelle installation : les autorisations et les réglages ne sont pas transférés automatiquement.
+
+<img src="../media/icon.png" width="128" height="128" alt="pikapik">
+
+---
+
 ## <a id="v1.55.1"></a>Le lecteur n’apparaît plus en double dans les réglages
 
 <sub>1.55.1 · 21 octobre 2026</sub>

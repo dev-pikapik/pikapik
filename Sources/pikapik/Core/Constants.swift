@@ -2,8 +2,7 @@ import Foundation
 
 enum AppConstants {
     static let appName = "pikapik"
-    static let legacyAppName = "pikapik"
-    static let bundleIDPrefix = "com.pikapik.app.direct"
+    static let bundleIDPrefix = "com.pikapik.app"
     static let directBundleID = "com.pikapik.app.direct"
     static let appStoreBundleID = "com.pikapik.app"
     static let devBundleID = "com.pikapik.app.dev"

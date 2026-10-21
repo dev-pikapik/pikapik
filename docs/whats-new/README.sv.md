@@ -5,6 +5,16 @@
 
 ---
 
+## <a id="v1.56.0"></a>Ett nytt hem för pikapik
+
+<sub>1.56.0 · 2026-10-22</sub>
+
+Projektet och hämtningarna har nu en ny adress. Det här är en ny installation: behörigheter och inställningar förs inte över automatiskt.
+
+<img src="../media/icon.png" width="128" height="128" alt="pikapik">
+
+---
+
 ## <a id="v1.55.1"></a>Spelaren visas inte längre två gånger i inställningarna
 
 <sub>1.55.1 · 21 oktober 2026</sub>

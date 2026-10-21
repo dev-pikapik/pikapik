@@ -5,7 +5,7 @@ struct SettingsFile {
         case apply, upload, none
     }
 
-    static let app = AppConstants.legacyAppName
+    static let app = AppConstants.appName
     static let name = "settings.json"
     static let maxSize = 2_000_000
     /// The time on an upload that no change on this Mac caused, for example the first one after sync is turned on while
@@ -120,7 +120,7 @@ struct SettingsFile {
 
     static func moveFolder(from old: URL, to new: URL) {
         let manager = FileManager.default
-        guard manager.fileExists(atPath: old.path) else { return }
+        guard old.standardizedFileURL != new.standardizedFileURL, manager.fileExists(atPath: old.path) else { return }
         guard manager.fileExists(atPath: new.path) else {
             try? manager.moveItem(at: old, to: new)
             return
