@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>De speler staat niet meer twee keer in de instellingen
+
+<sub>1.55.1 · 21 oktober 2026</sub>
+
+Een oude kopie van de speler verschijnt niet meer als tweede “pikapik Player”.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Als er nog een oude kopie van de speler op je Mac stond, bijvoorbeeld van een test, konden onder “Open video’s in pikapik” twee apps met dezelfde naam “pikapik Player” staan, die je niet uit elkaar kon houden. Nu telt elke kopie van pikapik als één app, en elk formaat staat eronder.
+
+**Probeer het:** Instellingen › Speler
+
+---
+
 ## <a id="v1.55.0"></a>Kies de app voor elk formaat
 
 <sub>1.55.0 · 21 oktober 2026</sub>

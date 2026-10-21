@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>Odtwarzacz nie pojawia się już dwa razy w ustawieniach
+
+<sub>1.55.1 · 21 października 2026</sub>
+
+Stara kopia odtwarzacza nie pokazuje się już jako drugi „pikapik Player”.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Jeśli na Macu została stara kopia odtwarzacza, na przykład po teście, pod „Otwieraj wideo w pikapik” mogły pojawić się dwie aplikacje o tej samej nazwie „pikapik Player”, których nie dało się odróżnić. Teraz każda kopia pikapik liczy się jako jedna aplikacja, a każdy format jest pod nią.
+
+**Wypróbuj:** Ustawienia › Odtwarzacz
+
+---
+
 ## <a id="v1.55.0"></a>Wybierz aplikację dla każdego formatu
 
 <sub>1.55.0 · 21 października 2026</sub>

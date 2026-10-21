@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>Pemutar tidak lagi muncul dua kali di Pengaturan
+
+<sub>1.55.1 · 21 Oktober 2026</sub>
+
+Salinan lama pemutar tidak lagi muncul sebagai “pikapik Player” yang kedua.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Jika salinan lama pemutar, misalnya dari pengujian, masih ada di Mac Anda, di bawah “Buka video di pikapik” bisa muncul dua app dengan nama yang sama, “pikapik Player”, dan keduanya tidak bisa dibedakan. Sekarang setiap salinan pikapik dihitung sebagai satu app, dan setiap format berada di bawahnya.
+
+**Coba:** Pengaturan › Pemutar
+
+---
+
 ## <a id="v1.55.0"></a>Pilih app untuk setiap format
 
 <sub>1.55.0 · 21 Oktober 2026</sub>

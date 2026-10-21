@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>Oynatıcı artık ayarlarda iki kez görünmüyor
+
+<sub>1.55.1 · 21 Ekim 2026</sub>
+
+Oynatıcının eski bir kopyası artık ikinci bir “pikapik Player” olarak görünmüyor.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Mac’inizde oynatıcının eski bir kopyası, örneğin bir testten kalma, durduğunda “Videoları pikapik’te aç” altında aynı adı taşıyan iki uygulama, “pikapik Player”, görünebiliyordu ve ikisini birbirinden ayırmak imkânsızdı. Artık pikapik’in her kopyası tek bir uygulama sayılıyor ve her biçim onun altında duruyor.
+
+**Deneyin:** Ayarlar › Oynatıcı
+
+---
+
 ## <a id="v1.55.0"></a>Her biçim için uygulamayı siz seçin
 
 <sub>1.55.0 · 21 Ekim 2026</sub>

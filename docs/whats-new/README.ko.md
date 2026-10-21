@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>설정에 플레이어가 두 번 나타나지 않습니다
+
+<sub>1.55.1 · 2026년 10월 21일</sub>
+
+플레이어의 예전 사본이 두 번째 “pikapik Player”로 나타나지 않습니다.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+테스트 등으로 생긴 플레이어의 예전 사본이 Mac에 남아 있으면 “비디오를 pikapik에서 열기” 아래에 같은 이름 “pikapik Player”의 앱이 둘 나타나 구분할 수 없었습니다. 이제 pikapik의 모든 사본이 하나의 앱으로 취급되고, 각 형식은 그 아래에 놓입니다.
+
+**사용해 보기:** 설정 › 플레이어
+
+---
+
 ## <a id="v1.55.0"></a>형식마다 열 앱을 고를 수 있습니다
 
 <sub>1.55.0 · 2026년 10월 21일</sub>

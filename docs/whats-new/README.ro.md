@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>Playerul nu mai apare de două ori în Setări
+
+<sub>1.55.1 · 21 octombrie 2026</sub>
+
+O copie veche a playerului nu mai apare ca un al doilea „pikapik Player”.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Dacă pe Mac rămăsese o copie veche a playerului, de exemplu de la un test, sub „Deschide videoclipurile în pikapik” puteau apărea două aplicații cu același nume, „pikapik Player”, imposibil de deosebit. Acum orice copie a pikapik se numără ca o singură aplicație, iar fiecare format stă sub ea.
+
+**Încearcă:** Setări › Player
+
+---
+
 ## <a id="v1.55.0"></a>Alege aplicația pentru fiecare format
 
 <sub>1.55.0 · 21 octombrie 2026</sub>

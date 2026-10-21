@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>Trình phát không còn hiện hai lần trong Cài đặt
+
+<sub>1.55.1 · 21 tháng 10 năm 2026</sub>
+
+Bản sao cũ của trình phát không còn hiện thành “pikapik Player” thứ hai.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Nếu một bản sao cũ của trình phát, chẳng hạn bản để thử nghiệm, vẫn còn trên máy Mac của bạn, bên dưới “Mở video bằng pikapik” có thể hiện hai app trùng tên “pikapik Player” mà không thể phân biệt. Giờ mọi bản sao của pikapik được tính là một app, và mỗi định dạng nằm bên dưới nó.
+
+**Thử ngay:** Cài đặt › Trình phát
+
+---
+
 ## <a id="v1.55.0"></a>Chọn ứng dụng cho từng định dạng
 
 <sub>1.55.0 · 21 tháng 10 năm 2026</sub>

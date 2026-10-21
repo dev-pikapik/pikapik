@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>Přehrávač se v nastavení už nezobrazuje dvakrát
+
+<sub>1.55.1 · 21. října 2026</sub>
+
+Stará kopie přehrávače se už nezobrazuje jako druhý „pikapik Player“.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Pokud na Macu zůstala stará kopie přehrávače, například po testu, mohly se pod „Otevírat videa v pikapik“ objevit dvě aplikace se stejným názvem „pikapik Player“ a nešlo je rozlišit. Nyní se každá kopie pikapik počítá jako jedna aplikace a každý formát je pod ní.
+
+**Vyzkoušejte:** Nastavení › Přehrávač
+
+---
+
 ## <a id="v1.55.0"></a>Vyberte aplikaci pro každý formát
 
 <sub>1.55.0 · 21. října 2026</sub>
