@@ -93,10 +93,12 @@ final class DefaultApps {
 
     private var targetID: String? { Bundle(url: target)?.bundleIdentifier }
 
-    /// One URL per app. Every copy of the player is the player itself, even one deleted from a build folder that
-    /// LaunchServices still lists; a deleted copy of another app is gone; other copies become the one macOS prefers.
+    /// One URL per app. Every copy of pikapik, with the same name or the same bundle ID (a dev build, a test copy, the
+    /// App Store copy), is pikapik itself, even one deleted from a build folder that LaunchServices still lists; a
+    /// deleted copy of another app is gone; other copies become the one macOS prefers.
     private func app(_ url: URL) -> URL? {
-        guard FileManager.default.fileExists(atPath: url.path) else { return url.lastPathComponent == target.lastPathComponent ? target : nil }
+        if url.lastPathComponent == target.lastPathComponent { return target }
+        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         guard let id = Bundle(url: url)?.bundleIdentifier else { return url }
         return id == targetID ? target : system.app(withID: id) ?? url
     }

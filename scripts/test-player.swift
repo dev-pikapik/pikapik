@@ -253,9 +253,10 @@ enum TestPlayer {
         let (ours, old, next) = (app("pikapik Player", id: "test.Ours"), app("Old"), app("Next"))
         let (renamed, twin) = (app("pikapik Player copy", id: "test.Ours", in: build), app("Old", in: build))
         let (stale, gone) = (build.appending(path: "Debug/pikapik Player.app"), folder.appending(path: "Gone.app"))
+        let dev = app("pikapik Player", id: "test.Dev", in: build)
         let (a, b, c, d, e) = (UTType.avi, UTType.mpeg4Movie, UTType.quickTimeMovie, UTType.mpeg2TransportStream, UTType.mpeg)
 
-        let system = FakeSystem(installed: [renamed, ours, old, next, twin])
+        let system = FakeSystem(installed: [renamed, ours, old, next, twin, dev])
         func fresh() -> DefaultApps {
             system.assigns = 0
             return DefaultApps(types: [a, b, c, d, e], target: ours, system: system, defaults: defaults)
@@ -292,6 +293,9 @@ enum TestPlayer {
         precondition(apps.owner(of: [b]) == ours && apps.choices(for: [b]) == [ours, next], "a copy of the player elsewhere, with its bundle ID, is the player")
         precondition(apps.owner(of: [c]) == nil && apps.choices(for: [c]) == [ours, next] && apps.choices(for: [d]) == [ours], "a deleted copy of another app is gone, not offered")
         precondition(apps.owner(of: [e]) == old && apps.choices(for: [e]) == [ours, old], "two copies of one app are one app, the one macOS prefers")
+        system.candidates[a.identifier] = [dev, old]
+        apps.refresh()
+        precondition(apps.owner(of: [a]) == ours && apps.choices(for: [a]) == [ours, old], "a copy of the player with another bundle ID but the same name is the player, not offered twice")
         await apps.open([a, b], with: ours).value
         precondition(system.assigns == 0, "macOS must not be asked to switch the player to the player")
         print("copies of the player count as the player, a deleted copy of another app is gone, two copies of an app are one: ok")
