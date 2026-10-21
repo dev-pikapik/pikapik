@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>Der Player steht in den Einstellungen nicht mehr doppelt
+
+<sub>1.55.1 · 21. Oktober 2026</sub>
+
+Eine alte Kopie des Players erscheint nicht mehr als zweiter „pikapik Player“.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Wenn auf Ihrem Mac noch eine alte Kopie des Players lag, zum Beispiel von einem Test, konnten unter „Videos in pikapik öffnen“ zwei Apps mit demselben Namen „pikapik Player“ stehen, und man konnte sie nicht unterscheiden. Jetzt zählt jede Kopie von pikapik als eine App, und jedes Format steht darunter.
+
+**Ausprobieren:** Einstellungen › Player
+
+---
+
 ## <a id="v1.55.0"></a>Wählen Sie die App für jedes Format
 
 <sub>1.55.0 · 21. Oktober 2026</sub>

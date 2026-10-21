@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>Spelaren visas inte längre två gånger i inställningarna
+
+<sub>1.55.1 · 21 oktober 2026</sub>
+
+En gammal kopia av spelaren visas inte längre som en andra «pikapik Player».
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Om en gammal kopia av spelaren, till exempel från ett test, låg kvar på din Mac kunde två appar med samma namn, «pikapik Player», visas under «Öppna videor i pikapik», och du kunde inte skilja dem åt. Nu räknas varje kopia av pikapik som en enda app, och varje format ligger under den.
+
+**Prova:** Inställningar › Spelare
+
+---
+
 ## <a id="v1.55.0"></a>Välj appen för varje format
 
 <sub>1.55.0 · 21 oktober 2026</sub>

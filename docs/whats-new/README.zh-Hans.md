@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>设置里的播放器不再出现两次
+
+<sub>1.55.1 · 2026年10月21日</sub>
+
+播放器的旧副本不再显示为第二个“pikapik Player”。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+如果 Mac 上还留着播放器的旧副本，比如测试时留下的，“用 pikapik 打开视频”下面可能出现两个同名的“pikapik Player”，分不清哪个是哪个。现在 pikapik 的每个副本都算作同一个 App，各个格式都放在它下面。
+
+**试试看：** 设置 › 播放器
+
+---
+
 ## <a id="v1.55.0"></a>每种格式都能自己选 App
 
 <sub>1.55.0 · 2026年10月21日</sub>

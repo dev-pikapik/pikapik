@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>Le lecteur n’apparaît plus en double dans les réglages
+
+<sub>1.55.1 · 21 octobre 2026</sub>
+
+Une ancienne copie du lecteur n’apparaît plus comme un second « pikapik Player ».
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Si une ancienne copie du lecteur, par exemple issue d’un test, était encore sur votre Mac, « Ouvrir les vidéos dans pikapik » pouvait afficher deux apps portant le même nom, « pikapik Player », sans moyen de les distinguer. Désormais, chaque copie de pikapik compte comme une seule app, et chaque format se range dessous.
+
+**Pour essayer :** Réglages › Lecteur
+
+---
+
 ## <a id="v1.55.0"></a>Choisissez l’app de chaque format
 
 <sub>1.55.0 · 21 octobre 2026</sub>

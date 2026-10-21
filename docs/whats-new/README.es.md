@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>El reproductor ya no aparece dos veces en los ajustes
+
+<sub>1.55.1 · 21 de octubre de 2026</sub>
+
+Una copia antigua del reproductor ya no aparece como un segundo «pikapik Player».
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+Si en tu Mac quedaba una copia antigua del reproductor, por ejemplo de una prueba, bajo «Abrir vídeos en pikapik» podían aparecer dos apps con el mismo nombre, «pikapik Player», y no había manera de distinguirlas. Ahora cada copia de pikapik cuenta como una sola app, y cada formato queda debajo de ella.
+
+**Pruébalo:** Ajustes › Reproductor
+
+---
+
 ## <a id="v1.55.0"></a>Elige la app de cada formato
 
 <sub>1.55.0 · 21 de octubre de 2026</sub>

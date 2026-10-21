@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.55.1"></a>設定にプレーヤーが2つ並ばなくなりました
+
+<sub>1.55.1 · 2026年10月21日</sub>
+
+プレーヤーの古いコピーが、2つ目の「pikapik Player」として表示されなくなりました。
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.55.0/open-with-dark.png"><img src="../media/whats-new/1.55.0/open-with-light.png" width="340" alt=""></picture>
+
+テスト用などプレーヤーの古いコピーが Mac に残っていると、「ビデオを pikapik で開く」の下に同じ名前「pikapik Player」のアプリが2つ並び、区別がつきませんでした。これからは pikapik のコピーはすべて1つのアプリとして扱われ、各フォーマットはその下に並びます。
+
+**試してみる：** 設定 › プレーヤー
+
+---
+
 ## <a id="v1.55.0"></a>フォーマットごとに開くアプリを選べます
 
 <sub>1.55.0 · 2026年10月21日</sub>
