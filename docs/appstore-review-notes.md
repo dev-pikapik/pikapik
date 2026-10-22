@@ -20,7 +20,7 @@ No private API. Entitlements: sandbox, network client, user-selected files, book
 Permissions: a tool that needs one looks grey; a click shows the macOS prompt (App Volume: via Allow; Show FPS: a line under it) and opens Settings > Permissions. Accessibility (on macOS 27: Device Control and Data Access), to change or hold back a scroll, click, key, shortcut or swipe: the Mouse tools, Brightness keys, Protect quitting and closing, Cut files, Home and End, Fix Wrong Keyboard Layout and Game Mode. Input Monitoring: Switch language (its shortcut) and the Pet's jump. System Audio Recording: App Volume. Screen Recording: Show FPS. Folders: Background Tasks in the home folder. The Services command needs none. Events and sound stay in memory, never stored or sent. The app never pastes into other apps; it sends only ⌘Q, ⌘W, Finder's ⌘C, ⌘X and ⌥⌘V, ⌘←, ⌘→, ⌃⌥⇧⌘F19 (its own Services key) and a back or forward swipe.
 
 4. External services
-Only Speed Test: speed.cloudflare.com, when the user starts a check; no personal data. No accounts, analytics, ads, tracking, payment processors or AI services.
+When requested, Speed Test uses speed.cloudflare.com (__down/__up) with generated test bytes. Cloudflare receives the connection IP and processes network information under its privacy policy. Optional tips use Apple's StoreKit; no purchase or subscription is needed for features. No developer-run analytics, ads, tracking or AI services.
 
 5. Regions
 No regional differences; 23 languages.
@@ -28,7 +28,7 @@ No regional differences; 23 languages.
 6. Regulated industry or third-party material
 None; no documents are needed.
 
-Other: the app is free. Optional voluntary tips do not unlock features; no subscription is required. Open at Login is off by default; no data is collected (privacy manifest); Pet clothes unlock with awards and cannot be purchased.
+Other: the app is free. Optional voluntary tips do not unlock features; no subscription is required. Open at Login is off by default; no developer-run analytics or tracking; Pet clothes unlock with awards and cannot be purchased.
 
 — конец текста для App Store Connect —
 
@@ -64,7 +64,7 @@ Shown only on Macs with a battery. It reads the battery's condition, maximum cap
 In the App Store version Temperature shows the macOS thermal state (ProcessInfo.thermalState) and what it means for speed. On a Mac with a battery it also shows the battery temperature, read from the AppleSmartBattery entries in the I/O Registry, like the Battery page. It reads no other sensors.
 
 ### Speed Test
-Settings > Speed Test measures download and upload speed with https://speed.cloudflare.com through an ephemeral URLSession, so no cookies or cache are kept. The caption says "Takes about 15 seconds. The check uses speed.cloudflare.com." A check starts only from Check Speed, from Check on the Speed Test card in the menu-bar menu (hidden until the user adds it) or from a pikapik-store://speed-test link the user opens. Only the last result is kept, in the app's preferences on this Mac.
+Settings > Speed Test measures download and upload speed with https://speed.cloudflare.com through an ephemeral URLSession. It GETs __down?bytes=0 and __down?bytes=50000000, and POSTs generated zero bytes to __up. It does not send a separate results or metadata record or call a trace endpoint. Cloudflare still receives the connection IP and may process request/network information under its privacy policy; the app does not control server-side retention. The caption says "Takes about 15 seconds. The check uses speed.cloudflare.com." A check starts only from Check Speed, from Check on the Speed Test card in the menu-bar menu (hidden until the user adds it) or from a pikapik-store://speed-test link the user opens. Only the last result is kept in the app's preferences on this Mac.
 
 ### App Volume
 Settings > Sound, macOS 14.2 and later (hidden on 14.0 and 14.1), off by default: a volume slider and a mute button for each app that plays sound. It needs System Audio Recording to change the volume of one app without touching the others. For an app whose slider is below 100% or that is muted, the app creates a private Core Audio process tap on that app only (AudioHardwareCreateProcessTap) and plays the same sound, scaled by the slider, to the output device the app was using; an app left at 100% gets no tap. The sound is processed on the fly in memory and is never recorded, stored, logged or sent anywhere. The entitlement com.apple.security.device.audio-input is there only so the sandboxed app can read other apps' sound through these system process taps. The microphone is never opened, and the app has no microphone usage description. The system prompt shows NSAudioCaptureUsageDescription: "pikapik passes each app’s sound through itself to change its volume. Nothing is recorded or saved."
