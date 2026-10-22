@@ -21,7 +21,11 @@ jobs:
 
       - name: Read version from tag
         if: github.ref_type == 'tag'
+        env:
+          DEVID_AVAILABLE: ${{ secrets.DEVID_P12 != '' }}
         run: |
+          test "$DEVID_AVAILABLE" = true
+          test "$NOTARIZE" = true
           VERSION="${GITHUB_REF_NAME#v}"
           PLIST_VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Sources/pikapik/Info.plist)
           [ "$VERSION" = "$PLIST_VERSION" ] || { echo "Tag is $GITHUB_REF_NAME, but Info.plist says $PLIST_VERSION" >&2; exit 1; }
@@ -86,24 +90,19 @@ jobs:
           else
             AUTH=(--apple-id "$NOTARY_APPLE_ID" --password "$NOTARY_PASSWORD" --team-id "$NOTARY_TEAM_ID")
           fi
-          # Both zips hold the same signed bundle, so one ticket covers both.
-          # Apple never holds up a release: no answer in 15 minutes ships the
-          # Developer ID signed build as is, without a stapled ticket.
-          xcrun notarytool submit build/pikapik.zip "${AUTH[@]}" --wait --timeout 15m --output-format json > build/notary.json || true
+          # A timeout or any status other than Accepted blocks publication.
+          xcrun notarytool submit build/pikapik.zip "${AUTH[@]}" --wait --timeout 30m --output-format json > build/notary.json
           cat build/notary.json
-          ID=$(/usr/bin/plutil -extract id raw -o - build/notary.json 2>/dev/null || true)
-          STATUS=$(/usr/bin/plutil -extract status raw -o - build/notary.json 2>/dev/null || true)
-          rm -f build/notary.json
+          ID=$(/usr/bin/plutil -extract id raw -o - build/notary.json)
+          STATUS=$(/usr/bin/plutil -extract status raw -o - build/notary.json)
           if [ "$STATUS" != Accepted ]; then
             [ -n "$ID" ] && xcrun notarytool log "$ID" "${AUTH[@]}" || true
-            if [ "$STATUS" = Invalid ] || [ "$STATUS" = Rejected ]; then
-              echo "::error::Apple refused notarization (status $STATUS), so nothing is published"
-              exit 1
-            fi
-            echo "::warning::Notarization ended with status '${STATUS:-no answer}'; publishing the signed build without a ticket"
-            exit 0
+            echo "::error::Notarization was not Accepted; publication blocked"
+            exit 1
           fi
           xcrun stapler staple build/pikapik.app
+          xcrun stapler validate build/pikapik.app
+          codesign --verify --deep --strict build/pikapik.app
           ditto -c -k --keepParent build/pikapik.app build/pikapik.zip
           rm -rf build/dmg
           mkdir -p build/dmg
@@ -112,7 +111,14 @@ jobs:
           rm -f build/pikapik.dmg
           hdiutil create -volname pikapik -srcfolder build/dmg -ov -format UDZO build/pikapik.dmg >/dev/null
           rm -rf build/dmg
+          codesign --force --sign "$SIGN_IDENTITY" --timestamp build/pikapik.dmg
+          xcrun notarytool submit build/pikapik.dmg "${AUTH[@]}" --wait --timeout 30m --output-format json > build/notary-dmg.json
+          test "$(/usr/bin/plutil -extract status raw -o - build/notary-dmg.json)" = Accepted
+          xcrun stapler staple build/pikapik.dmg
+          xcrun stapler validate build/pikapik.dmg
+          codesign --verify --strict build/pikapik.dmg
           spctl -a -vv -t exec build/pikapik.app
+          spctl --assess --type open --context context:primary-signature -vv build/pikapik.dmg
 
       - name: Verify
         run: |
