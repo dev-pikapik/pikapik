@@ -1,4 +1,4 @@
-pikapik - Mac Tools: information for App Review (Guideline 2.1)
+pikapik for Mac: information for App Review (Guideline 2.1)
 
 1. Screen recording
 Attached: a MacBook Pro with the latest macOS, from launch through the typical flow and each tool below.
@@ -28,7 +28,7 @@ No regional differences; 23 languages.
 6. Regulated industry or third-party material
 None; no documents are needed.
 
-Other: free, no in-app purchases; Open at Login is off by default; no data is collected (privacy manifest); Pet clothes unlock with awards, nothing is sold.
+Other: the app is free. Optional voluntary tips do not unlock features; no subscription is required. Open at Login is off by default; no data is collected (privacy manifest); Pet clothes unlock with awards and cannot be purchased.
 
 — конец текста для App Store Connect —
 
