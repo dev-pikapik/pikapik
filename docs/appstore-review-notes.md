@@ -8,7 +8,7 @@ pikapik is a free menu-bar app that fixes small everyday Mac annoyances, for Mac
 
 3. Setup and main features
 No account or sample files are needed (any photo or video works). Settings opens on first launch, later from the menu-bar icon; nothing is asked at launch; only the Pet is on.
-- Keep Awake (Turn off the display now: IORequestIdle on IODisplayWrangler, allowed by the sandbox profile), Speed Test, Temperature (thermal state, battery), Battery (Macs with a battery), App Volume (macOS 14.2+: a slider and mute per app), Brightness (dims an external monitor's picture).
+- Keep Awake (Turn off the display now: IORequestIdle on IODisplayWrangler, allowed by the sandbox profile), Temperature (thermal state, battery), Battery (Macs with a battery), App Volume (macOS 14.2+: a slider and mute per app), Brightness (dims an external monitor's picture).
 - Background Tasks: what starts in the background; view only. Animations, pointer acceleration, Other apps’ permissions: buttons only open System Settings.
 - Hide desktop icons: a click-through window above the icons shows the wallpaper (NSWorkspace.desktopImageURL); no Screen Recording.
 - Keyboard, with two input sources such as ABC and Russian. Switch language: hold Option, tap Shift. Fix Wrong Keyboard Layout: select "ghbdtn" (for "привет"), then Services > Fix Wrong Keyboard Layout, or turn on its shortcut and press ⌃⇧Space. Home and End: an event tap sees only those keys and posts ⌘←/⌘→ (CGEvent); nothing is kept.
@@ -20,7 +20,7 @@ No private API. Entitlements: sandbox, network client, user-selected files, book
 Permissions: a tool that needs one looks grey; a click shows the macOS prompt (App Volume: via Allow; Show FPS: a line under it) and opens Settings > Permissions. Accessibility (on macOS 27: Device Control and Data Access), to change or hold back a scroll, click, key, shortcut or swipe: the Mouse tools, Brightness keys, Protect quitting and closing, Cut files, Home and End, Fix Wrong Keyboard Layout and Game Mode. Input Monitoring: Switch language (its shortcut) and the Pet's jump. System Audio Recording: App Volume. Screen Recording: Show FPS. Folders: Background Tasks in the home folder. The Services command needs none. Events and sound stay in memory, never stored or sent. The app never pastes into other apps; it sends only ⌘Q, ⌘W, Finder's ⌘C, ⌘X and ⌥⌘V, ⌘←, ⌘→, ⌃⌥⇧⌘F19 (its own Services key) and a back or forward swipe.
 
 4. External services
-When requested, Speed Test uses speed.cloudflare.com (__down/__up) with generated test bytes. Cloudflare receives the connection IP and processes network information under its privacy policy. Optional tips use Apple's StoreKit; no purchase or subscription is needed for features. No developer-run analytics, ads, tracking or AI services.
+The App Store build excludes Speed Test, including its UI, URL handler and network client. StoreKit requests available tip products; none are configured, so the tip section stays hidden. No purchase or subscription is needed for features. No developer-run analytics, ads or tracking.
 
 5. Regions
 No regional differences; 23 languages.
@@ -28,7 +28,7 @@ No regional differences; 23 languages.
 6. Regulated industry or third-party material
 None; no documents are needed.
 
-Other: the app is free. Optional voluntary tips do not unlock features; no subscription is required. Open at Login is off by default; no developer-run analytics or tracking; Pet clothes unlock with awards and cannot be purchased.
+Other: the app is free. Features require no purchases or subscriptions; any future voluntary tips will not unlock features. Open at Login is off by default; no developer-run analytics or tracking; Pet clothes unlock with awards and cannot be purchased.
 
 — конец текста для App Store Connect —
 
@@ -64,7 +64,7 @@ Shown only on Macs with a battery. It reads the battery's condition, maximum cap
 In the App Store version Temperature shows the macOS thermal state (ProcessInfo.thermalState) and what it means for speed. On a Mac with a battery it also shows the battery temperature, read from the AppleSmartBattery entries in the I/O Registry, like the Battery page. It reads no other sensors.
 
 ### Speed Test
-Settings > Speed Test measures download and upload speed with https://speed.cloudflare.com through an ephemeral URLSession. It GETs __down?bytes=0 and __down?bytes=50000000, and POSTs generated zero bytes to __up. It does not send a separate results or metadata record or call a trace endpoint. Cloudflare still receives the connection IP and may process request/network information under its privacy policy; the app does not control server-side retention. The caption says "Takes about 15 seconds. The check uses speed.cloudflare.com." A check starts only from Check Speed, from Check on the Speed Test card in the menu-bar menu (hidden until the user adds it) or from a pikapik-store://speed-test link the user opens. Only the last result is kept in the app's preferences on this Mac.
+Not included in the App Store build. Its settings page, search entries, menu controls, URL handler and measurement implementation are compiled only for Direct/GitHub. A Store URL cannot start a check or create a background measurement task.
 
 ### App Volume
 Settings > Sound, macOS 14.2 and later (hidden on 14.0 and 14.1), off by default: a volume slider and a mute button for each app that plays sound. It needs System Audio Recording to change the volume of one app without touching the others. For an app whose slider is below 100% or that is muted, the app creates a private Core Audio process tap on that app only (AudioHardwareCreateProcessTap) and plays the same sound, scaled by the slider, to the output device the app was using; an app left at 100% gets no tap. The sound is processed on the fly in memory and is never recorded, stored, logged or sent anywhere. The entitlement com.apple.security.device.audio-input is there only so the sandboxed app can read other apps' sound through these system process taps. The microphone is never opened, and the app has no microphone usage description. The system prompt shows NSAudioCaptureUsageDescription: "pikapik passes each app’s sound through itself to change its volume. Nothing is recorded or saved."
@@ -125,7 +125,7 @@ Settings > Games: turn on Game Mode, then Show FPS. The line "Needs a permission
 One line in the macOS system log at launch: the macOS version, whether Accessibility and Input Monitoring are allowed, and how many system shortcuts macOS reports. App Volume adds debug-level lines about its audio connections (process numbers, output device, sound levels), which macOS does not keep unless debug logging is turned on. No key, click, scroll or sound is ever logged, and nothing leaves the Mac.
 
 ### iCloud settings sync
-The switch appears only in a build signed with a provisioning profile that includes iCloud key-value storage, and it is off by default. When such a build goes to review, replace the text under "4. External services" above with: "Speed Test connects to speed.cloudflare.com only when the user starts a check and sends no personal data. Sync settings with iCloud (General, off by default) uses the user's own iCloud. No accounts, analytics, ads, tracking, payment processors or AI services." The notes then stay within 4000 characters.
+The switch appears only in a build signed with a provisioning profile that includes iCloud key-value storage, and it is off by default. If such a build goes to review, disclose that optional sync uses the user's own iCloud account in "4. External services" above. The current four App Store profiles do not enable this entitlement. Keep the notes within4000 characters.
 
 ### Not in the App Store version
 These features need to look inside other apps' windows, type into or control other apps, change system files or run with administrator rights, which the App Sandbox does not allow. They are only in the version distributed outside the App Store:

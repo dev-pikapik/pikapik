@@ -146,7 +146,11 @@ private struct SettingsView: View {
                 List(selection: $model.selection) {
                     if model.search.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                         Section { rows([.general]) }
+                        #if APPSTORE
+                        Section("Mac") { rows([.battery, .keepAwake, .brightness, .fans, .temperatures, .ports]) }
+                        #else
                         Section("Mac") { rows([.battery, .keepAwake, .brightness, .fans, .temperatures, .speedTest, .ports]) }
+                        #endif
                         Section("Enhancements") { rows([.sound, .keyboard, .mouse, .windows, .dock, .finder, .animations]) }
                         Section("Apps") { rows([.player, .uninstaller, .background, .games, .pet]) }
                         Section("Info") { rows([.permissions, .about]) }
@@ -271,7 +275,9 @@ private struct SettingsView: View {
             #endif
         case .battery: BatterySettings()
         case .temperatures: TemperatureSettings()
+        #if !APPSTORE
         case .speedTest: SpeedTestSettings()
+        #endif
         case .ports: PortsPage()
         case .sound: ToolsSettings(tab: .sound, text: String(localized: "Each app gets its own volume"))
         case .keyboard: ToolsSettings(tab: .keyboard, text: String(localized: "Switch language, fix wrong layout, Home and End"))

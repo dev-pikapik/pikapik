@@ -63,8 +63,7 @@ struct SettingsItem: Identifiable {
             SettingsItem(tab: .fans, title: SettingTitle.fanSpeed, synonyms: "fan, rpm, cooling, cooler, hot, heat, noise, quiet, loud, temperature, thermal"),
             SettingsItem(tab: .permissions, title: SettingTitle.administratorAccess, synonyms: "allow, helper, password, administrator, install, remove", directOnly: true),
             SettingsItem(tab: .temperatures, title: SettingTitle.temperature, synonyms: "heat, hot, warm, thermal, sensors, CPU, GPU, processor, graphics, memory, RAM, SSD, storage, battery, Wi-Fi, degrees, Celsius, Fahrenheit, overheating"),
-            SettingsItem(tab: .speedTest, title: SettingTitle.checkSpeed, synonyms: "internet, Wi-Fi, network, bandwidth, ping, Mbps, speedtest"),
-            SettingsItem(tab: .speedTest, title: SettingTitle.whatItsGoodFor, synonyms: "4K, video, calls, games, downloads"),
+        ] + speedTestItems + [
             SettingsItem(tab: .ports, title: SettingTitle.freeAPort, synonyms: "port, server, localhost, listen, kill, lsof, address in use, EADDRINUSE, process, 3000, 8080, 5000, AirPlay"),
             SettingsItem(tab: .sound, title: SettingTitle.appVolume, synonyms: "mixer, mute app, per-app volume, volume, sound, audio, quiet, loud"),
             SettingsItem(tab: .keyboard, title: SettingTitle.switchLanguage, synonyms: "keyboard layout, input source, option, shift, alt"),
@@ -179,6 +178,17 @@ struct SettingsItem: Identifiable {
         ] + (SettingsTab.sound.isAvailable ? [
             SettingsItem(tab: .permissions, title: SettingTitle.systemAudioRecording, synonyms: "privacy, security, access"),
         ] : []) + GameShortcutGroup.allCases.map { SettingsItem(tab: .games, title: $0.title, synonyms: $0.detail) }
+    }
+
+    private static var speedTestItems: [SettingsItem] {
+        #if APPSTORE
+        []
+        #else
+        [
+            SettingsItem(tab: .speedTest, title: SettingTitle.checkSpeed, synonyms: "internet, Wi-Fi, network, bandwidth, ping, Mbps, speedtest"),
+            SettingsItem(tab: .speedTest, title: SettingTitle.whatItsGoodFor, synonyms: "4K, video, calls, games, downloads"),
+        ]
+        #endif
     }
 
     func matches(_ query: String) -> Bool {

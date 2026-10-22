@@ -1,3 +1,4 @@
+#if !APPSTORE
 import Foundation
 
 struct SpeedResult: Codable, Equatable {
@@ -62,3 +63,4 @@ struct SpeedResult: Codable, Equatable {
         return (download * 1.048576, upload * 1.048576)
     }
 }
+#endif

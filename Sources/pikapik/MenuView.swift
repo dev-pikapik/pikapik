@@ -17,6 +17,14 @@ struct MenuView: View {
     @State private var keepAwakeOpen = false
     @State private var contentHeight: CGFloat = 0
 
+    private var showsSpeedTest: Bool {
+        #if APPSTORE
+        false
+        #else
+        isShown(ToolID.speedTest)
+        #endif
+    }
+
     // Room left for the rows: the screen the panel is on, minus footer, padding and menu bar gap.
     private var maxRowsHeight: CGFloat {
         ((NSApp.keyWindow?.screen ?? NSScreen.main)?.visibleFrame.height ?? 700) - 140
@@ -81,7 +89,7 @@ struct MenuView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
-                    if !visibleTabs.isEmpty || isShown(ToolID.keepAwake) || showsBrightness || isShown(ToolID.speedTest) || showsFans || isShown(ToolID.temperatures) {
+                    if !visibleTabs.isEmpty || isShown(ToolID.keepAwake) || showsBrightness || showsSpeedTest || showsFans || isShown(ToolID.temperatures) {
                         VStack(spacing: 0) {
                             if isShown(ToolID.keepAwake) {
                                 if customizing {
@@ -144,13 +152,15 @@ struct MenuView: View {
                                 }
                             }
 
-                            if isShown(ToolID.speedTest) {
+                            #if !APPSTORE
+                            if showsSpeedTest {
                                 if customizing {
                                     customizeRow(icon: "speedometer", title: TabTitle.speedTest, id: ToolID.speedTest)
                                 } else {
                                     SpeedTestRow()
                                 }
                             }
+                            #endif
 
                             #if !APPSTORE
                             if showsFans {
@@ -171,7 +181,7 @@ struct MenuView: View {
                             }
 
                             ForEach(Array(visibleTabs.enumerated()), id: \.element) { index, tab in
-                                if index > 0 || isShown(ToolID.keepAwake) || showsBrightness || isShown(ToolID.speedTest) || showsFans || isShown(ToolID.temperatures) { groupDivider }
+                                if index > 0 || isShown(ToolID.keepAwake) || showsBrightness || showsSpeedTest || showsFans || isShown(ToolID.temperatures) { groupDivider }
                                 ForEach(registry.tools.filter { $0.tab == tab && isShown($0.id) }, id: \.id) { tool in
                                     if customizing {
                                         customizeRow(icon: tool.icon, title: tool.title, id: tool.id)

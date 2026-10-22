@@ -1,3 +1,4 @@
+#if !APPSTORE
 import AppKit
 import SwiftUI
 
@@ -16,13 +17,9 @@ final class SpeedTest {
     private(set) var failure: SpeedResult.Failure?
     private(set) var live: (download: Double, upload: Double) = (0, 0)
 
-    #if APPSTORE
-    @ObservationIgnored private var measuring: Task<Void, Never>?
-    #else
     @ObservationIgnored private var process: Process?
     @ObservationIgnored private var output: FileHandle?
     @ObservationIgnored private let file = FileManager.default.temporaryDirectory.appendingPathComponent("pikapik-speed-test.json")
-    #endif
 
     var isRunning: Bool { phase != nil }
 
@@ -31,28 +28,6 @@ final class SpeedTest {
     }
 
     func start() {
-        #if APPSTORE
-        guard measuring == nil else { return }
-        failure = nil
-        live = (0, 0)
-        phase = .starting
-        measuring = Task { @MainActor in
-            do {
-                let result = try await SpeedMeasure.run { phase, speeds in
-                    self.phase = phase
-                    self.live = speeds
-                }
-                guard !Task.isCancelled else { return }
-                self.result = result
-                UserDefaults.standard.set(try? JSONEncoder().encode(result), forKey: Self.key)
-            } catch {
-                guard !Task.isCancelled else { return }
-                self.failure = (error as? URLError).map { SpeedResult.offlineCodes.contains($0.errorCode) ? .offline : .failed } ?? .failed
-            }
-            self.phase = nil
-            self.measuring = nil
-        }
-        #else
         guard process == nil else { return }
         try? FileManager.default.removeItem(at: file)
         failure = nil
@@ -95,19 +70,12 @@ final class SpeedTest {
         self.output = output
         live = (0, 0)
         phase = .starting
-        #endif
     }
 
     func cancel() {
-        #if APPSTORE
-        measuring?.cancel()
-        measuring = nil
-        phase = nil
-        #else
         guard let process else { return }
         stop()
         process.terminate()
-        #endif
     }
 
     func handle(_ url: URL) {
@@ -116,7 +84,6 @@ final class SpeedTest {
         start()
     }
 
-    #if !APPSTORE
     private func stop() {
         process = nil
         output?.readabilityHandler = nil
@@ -143,7 +110,6 @@ final class SpeedTest {
             self.failure = failure
         }
     }
-    #endif
 }
 
 extension SpeedTest {
@@ -215,17 +181,10 @@ struct SpeedTestSettings: View {
                 .frame(maxWidth: .infinity)
                 .settingAnchor(SettingTitle.checkSpeed)
             } footer: {
-                #if APPSTORE
-                Text("Takes about 15 seconds. The check uses speed.cloudflare.com.")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                #else
                 Text("Takes about half a minute. The check runs on Apple’s servers.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                #endif
             }
             if let result = test.result {
                 Group {
@@ -431,3 +390,4 @@ struct SpeedTestRow: View {
         }
     }
 }
+#endif

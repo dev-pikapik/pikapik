@@ -2,7 +2,11 @@ import AppKit
 import SwiftUI
 
 enum SettingsTab: String, CaseIterable, Identifiable {
-    case general, battery, keepAwake, brightness, fans, temperatures, speedTest, ports, sound, keyboard, mouse, windows, dock, finder, animations, player, uninstaller, background, games, pet, permissions, about
+    case general, battery, keepAwake, brightness, fans, temperatures
+    #if !APPSTORE
+    case speedTest
+    #endif
+    case ports, sound, keyboard, mouse, windows, dock, finder, animations, player, uninstaller, background, games, pet, permissions, about
 
     var id: Self { self }
 
@@ -14,7 +18,9 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .brightness: TabTitle.brightness
         case .fans: TabTitle.fans
         case .temperatures: TabTitle.temperatures
+        #if !APPSTORE
         case .speedTest: TabTitle.speedTest
+        #endif
         case .ports: TabTitle.ports
         case .sound: TabTitle.sound
         case .keyboard: TabTitle.keyboard
@@ -41,7 +47,9 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .brightness: "sun.max.fill"
         case .fans: "fan"
         case .temperatures: "thermometer.medium"
+        #if !APPSTORE
         case .speedTest: "speedometer"
+        #endif
         case .ports: "network"
         case .sound: "speaker.wave.2.fill"
         case .keyboard: "keyboard.fill"
@@ -74,7 +82,10 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .brightness: .yellow
         case .fans: .teal
         case .pet, .temperatures: .red
-        case .speedTest, .battery: .green
+        #if !APPSTORE
+        case .speedTest: .green
+        #endif
+        case .battery: .green
         case .ports: .blue
         }
     }

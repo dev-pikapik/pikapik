@@ -71,7 +71,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Compress.handle(url)
         ArchiveHandoff.handle(url)
         KeepAwake.shared.handle(url)
+        #if !APPSTORE
         SpeedTest.shared.handle(url)
+        #endif
     }
 
     func application(_ application: NSApplication, open urls: [URL]) {
@@ -164,8 +166,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ notification: Notification) {
         Background.shared.quitting = true
         KeepAwake.shared.handOff()
-        SpeedTest.shared.cancel()
         #if !APPSTORE
+        SpeedTest.shared.cancel()
         AnimationsTool.shared.willQuit()
         #endif
         MainCopy.shared.retire()
