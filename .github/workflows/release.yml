@@ -4,6 +4,15 @@ on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      publish_approved:
+        description: Explicit owner approval to publish this new version tag
+        type: boolean
+        default: false
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -11,12 +20,24 @@ permissions:
 
 jobs:
   release:
+    if: github.repository_id == '1429245355' && github.actor == github.repository_owner && github.actor_id == '241494448' && github.repository_owner_id == '241494448' && startsWith(github.ref, 'refs/tags/v') && ((github.event_name == 'push' && github.event.created && !github.event.deleted) || (github.event_name == 'workflow_dispatch' && inputs.publish_approved))
     runs-on: macos-26
     timeout-minutes: 150
     env:
       GH_TOKEN: ${{ github.token }}
       NOTARIZE: ${{ secrets.NOTARY_KEY != '' || secrets.NOTARY_PASSWORD != '' }}
     steps:
+      - name: Refuse an already published or draft version
+        run: |
+          if gh api "repos/$GITHUB_REPOSITORY/releases/tags/$GITHUB_REF_NAME" > "$RUNNER_TEMP/existing-release.json" 2> "$RUNNER_TEMP/release-lookup-error.txt"; then
+            echo "This tag already has a release; refusing duplicate signing and publication."
+            exit 1
+          fi
+          if ! rg -q 'HTTP 404' "$RUNNER_TEMP/release-lookup-error.txt"; then
+            echo "Could not verify release absence; stopping before signing or notarization."
+            exit 1
+          fi
+
       - uses: actions/checkout@v5
 
       - name: Read version from tag

@@ -4,6 +4,12 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      runtime_approved:
+        description: Explicit owner approval for app runtime in this run
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -103,6 +109,7 @@ jobs:
 
       # The built app has to start, keep running and quit cleanly when asked
       - name: Start and quit the app
+        if: github.event_name == 'workflow_dispatch' && github.actor == github.repository_owner && github.actor_id == '241494448' && github.repository_owner_id == '241494448' && github.repository_id == '1429245355' && inputs.runtime_approved
         run: swiftc -O scripts/smoke-test.swift -o build/smoke-test && build/smoke-test build/pikapik.app
 
       - name: Keep the crash reports
@@ -127,6 +134,7 @@ jobs:
         run: APPSTORE=1 ./scripts/build.sh
 
       - name: Start and quit the app
+        if: github.event_name == 'workflow_dispatch' && github.actor == github.repository_owner && github.actor_id == '241494448' && github.repository_owner_id == '241494448' && github.repository_id == '1429245355' && inputs.runtime_approved
         run: swiftc -O scripts/smoke-test.swift -o build/smoke-test && build/smoke-test build/pikapik.app
 
       - name: Keep the crash reports
@@ -141,7 +149,7 @@ jobs:
   tests:
     name: Tests
     needs: changes
-    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' }}
+    if: ${{ !cancelled() && needs.changes.outputs.code != 'false' && github.event_name == 'workflow_dispatch' && github.actor == github.repository_owner && github.actor_id == '241494448' && github.repository_owner_id == '241494448' && github.repository_id == '1429245355' && inputs.runtime_approved }}
     runs-on: macos-26
     # the tests take about 35 minutes; the rest is room for tests stopped at their own time limit
     timeout-minutes: 90
