@@ -33,7 +33,7 @@ jobs:
             echo "This tag already has a release; refusing duplicate signing and publication."
             exit 1
           fi
-          if ! rg -q 'HTTP 404' "$RUNNER_TEMP/release-lookup-error.txt"; then
+          if ! grep -q 'HTTP 404' "$RUNNER_TEMP/release-lookup-error.txt"; then
             echo "Could not verify release absence; stopping before signing or notarization."
             exit 1
           fi
