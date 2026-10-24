@@ -24,13 +24,18 @@ enum TestGameMode {
         let swapped = wheel(shift: true, a1: 0, a2: 3)
         GameRules.wheelFlags(swapped, playing: true, keepsVertical: true)
         precondition(swapped.getIntegerValueField(.scrollWheelEventDeltaAxis1) == 3 && swapped.getIntegerValueField(.scrollWheelEventDeltaAxis2) == 0 && !swapped.flags.contains(.maskShift))
-        for (event, playing, on) in [(wheel(shift: true, a1: 0, a2: 3), false, true), (wheel(shift: true, a1: 0, a2: 3), true, false), (wheel(shift: false, a1: 0, a2: 3), true, true)] {
+        for (shift, playing, on) in [(true, false, true), (true, true, false), (false, true, true)] {
+            let event = wheel(shift: shift, a1: 0, a2: 3)
             GameRules.wheelFlags(event, playing: playing, keepsVertical: on)
-            precondition(event.getIntegerValueField(.scrollWheelEventDeltaAxis1) == 0 && event.getIntegerValueField(.scrollWheelEventDeltaAxis2) == 3)
+            precondition(event.getIntegerValueField(.scrollWheelEventDeltaAxis1) == 0 && event.getIntegerValueField(.scrollWheelEventDeltaAxis2) == 3 && event.flags.contains(.maskShift) == shift)
         }
+        let trackpad = wheel(shift: true, a1: 2, a2: 0)
+        trackpad.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
+        GameRules.wheelFlags(trackpad, playing: true, keepsVertical: true)
+        precondition(trackpad.flags.contains(.maskShift))
         let vertical = wheel(shift: true, a1: 2, a2: 0)
         GameRules.wheelFlags(vertical, playing: true, keepsVertical: true)
-        precondition(vertical.getIntegerValueField(.scrollWheelEventDeltaAxis1) == 2 && vertical.flags.contains(.maskShift))
+        precondition(vertical.getIntegerValueField(.scrollWheelEventDeltaAxis1) == 2 && vertical.getIntegerValueField(.scrollWheelEventDeltaAxis2) == 0 && !vertical.flags.contains(.maskShift))
         print("shift wheel: ok")
 
         let ids = GameRule.allCases.flatMap(\.hotKeys) + [1, 2]

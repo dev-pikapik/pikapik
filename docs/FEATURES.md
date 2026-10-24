@@ -1802,7 +1802,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 - The keyboard stays in the game — no input-source change.
 - 🌐 shortcuts are paused.
 - ⌃-click works as a plain click — no right-click while playing.
-- The wheel switches slots while you hold Shift — macOS doesn’t turn the mouse wheel sideways, so scrolling in the game (a hotbar in Minecraft) stays the same as without Shift (`GameRules.wheelFlags`).
+- The wheel switches slots while you hold Shift — macOS doesn’t turn the mouse wheel sideways, so scrolling in the game (a hotbar in Minecraft) stays the same as without Shift. The rule only looks at the mouse wheel, not at trackpad scrolls, and it also catches the moment macOS has already turned the wheel sideways before the game sees it: the wheel goes back upright with the direction kept, and the Shift mark is taken off the event so the game cannot turn the scrolling sideways on its own (`GameRules.wheelFlags`).
 - Gestures don’t leave the game — see its own entry.
 - The pointer stays in the game — see its own entry.
 - The screen stays on — the display neither dims nor sleeps while you play (IOKit power assertion).
