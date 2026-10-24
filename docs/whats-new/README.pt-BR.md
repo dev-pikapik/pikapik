@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Modo jogo: a roda mantém a direção nos jogos
+
+<sub>1.56.1 · 24 de outubro de 2026</sub>
+
+Segure Shift em um jogo, e a roda rola exatamente como rola sem o Shift.
+
+Com o Shift pressionado, o macOS gira a roda do mouse para o lado, então em jogos como Minecraft os espaços param de trocar. A regra que mantém a roda funcionando podia perder o momento: às vezes o macOS já tinha girado a roda antes de o jogo vê-la, ou a marca do Shift ainda viajava com o evento, então nada mudava com a regra ligada ou desligada, e a direção da rolagem podia até se inverter. Agora a roda volta na posição normal mantendo a direção, a marca do Shift sai do evento da roda, e o jogo rola igual ao modo sem Shift.
+
+**Experimente:** Ajustes › Jogos › A roda troca de espaço com ⇧ pressionado
+
+**Corrigido**
+
+- Segurar Shift nos jogos não muda mais a direção da rolagem.
+
+---
+
 ## <a id="v1.56.0"></a>Uma nova casa para o pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

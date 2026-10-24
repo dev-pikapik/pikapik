@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Mode Game: roda menjaga arahnya di dalam game
+
+<sub>1.56.1 · 24 Oktober 2026</sub>
+
+Tahan Shift di dalam game, dan roda menggulir persis seperti tanpa Shift.
+
+Saat Shift ditahan, macOS memutar roda mouse ke samping, sehingga game seperti Minecraft berhenti mengganti slot. Aturan yang menjaga roda tetap bekerja bisa lepas dari momen itu: kadang macOS sudah memutar roda sebelum game melihatnya, atau tanda Shift masih ikut dalam event, sehingga tak ada yang berubah baik aturannya dinyalakan maupun dimatikan, dan arah gulir bahkan bisa terbalik. Kini roda kembali tegak dengan arah yang tetap, tanda Shift dihilangkan dari event roda, dan game menggulir persis seperti tanpa Shift.
+
+**Coba:** Pengaturan › Game › Roda mengganti slot saat ⇧ ditahan
+
+**Diperbaiki**
+
+- Menahan Shift dalam game tidak lagi mengubah arah gulir.
+
+---
+
 ## <a id="v1.56.0"></a>Rumah baru untuk pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

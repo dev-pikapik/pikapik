@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Modalità gioco: la rotella mantiene la direzione nei giochi
+
+<sub>1.56.1 · 24 ottobre 2026</sub>
+
+Tieni premuto Maiusc in un gioco, e la rotella scorre esattamente come senza Maiusc.
+
+Con Maiusc premuto, macOS fa girare la rotella del mouse di lato, quindi in giochi come Minecraft gli slot smettono di cambiare. La regola che tiene la rotella al lavoro poteva mancare il momento: a volte macOS aveva già girato la rotella prima che il gioco la vedesse, oppure il segno di Maiusc viaggiava ancora con l’evento, così niente cambiava con la regola accesa o spenta, e la direzione dello scorrimento poteva persino invertirsi. Ora la rotella torna dritta mantenendo la direzione, il segno di Maiusc lascia l’evento della rotella e il gioco scorre come senza Maiusc.
+
+**Provalo:** Impostazioni › Giochi › La rotella cambia slot con ⇧ premuto
+
+**Corretto**
+
+- Tenere Maiusc nei giochi non cambia più la direzione dello scorrimento.
+
+---
+
 ## <a id="v1.56.0"></a>Una nuova casa per pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Spelläge: hjulet behåller sin riktning i spel
+
+<sub>1.56.1 · 24 oktober 2026</sub>
+
+Håll Skift i ett spel, och hjulet rullar precis som det gör utan Skift.
+
+När du håller Skift vänder macOS mushjulet åt sidan, så i spel som Minecraft slutar platserna att växla. Regeln som låter hjulet jobba kunde missa ögonblicket: ibland hade macOS redan vänt hjulet åt sidan innan spelet såg det, eller Skiftets märke följde fortfarande med händelsen, så inget ändrades med regeln på eller av, och rullningsriktningen kunde till och med vända. Nu kommer hjulet tillbaka upprätt med riktningen bevarad, Skifts märke lämnar hjulhändelsen, och spelet rullar precis som utan Skift.
+
+**Prova:** Inställningar › Spel › Hjulet byter plats medan du håller ⇧
+
+**Åtgärdat**
+
+- Att hålla Skift nere i spel ändrar inte längre rullningsriktningen.
+
+---
+
 ## <a id="v1.56.0"></a>Ett nytt hem för pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

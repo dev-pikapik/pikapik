@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Spelmodus: het wiel houdt zijn richting in spellen
+
+<sub>1.56.1 · 24 oktober 2026</sub>
+
+Houd Shift ingedrukt in een spel, en het wiel scrollt precies zo als zonder Shift.
+
+Als je Shift ingedrukt houdt, draait macOS het muiswiel opzij, zodat spellen zoals Minecraft de hotbar niet meer kunnen wisselen. De regel die het wiel laat werken kon het moment missen: soms had macOS het wiel al opzij gedraaid voordat het spel het zag, of het Shift-merkteken reisde nog steeds mee met het evenement, zodat er met de regel aan of uit niets veranderde en de scrollrichting zelfs kon omslaan. Nu gaat het wiel weer rechtop met zijn richting bewaard, het Shift-merkteken verdwijnt van het wiel-evenement en het spel scrollt precies zoals zonder Shift.
+
+**Probeer het:** Instellingen › Games › Het wiel wisselt van slot terwijl je ⇧ vasthoudt
+
+**Opgelost**
+
+- Shift ingedrukt houden in spellen verandert de scrollrichting niet meer.
+
+---
+
 ## <a id="v1.56.0"></a>Een nieuw thuis voor pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>
