@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Oyun Modu: oyun içinde tekerlek yönünü korur
+
+<sub>1.56.1 · 24 Ekim 2026</sub>
+
+Oyunda Shift’e basılı tutun; tekerlek Shift’sizken attığı gibi aynı şekilde döner.
+
+Shift basılıyken macOS fare tekerleğini yana döndürür, bu yüzden Minecraft gibi oyunlarda yuvalar değişmeyi bırakır. Tekerleği çalışır tutan kural anı kaçırabiliyordu: kimi zaman macOS tekerleği oyun görmeden önce yan dönmüş, kimi zaman da olay, Shift işaretiyle birlikte oyunun eline ulaşmıştı; kural açıkken de kapalıyken de bir şey değişmiyor, kaydırma yönü tersine dönüyordu bile. Artık tekerlek yönünü koruyarak dik geri geliyor, Shift işareti tekerlek olayından çıkıyor, oyun da Shift’sizken yaptığı gibi kaydırıyor.
+
+**Deneyin:** Ayarlar › Oyunlar › ⇧ basılıyken tekerlek yuva değiştirir
+
+**Düzeltilenler**
+
+- Oyunlarda basılı Shift artık kaydırma yönünü değiştirmiyor.
+
+---
+
 ## <a id="v1.56.0"></a>pikapik için yeni bir adres
 
 <sub>1.56.0 · 2026-10-22</sub>

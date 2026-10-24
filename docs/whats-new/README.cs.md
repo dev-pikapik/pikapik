@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Herní režim: kolečko si ve hrách udrží směr
+
+<sub>1.56.1 · 24. října 2026</sub>
+
+Držte ve hře Shift a kolečko se točí úplně stejně jako bez Shiftu.
+
+Když držíte Shift, macOS otočí kolečko myši do strany, takže se ve hrách jako Minecraft sloty přestaly přepínat. Pravidlu, které kolečko nechává pracovat, mohl uniknout okamžik: někdy už macOS kolečko otočil, než ho hra viděla, nebo hra dostala událost i se znamením Shift, takže se nic neměnilo ani s pravidlem zapnutým, ani vypnutým, a směr posouvání se mohl dokonce obrátit. Teď se kolečko vrací vzpřímeně se zachovaným směrem, znamení Shift se z události kolečka odstraní a hra posouvá stejně jako bez Shiftu.
+
+**Vyzkoušejte:** Nastavení › Hry › Kolečko přepíná sloty i při držení ⇧
+
+**Opraveno**
+
+- Držení Shiftu ve hrách už nezmění směr posouvání.
+
+---
+
 ## <a id="v1.56.0"></a>Nový domov pro pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

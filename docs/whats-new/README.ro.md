@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Modul joc: rotița își păstrează direcția în jocuri
+
+<sub>1.56.1 · 24 octombrie 2026</sub>
+
+Ține apăsat Shift în joc, iar rotița se învârte exact cum se învârte fără Shift.
+
+Cu Shift apăsat, macOS întoarce rotița mausului într-o parte, așa că în jocuri precum Minecraft sloturile nu se mai schimbă. Regula care păstrează rotița funcțională putea rata momentul: în unele cazuri macOS întorsese deja rotița înainte ca jocul să o vadă, sau semnul Shift mai călătorea odată cu evenimentul, deci nu se schimba nimic nici cu regula pornită, nici cu cea oprită, iar direcția derulării se putea chiar întoarce. Acum rotița revine dreaptă, păstrând direcția, semnul Shift este scos din evenimentul rotiței, iar jocul derulează la fel ca fără Shift.
+
+**Încearcă:** Setări › Jocuri › Rotița schimbă sloturile cât ții apăsat ⇧
+
+**Reparat**
+
+- Shift-ul apăsat nu mai schimbă direcția derulării în jocuri.
+
+---
+
 ## <a id="v1.56.0"></a>O casă nouă pentru pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

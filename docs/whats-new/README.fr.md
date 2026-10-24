@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Mode jeu : la molette garde sa direction en jeu
+
+<sub>1.56.1 · 24 octobre 2026</sub>
+
+Maintenez Maj dans un jeu, et la molette défile exactement comme sans Maj.
+
+Quand on maintient Maj, macOS tourne la molette de la souris de côté, donc dans des jeux comme Minecraft les emplacements ne changent plus. La règle qui laisse la molette travailler pouvait passer à côté : parfois macOS avait déjà tourné la molette de côté avant que le jeu ne la voie, ou la marque Maj arrivait encore jusqu’au jeu, si bien que rien ne changeait, règle activée ou non, et la direction du défilement pouvait même s’inverser. Désormais la molette revient droite en gardant sa direction, la marque Maj est retirée de l’événement de la molette, et le jeu défile comme sans Maj.
+
+**Pour essayer :** Réglages › Jeux › La molette change d’emplacement avec ⇧ maintenu
+
+**Corrigé**
+
+- Maintenir Maj dans les jeux ne change plus la direction du défilement.
+
+---
+
 ## <a id="v1.56.0"></a>Une nouvelle adresse pour pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

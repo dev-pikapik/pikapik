@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Chế độ trò chơi: con lăn giữ nguyên hướng trong game
+
+<sub>1.56.1 · 24 tháng 10 năm 2026</sub>
+
+Giữ Shift trong trò chơi, con lăn cuộn y hệt như khi không giữ Shift.
+
+Khi giữ Shift, macOS xoay con lăn chuột sang bên, nên các trò như Minecraft không đổi được ô nhanh. Quy tắc giữ con lăn hoạt động vẫn có thể bỏ lỡ thời điểm: có khi macOS đã xoay con lăn trước khi trò chơi nhìn thấy, hoặc dấu Shift vẫn đi kèm sự kiện vào trò chơi, nên bật hay tắt quy tắc cũng chẳng thay đổi gì, thậm chí hướng cuộn còn bị lộn ngược. Giờ con lăn trở về dọc mà giữ nguyên hướng, dấu Shift được rời khỏi sự kiện con lăn, và trò chơi cuộn đúng như khi không giữ Shift.
+
+**Thử ngay:** Cài đặt › Trò chơi › Con lăn đổi ô khi đang giữ ⇧
+
+**Đã sửa**
+
+- Giữ Shift trong trò chơi không còn đổi hướng cuộn.
+
+---
+
 ## <a id="v1.56.0"></a>Ngôi nhà mới cho pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

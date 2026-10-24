@@ -39,19 +39,27 @@ enum GameRules {
 
     static func wheelFlags(_ event: CGEvent, playing: Bool, keepsVertical: Bool) {
         guard playing, keepsVertical, event.flags.contains(.maskShift),
-              event.getIntegerValueField(.scrollWheelEventDeltaAxis1) == 0,
-              event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1) == 0,
-              event.getIntegerValueField(.scrollWheelEventPointDeltaAxis1) == 0 else { return }
-        let delta = event.getIntegerValueField(.scrollWheelEventDeltaAxis2)
-        let fixed = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2)
-        let point = event.getIntegerValueField(.scrollWheelEventPointDeltaAxis2)
-        guard delta != 0 || fixed != 0 || point != 0 else { return }
-        event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: delta)
-        event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: fixed)
-        event.setIntegerValueField(.scrollWheelEventPointDeltaAxis1, value: point)
-        event.setIntegerValueField(.scrollWheelEventDeltaAxis2, value: 0)
-        event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0)
-        event.setIntegerValueField(.scrollWheelEventPointDeltaAxis2, value: 0)
+              event.getIntegerValueField(.scrollWheelEventIsContinuous) == 0 else { return }
+        func moves(_ line: CGEventField, _ fixed: CGEventField, _ point: CGEventField) -> Bool {
+            event.getIntegerValueField(line) != 0 || event.getDoubleValueField(fixed) != 0 || event.getIntegerValueField(point) != 0
+        }
+        guard moves(.scrollWheelEventDeltaAxis1, .scrollWheelEventFixedPtDeltaAxis1, .scrollWheelEventPointDeltaAxis1) else {
+            guard moves(.scrollWheelEventDeltaAxis2, .scrollWheelEventFixedPtDeltaAxis2, .scrollWheelEventPointDeltaAxis2) else {
+                event.flags = event.flags.subtracting(.maskShift)
+                return
+            }
+            let delta = event.getIntegerValueField(.scrollWheelEventDeltaAxis2)
+            let fixed = event.getDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2)
+            let point = event.getIntegerValueField(.scrollWheelEventPointDeltaAxis2)
+            event.setIntegerValueField(.scrollWheelEventDeltaAxis2, value: 0)
+            event.setIntegerValueField(.scrollWheelEventDeltaAxis1, value: delta)
+            event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis2, value: 0)
+            event.setDoubleValueField(.scrollWheelEventFixedPtDeltaAxis1, value: fixed)
+            event.setIntegerValueField(.scrollWheelEventPointDeltaAxis2, value: 0)
+            event.setIntegerValueField(.scrollWheelEventPointDeltaAxis1, value: point)
+            event.flags = event.flags.subtracting(.maskShift)
+            return
+        }
         event.flags = event.flags.subtracting(.maskShift)
     }
 

@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Game Mode: the wheel keeps its direction in games
+
+<sub>1.56.1 · October 24, 2026</sub>
+
+Hold Shift in a game, and the wheel scrolls exactly the way it does without Shift.
+
+While Shift is held, macOS turns the mouse wheel sideways, so games such as Minecraft stop switching the hotbar. The rule that keeps the wheel working could miss the moment: sometimes macOS had already turned the wheel sideways before the game saw it, or the Shift mark still traveled with the event, so nothing changed with the rule on or off, and the direction of scrolling could even flip. Now the wheel goes back upright with the direction kept, and the Shift mark leaves the wheel event, so the game scrolls the same as without Shift.
+
+**Try it:** Settings › Games › The wheel switches slots while you hold ⇧
+
+**Fixed**
+
+- Holding Shift in games no longer changes the direction of scrolling.
+
+---
+
 ## <a id="v1.56.0"></a>A new home for pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

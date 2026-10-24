@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Spielmodus: Das Rad behält im Spiel seine Richtung
+
+<sub>1.56.1 · 24. Oktober 2026</sub>
+
+Halten Sie in einem Spiel Shift, und das Rad scrollt genau so wie ohne Shift.
+
+Bei gedrückter Shift-Taste dreht macOS das Mausrad zur Seite, deshalb wechseln in Spielen wie Minecraft die Slots nicht mehr. Die Regel, die das Rad arbeiten lässt, konnte den Moment verpassen: Manchmal war das Rad schon zur Seite gedreht, bevor das Spiel es sah, oder das Ereignis trug das Shift-Zeichen weiter ins Spiel, weshalb sich mit der Regel, ein- oder ausgeschaltet, nichts änderte und die Scrollrichtung sogar umspringen konnte. Jetzt kommt das Rad aufrecht zurück, die Richtung bleibt erhalten, und das Shift-Zeichen wird vom Rad-Ereignis entfernt, sodass das Spiel genau wie ohne Shift scrollt.
+
+**Ausprobieren:** Einstellungen › Spiele › Das Rad wechselt Slots bei gehaltenem ⇧
+
+**Behoben**
+
+- Die gedrückte Shift-Taste ändert die Scrollrichtung in Spielen nicht mehr.
+
+---
+
 ## <a id="v1.56.0"></a>Ein neues Zuhause für pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

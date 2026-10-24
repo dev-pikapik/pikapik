@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Tryb gry: kółko zachowuje kierunek w grach
+
+<sub>1.56.1 · 24 października 2026</sub>
+
+Trzymaj Shift w grze, a kółko kręci się dokładnie tak samo jak bez Shifta.
+
+Gdy trzymasz Shift, macOS kręci kółkiem myszy na bok, więc w grach takich jak Minecraft sloty przestają się zmieniać. Reguła utrzymująca kółko przy pracy mogła przeoczyć moment: czasem macOS zdążyło już skręcić kółko, zanim zobaczyła je gra, albo znacznik Shift nadal podróżował z zdarzeniem, więc nic się nie zmieniało ani z włączoną, ani z wyłączoną regułą, a kierunek przewijania mógł się nawet odwrócić. Teraz kółko wraca pionowo z zachowanym kierunkiem, znacznik Shift jest zdzierany z zdarzenia kółka, a gra przewija tak samo jak bez Shifta.
+
+**Wypróbuj:** Ustawienia › Gry › Kółko zmienia sloty przy wciśniętym ⇧
+
+**Poprawki**
+
+- Trzymanie Shifta w grach nie zmienia już kierunku przewijania.
+
+---
+
 ## <a id="v1.56.0"></a>Nowy dom dla pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>

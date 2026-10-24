@@ -5,6 +5,22 @@
 
 ---
 
+## <a id="v1.56.1"></a>Modo juego: la rueda mantiene la dirección en el juego
+
+<sub>1.56.1 · 24 de octubre de 2026</sub>
+
+Mantén Mayús en un juego, y la rueda se desplaza exactamente igual que sin Mayús.
+
+Al mantener Mayús, macOS gira la rueda del ratón hacia el lado, así que en juegos como Minecraft las ranuras dejan de cambiar. La regla que deja la rueda funcionar podía fallar: a veces macOS ya había girado la rueda antes de que el juego la viera, o la marca de Mayús seguía viajando con el evento, de modo que nada cambiaba con la regla activada o desactivada, y hasta podía invertirse la dirección del desplazamiento. Ahora la rueda vuelve derecha manteniendo su dirección, la marca de Mayús sale del evento de la rueda, y el juego se desplaza igual que sin Mayús.
+
+**Pruébalo:** Ajustes › Juegos › La rueda cambia de ranura con ⇧ pulsado
+
+**Corregido**
+
+- Mantener Mayús en los juegos ya no cambia la dirección del desplazamiento.
+
+---
+
 ## <a id="v1.56.0"></a>Un nuevo hogar para pikapik
 
 <sub>1.56.0 · 2026-10-22</sub>
