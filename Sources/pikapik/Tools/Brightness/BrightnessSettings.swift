@@ -93,7 +93,7 @@ struct BrightnessSlider: View {
     var body: some View {
         let percent = monitor.level.formatted(.percent.precision(.fractionLength(0)))
         HStack(spacing: 8) {
-            Image(systemName: "sun.min")
+            Image(.sunMin)
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
             Slider(value: Binding(get: { monitor.level }, set: { Brightness.shared.set($0, for: monitor.id) }), in: 0...1) {
@@ -101,7 +101,7 @@ struct BrightnessSlider: View {
             }
             .labelsHidden()
             .accessibilityValue(Text(percent))
-            Image(systemName: "sun.max")
+            Image(.sunMax)
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
             if showsPercent {
@@ -123,7 +123,7 @@ struct BrightnessRow: View {
         VStack(alignment: .leading, spacing: 0) {
             Button { SettingsWindow.show(.brightness) } label: {
                 HStack(spacing: 10) {
-                    Image(systemName: "sun.max")
+                    Image(.sunMax)
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(Color.secondary)
                         .frame(width: 28, height: 28)

@@ -33,9 +33,9 @@ struct PlayerPage: View {
             }
             Section {
                 if let license = Self.license {
-                    row(SettingTitle.playerLicenses, symbol: "doc.text.fill", color: .green) { NSWorkspace.shared.open(license) }
+                    row(SettingTitle.playerLicenses, symbol: .docTextFill, color: .green) { NSWorkspace.shared.open(license) }
                 }
-                row(SettingTitle.sourceCode, symbol: "chevron.left.forwardslash.chevron.right", color: .gray) { NSWorkspace.shared.open(Self.source) }
+                row(SettingTitle.sourceCode, symbol: .chevronLeftForwardslashChevronRight, color: .gray) { NSWorkspace.shared.open(Self.source) }
             }
         }
         .formStyle(.grouped)
@@ -45,10 +45,10 @@ struct PlayerPage: View {
         list.map { ($0.name, PlayerFormats.types(of: $0.extensions)) }
     }
 
-    private func row(_ title: String, symbol: String, color: Color, action: @escaping () -> Void) -> some View {
+    private func row(_ title: String, symbol: Symbol, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             LabeledContent {
-                Image(systemName: "arrow.up.right")
+                Image(.arrowUpRight)
                     .foregroundStyle(.secondary)
             } label: {
                 HStack(spacing: 10) {

@@ -5,7 +5,7 @@ import SwiftUI
 @Observable
 final class HomeEndTool: Tool {
     let id = ToolID.homeEnd
-    let icon = "arrow.left.to.line"
+    let icon = Symbol.arrowLeftToLine
     var title: String { SettingTitle.homeEnd }
 
     static let consoles = [

@@ -177,7 +177,7 @@ func finderKeysCallback(
 @Observable
 final class FinderOpenTool: Tool {
     let id = ToolID.finderOpen
-    let icon = "return"
+    let icon = Symbol.return
     var title: String { SettingTitle.enterOpensFiles }
     let tab = SettingsTab.finder
 
@@ -207,7 +207,7 @@ final class FinderOpenTool: Tool {
 @Observable
 final class FinderCutTool: Tool {
     let id = ToolID.finderCut
-    let icon = "scissors"
+    let icon = Symbol.scissors
     var title: String { SettingTitle.cutFilesInFinder }
     let tab = SettingsTab.finder
 
@@ -237,7 +237,7 @@ final class FinderCutTool: Tool {
 @Observable
 final class FinderDeleteTool: Tool {
     let id = ToolID.finderDelete
-    let icon = "delete.left"
+    let icon = Symbol.deleteLeft
     var title: String { SettingTitle.deleteRemovesFiles }
     let tab = SettingsTab.finder
 
@@ -303,7 +303,7 @@ struct FinderOpenArt: View {
                 .scaleEffect(opened ? 1 : 0.5, anchor: .leading)
                 .opacity(opened ? 1 : 0)
                 .position(x: 186, y: 52)
-                ArtKey(down: step == 1, width: 38) { Image(systemName: "return") }
+                ArtKey(down: step == 1, width: 38) { Image(.return) }
                     .position(x: 268, y: 40)
                 ArtKey(down: step == 3, width: 38) { Text(verbatim: "F2") }
                     .position(x: 268, y: 82)
@@ -367,7 +367,7 @@ struct FinderDeleteArt: View {
                     .fill(Color(nsColor: .controlBackgroundColor))
                     .overlay(shape.hairline(Color.primary.opacity(0.14)))
                     .overlay {
-                        Image(systemName: trashed ? "trash.fill" : "trash")
+                        Image(trashed ? .trashFill : .trash)
                             .font(.system(size: 21, weight: .medium))
                             .foregroundStyle(trashed ? Color.accentColor : Color.secondary)
                             .contentTransition(.symbolEffect(.replace))
@@ -376,7 +376,7 @@ struct FinderDeleteArt: View {
                     .shadow(color: .black.opacity(0.18), radius: 4, y: 2)
                     .scaleEffect(on && step == 1 ? 1.1 : 1)
                     .position(x: 234, y: 44)
-                ArtKey(down: step == 1, width: 46) { Image(systemName: "delete.left") }
+                ArtKey(down: step == 1, width: 46) { Image(.deleteLeft) }
                     .position(x: 234, y: 98)
             }
             .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: step)

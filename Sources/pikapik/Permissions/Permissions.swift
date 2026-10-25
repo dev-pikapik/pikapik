@@ -14,41 +14,41 @@ enum Permission: CaseIterable {
     case iCloud, fullDisk
     #endif
 
-    private var info: (icon: String, symbol: String, title: String, subtitle: String) {
+    private var info: (icon: String, symbol: Symbol, title: String, subtitle: String) {
         switch self {
         case .accessibility:
             #if APPSTORE
-            ("com.apple.graphic-icon.accessibility", "accessibility",
+            ("com.apple.graphic-icon.accessibility", .accessibility,
              Self.accessibilityTitle, String(localized: "Lets the app change clicks and keys"))
             #else
-            ("com.apple.graphic-icon.accessibility", "accessibility",
+            ("com.apple.graphic-icon.accessibility", .accessibility,
              Self.accessibilityTitle, String(localized: "Lets the app change clicks and keys and manage windows"))
             #endif
         case .inputMonitoring:
-            ("com.apple.graphic-icon.input-monitoring", "keyboard.badge.eye",
+            ("com.apple.graphic-icon.input-monitoring", .keyboardBadgeEye,
              SettingTitle.inputMonitoring, String(localized: "Lets the app see clicks and keys"))
         case .screenRecording:
-            ("com.apple.graphic-icon.screen-recording", "rectangle.dashed.badge.record",
+            ("com.apple.graphic-icon.screen-recording", .rectangleDashedBadgeRecord,
              SettingTitle.screenRecording,
              FrameRateMeter.hasTrace ? String(localized: "Needed for some games") : String(localized: "Needed to count frames"))
         case .systemAudio:
-            ("", "waveform", SettingTitle.systemAudioRecording, String(localized: "To change each app’s volume"))
+            ("", .waveform, SettingTitle.systemAudioRecording, String(localized: "To change each app’s volume"))
         #if !APPSTORE
         case .fans:
-            ("", "lock.shield", SettingTitle.adminAccess, String(localized: "Lets the app change the fan speed and turn off services for the whole Mac"))
+            ("", .lockShield, SettingTitle.adminAccess, String(localized: "Lets the app change the fan speed and turn off services for the whole Mac"))
         #endif
         case .finder:
-            ("", "puzzlepiece.extension",
+            ("", .puzzlepieceExtension,
              SettingTitle.finderExtensions, String(localized: "Lets the app add items to the right-click menu in Finder"))
         #if APPSTORE
         case .folders:
-            ("", "folder.fill", SettingTitle.foldersPermission, String(localized: "Lets the app save new files next to yours and see your background tasks"))
+            ("", .folderFill, SettingTitle.foldersPermission, String(localized: "Lets the app save new files next to yours and see your background tasks"))
         #else
         case .iCloud:
-            ("", "icloud.fill",
+            ("", .icloudFill,
              SettingTitle.iCloudDrive, String(localized: "Lets the app keep your settings in iCloud Drive to sync them"))
         case .fullDisk:
-            ("com.apple.graphic-icon.privacy", "hand.raised.fill",
+            ("com.apple.graphic-icon.privacy", .handRaisedFill,
              SettingTitle.fullDiskAccess, String(localized: "Lets the app find permissions left by deleted apps"))
         #endif
         }
@@ -72,7 +72,7 @@ enum Permission: CaseIterable {
     }
 
     var icon: String { info.icon }
-    var symbol: String { info.symbol }
+    var symbol: Symbol { info.symbol }
     var title: String { info.title }
     var subtitle: String { info.subtitle }
 
@@ -341,19 +341,19 @@ final class Permissions {
     }
 
     #if APPSTORE
-    static var privacyLists: [(title: String, icon: String, symbol: String, pane: String)] {
+    static var privacyLists: [(title: String, icon: String, symbol: Symbol, pane: String)] {
         [
-            (Permission.accessibilityTitle, "com.apple.graphic-icon.accessibility", "accessibility", "Privacy_Accessibility"),
-            (String(localized: "Screen Recording"), "com.apple.graphic-icon.screen-recording", "rectangle.dashed.badge.record", "Privacy_ScreenCapture"),
-            (String(localized: "Input Monitoring"), "com.apple.graphic-icon.input-monitoring", "keyboard.badge.eye", "Privacy_ListenEvent"),
-            (String(localized: "Full Disk Access"), "com.apple.graphic-icon.privacy", "hand.raised.fill", "Privacy_AllFiles"),
-            (String(localized: "Automation"), "com.apple.graphic-icon.automation", "gearshape.2", "Privacy_Automation"),
-            (String(localized: "App Management"), "", "app.badge.checkmark", "Privacy_AppBundles"),
-            (String(localized: "Files and Folders"), "", "folder.fill", "Privacy_FilesAndFolders"),
-            (String(localized: "Camera"), "com.apple.graphic-icon.video-camera", "camera", "Privacy_Camera"),
-            (String(localized: "Microphone"), "com.apple.graphic-icon.microphone", "mic", "Privacy_Microphone"),
-            (String(localized: "Developer Tools"), "com.apple.graphic-icon.developer-tools", "hammer", "Privacy_DevTools"),
-            (String(localized: "Bluetooth"), "com.apple.graphic-icon.bluetooth", "dot.radiowaves.left.and.right", "Privacy_Bluetooth"),
+            (Permission.accessibilityTitle, "com.apple.graphic-icon.accessibility", .accessibility, "Privacy_Accessibility"),
+            (String(localized: "Screen Recording"), "com.apple.graphic-icon.screen-recording", .rectangleDashedBadgeRecord, "Privacy_ScreenCapture"),
+            (String(localized: "Input Monitoring"), "com.apple.graphic-icon.input-monitoring", .keyboardBadgeEye, "Privacy_ListenEvent"),
+            (String(localized: "Full Disk Access"), "com.apple.graphic-icon.privacy", .handRaisedFill, "Privacy_AllFiles"),
+            (String(localized: "Automation"), "com.apple.graphic-icon.automation", .gearshape2, "Privacy_Automation"),
+            (String(localized: "App Management"), "", .appBadgeCheckmark, "Privacy_AppBundles"),
+            (String(localized: "Files and Folders"), "", .folderFill, "Privacy_FilesAndFolders"),
+            (String(localized: "Camera"), "com.apple.graphic-icon.video-camera", .camera, "Privacy_Camera"),
+            (String(localized: "Microphone"), "com.apple.graphic-icon.microphone", .mic, "Privacy_Microphone"),
+            (String(localized: "Developer Tools"), "com.apple.graphic-icon.developer-tools", .hammer, "Privacy_DevTools"),
+            (String(localized: "Bluetooth"), "com.apple.graphic-icon.bluetooth", .dotRadiowavesLeftAndRight, "Privacy_Bluetooth"),
         ]
     }
     #endif

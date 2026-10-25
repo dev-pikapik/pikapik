@@ -71,7 +71,7 @@ struct TipJarSection: View {
                 }
                 .settingAnchor(SettingTitle.sayThanks)
                 if jar.thanked {
-                    Label("Thank you! It means a lot.", systemImage: "heart.fill")
+                    Label("Thank you! It means a lot.", symbol: .heartFill)
                         .foregroundStyle(.pink)
                 } else {
                     HStack(spacing: 8) {

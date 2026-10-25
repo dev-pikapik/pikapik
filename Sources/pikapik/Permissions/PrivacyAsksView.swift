@@ -16,7 +16,7 @@ final class PrivacyAsksModel {
 struct PrivacyListRow: View {
     let title: String
     let icon: String
-    let symbol: String
+    let symbol: Symbol
     let pane: String
     let apps: [AskingApp]?
 
@@ -27,7 +27,7 @@ struct PrivacyListRow: View {
                 if let asking, !asking.isEmpty {
                     AskingStack(title: title, apps: asking)
                 }
-                Button("Open", systemImage: "arrow.up.forward.app") { Permissions.shared.openSettings(pane) }
+                Button("Open", symbol: .arrowUpForwardApp) { Permissions.shared.openSettings(pane) }
             }
             .fixedSize()
         } label: {

@@ -180,7 +180,7 @@ struct AppRowLabel<Trailing: View>: View {
                     .frame(width: 28, height: 28)
                     .accessibilityHidden(true)
             } else {
-                SectionIcon(symbol: "terminal", color: .gray, size: 28)
+                SectionIcon(symbol: .terminal, color: .gray, size: 28)
             }
             VStack(alignment: .leading, spacing: 1) {
                 HStack(spacing: 6) {
@@ -211,7 +211,7 @@ struct AppRowLabel<Trailing: View>: View {
 
 struct RowChevron: View {
     var body: some View {
-        Image(systemName: "chevron.forward")
+        Image(.chevronForward)
             .font(.caption.weight(.semibold))
             .foregroundStyle(.tertiary)
             .accessibilityHidden(true)
@@ -333,14 +333,14 @@ private struct AppName: View {
             if let app {
                 Image(nsImage: Self.icon(of: app, size: 16))
             } else {
-                Image(systemName: "questionmark.app.dashed")
+                Image(.questionmarkAppDashed)
                     .frame(width: 16, height: 16)
             }
             Text(verbatim: Self.name(of: app))
                 .lineLimit(1)
                 .truncationMode(.middle)
             if chevron {
-                Image(systemName: "chevron.up.chevron.down")
+                Image(.chevronUpChevronDown)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.tertiary)
             }

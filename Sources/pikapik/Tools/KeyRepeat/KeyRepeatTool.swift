@@ -3,7 +3,7 @@ import SwiftUI
 @Observable
 final class KeyRepeatTool: Tool {
     let id = ToolID.keyRepeat
-    let icon = "repeat"
+    let icon = Symbol.repeat
     var title: String { SettingTitle.keyRepeat }
 
     var isActive: Bool { isEnabled }

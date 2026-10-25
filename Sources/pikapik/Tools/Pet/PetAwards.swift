@@ -125,39 +125,39 @@ enum PetAward: String, CaseIterable, Identifiable {
         }
     }
 
-    var symbol: String {
+    var symbol: Symbol {
         switch self {
-        case .hello: "hand.wave.fill"
-        case .stroll: "pawprint.fill"
-        case .traveller: "map.fill"
-        case .marathon: "flag.checkered"
-        case .lift: "arrow.up"
-        case .flyer: "paperplane.fill"
-        case .cosmonaut: "moon.stars.fill"
-        case .jumper: "hare.fill"
-        case .hurdler: "cursorarrow.rays"
-        case .climber: "mountain.2.fill"
-        case .tumbler: "tornado"
-        case .rescuer: "heart.fill"
-        case .striker: "soccerball"
-        case .playmaker: "hand.point.up.left.fill"
-        case .chatter: "bubble.left.fill"
-        case .explorer: "binoculars.fill"
-        case .github: "chevron.left.forwardslash.chevron.right"
-        case .stylist: "tshirt.fill"
-        case .sunny: "face.smiling.fill"
-        case .charmer: "heart.circle.fill"
-        case .feelings: "theatermasks.fill"
-        case .gentle: "hand.raised.fill"
-        case .morning: "cup.and.saucer.fill"
-        case .dapper: "sparkles"
-        case .lark: "sunrise.fill"
-        case .owl: "moon.zzz.fill"
-        case .weekend: "sun.max.fill"
-        case .week: "7.square.fill"
-        case .month: "30.square.fill"
-        case .hundred: "crown.fill"
-        case .collector: "trophy.fill"
+        case .hello: .handWaveFill
+        case .stroll: .pawprintFill
+        case .traveller: .mapFill
+        case .marathon: .flagCheckered
+        case .lift: .arrowUp
+        case .flyer: .paperplaneFill
+        case .cosmonaut: .moonStarsFill
+        case .jumper: .hareFill
+        case .hurdler: .cursorarrowRays
+        case .climber: .mountain2Fill
+        case .tumbler: .tornado
+        case .rescuer: .heartFill
+        case .striker: .soccerball
+        case .playmaker: .handPointUpLeftFill
+        case .chatter: .bubbleLeftFill
+        case .explorer: .binocularsFill
+        case .github: .chevronLeftForwardslashChevronRight
+        case .stylist: .tshirtFill
+        case .sunny: .faceSmilingFill
+        case .charmer: .heartCircleFill
+        case .feelings: .theatermasksFill
+        case .gentle: .handRaisedFill
+        case .morning: .cupAndSaucerFill
+        case .dapper: .sparkles
+        case .lark: .sunriseFill
+        case .owl: .moonZzzFill
+        case .weekend: .sunMaxFill
+        case .week: .number7SquareFill
+        case .month: .number30SquareFill
+        case .hundred: .crownFill
+        case .collector: .trophyFill
         }
     }
 

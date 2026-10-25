@@ -3,7 +3,7 @@ import SwiftUI
 
 protocol Tool: AnyObject {
     var id: String { get }
-    var icon: String { get }
+    var icon: Symbol { get }
     var title: String { get }
     var isEnabled: Bool { get set }
     var isActive: Bool { get }
@@ -36,11 +36,11 @@ enum ToolStatus {
         }
     }
 
-    var symbol: String? {
+    var symbol: Symbol? {
         switch self {
         case .active, .off: nil
-        case .needsAccess: "exclamationmark.triangle"
-        case .playing: "gamecontroller"
+        case .needsAccess: .exclamationmarkTriangle
+        case .playing: .gamecontroller
         }
     }
 

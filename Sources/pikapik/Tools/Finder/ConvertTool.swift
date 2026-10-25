@@ -3,7 +3,7 @@ import SwiftUI
 
 final class ConvertTool: Tool {
     let id = ToolID.convert
-    let icon = "arrow.triangle.2.circlepath"
+    let icon = Symbol.arrowTriangle2Circlepath
     var title: String { SettingTitle.convertInFinder }
     let tab = SettingsTab.finder
     private let finder = FinderExtension(bundle: "Convert", key: ToolID.convert)

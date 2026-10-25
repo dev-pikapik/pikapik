@@ -44,7 +44,7 @@ extension SystemShortcutFrame {
                 )
                 .opacity(story.reach)
                 panel {
-                    Image(systemName: pointer.symbol).font(.system(size: 25)).foregroundStyle(Color.accentColor).padding(17)
+                    Image(pointer.symbol).font(.system(size: 25)).foregroundStyle(Color.accentColor).padding(17)
                 }
                 ArtCursor()
                     .position(x: 85 + ((right ? 160 : 3) - 85) * reach + 6, y: 54 + ((bottom ? 100 : 3) - 54) * reach + 9)
@@ -52,7 +52,7 @@ extension SystemShortcutFrame {
                 game
                 panel {
                     VStack(spacing: 9) {
-                        Image(systemName: pointer.symbol).font(.system(size: 25)).foregroundStyle(Color.accentColor)
+                        Image(pointer.symbol).font(.system(size: 25)).foregroundStyle(Color.accentColor)
                         Capsule().fill(Color.primary.opacity(0.2)).frame(width: 62, height: 5)
                     }.padding(13)
                 }

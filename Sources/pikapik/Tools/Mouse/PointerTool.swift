@@ -5,7 +5,7 @@ import SwiftUI
 @Observable
 final class PointerTool: Tool {
     let id = ToolID.linearPointer
-    let icon = "cursorarrow.motionlines"
+    let icon = Symbol.cursorarrowMotionlines
     var title: String { SettingTitle.linearPointer }
     var needs: [Permission] { [] }
     let tab = SettingsTab.mouse

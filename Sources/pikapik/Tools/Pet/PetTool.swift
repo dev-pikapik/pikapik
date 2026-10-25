@@ -5,7 +5,7 @@ final class PetTool: Tool {
     static let shared = PetTool()
 
     let id = ToolID.pet
-    let icon = "pawprint"
+    let icon = Symbol.pawprint
     var title: String { TabTitle.pet }
     var tab: SettingsTab { .pet }
     var isActive: Bool { isEnabled }
@@ -170,21 +170,21 @@ private struct PetSettings: View {
         )
         if inSettings {
             ToggleRow(
-                icon: "text.bubble",
+                icon: .textBubble,
                 title: SettingTitle.petTalks,
                 subtitle: talksSubtitle,
                 isOn: $tool.talks
             )
             .disabled(!tool.isEnabled)
             ToggleRow(
-                icon: "zzz",
+                icon: .zzz,
                 title: SettingTitle.petRhythm,
                 subtitle: Text("Perks up while you type and dozes off when you step away"),
                 isOn: $tool.rhythm
             )
             .disabled(!tool.isEnabled)
             ToggleRow(
-                icon: "soccerball",
+                icon: .soccerball,
                 title: SettingTitle.petBall,
                 subtitle: Text("A ball rolls along the bottom of the screen. Your pet kicks it, and you can kick it with the pointer or pick it up and throw it"),
                 isOn: $tool.ball
@@ -355,7 +355,7 @@ struct PetArt: View {
 
 private struct PetArtBubble: View {
     var body: some View {
-        Image(systemName: "heart.fill")
+        Image(.heartFill)
             .font(.system(size: 8, weight: .bold))
             .foregroundStyle(Art.red)
             .frame(width: 22, height: 15)

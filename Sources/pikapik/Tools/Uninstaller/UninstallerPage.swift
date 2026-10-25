@@ -64,7 +64,7 @@ struct UninstallerPage: View {
 
     private var searchRow: some View {
         HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
+            Image(.magnifyingglass)
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
             TextField(text: $model.query, prompt: Text("Search apps")) { Text("Search apps") }

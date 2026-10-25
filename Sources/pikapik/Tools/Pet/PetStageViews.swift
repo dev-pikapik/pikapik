@@ -85,7 +85,7 @@ struct PetBubble: View {
             HStack(alignment: .firstTextBaseline, spacing: 5) {
                 Text(text)
                 if clickable {
-                    Image(systemName: "arrow.up.forward.circle.fill").foregroundStyle(Color.accentColor)
+                    Image(.arrowUpForwardCircleFill).foregroundStyle(Color.accentColor)
                 }
             }
             .font(.system(size: 13, weight: .medium, design: .rounded))

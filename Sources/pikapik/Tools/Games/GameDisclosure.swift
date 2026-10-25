@@ -3,12 +3,12 @@ import SwiftUI
 struct GameDisclosureLabel: View {
     let title: String
     let detail: String
-    let symbol: String
+    let symbol: Symbol
     var count: Int?
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: symbol)
+            Image(symbol)
                 .font(.system(size: 16, weight: .medium))
                 .foregroundStyle(Color.accentColor)
                 .frame(width: 34, height: 34)
@@ -45,7 +45,7 @@ struct GameDisclosureStyle: DisclosureGroupStyle {
             } label: {
                 HStack(spacing: 10) {
                     configuration.label
-                    Image(systemName: "chevron.right")
+                    Image(.chevronRight)
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(.tertiary)
                         .rotationEffect(.degrees(configuration.isExpanded ? 90 : 0))

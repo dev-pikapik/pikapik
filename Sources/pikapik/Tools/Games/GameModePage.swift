@@ -45,7 +45,7 @@ struct GameModePage: View {
                 DisclosureGroup(isExpanded: $advanced) {
                     EmptyView()
                 } label: {
-                    GameDisclosureLabel(title: String(localized: "More game settings"), detail: String(localized: "Fine-tune protection and explore your Mac’s shortcuts."), symbol: "slider.horizontal.3")
+                    GameDisclosureLabel(title: String(localized: "More game settings"), detail: String(localized: "Fine-tune protection and explore your Mac’s shortcuts."), symbol: .sliderHorizontal3)
                 }
                 .disclosureGroupStyle(GameDisclosureStyle(contentSpacing: 0))
             }
@@ -55,7 +55,7 @@ struct GameModePage: View {
                     DisclosureGroup(isExpanded: $safeguards) {
                         Text("To leave a game, press \(CommandKeysTool.quit.text); to close its window, \(CommandKeysTool.close.text). ⌥⌘Esc always works.").font(.subheadline).foregroundStyle(.secondary)
                     } label: {
-                        GameDisclosureLabel(title: SettingTitle.gameSafeguards, detail: String(localized: "Closing the game, the pointer and display."), symbol: "shield", count: GameRule.allCases.count)
+                        GameDisclosureLabel(title: SettingTitle.gameSafeguards, detail: String(localized: "Closing the game, the pointer and display."), symbol: .shield, count: GameRule.allCases.count)
                     }
                     .disclosureGroupStyle(GameDisclosureStyle())
                     .settingAnchor(SettingTitle.gameSafeguards)

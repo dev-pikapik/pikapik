@@ -33,7 +33,7 @@ if [ -z "$DIR" ]; then
     [ ! -d Vendor/ffmpeg/include ] || swiftc -wmo -c -module-name Player -target arm64-apple-macos14.0 \
         -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include \
         -Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend "$DIR" \
-        Helper/Player/*.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,ImageLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift -o "$DIR/Player.o"
+        Helper/Player/*.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,ImageLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift Sources/pikapik/Core/Symbol.swift Sources/pikapik/UI/SymbolImage.swift -o "$DIR/Player.o"
 fi
 
 python3 - "$DIR" <<'PY'

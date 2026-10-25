@@ -11,7 +11,7 @@ struct GameShortcutPicker: View {
         Button { presented.toggle() } label: {
             HStack(spacing: 8) {
                 Text(verbatim: selection.title)
-                Image(systemName: "chevron.up.chevron.down").font(.system(size: 9, weight: .medium)).foregroundStyle(.secondary)
+                Image(.chevronUpChevronDown).font(.system(size: 9, weight: .medium)).foregroundStyle(.secondary)
             }
         }
         .buttonStyle(.bordered)
@@ -41,7 +41,7 @@ private struct GameShortcutOptions: View {
                     presented = false
                 } label: {
                     HStack(alignment: .top, spacing: 10) {
-                        Image(systemName: "checkmark").font(.system(size: 11, weight: .semibold))
+                        Image(.checkmark).font(.system(size: 11, weight: .semibold))
                             .foregroundStyle(Color.accentColor).opacity(selection == option ? 1 : 0)
                             .frame(width: 14).padding(.top, 2).accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 4) {

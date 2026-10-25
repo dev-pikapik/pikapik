@@ -6,7 +6,7 @@ final class BrightnessKeysTool: Tool {
     static let shared = BrightnessKeysTool()
 
     let id = ToolID.brightnessKeys
-    let icon = "sun.max"
+    let icon = Symbol.sunMax
     var title: String { SettingTitle.brightnessKeys }
     let tab = SettingsTab.brightness
     var needs: [Permission] { [.accessibility] }
@@ -154,7 +154,7 @@ private struct BrightnessHUDView: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: "sun.max.fill")
+            Image(.sunMaxFill)
                 .font(.system(size: 15, weight: .semibold))
                 .foregroundStyle(.secondary)
             Capsule()
@@ -197,8 +197,8 @@ struct BrightnessArt: View {
                 }
                 .position(x: 88, y: 64)
                 HStack(spacing: 10) {
-                    ArtKey(down: step == 1 || step == 3, width: 44, height: 30) { Image(systemName: "sun.min") }
-                    ArtKey(down: step == 6 || step == 8, width: 44, height: 30) { Image(systemName: "sun.max") }
+                    ArtKey(down: step == 1 || step == 3, width: 44, height: 30) { Image(.sunMin) }
+                    ArtKey(down: step == 6 || step == 8, width: 44, height: 30) { Image(.sunMax) }
                 }
                 .animation(reduceMotion ? nil : .smooth(duration: 0.15), value: step)
                 .position(x: 222, y: 58)
@@ -210,7 +210,7 @@ struct BrightnessArt: View {
     private func hud(_ level: Double) -> some View {
         let shape = RoundedRectangle(cornerRadius: 9, style: .continuous)
         return HStack(spacing: 4) {
-            Image(systemName: "sun.max.fill")
+            Image(.sunMaxFill)
                 .font(.system(size: 8, weight: .semibold))
                 .foregroundStyle(Color.primary)
             Capsule()

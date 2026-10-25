@@ -3,7 +3,7 @@ import CoreImage
 
 final class MusicView: NSView {
     private static let context = CIContext()
-    private static let note = NSImage(systemSymbolName: "music.note", accessibilityDescription: nil)?.withSymbolConfiguration(NSImage.SymbolConfiguration(pointSize: 140, weight: .light))
+    private static let note = NSImage(.musicNote, accessibilityDescription: nil)?.withSymbolConfiguration(NSImage.SymbolConfiguration(pointSize: 140, weight: .light))
     private let glass = NSVisualEffectView()
     private let backdrop = NSView()
     private let dim = NSView()

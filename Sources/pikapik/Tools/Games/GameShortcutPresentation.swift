@@ -33,17 +33,17 @@ enum GameShortcutGroup: String, CaseIterable, Identifiable {
         }
     }
 
-    var symbol: String {
+    var symbol: Symbol {
         switch self {
-        case .language: "globe"
-        case .windows: "macwindow.on.rectangle"
-        case .desktops: "rectangle.3.group"
-        case .screenshots: "camera"
-        case .keyboard: "keyboard"
-        case .pointer: "computermouse"
-        case .accessibility: "accessibility"
-        case .system: "slider.horizontal.3"
-        case .other: "ellipsis"
+        case .language: .globe
+        case .windows: .macwindowOnRectangle
+        case .desktops: .rectangle3Group
+        case .screenshots: .camera
+        case .keyboard: .keyboard
+        case .pointer: .computermouse
+        case .accessibility: .accessibility
+        case .system: .sliderHorizontal3
+        case .other: .ellipsis
         }
     }
 }

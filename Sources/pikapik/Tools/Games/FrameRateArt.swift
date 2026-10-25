@@ -25,7 +25,7 @@ struct FrameRateSettings: View {
                 .opacity(tool.isEnabled ? 1 : 0.5)
                 .settingAnchor(SettingTitle.cornerForFPS)
             ToggleRow(
-                icon: "speedometer",
+                icon: .speedometer,
                 title: SettingTitle.showFPS,
                 subtitle: Text("Shows how smoothly the game runs"),
                 help: Text(verbatim: (FrameRateMeter.hasTrace ? String(localized: "FPS means frames per second: how many pictures the game draws each second. A few games, mostly older ones, can only be counted through screen recording, and then the number can’t go above the screen’s refresh rate.") : String(localized: "FPS means frames per second: how many pictures the game draws each second. It’s counted through screen recording, so the number can’t go above the screen’s refresh rate.")) + " " + String(localized: "Calm games like chess draw a new picture only when something moves, so 0 is normal for them.")),

@@ -99,14 +99,14 @@ enum ThermalPart: CaseIterable, Identifiable {
         }
     }
 
-    var symbol: String {
+    var symbol: Symbol {
         switch self {
-        case .processor: "cpu"
-        case .graphics: "cube.transparent"
-        case .memory: "memorychip"
-        case .storage: "internaldrive"
-        case .battery: "battery.75percent"
-        case .wifi: "wifi"
+        case .processor: .cpu
+        case .graphics: .cubeTransparent
+        case .memory: .memorychip
+        case .storage: .internaldrive
+        case .battery: .battery75percent
+        case .wifi: .wifi
         }
     }
 

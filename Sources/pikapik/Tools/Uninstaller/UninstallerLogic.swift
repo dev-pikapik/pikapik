@@ -144,17 +144,17 @@ extension LeftoverKind {
         }
     }
 
-    var symbol: String {
+    var symbol: Symbol {
         switch self {
-        case .app: "app.fill"
-        case .appData: "folder.fill"
-        case .containers: "archivebox.fill"
-        case .caches: "tray.full.fill"
-        case .preferences: "slider.horizontal.3"
-        case .background: "gearshape.2.fill"
-        case .extensions: "puzzlepiece.extension.fill"
-        case .logs: "doc.text.fill"
-        case .install: "shippingbox.fill"
+        case .app: .appFill
+        case .appData: .folderFill
+        case .containers: .archiveboxFill
+        case .caches: .trayFullFill
+        case .preferences: .sliderHorizontal3
+        case .background: .gearshape2Fill
+        case .extensions: .puzzlepieceExtensionFill
+        case .logs: .docTextFill
+        case .install: .shippingboxFill
         }
     }
 }

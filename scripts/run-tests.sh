@@ -1,22 +1,26 @@
 #!/bin/bash
-# Usage: scripts/run-tests.sh [--changed] [--list]
+# Usage: scripts/run-tests.sh [--changed] [--list] [test-name…]
 # Builds and runs every test line from CONTRIBUTING.md, keeps going after a failure and lists every problem at the end.
 # --changed runs only the lines that build, name or read a file changed since origin/main, committed or not, and all of them when this script changed;
-# --list prints the names of the tests instead of running them.
+# --list prints the names of the tests instead of running them. Names, --changed and --list work together.
 # On CI a test that prints that it skipped something fails too, unless scripts/ci-skips.txt lists that skip with a reason.
 # TEST_TIME_LIMIT is how many seconds a test may take to build and to run (600); the limit needs timeout or gtimeout from coreutils.
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
+USAGE="Usage: scripts/run-tests.sh [--changed] [--list] [test-name…]"
 changed=false
 list=false
+names=()
 for arg in "$@"; do
     case $arg in
         --changed) changed=true ;;
         --list) list=true ;;
-        *) echo "Usage: scripts/run-tests.sh [--changed] [--list]" >&2; exit 2 ;;
+        -*) echo "$USAGE" >&2; exit 2 ;;
+        *) names+=("$arg") ;;
     esac
 done
+flags="${TEST_SWIFT_FLAGS:+$TEST_SWIFT_FLAGS }"
 
 SKIPS=scripts/ci-skips.txt
 SECS="${TEST_TIME_LIMIT:-600}"
@@ -28,6 +32,10 @@ problem() {
 
 tests=$(grep '^swiftc .*scripts/test-' CONTRIBUTING.md)
 [ -n "$tests" ] || problem CONTRIBUTING.md "CONTRIBUTING.md has no test lines"
+known=$(sed 's/.* && //; s/^build\///; s/ .*//' <<< "$tests")
+for name in ${names[@]+"${names[@]}"}; do
+    grep -qxF -- "$name" <<< "$known" || { echo "CONTRIBUTING.md has no test called $name; scripts/run-tests.sh --list shows them all" >&2; echo "$USAGE" >&2; exit 2; }
+done
 for file in scripts/test-*.swift; do
     [[ "$tests" == *"$file"* ]] || problem "$file" "$file has no line in CONTRIBUTING.md, so it never runs"
 done
@@ -105,10 +113,11 @@ total=0
 count=0
 while IFS= read -r test; do
     [ -n "$test" ] || continue
-    total=$((total + 1))
     run="${test##* && }"
     name="${run#build/}"
     name="${name%% *}"
+    [ ${#names[@]} -eq 0 ] || [[ " ${names[*]} " == *" $name "* ]] || continue
+    total=$((total + 1))
     selected "$test" || continue
     if $list; then
         echo "$name"
@@ -118,9 +127,12 @@ while IFS= read -r test; do
     log="build/test-logs/$name.log"
     echo "::group::$name"
     start=$SECONDS
+    build="${test% && *}"
+    build="${build//swiftc /swiftc $flags}"
+    build="${build//.\/scripts\/test-core.sh /./scripts/test-core.sh $flags}"
     if [[ "$test" != *" && "* ]]; then
         problem "$name" "This CONTRIBUTING.md line doesn’t build a test and then run it: $test"
-    elif ! ${LIMIT[@]+"${LIMIT[@]}"} bash -c "${test% && *}" < /dev/null; then
+    elif ! ${LIMIT[@]+"${LIMIT[@]}"} bash -c "$build" < /dev/null; then
         stopped $start && problem "$name" "$name took longer than $SECS s to build and was stopped" || problem "$name" "$name did not build"
     else
         start=$SECONDS

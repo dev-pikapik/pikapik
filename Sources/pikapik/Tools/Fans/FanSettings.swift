@@ -12,7 +12,7 @@ struct FanSettings: View {
                 }
                 if let error = control.error {
                     Section {
-                        Label(error, systemImage: "exclamationmark.triangle.fill")
+                        Label(error, symbol: .exclamationmarkTriangleFill)
                             .foregroundStyle(.orange)
                     }
                 }
@@ -113,7 +113,7 @@ struct FanRow: View {
     var body: some View {
         Button { SettingsWindow.show(.fans) } label: {
             HStack(spacing: 10) {
-                Image(systemName: "fan")
+                Image(.fan)
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(control.wanted.isEmpty ? Color.secondary : Color.white)
                     .frame(width: 28, height: 28)

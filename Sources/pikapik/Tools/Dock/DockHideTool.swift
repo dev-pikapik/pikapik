@@ -15,7 +15,7 @@ final class DockHideTool: Tool {
     }
 
     let id = ToolID.dockHide
-    let icon = "dock.rectangle"
+    let icon = Symbol.dockRectangle
     var title: String { SettingTitle.dockHide }
     let tab = SettingsTab.dock
     private static let actionKey = PreferenceKey.dockHideAction

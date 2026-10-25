@@ -80,7 +80,7 @@ enum TestLeftoverPermissions {
         ], "\(found.map(\.client))")
         let gone = found.first { $0.client == "com.example.gone" }!
         precondition(gone.kinds.map(\.name) == ["Accessibility", "Camera", "Other"], "\(gone.kinds.map(\.name))")
-        precondition(gone.kinds[0].pane == "Privacy_Accessibility" && gone.kinds[1].symbol == "camera")
+        precondition(gone.kinds[0].pane == "Privacy_Accessibility" && gone.kinds[1].symbol == .camera)
         precondition(gone.modified == Date(timeIntervalSince1970: 300))
         precondition(found.first { $0.client.hasPrefix("com.lwouis") }!.kinds.map(\.name) == ["Files and Folders"])
         precondition(found.allSatisfy { $0.isPath == $0.client.hasPrefix("/") })
