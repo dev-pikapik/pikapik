@@ -8,7 +8,8 @@ cd "$(dirname "$0")/.."
 DIR="${1:-}"
 if [ -z "$DIR" ]; then
     DIR="$(mktemp -d)"
-    trap 'rm -rf "$DIR"' EXIT
+    export TMPDIR="$(mktemp -d)"
+    trap 'rm -rf "$DIR" "$TMPDIR"' EXIT
     SOURCES=()
     while IFS= read -r -d '' f; do SOURCES+=("$f"); done < <(find Sources -name '*.swift' -print0)
     SOURCES+=(Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift)

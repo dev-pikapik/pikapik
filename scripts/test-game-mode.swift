@@ -321,8 +321,8 @@ enum TestGameMode {
         precondition(files.map(\.path) == ["/Applications/Chess Club.app", curse, "/Applications/Old.app"])
         precondition(GameRules.rule(id: nil, name: files[1].lastPathComponent, path: files[1].path) == "/Users/me/Documents/curseforge/minecraft/Install/runtime/")
         precondition(GameRules.dockFiles(nil).isEmpty && GameRules.dockFiles(["junk"]).isEmpty)
-        precondition(GameRules.shelf(["com.a.game", "com.apple.finder", "com.b.game", "", "com.a.game", "com.pikapik.app.dev", "/opt/wine", "com.b.game"])
-            == ["com.a.game", "com.b.game", "/opt/wine"])
+        precondition(GameRules.shelf(["com.a.game", "com.apple.finder", "com.b.game", "", "com.a.game", "com.pikapik.app.dev", "/opt/wine", "com.pikapik.app", "com.b.game"])
+            == ["com.a.game", "com.b.game", "/opt/wine"], "the Games shelf never offers pikapik, the website copy or the App Store one")
         precondition(GameRules.shelf([]).isEmpty)
         print("dock shelf: ok")
 

@@ -326,7 +326,7 @@ enum TestAppVolume {
         precondition(AppVolumeMath.canonical("com.example.player") == "com.example.player")
         precondition(owner(player.bundlePath! + "/Contents/MacOS/x", nil, "x") == AppVolumeOwner(key: "com.example.player", name: "Player", bundlePath: player.bundlePath))
 
-        let suite = "pikapik.test.app-volume"
+        let suite = folder.appendingPathComponent("defaults").path
         let defaults = UserDefaults(suiteName: suite)!
         defaults.removePersistentDomain(forName: suite)
         defer { defaults.removePersistentDomain(forName: suite) }

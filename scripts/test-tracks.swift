@@ -298,6 +298,10 @@ enum TestTracks {
         }
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("pika-tracks-\(UUID().uuidString)")
         try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let defaults = UserDefaults(suiteName: folder.appendingPathComponent("defaults").path)!
+        let standard: @convention(block) (AnyObject) -> UserDefaults = { _ in defaults }
+        method_setImplementation(class_getClassMethod(UserDefaults.self, #selector(getter: UserDefaults.standard))!, imp_implementationWithBlock(standard))
+        precondition(UserDefaults.standard === defaults, "the test keeps its settings in a temporary folder")
         func finish(_ code: Int32) -> Never { try? FileManager.default.removeItem(at: folder); exit(code) }
 
         let english = write("1\n00:00:01,000 --> 00:00:03,000\nFirst English line\n\n2\n00:00:04,000 --> 00:00:06,000\nSecond <i>English</i> line\n", "en.srt", in: folder)

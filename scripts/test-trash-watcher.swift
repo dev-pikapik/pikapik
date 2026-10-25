@@ -22,6 +22,7 @@ struct TestTrashWatcher {
     static func main() {
         let folder = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("pika-trash-watcher-\(UUID().uuidString)")
         try! fm.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? fm.removeItem(at: folder) }
         make(folder, ["Old.app", "Older.app", "notes.txt"])
 
         var offered: [[String]] = []

@@ -3,8 +3,17 @@ import Foundation
 @main
 struct TestSettingsSyncThread {
     static func main() {
+        let suite = FileManager.default.temporaryDirectory.appendingPathComponent("test-settings-sync-thread-\(UUID().uuidString)").path
+        let defaults = UserDefaults(suiteName: suite)!
+        let standard: @convention(block) (AnyObject) -> UserDefaults = { _ in defaults }
+        method_setImplementation(class_getClassMethod(UserDefaults.self, #selector(getter: UserDefaults.standard))!, imp_implementationWithBlock(standard))
+        defer {
+            defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(atPath: suite + ".plist")
+        }
+        precondition(UserDefaults.standard === defaults, "the test keeps its settings in a temporary folder")
+
         let key = "test-settings-sync-thread"
-        defer { UserDefaults.standard.removeObject(forKey: key) }
         var heard: [Bool] = []
         SettingsFile.onSave { heard.append(Thread.isMainThread) }
 
