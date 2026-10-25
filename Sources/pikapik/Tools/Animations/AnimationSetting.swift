@@ -280,6 +280,10 @@ class AnimationsEngine {
         (ours[setting] == nil ? system[setting] : own[setting]) ?? setting.macOS
     }
 
+    var changed: Bool { !owned.isEmpty || holdsAutohide }
+
+    var showsAutohide: Bool { !autohide || holdsAutohide }
+
     func reload() {
         system = Self.snapshot(host)
         autohide = host.readAutohide() ?? false

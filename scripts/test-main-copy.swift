@@ -529,6 +529,43 @@ struct TestMainCopy {
             let mac = Mac(system: original)
             let a = mac.party("A", "\(tools).a", 10, [:])
             mac.become(a)
+            precondition(a.engine.showsAutohide && !a.engine.changed, "a Dock that shows offers the switch, and nothing is changed yet")
+            a.engine.setAutohide(true)
+            mac.elapse()
+            mac.quit(a)
+            let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
+            mac.become(again)
+            mac.elapse()
+            precondition(mac.autohide && again.engine.autohide && again.engine.showsAutohide && again.engine.changed, "after a relaunch that hides the Dock again, the switch is there and on, and Restore Defaults is available")
+            let user = Mac(system: original)
+            user.dockAutohide = true
+            let b = user.party("B", "\(tools).b", 20, [:])
+            user.become(b)
+            precondition(!b.engine.showsAutohide && !b.engine.changed, "a Dock the user hides without pikapik offers no switch and nothing to restore")
+        }
+        print("while pikapik keeps the Dock hidden, the switch stays on the page after a relaunch and Restore Defaults is available: ok")
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            a.engine.setAutohide(true)
+            mac.elapse()
+            mac.kills = []
+            mac.dockAutohide = false
+            a.engine.refresh()
+            mac.elapse()
+            precondition(!mac.autohide && mac.journalEmpty && mac.kills.isEmpty && !a.engine.autohide && !a.engine.changed && a.engine.showsAutohide, "autohide turned off in System Settings stays off, and the wish is forgotten at once: \(mac.kills)")
+            mac.quit(a)
+            let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
+            mac.become(again)
+            mac.elapse()
+            precondition(!mac.autohide && mac.kills.isEmpty && !again.engine.changed && again.engine.showsAutohide, "autohide stays off after a relaunch: \(mac.kills)")
+        }
+        print("autohide turned off in System Settings while pikapik runs stays off, right away and after a relaunch, and the switch shows it off: ok")
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
             a.engine.setAutohide(true)
             precondition(a.engine.holdsAutohide, "autohide alone counts as a change")
             mac.elapse()
@@ -549,8 +586,9 @@ struct TestMainCopy {
         }
         print("Restore Defaults puts autohide back with one Dock restart, and in a passive copy it leaves the main copy alone: ok")
         for first in ["A", "B"] {
-            for waiting in [false, true] {
+            for (waiting, missing) in [(false, false), (true, false), (false, true), (true, true)] {
                 let mac = Mac(system: original)
+                mac.dockAutohide = missing ? nil : false
                 let a = mac.party("A", "\(tools).a", 10, wantsA), b = mac.party("B", "\(tools).b", 20, wantsB)
                 mac.become(a)
                 a.engine.setAutohide(true)
@@ -564,7 +602,7 @@ struct TestMainCopy {
                     precondition(mac.lookups == seen, "\(party.name) asks nobody about other copies before everything is back")
                     return dock
                 }
-                precondition(off(one) && mac.system == original && mac.dockAutohide == false && mac.journalEmpty && mac.kills.isEmpty, "first \(first), waiting \(waiting): the first copy puts everything back at once")
+                precondition(off(one) && mac.system == original && mac.dockAutohide == (missing ? nil : false) && mac.journalEmpty && mac.kills.isEmpty, "first \(first), waiting \(waiting), missing \(missing): the first copy puts everything back at once")
                 mac.quit(one)
                 precondition(!off(two), "first \(first), waiting \(waiting): the second copy has nothing left")
                 mac.quit(two)
@@ -573,7 +611,7 @@ struct TestMainCopy {
                 let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
                 mac.become(again)
                 mac.elapse()
-                precondition(mac.system == original.merging(wantsA) { $1 } && mac.autohide, "first \(first), waiting \(waiting): after the restart the main copy brings its values back")
+                precondition(mac.system == original.merging(wantsA) { $1 } && mac.autohide && (mac.journal.object(forKey: "animations-autohide-missing") != nil) == missing, "first \(first), waiting \(waiting), missing \(missing): after the restart the main copy brings its values back")
             }
         }
         do {

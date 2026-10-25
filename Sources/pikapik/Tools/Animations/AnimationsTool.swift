@@ -11,10 +11,10 @@ final class AnimationsTool: AnimationsEngine, Tool {
     var tab: SettingsTab { .animations }
     var isActive: Bool { isEnabled }
     var needs: [Permission] { [] }
-    var isDefault: Bool { owned.isEmpty && !holdsAutohide }
+    var isDefault: Bool { !changed }
 
     var isEnabled: Bool {
-        get { !owned.isEmpty || holdsAutohide }
+        get { changed }
         set { if !newValue { reset() } }
     }
 
@@ -194,7 +194,7 @@ struct AnimationsPage: View {
         .environment(\.inSettings, true)
         .onAppear {
             tool.reload()
-            offersAutohide = offersAutohide || !tool.autohide || tool.holdsAutohide
+            offersAutohide = offersAutohide || tool.showsAutohide
         }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in tool.reload() }
     }
