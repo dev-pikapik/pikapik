@@ -7,7 +7,6 @@ final class LayoutFixService: NSObject {
 
     static func register() {
         NSApp.servicesProvider = shared
-        NSUpdateDynamicServices()
     }
 
     @objc func fixLayout(_ pasteboard: NSPasteboard, userData: String?, error: AutoreleasingUnsafeMutablePointer<NSString?>) {

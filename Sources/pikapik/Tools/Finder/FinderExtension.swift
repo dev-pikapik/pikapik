@@ -187,7 +187,11 @@ final class FinderRestart {
                   Self.isStale(finder.processIdentifier)
             else { return }
             let safe = Self.isSafe(finder)
-            DispatchQueue.main.async { safe ? self.restart() : (self.isNeeded = true) }
+            DispatchQueue.main.async {
+                if safe { return self.restart() }
+                self.isNeeded = true
+                UserDefaults.standard.removeObject(forKey: PreferenceKey.launchMaintenance)
+            }
         }
     }
 

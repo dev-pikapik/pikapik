@@ -92,8 +92,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         defaults.set(path, forKey: "app-path")
         LoginItem.shared.restore(moved: moved)
         if moved { FinderExtension.register() }
-        FinderRestart.shared.check()
-        FinderExtension.refreshFinderRecord()
         NewMarks.shared.begin(version: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "", fresh: firstLaunch)
         defaults.set(true, forKey: "launchedBefore")
         ["double-space", "double-space-interval", "dock-display-anchor", "dock-display-return"].forEach(defaults.removeObject)
@@ -106,6 +104,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         Appearance.saved.apply()
         LayoutFixService.register()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [self] in MainActor.assumeIsolated { maintain() } }
         let permissions = Permissions.shared
         permissions.onChange = { ToolRegistry.shared.refresh() }
         NotificationCenter.default.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
@@ -123,7 +122,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Brightness.shared.start()
         #if !APPSTORE
         FanControl.shared.start()
-        if FileManager.default.fileExists(atPath: PlayerPage.helper.path) { LSRegisterURL(PlayerPage.helper as CFURL, false) }
         signals = [SIGTERM, SIGINT, SIGHUP].map { number in
             signal(number, SIG_IGN)
             let source = DispatchSource.makeSignalSource(signal: number, queue: .main)
@@ -188,5 +186,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @MainActor private func stopFeatures(quitting: Bool) {
         Lifecycle.run(quitting ? .quit : .handOver)
+    }
+
+    @MainActor private func maintain() {
+        let defaults = UserDefaults.standard
+        let stamp = Lifecycle.stamp(path: Bundle.main.bundlePath, info: Bundle.main.infoDictionary, system: ProcessInfo.processInfo.operatingSystemVersionString)
+        guard Lifecycle.isDue(stamp, saved: defaults.string(forKey: PreferenceKey.launchMaintenance), bundleID: Bundle.main.bundleIdentifier) else { return }
+        Log.note("launch maintenance")
+        NSUpdateDynamicServices()
+        #if !APPSTORE
+        if FileManager.default.fileExists(atPath: PlayerPage.helper.path) { LSRegisterURL(PlayerPage.helper as CFURL, false) }
+        #endif
+        FinderRestart.shared.check()
+        FinderExtension.refreshFinderRecord()
+        defaults.set(stamp, forKey: PreferenceKey.launchMaintenance)
     }
 }

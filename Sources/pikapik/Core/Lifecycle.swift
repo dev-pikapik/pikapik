@@ -223,4 +223,12 @@ enum Lifecycle {
             }
         }
     }
+
+    static func stamp(path: String, info: [String: Any]?, system: String) -> String {
+        [path, info?["CFBundleShortVersionString"] as? String ?? "", info?["CFBundleVersion"] as? String ?? "", system].joined(separator: "|")
+    }
+
+    static func isDue(_ stamp: String, saved: String?, bundleID: String?) -> Bool {
+        bundleID == AppConstants.devBundleID || stamp != saved
+    }
 }

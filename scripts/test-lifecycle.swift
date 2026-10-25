@@ -158,5 +158,25 @@ enum TestLifecycle {
             precondition(rows.contains { $0.owner == owner && $0.changes != nil }, "\(owner) changes the Mac but its row does not say what")
         }
         print("lifecycle scan: ok")
+
+        let info: [String: Any] = ["CFBundleShortVersionString": "1.53.1", "CFBundleVersion": "1531"]
+        let system = "Version 27.0 (Build 27A1)"
+        let stamp = Lifecycle.stamp(path: "/Applications/pikapik.app", info: info, system: system)
+        precondition(stamp == "/Applications/pikapik.app|1.53.1|1531|Version 27.0 (Build 27A1)", "the stamp names the place, the version, the build and macOS: \(stamp)")
+        let website = AppConstants.directBundleID
+        precondition(Lifecycle.isDue(stamp, saved: nil, bundleID: website), "the first launch registers everything")
+        precondition(!Lifecycle.isDue(stamp, saved: stamp, bundleID: website), "the same copy at the same place skips the registrations")
+        precondition(!Lifecycle.isDue(stamp, saved: stamp, bundleID: AppConstants.appStoreBundleID), "the App Store copy at the same place skips the registrations too")
+        for changed in [
+            Lifecycle.stamp(path: "/Users/me/Applications/pikapik.app", info: info, system: system),
+            Lifecycle.stamp(path: "/Applications/pikapik.app", info: ["CFBundleShortVersionString": "1.54.0", "CFBundleVersion": "1540"], system: system),
+            Lifecycle.stamp(path: "/Applications/pikapik.app", info: ["CFBundleShortVersionString": "1.53.1", "CFBundleVersion": "1532"], system: system),
+            Lifecycle.stamp(path: "/Applications/pikapik.app", info: info, system: "Version 27.1 (Build 27B1)"),
+        ] {
+            precondition(Lifecycle.isDue(changed, saved: stamp, bundleID: website), "a move, an update, a new build or a new macOS registers again: \(changed)")
+        }
+        precondition(Lifecycle.isDue(stamp, saved: stamp, bundleID: AppConstants.devBundleID), "the dev build registers at every launch")
+        precondition(!SettingsFile.keys.contains(PreferenceKey.launchMaintenance), "the stamp belongs to this Mac, so settings sync must not carry it to another")
+        print("lifecycle maintenance: ok")
     }
 }
