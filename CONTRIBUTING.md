@@ -329,6 +329,12 @@ The search field in Settings matches words in any order, ignores accents and und
 swiftc -parse-as-library Sources/pikapik/Settings/SettingsSearch.swift scripts/test-settings-search.swift -o build/test-settings-search && build/test-settings-search
 ```
 
+The hints that point to a System Settings pane use the pane's own words, read from the string tables macOS ships in the pane's extension (`GuideTables`). One table file holds every language, so only English and the language shown are kept, and `GuideText` lets go of them when the Settings window closes. The test reads made-up tables and, where the Mac has it, the Accessibility pane, and checks that no third language is kept:
+
+```bash
+swiftc -parse-as-library Sources/pikapik/Settings/GuideTables.swift scripts/test-guide-tables.swift -o build/test-guide-tables && build/test-guide-tables
+```
+
 The app also reads the file whenever it comes to the front, so a change that arrived while it sat in the background is picked up. This check writes newer settings from "another Mac" into the local build's folder and waits for them to be applied. It needs `./scripts/build.sh` first and switches between apps, so it refuses to run unless the keyboard and mouse have been idle for two minutes:
 
 ```bash

@@ -97,6 +97,7 @@ enum SettingsWindow {
         window.setContentSize(NSSize(width: max(saved.width, minSize.width), height: max(saved.height, minSize.height)))
         NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: window, queue: .main) { _ in
             NewMarks.shared.leave((model.selection ?? .general).rawValue)
+            MainActor.assumeIsolated { GuideText.forget() }
             NSApp.setActivationPolicy(.accessory)
         }
         self.window = window
