@@ -112,6 +112,7 @@ enum KeyboardLayouts {
     private static var dictionaries: [String: String?] = [:]
     private static var lenient: Set<String> = []
     private static var completed: [String: String] = [:]
+    private static var guessed: [String: String] = [:]
 
     static var all: [KeyboardLayout] {
         get {
@@ -183,7 +184,7 @@ enum KeyboardLayouts {
         if word.count == 1 || lenient.contains(dictionary) {
             return lower.split(separator: "-").allSatisfy { completions(String($0), dictionary).contains(String($0)) }
         }
-        return [lower, lower.capitalized].contains { spelled($0, dictionary) }
+        return (word.first?.isUppercase == true ? [lower, lower.capitalized] : [lower]).contains { spelled($0, dictionary) }
     }
 
     private static func spelled(_ word: String, _ dictionary: String) -> Bool {
@@ -218,15 +219,31 @@ enum KeyboardLayouts {
 
     private static func typo(_ text: String) -> Int {
         guard let word = core(text), let names = dictionaries(word) else { return 0 }
-        let range = NSRange(location: 0, length: (word as NSString).length)
         var found = 0
         for name in names {
-            for guess in NSSpellChecker.shared.guesses(forWordRange: range, in: word, language: name, inSpellDocumentWithTag: 0) ?? [] where !guess.contains(" ") && isNear(guess.lowercased(), word.lowercased()) {
+            guard let list = guesses(word, name) else { return 2 }
+            for guess in list where !guess.contains(" ") {
+                guard isNear(guess.lowercased(), word.lowercased()) else { continue }
                 if isCommon(guess, name) { return 2 }
                 found = 1
             }
         }
         return found
+    }
+
+    private static func guesses(_ word: String, _ dictionary: String) -> [String]? {
+        func ask(_ text: String) -> [String] {
+            let found = NSSpellChecker.shared.guesses(forWordRange: NSRange(location: 0, length: (text as NSString).length), in: text, language: dictionary, inSpellDocumentWithTag: 0) ?? []
+            if !found.isEmpty { guessed[dictionary] = text }
+            return found
+        }
+        let found = ask(word)
+        guard found.isEmpty else { return found }
+        let again = ask(word)
+        guard again.isEmpty else { return again }
+        guard let reference = guessed[dictionary] else { return [] }
+        guard reference != word else { return nil }
+        return ask(reference).isEmpty ? nil : []
     }
 
     private static func isCommon(_ word: String, _ dictionary: String) -> Bool {
@@ -240,7 +257,9 @@ enum KeyboardLayouts {
         return names.contains { name in
             guard let found = answer(prefix, name) else { return true }
             guard found.isEmpty else { return true }
-            return answer(completed[name] ?? String(prefix.prefix(1)), name)?.isEmpty ?? true
+            guard let again = answer(prefix, name), again.isEmpty else { return true }
+            let reference = completed[name] ?? String(prefix.prefix(1))
+            return reference == prefix || answer(reference, name)?.isEmpty ?? true
         }
     }
 
