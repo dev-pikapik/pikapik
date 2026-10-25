@@ -1,0 +1,60 @@
+name: Record layout answers
+
+# The layout test runs the app's engine on the macOS spell checker's answers kept in scripts/test-layout-spell.lzma. GitHub's
+# clean machine gives them without the words a person's own Mac has learned; like the Tests job, it runs only on the owner's approval
+on:
+  workflow_dispatch:
+    inputs:
+      runtime_approved:
+        description: Explicit owner approval for app runtime in this run
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  record:
+    name: Record
+    if: github.event_name == 'workflow_dispatch' && github.actor == github.repository_owner && github.actor_id == '241494448' && github.repository_owner_id == '241494448' && github.repository_id == '1429245355' && inputs.runtime_approved
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build the layout test
+        run: |
+          mkdir -p build
+          swiftc -swift-version 5 -parse-as-library Sources/pikapik/Tools/LayoutFix/KeyboardLayouts.swift scripts/test-layout.swift -o build/test-layout
+
+      # Each recording starts from no answers at all, and they count only when two recordings come out the same
+      - name: Record the spell checker's answers twice
+        run: |
+          for attempt in 1 2 3; do
+            rm -f scripts/test-layout-spell.lzma build/first.lzma
+            if build/test-layout record > build/first.log 2>&1 && mv scripts/test-layout-spell.lzma build/first.lzma \
+              && build/test-layout record > build/second.log 2>&1 && cmp -s build/first.lzma scripts/test-layout-spell.lzma; then
+              exit 0
+            fi
+            echo "::warning::Attempt $attempt: the two recordings did not both finish with the same answers"
+            tail -5 build/first.log build/second.log 2>/dev/null || true
+            if [ -f build/first.lzma ] && [ -f scripts/test-layout-spell.lzma ]; then
+              python3 -I -c 'import lzma, sys; a, b = (set(lzma.open(p, "rt").read().splitlines()) for p in sys.argv[1:]); print("\n".join(sorted(a ^ b)[:40]))' build/first.lzma scripts/test-layout-spell.lzma || true
+            fi
+            [ "$attempt" = 3 ] || sleep 30
+          done
+          exit 1
+
+      - name: Replay them
+        run: build/test-layout
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-layout-spell
+          path: scripts/test-layout-spell.lzma
+          retention-days: 7
+          overwrite: true
