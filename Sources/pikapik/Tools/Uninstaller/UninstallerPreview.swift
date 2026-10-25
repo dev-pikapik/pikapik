@@ -170,7 +170,7 @@ private struct ChoiceView: View {
                 if plan.hasChoice(in: .app) {
                     Button("Reset App") { model.remove(reset: true) }
                         .disabled(plan.chosen(reset: true).isEmpty)
-                        .help(Text("Keeps the app and removes its data, settings and temporary files"))
+                        .help(Text("Keeps the app and moves its data, settings and temporary files to the Trash"))
                 } else {
                     Button(plan.allOn ? String(localized: "Deselect All") : String(localized: "Select All")) {
                         session.plan.setAll(on: !session.plan.allOn)

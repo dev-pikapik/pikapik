@@ -472,7 +472,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Measures your internet download and upload speed, responsiveness and ping.
 
-**How it works:** `SpeedTestSettings` in `Sources/pikapik/Tools/SpeedTest/SpeedTest.swift`, `SpeedMeasure.swift`, `SpeedResult.swift`. Website: `/usr/bin/networkQuality` (“Takes about half a minute. The check runs on Apple’s servers.”). App Store: an ephemeral URLSession against speed.cloudflare.com (“Takes about 15 seconds. The check uses speed.cloudflare.com.”). Only the last result is kept, in the app’s preferences. The button turns into Cancel while running.
+**How it works:** `SpeedTestSettings` in `Sources/pikapik/Tools/SpeedTest/SpeedTest.swift`, `SpeedMeasure.swift`, `SpeedResult.swift`. Website: `/usr/bin/networkQuality` (“Takes about half a minute and runs on Apple’s servers. It can use a lot of data.”). App Store: an ephemeral URLSession against speed.cloudflare.com (“Takes about 15 seconds. The check uses speed.cloudflare.com.”). Only the last result is kept, in the app’s preferences. The button turns into Cancel while running.
 
 **Options:**
 - Download — Mbit/s.

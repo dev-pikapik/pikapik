@@ -106,8 +106,8 @@ private struct ScrollDirectionSettings: View {
         ToggleRow(
             icon: tool.icon,
             title: tool.title,
-            subtitle: Text("One way for the trackpad, another for the mouse"),
-            hint: Text("One way for the trackpad, another for the mouse"),
+            subtitle: Text("One way for the trackpad and Magic Mouse, another for the mouse wheel"),
+            hint: Text("One way for the trackpad and Magic Mouse, another for the mouse wheel"),
             help: Text("The trackpad and the mouse wheel each scroll the way you choose, whatever is set in System Settings. Handy with Universal Control: set the same on each Mac and scrolling feels the same everywhere."),
             isOn: $tool.isEnabled
         )

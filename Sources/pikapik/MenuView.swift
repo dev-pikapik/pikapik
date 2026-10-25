@@ -270,6 +270,7 @@ struct MenuView: View {
 
     private var keepAwakeOptions: some View {
         VStack(alignment: .leading, spacing: 8) {
+            Text(SettingTitle.display).font(.caption).foregroundStyle(.secondary).accessibilityHidden(true)
             Picker("Display", selection: $keepAwake.keepsDisplayOn) {
                 Text("Always on").tag(true)
                 Text("Turns off as usual").tag(false)

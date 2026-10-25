@@ -235,9 +235,8 @@ private struct PointerSettings: View {
         ToggleRow(
             icon: tool.icon,
             title: tool.title,
-            subtitle: Text("Same distance as your hand, at any speed"),
-            hint: Text("Moves as far as your hand"),
-            help: Text("The pointer moves as far as your hand, at any speed. Mouse only."),
+            subtitle: Text("The pointer moves as far as your hand, at any speed. Mouse only."),
+            hint: Text("Mouse only: moves as far as your hand"),
             isOn: $tool.isEnabled
         )
         if inSettings {

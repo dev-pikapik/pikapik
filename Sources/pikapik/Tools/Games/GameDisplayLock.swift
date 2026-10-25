@@ -71,8 +71,10 @@ enum GameHint {
 
     static func show() {
         guard let screen = NSScreen.screens.first(where: { NSMouseInRect(NSEvent.mouseLocation, $0.frame, false) }) ?? NSScreen.main else { return }
-        let view = NSHostingView(rootView: Text("To leave the game, press \(CommandKeysTool.quit.text)")
-            .font(.title3.weight(.medium))
+        let view = NSHostingView(rootView: VStack(spacing: 2) {
+            Text("pikapik paused this shortcut while you play").font(.callout).foregroundStyle(.secondary)
+            Text("To leave the game, press \(CommandKeysTool.quit.text)").font(.title3.weight(.medium))
+        }
             .padding(.horizontal, 22)
             .padding(.vertical, 12)
             .glassCard(cornerRadius: 22)
@@ -93,7 +95,7 @@ enum GameHint {
         panel.alphaValue = fade == 0 ? 1 : 0
         panel.orderFrontRegardless()
         NSAnimationContext.runAnimationGroup { $0.duration = fade; panel.animator().alphaValue = 1 }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             NSAnimationContext.runAnimationGroup { $0.duration = fade; panel.animator().alphaValue = 0 } completionHandler: { panel.orderOut(nil) }
         }
     }

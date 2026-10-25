@@ -270,7 +270,7 @@ private struct MiddleClickSettings: View {
             icon: tool.icon,
             title: tool.title,
             subtitle: Text("Like the middle mouse button"),
-            hint: Text("Like the middle mouse button"),
+            hint: status,
             help: Text("Tap or click with three or four fingers to open a link in a new tab or close a tab, like the middle mouse button."),
             isOn: $tool.isEnabled
         )

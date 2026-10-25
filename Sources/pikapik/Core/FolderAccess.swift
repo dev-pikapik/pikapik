@@ -75,7 +75,11 @@ enum FolderAccess {
         while panel.runModal() == .OK {
             guard let url = panel.url, covers(url.resolvingSymlinksInPath().path, folder.path),
                   let data = try? url.bookmarkData(options: .withSecurityScope), url.startAccessingSecurityScopedResource()
-            else { continue }
+            else {
+                panel.message = inHome ? String(localized: "To continue, choose your home folder “\(home.lastPathComponent)”.") : String(localized: "To continue, choose the folder “\(folder.lastPathComponent)” or a folder that contains it.")
+                panel.directoryURL = inHome ? home : folder
+                continue
+            }
             var saved = UserDefaults.standard.dictionary(forKey: key) as? [String: Data] ?? [:]
             saved[url.resolvingSymlinksInPath().path] = data
             UserDefaults.standard.set(saved, forKey: key)

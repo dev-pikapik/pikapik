@@ -14,7 +14,12 @@ struct GameModePage: View {
             )
             Section {
                 GameModeArt(on: tool.isEnabled)
-                tool.settingsView
+                tool.settingsView.needs(tool.needs)
+            } footer: {
+                Text("To leave a game, press \(CommandKeysTool.quit.text); to close its window, \(CommandKeysTool.close.text). ⌥⌘Esc always works.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             Section {
                 Group {
@@ -53,11 +58,11 @@ struct GameModePage: View {
                 SystemShortcutList(tool: tool)
                 Section {
                     DisclosureGroup(isExpanded: $safeguards) {
-                        Text("To leave a game, press \(CommandKeysTool.quit.text); to close its window, \(CommandKeysTool.close.text). ⌥⌘Esc always works.").font(.subheadline).foregroundStyle(.secondary)
+                        EmptyView()
                     } label: {
                         GameDisclosureLabel(title: SettingTitle.gameSafeguards, detail: String(localized: "Closing the game, the pointer and display."), symbol: .shield, count: GameRule.allCases.count)
                     }
-                    .disclosureGroupStyle(GameDisclosureStyle())
+                    .disclosureGroupStyle(GameDisclosureStyle(contentSpacing: 0))
                     .settingAnchor(SettingTitle.gameSafeguards)
                 }
                 if safeguards {
@@ -98,7 +103,7 @@ struct GameModePage: View {
                 }
             }
             RestoreDefaultsSection(
-                message: String(localized: "These will turn off and go back to their default options: \(tool.title)"),
+                message: String(localized: "Game Mode will turn off and your list of games will be cleared. Safeguards, shortcut choices and FPS will go back to their defaults."),
                 isDefault: tool.isDefault,
                 reset: tool.reset
             )
@@ -106,6 +111,9 @@ struct GameModePage: View {
         .formStyle(.grouped)
         .coordinateSpace(.named(SystemShortcutList.viewport))
         .settingsPage()
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            PermissionBar(permissions: tool.needs)
+        }
         .environment(\.inSettings, true)
         .onChange(of: SettingsWindow.model.highlight, initial: true) {
             let simple = [tool.title, SettingTitle.yourGames, SettingTitle.showFPS, SettingTitle.cornerForFPS]
@@ -176,7 +184,7 @@ struct GameModeSettings: View {
             title: tool.title,
             subtitle: Text("While you play, your Mac doesn’t pull you out of the game"),
             hint: tool.game.map { Text("Now playing: \($0.title)") } ?? Text("Your Mac doesn’t pull you out of a game"),
-            help: Text("To leave a game, press \(CommandKeysTool.quit.text); to close its window, \(CommandKeysTool.close.text). ⌥⌘Esc always works."),
+            help: Text("pikapik’s Game Mode is separate from Game Mode in macOS, which pikapik doesn’t turn on or off."),
             isOn: $tool.isEnabled
         )
     }

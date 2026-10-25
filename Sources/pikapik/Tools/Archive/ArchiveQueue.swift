@@ -192,6 +192,8 @@ final class ArchiveQueue {
             alert.messageText = String(localized: "“\(name)” can’t be opened")
             #if APPSTORE
             alert.informativeText = String(localized: "The file may be damaged, or it may be a kind that this version of pikapik can’t open: split parts, single XZ, LZMA or ZST files, and 7Z or RAR with a password.")
+            #else
+            alert.informativeText = String(localized: "The file may be damaged.")
             #endif
         default:
             NSLog("pikapik archive: %@ failed: %@", name, String(describing: error))

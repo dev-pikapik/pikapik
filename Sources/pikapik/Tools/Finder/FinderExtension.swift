@@ -239,10 +239,12 @@ struct FinderRestartBar: View {
             HStack(spacing: 12) {
                 Image(.arrowClockwise)
                     .accessibilityHidden(true)
-                Text("Restart Finder once to bring back the right-click items")
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Restart Finder once to bring back the right-click items")
+                    Text("Finder closes its windows and opens again. Wait until files finish copying.").font(.caption).foregroundStyle(.secondary)
+                }
                 Spacer(minLength: 0)
                 Button("Restart Finder") { restart.restart() }
-                    .help(Text("Finder closes its windows and opens again. Wait until files finish copying."))
             }
             .noticeBar()
         }

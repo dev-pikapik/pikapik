@@ -471,7 +471,7 @@ private struct ToolsSettings: View {
                 Section {
                     SystemSettingsRow(
                         title: String(localized: "Turn off pointer acceleration"),
-                        subtitle: Text("Same distance as your hand, at any speed"),
+                        subtitle: Text("The pointer moves as far as your hand, at any speed. Mouse only."),
                         url: URL(string: "x-apple.systempreferences:com.apple.Mouse-Settings.extension")!,
                         guide: SettingsGuide(pane: .mouse, steps: [.button("Advanced…"), .toggle("Pointer acceleration", on: false)])
                     )
