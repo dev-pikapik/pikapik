@@ -110,7 +110,7 @@ enum GameRules {
 
     static func shelf(_ keys: [String]) -> [String] {
         var seen = Set<String>()
-        return keys.filter { !$0.isEmpty && !$0.hasPrefix(AppConstants.bundleIDPrefix) && $0 != "com.apple.finder" && seen.insert($0).inserted }
+        return keys.filter { !$0.isEmpty && !$0.hasPrefix(AppConstants.bundleIDPrefix) && !$0.hasPrefix(AppConstants.appStoreBundleID) && $0 != "com.apple.finder" && seen.insert($0).inserted }
     }
 
     static func processIDs(_ text: String, names: (Int32) -> [String]) -> [Int32] {

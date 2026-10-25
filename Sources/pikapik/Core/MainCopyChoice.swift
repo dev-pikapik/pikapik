@@ -24,7 +24,7 @@ extension RunningCopy {
 
 enum MainCopyChoice {
     static let websiteID = "com.pikapik.app.direct"
-    static let appStoreID = "com.pikapik.app"
+    static let appStoreID = "com.pikapik.tools"
 
     static func family(_ bundleID: String) -> String {
         if [websiteID, appStoreID].contains(bundleID) { return "pikapik" }

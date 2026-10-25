@@ -6,7 +6,7 @@ import SwiftUI
 final class TipJar {
     static let shared = TipJar()
 
-    static let ids = ["small", "medium", "large"].map { "com.pikapik.app.tip.\($0)" }
+    static let ids = ["small", "medium", "large"].map { "com.pikapik.tools.tip.\($0)" }
 
     private(set) var products: [Product] = []
     private(set) var thanked = false

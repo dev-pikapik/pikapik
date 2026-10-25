@@ -32,7 +32,7 @@ elif [ -z "$DEV" ]; then
     done
 fi
 
-APPSTORE_ID=com.pikapik.app
+APPSTORE_ID=com.pikapik.tools
 rm -rf build
 mkdir -p "$APP/Contents/MacOS" build/strings build/dSYM
 [ -z "$HELPERS" ] || mkdir -p "$APP/Contents/Library/LaunchServices"

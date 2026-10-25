@@ -3,8 +3,8 @@ import Foundation
 @main
 struct TestFinderMenu {
     static func main() {
-        let website = "com.pikapik.app.direct", store = "com.pikapik.app", dev = "com.pikapik.app.dev"
-        let rehearsal = "com.pikapik.app.rehearsal", e2e = "com.pikapik.e2e.menu.a"
+        let website = "com.pikapik.app.direct", store = "com.pikapik.tools", dev = "com.pikapik.app.dev"
+        let rehearsal = "com.pikapik.tools.rehearsal", e2e = "com.pikapik.e2e.menu.a"
 
         func host(_ id: String, _ minute: Double, pid: Int32 = 100) -> RunningCopy {
             RunningCopy(pid: pid, bundleID: id, launched: Date(timeIntervalSince1970: 1_000_000 + minute * 60))

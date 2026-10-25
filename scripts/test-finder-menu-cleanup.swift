@@ -3,14 +3,14 @@ import Foundation
 @main
 struct TestFinderMenuCleanup {
     static func main() {
-        let own = "com.pikapik.app.direct.new-file", store = "com.pikapik.app.new-file", dev = "com.pikapik.app.dev.new-file"
+        let own = "com.pikapik.app.direct.new-file", store = "com.pikapik.tools.new-file", dev = "com.pikapik.app.dev.new-file"
         let e2e = "com.pikapik.e2e.menu.b.new-file", rehearsal = "com.pikapik.app.rehearsal.new-file"
 
         let apps = ["com.apple.finder", "com.pikapik.app.direct", own, "com.pikapik.app.direct.compress", dev, store, e2e, "com.example.files.new-file", "com.pikapikfan.new-file"]
         precondition(MainCopyChoice.sameMenu(own, in: apps) == [own, dev, store, e2e], "running New File extensions of pikapik copies: \(MainCopyChoice.sameMenu(own, in: apps))")
         precondition(MainCopyChoice.sameMenu(rehearsal, in: apps) == [own, dev, store, e2e], "a test copy sees the same copies")
-        precondition(MainCopyChoice.sameMenu("com.pikapik.app.compress", in: apps) == ["com.pikapik.app.direct.compress"], "another kind of menu item")
-        precondition(MainCopyChoice.sameMenu(own, in: ["com.pikapik.app.direct", "com.pikapik.app", "com.example.files.new-file"]).isEmpty, "apps and other developers are not copies")
+        precondition(MainCopyChoice.sameMenu("com.pikapik.tools.compress", in: apps) == ["com.pikapik.app.direct.compress"], "another kind of menu item")
+        precondition(MainCopyChoice.sameMenu(own, in: ["com.pikapik.app.direct", "com.pikapik.tools", "com.example.files.new-file"]).isEmpty, "apps and other developers are not copies")
         print("running extensions that count as copies: ok")
 
         let list = """
