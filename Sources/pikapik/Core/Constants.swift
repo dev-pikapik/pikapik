@@ -4,7 +4,7 @@ enum AppConstants {
     static let appName = "pikapik"
     static let bundleIDPrefix = "com.pikapik.app"
     static let directBundleID = "com.pikapik.app.direct"
-    static let appStoreBundleID = "com.pikapik.tools"
+    static let appStoreBundleID = "com.pikapik.app"
     static let devBundleID = "com.pikapik.app.dev"
     static let fanHelperLabel = "com.pikapik.app.direct.fans"
     static let playerAppName = "pikapik Player.app"

@@ -65,7 +65,7 @@ struct AppExclusions: View {
     private func suggestions() -> [String] {
         var seen = skipped
         return (AppShelf.dock().compactMap { Bundle(url: $0)?.bundleIdentifier } + AppShelf.running.compactMap(\.bundleIdentifier))
-            .filter { !$0.hasPrefix("com.pikapik.app") && !$0.hasPrefix("com.pikapik.tools") && seen.insert($0).inserted }
+            .filter { !$0.hasPrefix("com.pikapik.app") && seen.insert($0).inserted }
     }
 }
 
