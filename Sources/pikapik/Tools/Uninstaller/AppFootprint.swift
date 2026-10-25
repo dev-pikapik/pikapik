@@ -143,18 +143,18 @@ final class AppFootprint {
         return !(own.hasPrefix("com.apple.") && forms.contains { $0 == own || $0.hasPrefix(own + ".") })
     }
 
-    fileprivate func fileInfo(_ url: URL) -> (device: Int32, inode: UInt64, isLink: Bool, isDirectory: Bool)? {
-        var info = stat()
-        guard lstat(url.path, &info) == 0 else { return nil }
-        let type = info.st_mode & mode_t(S_IFMT)
-        return (info.st_dev, info.st_ino, type == mode_t(S_IFLNK), type == mode_t(S_IFDIR))
+    func fileInfo(_ url: URL) -> (device: Int32, inode: UInt64, isLink: Bool, isDirectory: Bool)? {
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
+              let device = attributes[.systemNumber] as? NSNumber, let inode = attributes[.systemFileNumber] as? NSNumber else { return nil }
+        let type = attributes[.type] as? FileAttributeType
+        return (device.int32Value, inode.uint64Value, type == .typeSymbolicLink, type == .typeDirectory)
     }
 
-    fileprivate func needsAdmin(_ url: URL, isLink: Bool, isDirectory: Bool) -> Bool {
+    func needsAdmin(_ url: URL, isLink: Bool, isDirectory: Bool) -> Bool {
         func blocked(_ path: String) -> Bool {
             guard access(path, W_OK) != 0 else { return false }
-            var info = stat()
-            return errno != EPERM || lstat(path, &info) != 0 || info.st_uid != getuid()
+            guard errno == EPERM else { return true }
+            return ((try? FileManager.default.attributesOfItem(atPath: path))?[.ownerAccountID] as? NSNumber)?.uint32Value != getuid()
         }
         if blocked(url.deletingLastPathComponent().path) { return true }
         return !isLink && isDirectory && blocked(url.path)

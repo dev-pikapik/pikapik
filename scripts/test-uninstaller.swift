@@ -174,6 +174,7 @@ enum UninstallerTests {
         ownership()
         links()
         jobs()
+        files()
         receipts()
         vendorReceipts()
         casks()
@@ -593,6 +594,41 @@ enum UninstallerTests {
         precondition(frozen["root/Library/PrivilegedHelperTools/com.jobby.helper"]?.needsAdmin == false, "a folder the system protects is not an admin matter")
     }
 
+    static func files() {
+        let w = World()
+        defer { w.destroy() }
+        w.file("root/Library/Thing/data")
+        w.file("root/Library/note.txt")
+        w.link("root/Library/thing-link", to: w.at("root/Library/Thing").path)
+        w.link("root/Library/broken-link", to: w.at("root/Library/nowhere").path)
+        let footprint = w.footprint([])
+        for (path, isLink, isDirectory) in [("root/Library/Thing", false, true), ("root/Library/note.txt", false, false), ("root/Library/thing-link", true, false), ("root/Library/broken-link", true, false)] {
+            var info = stat()
+            precondition(lstat(w.at(path).path, &info) == 0, path)
+            let attributes = try! FileManager.default.attributesOfItem(atPath: w.at(path).path)
+            let found = footprint.fileInfo(w.at(path))!
+            precondition(found.device == info.st_dev && found.inode == info.st_ino, "\(path) identity")
+            precondition(Int(found.device) == (attributes[.systemNumber] as! NSNumber).intValue && found.inode == (attributes[.systemFileNumber] as! NSNumber).uint64Value, "\(path) identity")
+            precondition(found.isLink == isLink && found.isDirectory == isDirectory, "\(path) kind")
+        }
+        precondition(footprint.fileInfo(w.at("root/Library/missing")) == nil)
+
+        let root = getuid() == 0
+        let thing = w.at("root/Library/Thing")
+        w.lock("root/Library", mode: 0o555)
+        precondition(footprint.needsAdmin(thing, isLink: false, isDirectory: true) == !root, "a read-only folder of mine")
+        w.unlockAll()
+        w.lock("root/Library/Thing", mode: 0o555)
+        precondition(footprint.needsAdmin(thing, isLink: false, isDirectory: true) == !root, "a read-only folder of mine")
+        precondition(!footprint.needsAdmin(thing, isLink: false, isDirectory: false) && !footprint.needsAdmin(thing, isLink: true, isDirectory: false))
+        w.unlockAll()
+        w.freeze("root/Library")
+        precondition(!footprint.needsAdmin(thing, isLink: false, isDirectory: true), "a frozen folder of mine")
+        w.unlockAll()
+        precondition(root || footprint.needsAdmin(URL(fileURLWithPath: "/System/Library/pika-uninstaller-test"), isLink: false, isDirectory: false), "a protected folder of root's")
+        precondition(footprint.needsAdmin(URL(fileURLWithPath: "/Library/LaunchDaemons/pika-uninstaller-test.plist"), isLink: false, isDirectory: false) == !root, "a folder of root's")
+    }
+
     static func receipts() {
         let w = World()
         defer { w.destroy() }
@@ -913,6 +949,11 @@ enum UninstallerTests {
         w.link("home/Calculator.app", to: "/System/Applications/Calculator.app")
         let calculator = identity("home/Calculator.app")
         precondition(!calculator.url.path.hasPrefix("/System/") && AppFootprint(roots: .live, installed: [], system: []).isSystem(calculator))
+        try! FileManager.default.copyItem(atPath: "/System/Applications/Calculator.app", toPath: w.at("root/Applications/Calculator.app").path)
+        precondition(AppIdentity.read(at: w.at("root/Applications/Calculator.app"))?.isPlatform == true && !names(AppInventory.installed(roots)).contains("Calculator"))
+        w.link("root/Applications/Shortcut", to: w.at("root/Applications/Suite").path)
+        precondition(AppInventory.isRealDirectory(w.at("root/Applications/Suite")) && !AppInventory.isRealDirectory(w.at("root/Applications/Shortcut")))
+        precondition(!AppInventory.isRealDirectory(w.at("root/Applications/readme.txt")) && !AppInventory.isRealDirectory(w.at("root/Applications/Missing")))
 
         let contents = "root/Applications/Big.app/Contents"
         w.app("Big", id: "com.big.app", executable: "BigExe", nested: ["com.big.app.login"], labels: ["com.big.app.other"],

@@ -209,6 +209,7 @@ struct AppIdentity: Equatable, Identifiable {
     var groups: [String] = []
     var organization = ""
     var isAppStore = false
+    var isPlatform = false
 
     var id: String { url.path }
     var displayName: String { url.deletingPathExtension().lastPathComponent }
@@ -270,7 +271,7 @@ struct AppIdentity: Equatable, Identifiable {
         return (Array(bundles.prefix(128)), labels)
     }
 
-    static func signature(of url: URL) -> (team: String, groups: [String], organization: String)? {
+    static func signature(of url: URL) -> (team: String, groups: [String], organization: String, platform: Bool)? {
         var code: SecStaticCode?
         guard SecStaticCodeCreateWithPath(url as CFURL, [], &code) == errSecSuccess, let code else { return nil }
         var info: CFDictionary?
@@ -288,7 +289,8 @@ struct AppIdentity: Equatable, Identifiable {
             organization = String(summary[colon.upperBound...])
             if let paren = organization.range(of: " (", options: .backwards) { organization = String(organization[..<paren.lowerBound]) }
         }
-        return (team, entitlements["com.apple.security.application-groups"] as? [String] ?? [], organization)
+        let platform = (dict[kSecCodeInfoPlatformIdentifier as String] as? Int ?? 0) != 0
+        return (team, entitlements["com.apple.security.application-groups"] as? [String] ?? [], organization, platform)
     }
 
     static func read(at url: URL, signed: Bool = true) -> AppIdentity? {
@@ -317,6 +319,7 @@ struct AppIdentity: Equatable, Identifiable {
         if signed, let main = signature(of: url) {
             app.teamID = main.team
             app.organization = main.organization
+            app.isPlatform = main.platform
             app.groups = unique(main.groups + nested.bundles.flatMap { signature(of: $0)?.groups ?? [] })
         }
         return app
@@ -389,8 +392,7 @@ enum AppInventory {
     }
 
     static func isRealDirectory(_ url: URL) -> Bool {
-        var info = stat()
-        return lstat(url.path, &info) == 0 && info.st_mode & mode_t(S_IFMT) == mode_t(S_IFDIR)
+        (try? FileManager.default.attributesOfItem(atPath: url.path))?[.type] as? FileAttributeType == .typeDirectory
     }
 
     static func parallelMap<T, R>(_ items: [T], _ transform: (T) -> R?) -> [R] {
@@ -423,8 +425,7 @@ enum AppInventory {
         let found: [(AppIdentity, String)] = parallelMap(candidates) { candidate in
             let real = candidate.url.resolvingSymlinksInPath()
             guard !(real.path + "/").hasPrefix(systemPrefix), !isInTrash(real) else { return nil }
-            var info = stat()
-            guard lstat(real.path, &info) == 0, info.st_flags & UInt32(SF_RESTRICTED) == 0, let app = AppIdentity.read(at: candidate.url) else { return nil }
+            guard let app = AppIdentity.read(at: candidate.url), !app.isPlatform else { return nil }
             let id = app.bundleID.lowercased()
             if id.hasPrefix(AppNames.selfBundleIDPrefix) || (id.hasPrefix(AppNames.appleBundleIDPrefix) && !candidate.direct) { return nil }
             return (app, real.path)

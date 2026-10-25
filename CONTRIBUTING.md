@@ -383,6 +383,12 @@ The **Background Tasks** page shows everything that starts by itself: apps that 
 swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Fans/FanHelperProtocol.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Background/BackgroundTasks.swift scripts/test-background.swift -o build/test-background && build/test-background
 ```
 
+The Mac App Store version keeps `BackgroundTasks.swift`, `AppIdentity.swift` and `AppFootprint.swift` for the **Background Tasks** page. Apple asks apps to give a reason for the calls that can tell when a file was made or changed, such as `stat` and `lstat`, so in the App Store version these three files call none of them and read no file dates: they get what they need from `FileManager` and `access`. The test builds them the way the App Store version is built, for Apple silicon and for Intel, and fails if any of those calls is still there:
+
+```bash
+swiftc -parse-as-library scripts/test-appstore-no-stat.swift -o build/test-appstore-no-stat && build/test-appstore-no-stat
+```
+
 `TrashWatcher` is what makes **Offer to clean up when an app goes to the Trash** work: it watches the Trash, ignores the apps that are already there when it starts, reports only the ones that arrive later, and stays quiet once stopped or when the folder cannot be read. The test watches a folder of its own in the temporary directory, never your real Trash, and takes about eight seconds. The folder stays in the temporary directory, which macOS clears itself:
 
 ```bash
