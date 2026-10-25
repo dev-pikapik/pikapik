@@ -6,30 +6,26 @@ BUNDLE_ID="com.pikapik.app.direct"
 
 say() { printf '\033[1m→ %s\033[0m\n' "$1"; }
 ours() { [ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$1/Contents/Info.plist" 2>/dev/null)" = "$BUNDLE_ID" ]; }
-# The App Store version runs under the same process name, so quit only what runs from our copies.
-quit_ours() { for app in "$DEST"; do if ours "$app"; then pkill -f "^$app/" 2>/dev/null || true; fi; done; }
+# The App Store version runs under the same process name, so quit only what runs from our copy.
+quit_ours() { if ours "$DEST"; then pkill -f "^$DEST/" 2>/dev/null || true; fi; }
 
-for app in "$DEST"; do
-    ours "$app" || continue
+if ours "$DEST"; then
     say "Removing from login items"
     quit_ours
     sleep 1
-    open -W -n "$app" --args --uninstall 2>/dev/null || true
-    break
-done
+    open -W -n "$DEST" --args --uninstall 2>/dev/null || true
+fi
 
 quit_ours
 
 say "Deleting the app"
 SUDO=""
 [ -w /Applications ] || SUDO="sudo"
-for app in "$DEST"; do
-    if ours "$app"; then
-        $SUDO rm -rf "$app"
-    elif [ -e "$app" ]; then
-        say "Leaving $app in place: it isn't the GitHub version (for example, pikapik from the App Store)"
-    fi
-done
+if ours "$DEST"; then
+    $SUDO rm -rf "$DEST"
+elif [ -e "$DEST" ]; then
+    say "Leaving $DEST in place: it isn't the GitHub version (for example, pikapik from the App Store)"
+fi
 
 FANS="/Library/PrivilegedHelperTools/$BUNDLE_ID.fans"
 if [ -e "$FANS" ]; then
