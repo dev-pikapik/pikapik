@@ -45,11 +45,9 @@ struct GameDisclosureStyle: DisclosureGroupStyle {
             } label: {
                 HStack(spacing: 10) {
                     configuration.label
-                    Image(.chevronRight)
+                    DisclosureChevron(isExpanded: configuration.isExpanded)
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(.tertiary)
-                        .rotationEffect(.degrees(configuration.isExpanded ? 90 : 0))
-                        .accessibilityHidden(true)
                 }
                 .frame(maxWidth: .infinity, minHeight: 48, alignment: .leading)
                 .contentShape(Rectangle())

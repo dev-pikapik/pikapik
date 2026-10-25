@@ -79,15 +79,25 @@ enum TestImages {
         try FileManager.default.removeItem(at: dir.appending(path: "folder.png"))
         print("the pictures next to one opened file are listed in natural order, without folders: ok")
 
-        var seen = Set<String>()
-        for binding in ImageAction.bindings {
-            precondition(seen.insert("\(binding.key)\(binding.modifiers.rawValue)").inserted, "duplicate \(binding)")
-            precondition(ImageAction(key: binding.key, modifiers: binding.modifiers) == binding.action)
+        for direction in [NSUserInterfaceLayoutDirection.leftToRight, .rightToLeft] {
+            var seen = Set<String>()
+            for binding in ImageAction.bindings(for: direction) {
+                precondition(seen.insert("\(binding.key)\(binding.modifiers.rawValue)").inserted, "duplicate \(binding)")
+                precondition(ImageAction(key: binding.key, modifiers: binding.modifiers, direction: direction) == binding.action)
+            }
         }
         precondition(["=", "+"].allSatisfy { ImageAction(key: $0, modifiers: .command) == .zoomIn && ImageAction(key: $0, modifiers: [.command, .shift]) == .zoomIn } && ImageAction(key: "-", modifiers: .command) == .zoomOut)
         precondition(ImageAction(key: "r", modifiers: [.command, .capsLock]) == .rotateRight)
         precondition(ImageAction(key: "r") == nil && ImageAction(key: "f") == nil && ImageAction(key: "q", modifiers: .command) == nil)
         print("keys never clash and only pictures’ own keys are claimed: ok")
+
+        let (left, right) = ("\u{F702}", "\u{F703}")
+        precondition(ImageAction(key: left) == .previous && ImageAction(key: right) == .next)
+        precondition(ImageAction(key: left, direction: .rightToLeft) == .next && ImageAction(key: right, direction: .rightToLeft) == .previous)
+        let unpaged = { (direction: NSUserInterfaceLayoutDirection) in ImageAction.bindings(for: direction).filter { ![.previous, .next].contains($0.action) } }
+        let (ltr, rtl) = (unpaged(.leftToRight), unpaged(.rightToLeft))
+        precondition(ltr.count == rtl.count && zip(ltr, rtl).allSatisfy { $0.action == $1.action && $0.key == $1.key && $0.modifiers == $1.modifiers })
+        print("in right-to-left languages ← shows the next picture and → the previous one, all other keys stay the same: ok")
 
         let (huge, wide, small) = (CGSize(width: 12000, height: 9000), CGSize(width: 30000, height: 1000), CGSize(width: 2000, height: 1500))
         precondition(ImageDetail.pixels(longSide: 1000, backing: 2, screen: 3456, image: huge) == 3456)

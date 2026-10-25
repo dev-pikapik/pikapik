@@ -48,7 +48,7 @@ struct PlayerPage: View {
     private func row(_ title: String, symbol: Symbol, color: Color, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             LabeledContent {
-                Image(.arrowUpRight)
+                Image(.arrowUpForward)
                     .foregroundStyle(.secondary)
             } label: {
                 HStack(spacing: 10) {

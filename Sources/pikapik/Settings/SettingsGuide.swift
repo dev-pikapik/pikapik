@@ -189,7 +189,7 @@ struct SettingsGuideScene: View {
                 if layout.layers[page].kind == .page, let title = steps[layout.layers[page].opener].label {
                     place(CGRect(x: 84, y: 6, width: 144, height: 10)) {
                         HStack(spacing: 3) {
-                            Image(.chevronLeft).font(.system(size: 6, weight: .bold)).foregroundStyle(Color.accentColor)
+                            Image(.chevronBackward).font(.system(size: 6, weight: .bold)).foregroundStyle(Color.accentColor)
                             GuideLabel(text: title, pane: pane, size: 8, weight: .semibold)
                         }
                     }
@@ -349,7 +349,7 @@ struct SettingsGuideScene: View {
             .background(pressed ? Color.primary.opacity(0.12) : Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 3, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 3, style: .continuous).hairline(Color.primary.opacity(0.2)))
         case .page:
-            Image(.chevronRight).font(.system(size: 6, weight: .bold)).foregroundStyle(.secondary)
+            Image(.chevronForward).font(.system(size: 6, weight: .bold)).foregroundStyle(.secondary)
         case .info, .appInfo:
             Image(.infoCircle).font(.system(size: 9)).foregroundStyle(Color.accentColor)
         case .display, .select:

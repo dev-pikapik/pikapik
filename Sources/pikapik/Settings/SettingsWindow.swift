@@ -172,7 +172,7 @@ private struct SettingsView: View {
                     ToolbarItem(placement: .navigation) {
                         Button {
                             withAnimation { columns = columns == .detailOnly ? .all : .detailOnly }
-                        } label: { Label("Sidebar", symbol: .sidebarLeft) }
+                        } label: { Label("Sidebar", symbol: .sidebarLeading) }
                         .help(Text("Sidebar"))
                     }
                     ToolbarItem(placement: .navigation) {

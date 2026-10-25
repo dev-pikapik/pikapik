@@ -104,9 +104,8 @@ struct MenuView: View {
                                             isOn: $keepAwake.isOn
                                         )
                                         Button { keepAwakeOpen.toggle() } label: {
-                                            Image(.chevronRight)
+                                            DisclosureChevron(isExpanded: keepAwakeOpen)
                                                 .font(.system(size: 11, weight: .semibold))
-                                                .rotationEffect(.degrees(keepAwakeOpen ? 90 : 0))
                                                 .animation(.snappy, value: keepAwakeOpen)
                                                 .frame(width: 28, height: 38)
                                                 .contentShape(Rectangle())

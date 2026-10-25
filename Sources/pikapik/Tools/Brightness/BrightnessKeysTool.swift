@@ -205,6 +205,7 @@ struct BrightnessArt: View {
             }
             .animation(reduceMotion ? nil : .smooth(duration: 0.5), value: step)
         }
+        .environment(\.layoutDirection, .leftToRight)
     }
 
     private func hud(_ level: Double) -> some View {

@@ -335,7 +335,7 @@ struct FinderColumnsArt: View {
                                 .frame(width: [30, 22, 34, 26, 18][(row + column) % 5], height: 3.5)
                             Spacer(minLength: 0)
                             if column < 3 && row < 3 {
-                                Image(.chevronRight)
+                                Image(.chevronForward)
                                     .font(.system(size: 5, weight: .bold))
                                     .foregroundStyle(focused ? Color.white : Color.secondary)
                             }
