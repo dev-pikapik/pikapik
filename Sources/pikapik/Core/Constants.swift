@@ -134,6 +134,10 @@ enum PreferenceKey {
     static let fansRPM = "fans-rpm"
     static let speedTestResult = "speed-test-result"
 
+    static let backgroundTurnedOffLogins = "background-turned-off-logins"
+    static let backgroundTurnedOffAgents = "background-turned-off-agents"
+    static let backgroundTurnedOffServices = "background-turned-off-services"
+
     static let systemAudioGranted = "system-audio-granted"
     static let systemAudioAsked = "system-audio-asked"
 
@@ -199,6 +203,7 @@ enum SystemPath {
     static let chmod = "/bin/chmod"
     static let sh = "/bin/sh"
     static let bash = "/bin/bash"
+    static let sleep = "/bin/sleep"
     static let standardBinPath = "/usr/bin:/bin"
 
     static let socketfilterfw = "/usr/libexec/ApplicationFirewall/socketfilterfw"

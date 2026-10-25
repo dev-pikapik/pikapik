@@ -224,7 +224,7 @@ private struct PortRow: View {
     private func turnOff(_ label: String) {
         working = true
         failed = false
-        BackgroundModel.shared.setService(label, on: false) { ok in
+        FanControl.shared.setService(label, on: false) { ok in
             working = false
             failed = !ok
             if ok {
@@ -263,7 +263,7 @@ private struct PortRow: View {
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(hints, id: \.port) { hint in
                             #if !APPSTORE
-                            if let label = hint.label {
+                            if let label = hint.label, HelperAccess.isAdmin(getuid()) {
                                 Text("To free port \(String(hint.port)), turn off “\(hint.service)”.")
                                 Button("Turn Off") { turnOff(label) }
                                     .disabled(working)

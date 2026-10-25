@@ -1,8 +1,17 @@
 import Foundation
 
-guard let device = SMC() else { exit(1) }
+let label = URL(fileURLWithPath: CommandLine.arguments[0]).lastPathComponent
+let services = ServiceSwitch(record: "/Library/PrivilegedHelperTools/" + label + FanHelperInfo.recordSuffix, own: label)
+
+if CommandLine.arguments.contains("--restore") {
+    guard getuid() == 0 else { exit(1) }
+    exit(services.restore(by: 0) ? 0 : 1)
+}
+
+let device = SMC()
 
 if CommandLine.arguments.contains("--read") {
+    guard let device else { exit(1) }
     let lower = device.read("F0md") != nil
     print("FNum \(device.count)  mode key F0\(lower ? "md" : "Md")  Ftst \(device.hasUnlock ? "yes" : "no")")
     for fan in device.fans() {
@@ -13,32 +22,33 @@ if CommandLine.arguments.contains("--read") {
 }
 
 final class Service: NSObject, FanHelperProtocol, NSXPCListenerDelegate {
-    private static let launchctlExecutableURL = URL(fileURLWithPath: "/bin/launchctl")
     private let lock = NSLock()
     private let updates = NSLock()
-    private let smc: SMC
+    private let records = NSLock()
+    private let smc: SMC?
+    private let services: ServiceSwitch
     private let requirement: String?
     private let candidate: String?
-    private let own: String
     private var clients = 0
 
-    init(smc: SMC, requirement: String?, candidate: String?, own: String) {
+    init(smc: SMC?, services: ServiceSwitch, requirement: String?, candidate: String?) {
         self.smc = smc
+        self.services = services
         self.requirement = requirement
         self.candidate = candidate
-        self.own = own
     }
 
     func resetAll() {
         lock.lock()
         defer { lock.unlock() }
+        guard let smc else { return }
         (0..<smc.count).forEach { smc.setAuto(fan: $0) }
     }
 
     func guardHeat() {
         lock.lock()
         defer { lock.unlock() }
-        guard ProcessInfo.processInfo.thermalState.rawValue >= ProcessInfo.ThermalState.serious.rawValue,
+        guard let smc, ProcessInfo.processInfo.thermalState.rawValue >= ProcessInfo.ThermalState.serious.rawValue,
               smc.fans().contains(where: \.manual)
         else { return }
         (0..<smc.count).forEach { smc.setAuto(fan: $0) }
@@ -78,12 +88,13 @@ final class Service: NSObject, FanHelperProtocol, NSXPCListenerDelegate {
         lock.lock()
         defer { lock.unlock() }
         let cool = ProcessInfo.processInfo.thermalState.rawValue < ProcessInfo.ThermalState.serious.rawValue
-        reply(cool && rpm.isFinite && smc.setManual(fan: fan, rpm: rpm))
+        reply(cool && rpm.isFinite && smc?.setManual(fan: fan, rpm: rpm) == true)
     }
 
     func setAuto(fan: Int, reply: @escaping (Bool) -> Void) {
         lock.lock()
         defer { lock.unlock() }
+        guard let smc else { return reply(false) }
         smc.setAuto(fan: fan)
         reply(true)
     }
@@ -95,25 +106,24 @@ final class Service: NSObject, FanHelperProtocol, NSXPCListenerDelegate {
     }
 
     func setService(label: String, on: Bool, reply: @escaping (Bool) -> Void) {
-        guard label != own, let file = HelperServices.plist(for: label) else { return reply(false) }
-        let target = "system/" + label
-        guard Self.launchctl([on ? "enable" : "disable", target]) else { return reply(false) }
-        guard on else {
-            _ = Self.launchctl(["bootout", target])
-            return reply(true)
-        }
-        reply(Self.launchctl(["bootstrap", "system", file]) || Self.launchctl(["print", target]))
+        guard let caller = NSXPCConnection.current()?.effectiveUserIdentifier else { return reply(false) }
+        records.lock()
+        defer { records.unlock() }
+        reply(services.set(label, on: on, by: caller))
     }
 
-    private static func launchctl(_ arguments: [String]) -> Bool {
-        let process = Process()
-        process.executableURL = launchctlExecutableURL
-        process.arguments = arguments
-        process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return false }
-        process.waitUntilExit()
-        return process.terminationStatus == 0
+    func adopt(labels: [String], reply: @escaping (Bool) -> Void) {
+        guard let caller = NSXPCConnection.current()?.effectiveUserIdentifier else { return reply(false) }
+        records.lock()
+        defer { records.unlock() }
+        reply(services.adopt(labels, by: caller))
+    }
+
+    func restoreServices(reply: @escaping (Bool) -> Void) {
+        guard let caller = NSXPCConnection.current()?.effectiveUserIdentifier else { return reply(false) }
+        records.lock()
+        defer { records.unlock() }
+        reply(services.restore(by: caller))
     }
 
     func finish() -> Never {
@@ -124,10 +134,10 @@ final class Service: NSObject, FanHelperProtocol, NSXPCListenerDelegate {
     }
 }
 
-let label = URL(fileURLWithPath: CommandLine.arguments[0]).lastPathComponent
 let appIdentifier = label.hasSuffix(FanHelperInfo.suffix) ? String(label.dropLast(FanHelperInfo.suffix.count)) : label
-let service = Service(smc: device, requirement: FanHelperInfo.requirement(identifier: appIdentifier), candidate: FanHelperInfo.requirement(identifier: label), own: label)
+let service = Service(smc: device, services: services, requirement: FanHelperInfo.requirement(identifier: appIdentifier), candidate: FanHelperInfo.requirement(identifier: label))
 service.resetAll()
+services.prune()
 
 let listener = NSXPCListener(machServiceName: label)
 listener.delegate = service
