@@ -119,7 +119,7 @@ enum HelperServices {
         "com.openssh.sshd": "/System/Library/LaunchDaemons/ssh.plist",
         "com.apple.screensharing": "/System/Library/LaunchDaemons/com.apple.screensharing.plist",
     ]
-    private static let reserved = ["com.apple.", "com.pikapik.app", "com.pikapik.tools"]
+    private static let reserved = ["com.apple.", "com.pikapik.app.direct", "com.pikapik.app"]
     private static let characters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-")
 
     static func allows(_ label: String) -> Bool {
