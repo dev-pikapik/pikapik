@@ -158,7 +158,7 @@ struct ArtQuickLook: View {
         let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
         VStack(spacing: 0) {
             HStack(spacing: 4) {
-                Image(systemName: "xmark").font(.system(size: 5, weight: .bold)).foregroundStyle(.secondary)
+                Image(.xmark).font(.system(size: 5, weight: .bold)).foregroundStyle(.secondary)
                 Spacer(minLength: 0)
                 Capsule().fill(Color.primary.opacity(0.14)).frame(width: size.width * 0.3, height: 3)
                 Spacer(minLength: 0)
@@ -196,7 +196,7 @@ struct ArtDock: View {
                         .frame(width: icon, height: icon)
                         .overlay {
                             if index == 2 {
-                                Image(systemName: "macwindow").font(.system(size: 11 * unit, weight: .semibold)).foregroundStyle(.white)
+                                Image(.macwindow).font(.system(size: 11 * unit, weight: .semibold)).foregroundStyle(.white)
                             }
                         }
                         .overlay(alignment: .topTrailing) {
@@ -366,7 +366,7 @@ struct ArtSpotlight: View {
 
     var body: some View {
         HStack(spacing: height * 0.24) {
-            Image(systemName: "magnifyingglass")
+            Image(.magnifyingglass)
                 .font(.system(size: height * 0.42, weight: .semibold))
                 .foregroundStyle(Color.primary.opacity(0.6))
             Capsule().fill(Color.primary.opacity(0.22)).frame(width: width * 0.4, height: height * 0.18)
@@ -512,7 +512,7 @@ struct ArtMenuRow: View {
             }
             Spacer(minLength: 0)
             if submenu {
-                Image(systemName: "chevron.right")
+                Image(.chevronRight)
                     .font(.system(size: 7, weight: .bold))
                     .foregroundStyle(active ? Color.white : Color.secondary)
             }

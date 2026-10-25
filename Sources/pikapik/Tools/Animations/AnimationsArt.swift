@@ -180,7 +180,7 @@ struct WindowOpenArt: View {
             let close = CGPoint(x: 89, y: 39)
             ArtWindow(size: CGSize(width: 150, height: 80), active: !open) { Lines(widths: [70, 48, 58]) }
                 .overlay(alignment: .topTrailing) {
-                    Image(systemName: "plus")
+                    Image(.plus)
                         .font(.system(size: 8, weight: .semibold))
                         .foregroundStyle(.secondary)
                         .frame(width: 14, height: 14)
@@ -225,7 +225,7 @@ struct ResizeArt: View {
                 .clipped()
             }
             .overlay(alignment: .topTrailing) {
-                Image(systemName: "square.and.arrow.down")
+                Image(.squareAndArrowDown)
                     .font(.system(size: 8, weight: .semibold))
                     .foregroundStyle(.secondary)
                     .frame(width: 14, height: 14)
@@ -264,7 +264,7 @@ struct QuickLookArt: View {
                 }
             }
             .position(x: 82, y: 52)
-            ArtKey(down: step == 1 || step == 3, width: 64, height: 20) { Image(systemName: "space") }
+            ArtKey(down: step == 1 || step == 3, width: 64, height: 20) { Image(.space) }
                 .animation(.easeOut(duration: 0.08), value: step)
                 .position(x: 82, y: 111)
             panel(open: open)
@@ -335,7 +335,7 @@ struct FinderColumnsArt: View {
                                 .frame(width: [30, 22, 34, 26, 18][(row + column) % 5], height: 3.5)
                             Spacer(minLength: 0)
                             if column < 3 && row < 3 {
-                                Image(systemName: "chevron.right")
+                                Image(.chevronRight)
                                     .font(.system(size: 5, weight: .bold))
                                     .foregroundStyle(focused ? Color.white : Color.secondary)
                             }
@@ -365,7 +365,7 @@ struct FinderWindowArt: View {
             let folder = CGPoint(x: 52, y: 60)
             let close = CGPoint(x: 111, y: 23)
             VStack(spacing: 4) {
-                Image(systemName: "folder.fill")
+                Image(.folderFill)
                     .font(.system(size: 30))
                     .foregroundStyle(LinearGradient(colors: [Color(red: 0.45, green: 0.75, blue: 1), Color(red: 0.27, green: 0.6, blue: 0.95)], startPoint: .top, endPoint: .bottom))
                     .padding(.horizontal, 4)
@@ -469,7 +469,7 @@ struct MinimizeArt: View {
             RoundedRectangle(cornerRadius: 5, style: .continuous)
                 .fill(Color.primary.opacity(0.08))
                 .frame(width: 20, height: 20)
-                .overlay(Image(systemName: "trash").font(.system(size: 10, weight: .medium)).foregroundStyle(.secondary))
+                .overlay(Image(.trash).font(.system(size: 10, weight: .medium)).foregroundStyle(.secondary))
         }
         .padding(.horizontal, 6)
         .padding(.vertical, 5)

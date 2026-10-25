@@ -166,7 +166,7 @@ extension PlayerController {
         pipButton.isHidden = pip == nil
         pipButton.isEnabled = pip?.isPossible == true
         let label = pip?.isActive == true ? String(localized: "Exit Picture in Picture") : String(localized: "Picture in Picture")
-        pipButton.image = NSImage(systemSymbolName: pip?.isActive == true ? "pip.exit" : "pip.enter", accessibilityDescription: label)
+        pipButton.image = NSImage(pip?.isActive == true ? .pipExit : .pipEnter, accessibilityDescription: label)
         pipButton.setAccessibilityLabel(label)
     }
 
@@ -234,7 +234,7 @@ extension PlayerController {
     func setMuted(_ value: Bool) {
         muted = value
         engine?.muted = value
-        speaker.image = NSImage(systemSymbolName: value ? "speaker.slash.fill" : "speaker.wave.2.fill", accessibilityDescription: nil)
+        speaker.image = NSImage(value ? .speakerSlashFill : .speakerWave2Fill, accessibilityDescription: nil)
         showControls()
     }
 

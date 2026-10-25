@@ -6,7 +6,7 @@ final class AnimationsTool: AnimationsEngine, Tool {
     private static let killallExecutableURL = URL(fileURLWithPath: SystemPath.killall)
 
     let id = ToolID.animations
-    let icon = "hare"
+    let icon = Symbol.hare
     var title: String { TabTitle.animations }
     var tab: SettingsTab { .animations }
     var isActive: Bool { isEnabled }
@@ -204,7 +204,7 @@ private struct ChangesBar: View {
     var body: some View {
         if tool.appsPending || tool.finderPending {
             HStack(spacing: 12) {
-                Image(systemName: "arrow.clockwise")
+                Image(.arrowClockwise)
                     .accessibilityHidden(true)
                 if tool.appsPending {
                     Text("Works in apps after you reopen them")
@@ -382,13 +382,13 @@ private struct PaceSlider: View {
             }
         )
         HStack(spacing: 8) {
-            Image(systemName: "tortoise.fill")
+            Image(.tortoiseFill)
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
             slider(binding)
                 .labelsHidden()
                 .accessibilityValue(Text(value))
-            Image(systemName: "hare.fill")
+            Image(.hareFill)
                 .foregroundStyle(.secondary)
                 .accessibilityHidden(true)
         }

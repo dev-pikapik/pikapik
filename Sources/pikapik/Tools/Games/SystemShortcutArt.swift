@@ -84,16 +84,16 @@ struct SystemShortcutFrame: View {
                 Rectangle().strokeBorder(.white, style: StrokeStyle(lineWidth: 1, dash: [3, 2]))
                     .frame(width: 108, height: 63).position(x: 85, y: 47)
                     .opacity(hit)
-                Image(systemName: "plus").font(.system(size: 15, weight: .light)).foregroundStyle(.white)
+                Image(.plus).font(.system(size: 15, weight: .light)).foregroundStyle(.white)
                     .position(x: 32 + 105 * story.reach, y: 17 + 60 * story.reach).opacity(hit)
             }
         case .capturePanel:
             game
             if hit > 0 {
                 HStack(spacing: 9) {
-                    ForEach(["rectangle", "rectangle.dashed", "record.circle", "xmark"], id: \.self) { symbol in
-                        Image(systemName: symbol).font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(symbol == "record.circle" ? Art.red : Color.primary)
+                    ForEach([Symbol.rectangle, .rectangleDashed, .recordCircle, .xmark], id: \.self) { symbol in
+                        Image(symbol).font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(symbol == .recordCircle ? Art.red : Color.primary)
                     }
                 }
                 .frame(width: 124, height: 28)
@@ -103,7 +103,7 @@ struct SystemShortcutFrame: View {
         case .zoom:
             ArtScreen(glow: 1, radius: 0) { Color.clear }
             game.scaleEffect(1 + (entry.rawName.lowercased().contains("out") ? -0.35 : 1.1) * hit, anchor: .center)
-            hud(symbol: "plus.magnifyingglass", progress: 0.7)
+            hud(symbol: .plusMagnifyingglass, progress: 0.7)
         case .contrast:
             game.contrast(1 + (entry.rawName.lowercased().contains("decrease") ? -0.6 : 2) * hit)
             hud(symbol: entry.kind.symbol, progress: 0.8)
@@ -139,8 +139,8 @@ struct SystemShortcutFrame: View {
             } else {
             panel {
                 VStack(alignment: .leading, spacing: 6) {
-                    HStack { Image(systemName: "globe"); Text(verbatim: "ABC") }
-                    HStack { Image(systemName: "checkmark"); Text(verbatim: "АБВ") }
+                    HStack { Image(.globe); Text(verbatim: "ABC") }
+                    HStack { Image(.checkmark); Text(verbatim: "АБВ") }
                         .foregroundStyle(Color.accentColor)
                 }.font(.system(size: 12, weight: .medium)).padding(12)
             }
@@ -149,7 +149,7 @@ struct SystemShortcutFrame: View {
             game
             panel {
                 VStack(alignment: .leading, spacing: 6) {
-                    Image(systemName: "note.text").font(.system(size: 19)).foregroundStyle(Art.yellow)
+                    Image(.noteText).font(.system(size: 19)).foregroundStyle(Art.yellow)
                     ForEach([62.0, 49, 57], id: \.self) { width in Capsule().fill(Color.primary.opacity(0.2)).frame(width: width, height: 4) }
                 }.padding(12)
             }
@@ -162,7 +162,7 @@ struct SystemShortcutFrame: View {
             game
             panel {
                 HStack(spacing: 5) {
-                    Image(systemName: entry.kind.symbol).font(.system(size: 21)).foregroundStyle(Color.accentColor)
+                    Image(entry.kind.symbol).font(.system(size: 21)).foregroundStyle(Color.accentColor)
                     ForEach(Array([12.0, 24, 17, 28, 12].enumerated()), id: \.offset) { _, size in
                         Capsule().fill(Color.accentColor).frame(width: 3, height: size)
                     }
@@ -172,7 +172,7 @@ struct SystemShortcutFrame: View {
             game
             panel {
                 VStack(alignment: .leading, spacing: 7) {
-                    Image(systemName: entry.kind.symbol).foregroundStyle(Color.accentColor)
+                    Image(entry.kind.symbol).foregroundStyle(Color.accentColor)
                     ForEach([70.0, 58, 64], id: \.self) { width in
                         Capsule().fill(Color.primary.opacity(0.35)).frame(width: width, height: 4)
                     }
@@ -181,7 +181,7 @@ struct SystemShortcutFrame: View {
         case .presenter:
             game
             if hit > 0 {
-                Image(systemName: "person.crop.circle.fill")
+                Image(.personCropCircleFill)
                     .font(.system(size: entry.rawName.lowercased().contains("small") ? 37 : 68))
                     .foregroundStyle(.white, Color.accentColor)
                     .background(Circle().fill(Color.accentColor))
@@ -191,7 +191,7 @@ struct SystemShortcutFrame: View {
         case .focusMode:
             game
             panel {
-                Image(systemName: entry.kind.symbol).font(.system(size: 25)).foregroundStyle(.purple)
+                Image(entry.kind.symbol).font(.system(size: 25)).foregroundStyle(.purple)
                     .padding(17)
             }
         case .forceQuit:
@@ -211,7 +211,7 @@ struct SystemShortcutFrame: View {
             game
             panel {
                 VStack(spacing: 9) {
-                    Image(systemName: entry.kind.symbol).font(.system(size: 25)).foregroundStyle(Color.accentColor)
+                    Image(entry.kind.symbol).font(.system(size: 25)).foregroundStyle(Color.accentColor)
                     Capsule().fill(Color.primary.opacity(0.2)).frame(width: 62, height: 5)
                 }.padding(13)
             }
@@ -222,7 +222,7 @@ struct SystemShortcutFrame: View {
         VStack(spacing: 6) {
             ForEach(0..<3, id: \.self) { _ in
                 HStack(spacing: 6) {
-                    Image(systemName: "bell.fill").foregroundStyle(Color.accentColor)
+                    Image(.bellFill).foregroundStyle(Color.accentColor)
                     Capsule().fill(Color.primary.opacity(0.2)).frame(width: 44, height: 4)
                 }.font(.system(size: 10)).padding(8).artGlass(radius: 7)
             }
@@ -238,7 +238,7 @@ struct SystemShortcutFrame: View {
         let glyphs = entry.text.map(KeyCaps.caps) ?? []
         return HStack(spacing: 3) {
             if glyphs.isEmpty {
-                ArtKey(down: story.down, width: 24, height: 18) { Image(systemName: entry.kind.symbol) }
+                ArtKey(down: story.down, width: 24, height: 18) { Image(entry.kind.symbol) }
             } else {
                 ForEach(Array(glyphs.enumerated()), id: \.offset) { _, glyph in
                     ArtKey(down: story.down, width: max(19, CGFloat(glyph.count) * 5.6 + 10), height: 18) { Text(verbatim: glyph) }
@@ -263,10 +263,10 @@ struct SystemShortcutFrame: View {
             .position(x: 99, y: 43)
     }
 
-    private func hud(symbol: String, progress: CGFloat) -> some View {
+    private func hud(symbol: Symbol, progress: CGFloat) -> some View {
         panel {
             VStack(spacing: 8) {
-                Image(systemName: symbol).font(.system(size: 24)).foregroundStyle(.primary)
+                Image(symbol).font(.system(size: 24)).foregroundStyle(.primary)
                 Capsule().fill(Color.primary.opacity(0.15)).frame(width: 65, height: 5)
                     .overlay(alignment: .leading) { Capsule().fill(Color.primary).frame(width: 65 * progress, height: 5) }
             }.padding(14)

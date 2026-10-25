@@ -87,7 +87,7 @@ private struct ShelfTile: View {
                     .frame(width: 48, height: 48)
                     .overlay(alignment: .bottomTrailing) {
                         if added {
-                            Image(systemName: "checkmark.circle.fill")
+                            Image(.checkmarkCircleFill)
                                 .font(.system(size: 17, weight: .semibold))
                                 .symbolRenderingMode(.palette)
                                 .foregroundStyle(.white, Color.accentColor)

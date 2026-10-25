@@ -5,7 +5,7 @@ import SwiftUI
 @Observable
 final class DesktopIconsTool: Tool {
     let id = ToolID.desktopIcons
-    let icon = "menubar.dock.rectangle"
+    let icon = Symbol.menubarDockRectangle
     var title: String { SettingTitle.hideDesktopIcons }
     let tab = SettingsTab.finder
     let needs: [Permission] = []
@@ -31,7 +31,7 @@ final class DesktopIconsTool: Tool {
 @Observable
 final class DesktopIconsTool: Tool {
     let id = ToolID.desktopIcons
-    let icon = "menubar.dock.rectangle"
+    let icon = Symbol.menubarDockRectangle
     var title: String { SettingTitle.hideDesktopIcons }
     let tab = SettingsTab.finder
     let needs: [Permission] = []
@@ -77,7 +77,7 @@ final class HiddenFilesTool: Tool {
     private static let key = "AppleShowAllFiles" as CFString
 
     let id = ToolID.hiddenFiles
-    let icon = "eye"
+    let icon = Symbol.eye
     var title: String { SettingTitle.showHiddenFiles }
     let tab = SettingsTab.finder
     let needs: [Permission] = []
@@ -264,7 +264,7 @@ struct DesktopIconsArt: View {
     private func icon(_ index: Int, hidden: Bool) -> some View {
         VStack(spacing: 2) {
             if index == 0 || index == 3 {
-                Image(systemName: "folder.fill")
+                Image(.folderFill)
                     .font(.system(size: 12))
                     .foregroundStyle(Color(red: 0.45, green: 0.73, blue: 1))
                     .frame(width: 14, height: 11)

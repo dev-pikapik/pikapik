@@ -37,7 +37,7 @@ struct PermissionBar: View {
         let missing = Permission.allCases.filter { permissions.contains($0) && !$0.isGranted }
         if !missing.isEmpty {
             HStack(spacing: 12) {
-                Image(systemName: "lock")
+                Image(.lock)
                     .accessibilityHidden(true)
                 if let text {
                     Text(text)
@@ -111,7 +111,7 @@ struct PermissionsView: View {
                     if permission == .finder, !permission.isGranted { SettingsGuide.finderExtensions }
                     PermissionRow(permission: permission)
                     if let error = permission.error {
-                        Label(error, systemImage: "exclamationmark.triangle.fill")
+                        Label(error, symbol: .exclamationmarkTriangleFill)
                             .font(.caption)
                             .foregroundStyle(.orange)
                     }
@@ -186,7 +186,7 @@ struct PermissionRow: View {
                 } else {
                     PermissionButton(title: "Allow", opensSettings: permission.opensSettingsToAllow, action: permission.allow)
                 }
-                Image(systemName: granted ? "checkmark.circle.fill" : "xmark.circle.fill")
+                Image(granted ? .checkmarkCircleFill : .xmarkCircleFill)
                     .font(.title3)
                     .foregroundStyle(granted ? .green : .orange)
                     .contentTransition(.symbolEffect(.replace))
@@ -212,7 +212,7 @@ private struct PermissionButton: View {
     var body: some View {
         Button(action: action) {
             if opensSettings {
-                Label(title, systemImage: "arrow.up.forward.app")
+                Label(title, symbol: .arrowUpForwardApp)
             } else {
                 Text(title)
             }
@@ -222,7 +222,7 @@ private struct PermissionButton: View {
 
 struct PermissionIcon: View {
     let type: String
-    let symbol: String
+    let symbol: Symbol
 
     var body: some View {
         let size = SettingsTab.iconSize + 4

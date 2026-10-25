@@ -69,8 +69,8 @@ struct GeneralSettings: View {
     @Bindable private var sync = SettingsSync.shared
 
     @ViewBuilder private var backupButtons: some View {
-        Button("Import Settings…", systemImage: "square.and.arrow.down") { SettingsBackup.chooseImport() }
-        Button("Export Settings…", systemImage: "square.and.arrow.up") { SettingsBackup.export() }
+        Button("Import Settings…", symbol: .squareAndArrowDown) { SettingsBackup.chooseImport() }
+        Button("Export Settings…", symbol: .squareAndArrowUp) { SettingsBackup.export() }
     }
 
     var body: some View {
@@ -85,7 +85,7 @@ struct GeneralSettings: View {
                              : String(localized: "Starts on its own when you log in")))
                         if loginItem.needsApproval {
                             Spacer()
-                            Button("Open", systemImage: "arrow.up.forward.app") { BackgroundTasks.openLoginItems() }
+                            Button("Open", symbol: .arrowUpForwardApp) { BackgroundTasks.openLoginItems() }
                         }
                     }
                 }
@@ -109,7 +109,7 @@ struct GeneralSettings: View {
                 .settingAnchor(SettingTitle.language)
                 if language.selected != language.atLaunch {
                     LabeledContent("Restart pikapik to apply") {
-                        Button("Restart", systemImage: "arrow.clockwise") { SettingsWindow.restart() }
+                        Button("Restart", symbol: .arrowClockwise) { SettingsWindow.restart() }
                     }
                     .foregroundStyle(.secondary)
                 }
@@ -133,7 +133,7 @@ struct GeneralSettings: View {
                 #if !APPSTORE
                 if sync.state == .noDrive {
                     LabeledContent("Turn on iCloud Drive in System Settings") {
-                        Button("Open", systemImage: "arrow.up.forward.app") { sync.openSettings() }
+                        Button("Open", symbol: .arrowUpForwardApp) { sync.openSettings() }
                     }
                     .foregroundStyle(.secondary)
                 } else if sync.state == .noAccess {

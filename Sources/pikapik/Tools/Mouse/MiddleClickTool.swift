@@ -4,7 +4,7 @@ import SwiftUI
 @Observable
 final class MiddleClickTool: Tool {
     let id = ToolID.middleClick
-    let icon = "hand.tap"
+    let icon = Symbol.handTap
     var title: String { SettingTitle.middleClick }
     var needs: [Permission] { [.accessibility, .inputMonitoring] }
     let tab = SettingsTab.mouse

@@ -235,7 +235,7 @@ struct GameRuleFrame: View {
         case .focusKeys:
             game()
             HStack(spacing: 9) {
-                Image(systemName: "apple.logo").font(.system(size: 12))
+                Image(.appleLogo).font(.system(size: 12))
                 Capsule().fill(Color.primary.opacity(0.3)).frame(width: 24, height: 5)
                     .padding(.horizontal, 5)
                     .padding(.vertical, 4)
@@ -302,12 +302,12 @@ struct GameRuleFrame: View {
                 let touch = story.phase > 1.15 && story.phase < Self.lift
                 ArtTrackpad(touch: touch, swipe: -5 + 10 * GameStory.ramp(story.phase, 1.25, 0.4), width: 34, fingers: 3)
             case .display:
-                ArtKey(down: false, width: 26, height: 18) { Image(systemName: "gamecontroller.fill") }
+                ArtKey(down: false, width: 26, height: 18) { Image(.gamecontrollerFill) }
             default:
                 HStack(spacing: 3) {
                     ForEach(Array(glyphs.enumerated()), id: \.offset) { _, glyph in
                         ArtKey(down: story.down, width: max(19, CGFloat(glyph.count) * 5.6 + 10), height: 18) {
-                            if let symbol = Self.symbols[glyph] { Image(systemName: symbol) } else { Text(verbatim: glyph) }
+                            if let symbol = Self.symbols[glyph] { Image(symbol) } else { Text(verbatim: glyph) }
                         }
                     }
                 }
@@ -328,7 +328,7 @@ struct GameRuleFrame: View {
     }
 
     private static let lift = GameStory.press + 0.3
-    private static let symbols = ["🌐": "globe", "🎤": "mic.fill"]
+    private static let symbols: [String: Symbol] = ["🌐": .globe, "🎤": .micFill]
 
     private var glyphs: [String] {
         keys.first { !$0.isEmpty && $0 != "…" }.map(KeyCaps.caps) ?? []
@@ -424,7 +424,7 @@ private struct GameLayer: View {
             Canvas { context, _ in Self.drawPet(&context, time, night) }
         } else {
             Canvas { context, _ in Self.draw(&context, time, night) } symbols: {
-                Text(Image(systemName: "heart.fill")).font(.system(size: 6.5)).foregroundStyle(Art.red).tag(0)
+                Text(Image(.heartFill)).font(.system(size: 6.5)).foregroundStyle(Art.red).tag(0)
             }
         }
     }

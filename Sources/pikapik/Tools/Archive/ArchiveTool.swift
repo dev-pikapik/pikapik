@@ -4,7 +4,7 @@ import UniformTypeIdentifiers
 
 final class ArchiveTool: Tool {
     let id = ToolID.archive
-    let icon = "doc.zipper"
+    let icon = Symbol.docZipper
     var title: String { SettingTitle.archivesInFinder }
     let tab = SettingsTab.finder
     private let finder = FinderExtension(bundle: "Archive", key: ToolID.archive, preview: true)
@@ -165,7 +165,7 @@ private struct ArtArchive: View {
     var selected = false
 
     var body: some View {
-        Image(systemName: "doc.zipper")
+        Image(.docZipper)
             .font(.system(size: 30, weight: .light))
             .foregroundStyle(selected ? Color.accentColor : Color.secondary)
             .padding(8)

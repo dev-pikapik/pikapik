@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ToggleRow: View {
-    let icon: String
+    let icon: Symbol
     let title: String
     let subtitle: Text
     var hint: Text?
@@ -31,7 +31,7 @@ struct ToggleRow: View {
     private var row: some View {
         Button { isOn.toggle() } label: {
             HStack(spacing: 10) {
-                Image(systemName: icon)
+                Image(icon)
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(isOn ? Color.white : Color.secondary)
                     .frame(width: 28, height: 28)

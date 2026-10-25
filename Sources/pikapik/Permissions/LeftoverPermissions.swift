@@ -10,7 +10,7 @@ struct PermissionGrant: Equatable {
 
 struct PermissionKind: Equatable {
     let name: String
-    let symbol: String
+    let symbol: Symbol
     let pane: String
 }
 
@@ -126,26 +126,26 @@ enum LeftoverPermissions {
             .joined(separator: " ")
     }
 
-    private static let services: [(ids: [String], name: () -> String, symbol: String, pane: String)] = [
-        (["Accessibility", "PostEvent"], { Permission.accessibilityTitle }, "accessibility", "Privacy_Accessibility"),
-        (["ScreenCapture"], { String(localized: "Screen Recording") }, "rectangle.dashed.badge.record", "Privacy_ScreenCapture"),
-        (["AudioCapture"], { String(localized: "System Audio Recording") }, "waveform", "Privacy_AudioCapture"),
-        (["ListenEvent"], { String(localized: "Input Monitoring") }, "keyboard.badge.eye", "Privacy_ListenEvent"),
-        (["SystemPolicyAllFiles", "EndpointSecurityClient"], { String(localized: "Full Disk Access") }, "internaldrive", "Privacy_AllFiles"),
-        (["Camera"], { String(localized: "Camera") }, "camera", "Privacy_Camera"),
-        (["Microphone"], { String(localized: "Microphone") }, "mic", "Privacy_Microphone"),
-        (["AppleEvents"], { String(localized: "Automation") }, "gearshape.2", "Privacy_Automation"),
+    private static let services: [(ids: [String], name: () -> String, symbol: Symbol, pane: String)] = [
+        (["Accessibility", "PostEvent"], { Permission.accessibilityTitle }, .accessibility, "Privacy_Accessibility"),
+        (["ScreenCapture"], { String(localized: "Screen Recording") }, .rectangleDashedBadgeRecord, "Privacy_ScreenCapture"),
+        (["AudioCapture"], { String(localized: "System Audio Recording") }, .waveform, "Privacy_AudioCapture"),
+        (["ListenEvent"], { String(localized: "Input Monitoring") }, .keyboardBadgeEye, "Privacy_ListenEvent"),
+        (["SystemPolicyAllFiles", "EndpointSecurityClient"], { String(localized: "Full Disk Access") }, .internaldrive, "Privacy_AllFiles"),
+        (["Camera"], { String(localized: "Camera") }, .camera, "Privacy_Camera"),
+        (["Microphone"], { String(localized: "Microphone") }, .mic, "Privacy_Microphone"),
+        (["AppleEvents"], { String(localized: "Automation") }, .gearshape2, "Privacy_Automation"),
         (
             ["SystemPolicyDesktopFolder", "SystemPolicyDocumentsFolder", "SystemPolicyDownloadsFolder", "SystemPolicyNetworkVolumes", "SystemPolicyRemovableVolumes", "SystemPolicySysAdminFiles", "FileProviderDomain", "FileProviderPresence"],
-            { String(localized: "Files and Folders") }, "folder", "Privacy_FilesAndFolders"
+            { String(localized: "Files and Folders") }, .folder, "Privacy_FilesAndFolders"
         ),
-        (["SystemPolicyAppBundles"], { String(localized: "App Management") }, "app.badge.checkmark", "Privacy_AppBundles"),
-        (["DeveloperTool"], { String(localized: "Developer Tools") }, "hammer", "Privacy_DevTools"),
-        (["AddressBook"], { String(localized: "Contacts") }, "person.crop.circle", "Privacy_Contacts"),
-        (["Calendar"], { String(localized: "Calendars") }, "calendar", "Privacy_Calendars"),
-        (["Photos", "PhotosAdd"], { String(localized: "Photos") }, "photo", "Privacy_Photos"),
-        (["BluetoothAlways"], { String(localized: "Bluetooth") }, "dot.radiowaves.left.and.right", "Privacy_Bluetooth"),
-        (["Ubiquity"], { String(localized: "iCloud Drive") }, "icloud", "Privacy"),
+        (["SystemPolicyAppBundles"], { String(localized: "App Management") }, .appBadgeCheckmark, "Privacy_AppBundles"),
+        (["DeveloperTool"], { String(localized: "Developer Tools") }, .hammer, "Privacy_DevTools"),
+        (["AddressBook"], { String(localized: "Contacts") }, .personCropCircle, "Privacy_Contacts"),
+        (["Calendar"], { String(localized: "Calendars") }, .calendar, "Privacy_Calendars"),
+        (["Photos", "PhotosAdd"], { String(localized: "Photos") }, .photo, "Privacy_Photos"),
+        (["BluetoothAlways"], { String(localized: "Bluetooth") }, .dotRadiowavesLeftAndRight, "Privacy_Bluetooth"),
+        (["Ubiquity"], { String(localized: "iCloud Drive") }, .icloud, "Privacy"),
     ]
 
     private static func order(_ service: String) -> Int {
@@ -154,7 +154,7 @@ enum LeftoverPermissions {
 
     static func kind(_ service: String) -> PermissionKind {
         let index = order(service)
-        guard index < services.count else { return PermissionKind(name: String(localized: "Other"), symbol: "lock", pane: "Privacy") }
+        guard index < services.count else { return PermissionKind(name: String(localized: "Other"), symbol: .lock, pane: "Privacy") }
         let item = services[index]
         return PermissionKind(name: item.name(), symbol: item.symbol, pane: item.pane)
     }

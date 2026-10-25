@@ -4,7 +4,7 @@ import SwiftUI
 @Observable
 final class SideButtonsTool: Tool {
     let id = ToolID.sideButtons
-    let icon = "arrow.left.arrow.right"
+    let icon = Symbol.arrowLeftArrowRight
     var title: String { SettingTitle.sideButtons }
     let tab = SettingsTab.mouse
 
@@ -144,13 +144,13 @@ struct SideButtonsArt: View {
                 ArtMouse(sideButtons: true, back: backPressed, forward: forwardPressed)
                     .artScale(2.1)
                     .position(x: 62, y: 66)
-                arrow(swapped ? "chevron.left" : "chevron.right", pressed: forwardPressed).position(x: 22, y: 61)
-                arrow(swapped ? "chevron.right" : "chevron.left", pressed: backPressed).position(x: 22, y: 81)
+                arrow(swapped ? .chevronLeft : .chevronRight, pressed: forwardPressed).position(x: 22, y: 61)
+                arrow(swapped ? .chevronRight : .chevronLeft, pressed: backPressed).position(x: 22, y: 81)
                 ArtWindow(size: CGSize(width: Self.pageWidth, height: 98)) {
                     VStack(spacing: 0) {
                         HStack(spacing: 10) {
-                            Image(systemName: "chevron.left").foregroundStyle(on && action == 1 ? Color.accentColor : Color.secondary)
-                            Image(systemName: "chevron.right").foregroundStyle(on && action == 2 ? Color.accentColor : Color.secondary)
+                            Image(.chevronLeft).foregroundStyle(on && action == 1 ? Color.accentColor : Color.secondary)
+                            Image(.chevronRight).foregroundStyle(on && action == 2 ? Color.accentColor : Color.secondary)
                             Spacer(minLength: 0)
                         }
                         .font(.system(size: 9, weight: .bold))
@@ -170,8 +170,8 @@ struct SideButtonsArt: View {
         }
     }
 
-    private func arrow(_ symbol: String, pressed: Bool) -> some View {
-        Image(systemName: symbol)
+    private func arrow(_ symbol: Symbol, pressed: Bool) -> some View {
+        Image(symbol)
             .font(.system(size: 9, weight: .bold))
             .foregroundStyle(pressed ? Color.accentColor : Color.secondary)
     }

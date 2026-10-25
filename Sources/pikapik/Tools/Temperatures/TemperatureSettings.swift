@@ -67,7 +67,7 @@ private struct PartRow: View {
                     .frame(minWidth: 40, alignment: .trailing)
             }
         } label: {
-            Label { Text(part.title) } icon: { Image(systemName: part.symbol).frame(width: 24) }
+            Label { Text(part.title) } icon: { Image(part.symbol).frame(width: 24) }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(part.title)
@@ -144,7 +144,7 @@ struct TemperatureRow: View {
         let level = model.level
         Button { SettingsWindow.show(.temperatures) } label: {
             HStack(spacing: 10) {
-                Image(systemName: "thermometer.medium")
+                Image(.thermometerMedium)
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(level == 0 ? Color.secondary : level == 1 ? Color.black.opacity(0.75) : Color.white)
                     .frame(width: 28, height: 28)

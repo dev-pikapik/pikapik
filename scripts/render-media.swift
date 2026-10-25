@@ -57,7 +57,7 @@ enum RenderMedia {
         ("whats-new/1.25.0/game-pictures", 4.2, AnyView(SwitchRowsArt(rows: [(AnyView(GameRuleFrame(rule: .commandQ, story: .still(on: false), height: 32)), 64), (AnyView(GameRuleFrame(rule: .spotlight, story: .still(on: false), height: 32)), 52), (AnyView(GameRuleFrame(rule: .missionControl, story: .still(on: false), height: 32)), 72)], height: 36))),
         ("whats-new/1.26.1/game-previews", 6.2, AnyView(IllustrationRow { HStack(spacing: 14) { GameRuleArt(rule: .spotlight, keys: ["⌘Space"], height: 96); GameRuleArt(rule: .showDesktop, keys: ["F11"], height: 96) } })),
         ("whats-new/1.25.1/dock-games", 3.85, AnyView(DockShelfArt())),
-        ("whats-new/1.28.0/app-shelf", 3.85, AnyView(DockShelfArt(symbol: "safari.fill"))),
+        ("whats-new/1.28.0/app-shelf", 3.85, AnyView(DockShelfArt(symbol: .safariFill))),
         ("whats-new/1.29.0/pet-ball", PetBallArt.length, AnyView(PetBallArt())),
         ("whats-new/1.31.0/system-shortcuts", 6.2, AnyView(SystemShortcutsCard())),
         ("whats-new/1.31.2/game-settings", 5.4, AnyView(GameSettingsCard())),
@@ -194,7 +194,7 @@ private struct GameSettingsCard: View {
         IllustrationRow(loop: [1.8, 3.6]) { tick in
             VStack(spacing: 7) {
                 HStack(spacing: 9) {
-                    Image(systemName: GameShortcutGroup.language.symbol)
+                    Image(GameShortcutGroup.language.symbol)
                         .font(.system(size: 15)).foregroundStyle(Color.accentColor)
                         .frame(width: 28, height: 28)
                         .background(Color.accentColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 7))
@@ -204,7 +204,7 @@ private struct GameSettingsCard: View {
                     }
                     Spacer(minLength: 2)
                     Text(verbatim: "2").font(.system(size: 10)).foregroundStyle(.secondary)
-                    Image(systemName: "chevron.right").font(.system(size: 8, weight: .semibold))
+                    Image(.chevronRight).font(.system(size: 8, weight: .semibold))
                         .rotationEffect(.degrees(tick % 2 == 1 ? 90 : 0)).foregroundStyle(.secondary)
                 }
                 if tick % 2 == 1 {
@@ -217,11 +217,11 @@ private struct GameSettingsCard: View {
                     }
                 } else {
                     HStack(spacing: 9) {
-                        Image(systemName: GameShortcutGroup.screenshots.symbol).foregroundStyle(Color.accentColor).frame(width: 28)
+                        Image(GameShortcutGroup.screenshots.symbol).foregroundStyle(Color.accentColor).frame(width: 28)
                         Text(verbatim: GameShortcutGroup.screenshots.title).font(.system(size: 12, weight: .semibold))
                         Spacer()
                         Text(verbatim: "9").font(.system(size: 10)).foregroundStyle(.secondary)
-                        Image(systemName: "chevron.right").font(.system(size: 8, weight: .semibold)).foregroundStyle(.secondary)
+                        Image(.chevronRight).font(.system(size: 8, weight: .semibold)).foregroundStyle(.secondary)
                     }.frame(height: 36)
                 }
             }
@@ -245,7 +245,7 @@ private struct UnifiedGamePreviewCard: View {
                 Text(verbatim: GameShortcutGroup.language.title).font(.system(size: 12, weight: .medium))
                 Spacer(minLength: 4)
                 Text(verbatim: (background ? GameShortcutMode.automatic : .system).title).font(.system(size: 10))
-                Image(systemName: "chevron.up.chevron.down").font(.system(size: 7))
+                Image(.chevronUpChevronDown).font(.system(size: 7))
             }
             Text(verbatim: background ? GameShortcutDescription.language.text : String(localized: "macOS runs the action normally, even if it opens a window or takes focus from the game."))
                 .font(.system(size: 9)).foregroundStyle(.secondary).lineLimit(2)
@@ -264,7 +264,7 @@ private struct GameChoicesCard: View {
                 ForEach([GameShortcutMode.automatic, .pause], id: \.self) { mode in
                     let selected = mode == (tick % 2 == 0 ? .automatic : .pause)
                     HStack(alignment: .top, spacing: 7) {
-                        Image(systemName: "checkmark").font(.system(size: 10, weight: .semibold))
+                        Image(.checkmark).font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(Color.accentColor).opacity(selected ? 1 : 0).frame(width: 12).padding(.top, 1)
                         VStack(alignment: .leading, spacing: 3) {
                             Text(verbatim: mode.title).font(.system(size: 11, weight: .medium))
@@ -293,7 +293,7 @@ private struct PermissionsCard: View {
                 PermissionArtRow(permission: .fans, granted: allowed)
                 Divider().padding(.horizontal, 10)
                 HStack(spacing: 8) {
-                    SectionIcon(symbol: "fan", color: .blue, size: 18)
+                    SectionIcon(symbol: .fan, color: .blue, size: 18)
                     Capsule().fill(Color.primary.opacity(0.14)).frame(height: 4)
                         .overlay(alignment: .leading) { Capsule().fill(Color.accentColor).frame(width: 52, height: 4) }
                         .overlay(alignment: .leading) { Circle().fill(.white).frame(width: 12, height: 12).shadow(color: .black.opacity(0.25), radius: 1, y: 0.5).offset(x: 46) }
@@ -326,7 +326,7 @@ private struct PermissionArtRow: View {
                 .frame(height: 17)
                 .background(Color.primary.opacity(0.07), in: RoundedRectangle(cornerRadius: 5, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 5, style: .continuous).strokeBorder(Color.primary.opacity(0.12), lineWidth: 0.5))
-            Image(systemName: granted ? "checkmark.circle.fill" : "xmark.circle.fill")
+            Image(granted ? .checkmarkCircleFill : .xmarkCircleFill)
                 .font(.system(size: 13))
                 .foregroundStyle(granted ? Color.green : Color.orange)
         }
@@ -374,7 +374,7 @@ private struct CommandKeysArt: View {
 }
 
 private struct DockShelfArt: View {
-    var symbol = "gamecontroller.fill"
+    var symbol = Symbol.gamecontrollerFill
     @State private var tick = 0
 
     private static let colors: [Color] = [.teal, .orange, .purple, .pink]
@@ -390,11 +390,11 @@ private struct DockShelfArt: View {
                                 .fill(LinearGradient(colors: [Self.colors[index], Self.colors[index].opacity(0.65)], startPoint: .top, endPoint: .bottom))
                                 .frame(width: 40, height: 40)
                                 .overlay {
-                                    if index == 2 { Image(systemName: symbol).font(.system(size: 18)).foregroundStyle(.white) }
+                                    if index == 2 { Image(symbol).font(.system(size: 18)).foregroundStyle(.white) }
                                 }
                                 .overlay(alignment: .bottomTrailing) {
                                     if index == 2 && step == 3 {
-                                        Image(systemName: "checkmark.circle.fill")
+                                        Image(.checkmarkCircleFill)
                                             .font(.system(size: 17, weight: .semibold))
                                             .symbolRenderingMode(.palette)
                                             .foregroundStyle(.white, Color.accentColor)
@@ -882,9 +882,9 @@ private struct SpeedTestArt: View {
         let (down, up) = Self.speeds[step]
         IllustrationRow {
             HStack(spacing: 0) {
-                number("arrow.down", down, active: step == 1 || step == 2)
+                number(.arrowDown, down, active: step == 1 || step == 2)
                 Rectangle().fill(Color.primary.opacity(0.12)).frame(width: 0.5, height: 56)
-                number("arrow.up", up, active: step == 3)
+                number(.arrowUp, up, active: step == 3)
             }
             .frame(width: 260)
             .animation(.snappy, value: step)
@@ -892,9 +892,9 @@ private struct SpeedTestArt: View {
         .loop($tick, [1.0, 0.8, 0.8, 0.8, 2.0])
     }
 
-    private func number(_ symbol: String, _ value: Double?, active: Bool) -> some View {
+    private func number(_ symbol: Symbol, _ value: Double?, active: Bool) -> some View {
         VStack(spacing: 2) {
-            Image(systemName: symbol)
+            Image(symbol)
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(active ? Color.accentColor : .secondary)
             Text(verbatim: value.map(SpeedTest.format) ?? "–")
@@ -1181,7 +1181,7 @@ private struct ArchivePasswordScene: View {
 
     private var status: some View {
         HStack(spacing: 4) {
-            Image(systemName: match ? "checkmark.circle.fill" : "xmark.circle.fill")
+            Image(match ? .checkmarkCircleFill : .xmarkCircleFill)
                 .font(.system(size: 10, weight: .semibold))
             Capsule().frame(width: match ? 58 : 76, height: 4).opacity(0.45)
         }
@@ -1201,10 +1201,10 @@ private struct ArchivePasswordScene: View {
 private struct BackgroundCard: View {
     static let durations = [1.2, 1.1, 0.15, 1.6, 0.15, 1.6]
     static var length: Double { durations.reduce(0, +) }
-    private static let rows: [(symbol: String, color: Color, name: CGFloat, byline: CGFloat)] = [
-        ("cloud.fill", .blue, 58, 84),
-        ("arrow.triangle.2.circlepath", .orange, 72, 62),
-        ("music.note", .pink, 46, 76),
+    private static let rows: [(symbol: Symbol, color: Color, name: CGFloat, byline: CGFloat)] = [
+        (.cloudFill, .blue, 58, 84),
+        (.arrowTriangle2Circlepath, .orange, 72, 62),
+        (.musicNote, .pink, 46, 76),
     ]
     private static let button = CGPoint(x: 236, y: 64)
 
@@ -1304,7 +1304,7 @@ private struct PortsCard: View {
     private func search(_ query: String, caret: Bool, free: Bool) -> some View {
         VStack(spacing: 0) {
             HStack(spacing: 4) {
-                Image(systemName: "magnifyingglass")
+                Image(.magnifyingglass)
                     .font(.system(size: 8, weight: .medium))
                     .foregroundStyle(.secondary)
                 HStack(spacing: 1) {
@@ -1321,7 +1321,7 @@ private struct PortsCard: View {
                 .transaction { $0.animation = nil }
                 Spacer(minLength: 0)
                 if !query.isEmpty {
-                    Image(systemName: "xmark.circle.fill")
+                    Image(.xmarkCircleFill)
                         .font(.system(size: 8))
                         .foregroundStyle(.tertiary)
                         .transaction { $0.animation = nil }
@@ -1331,7 +1331,7 @@ private struct PortsCard: View {
             .frame(height: 20)
             if free {
                 HStack(spacing: 4) {
-                    Image(systemName: "checkmark.circle.fill")
+                    Image(.checkmarkCircleFill)
                         .font(.system(size: 9))
                         .foregroundStyle(.white, Art.green)
                     Capsule().fill(Color.primary.opacity(0.4)).frame(width: 18, height: 3.5)
@@ -1384,7 +1384,7 @@ private struct PortsCard: View {
                 Capsule().fill(Color.primary.opacity(pressed ? 0.22 : 0.1))
                     .overlay(Capsule().fill(Color.primary.opacity(0.45)).frame(width: 18, height: 3))
                     .frame(width: 34, height: 13)
-                Image(systemName: "chevron.right")
+                Image(.chevronRight)
                     .font(.system(size: 6.5, weight: .semibold))
                     .foregroundStyle(.tertiary)
                     .frame(width: 5)
@@ -1448,8 +1448,8 @@ private struct AppVolumeMixerCard: View {
 private struct AppVolumeMixerScene: View {
     let t: Double
 
-    private static let apps: [(symbol: String, color: Color, caption: CGFloat)] = [
-        ("phone.fill", Art.green, 44), ("gamecontroller.fill", .accentColor, 36), ("music.note", Art.red, 40),
+    private static let apps: [(symbol: Symbol, color: Color, caption: CGFloat)] = [
+        (.phoneFill, Art.green, 44), (.gamecontrollerFill, .accentColor, 36), (.musicNote, Art.red, 40),
     ]
     private static let left: CGFloat = 140
     private static let width: CGFloat = 84
@@ -1507,12 +1507,12 @@ private struct AppVolumeMixerScene: View {
         }
     }
 
-    private func tile(_ symbol: String, color: Color) -> some View {
+    private func tile(_ symbol: Symbol, color: Color) -> some View {
         let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
         return shape
             .fill(LinearGradient(colors: [color, color.opacity(0.7)], startPoint: .top, endPoint: .bottom))
             .overlay(shape.hairline(Color.white.opacity(0.25)))
-            .overlay(Image(systemName: symbol).font(.system(size: 11, weight: .semibold)).foregroundStyle(.white))
+            .overlay(Image(symbol).font(.system(size: 11, weight: .semibold)).foregroundStyle(.white))
             .frame(width: 22, height: 22)
             .shadow(color: .black.opacity(0.18), radius: 2, y: 1)
     }
@@ -1535,8 +1535,8 @@ private struct AppVolumeMixerScene: View {
 
     private func speaker(muted: Double) -> some View {
         ZStack {
-            Image(systemName: "speaker.wave.2.fill").foregroundStyle(Color.secondary).opacity(1 - muted)
-            Image(systemName: "speaker.slash.fill").foregroundStyle(Color.accentColor).opacity(muted)
+            Image(.speakerWave2Fill).foregroundStyle(Color.secondary).opacity(1 - muted)
+            Image(.speakerSlashFill).foregroundStyle(Color.accentColor).opacity(muted)
         }
         .font(.system(size: 12))
         .frame(width: 20, height: 20)
@@ -1863,11 +1863,11 @@ private struct PlayerScene: View {
 
     private func controls(progress: Double) -> some View {
         HStack(spacing: 6) {
-            Image(systemName: "pause.fill")
+            Image(.pauseFill)
             Capsule().fill(.white.opacity(0.3))
                 .frame(width: 116, height: 3)
                 .overlay(alignment: .leading) { Capsule().fill(.white).frame(width: 116 * progress, height: 3) }
-            Image(systemName: "speaker.wave.2.fill")
+            Image(.speakerWave2Fill)
         }
         .font(.system(size: 7))
         .foregroundStyle(.white)

@@ -50,7 +50,7 @@ final class IconStyle: NSObject {
 }
 
 struct SectionIcon: View {
-    let symbol: String
+    let symbol: Symbol
     let color: Color
     var size: CGFloat = 24
     var template: NSImage?
@@ -85,7 +85,7 @@ struct SectionIcon: View {
                 .scaledToFit()
                 .frame(width: size * 0.54, height: size * 0.54)
         } else {
-            Image(systemName: symbol)
+            Image(symbol)
                 .font(.system(size: size * 0.56, weight: .medium))
                 .symbolRenderingMode(.monochrome)
                 .imageScale(.medium)

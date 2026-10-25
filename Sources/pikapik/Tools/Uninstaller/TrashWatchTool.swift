@@ -6,7 +6,7 @@ final class TrashWatchTool: Tool {
     static let shared = TrashWatchTool()
 
     let id = ToolID.trashWatch
-    let icon = "trash"
+    let icon = Symbol.trash
     var title: String { SettingTitle.trashWatch }
     var tab: SettingsTab { .uninstaller }
     var needs: [Permission] { [.fullDisk] }

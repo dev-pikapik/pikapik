@@ -4,7 +4,7 @@ import SwiftUI
 @Observable
 final class CommandKeysTool: Tool {
     let id = ToolID.commandKeys
-    let icon = "command"
+    let icon = Symbol.command
     var title: String { SettingTitle.commandKeys }
     let tab = SettingsTab.windows
 

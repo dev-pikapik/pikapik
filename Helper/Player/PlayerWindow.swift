@@ -192,12 +192,12 @@ final class PlayerController: NSWindowController, NSWindowDelegate, NSMenuItemVa
 
         controls.appearance = NSAppearance(named: .darkAqua)
 
-        configure(playButton, "play.fill", String(localized: "Play"), #selector(playPause))
-        configure(previousButton, "backward.fill", String(localized: "Previous in Folder"), #selector(previous))
-        configure(nextButton, "forward.fill", String(localized: "Next in Folder"), #selector(next))
-        configure(fullScreenButton, "arrow.up.left.and.arrow.down.right", String(localized: "Full Screen"), #selector(fullScreen))
-        configure(captionsButton, "captions.bubble", String(localized: "Audio and Subtitles"), #selector(showTrackMenu))
-        configure(pipButton, "pip.enter", String(localized: "Picture in Picture"), #selector(togglePictureInPicture))
+        configure(playButton, .playFill, String(localized: "Play"), #selector(playPause))
+        configure(previousButton, .backwardFill, String(localized: "Previous in Folder"), #selector(previous))
+        configure(nextButton, .forwardFill, String(localized: "Next in Folder"), #selector(next))
+        configure(fullScreenButton, .arrowUpLeftAndArrowDownRight, String(localized: "Full Screen"), #selector(fullScreen))
+        configure(captionsButton, .captionsBubble, String(localized: "Audio and Subtitles"), #selector(showTrackMenu))
+        configure(pipButton, .pipEnter, String(localized: "Picture in Picture"), #selector(togglePictureInPicture))
         pipButton.isHidden = true
         for label in [elapsed, remaining, speedLabel] {
             label.font = .monospacedDigitSystemFont(ofSize: 11, weight: .regular)
@@ -213,7 +213,7 @@ final class PlayerController: NSWindowController, NSWindowDelegate, NSMenuItemVa
         scrubber.onHover = { [weak self] in self?.hover($0) }
         marks.translatesAutoresizingMaskIntoConstraints = false
         scrubber.addSubview(marks)
-        speaker.image = NSImage(systemSymbolName: "speaker.wave.2.fill", accessibilityDescription: nil)
+        speaker.image = NSImage(.speakerWave2Fill, accessibilityDescription: nil)
         speaker.contentTintColor = .labelColor
         speedLabel.isHidden = true
         volume.target = self
@@ -268,8 +268,8 @@ final class PlayerController: NSWindowController, NSWindowDelegate, NSMenuItemVa
         chrome = WindowChrome(window, over: video)
     }
 
-    func configure(_ button: NSButton, _ symbol: String, _ label: String, _ action: Selector) {
-        button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: label)
+    func configure(_ button: NSButton, _ symbol: Symbol, _ label: String, _ action: Selector) {
+        button.image = NSImage(symbol, accessibilityDescription: label)
         button.setAccessibilityLabel(label)
         button.isBordered = false
         button.contentTintColor = .labelColor
@@ -515,7 +515,7 @@ final class PlayerController: NSWindowController, NSWindowDelegate, NSMenuItemVa
         scrubber.maxValue = max(total, 0.001)
         scrubber.doubleValue = now
         let label = playing ? String(localized: "Pause") : String(localized: "Play")
-        playButton.image = NSImage(systemSymbolName: playing ? "pause.fill" : "play.fill", accessibilityDescription: label)
+        playButton.image = NSImage(playing ? .pauseFill : .playFill, accessibilityDescription: label)
         playButton.setAccessibilityLabel(label)
         pip?.refresh()
         speedLabel.isHidden = speed == 1

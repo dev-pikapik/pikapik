@@ -6,7 +6,7 @@ import SwiftUI
 @Observable
 final class QuitOnCloseTool: Tool {
     let id = ToolID.quitOnClose
-    let icon = "xmark.app"
+    let icon = Symbol.xmarkApp
     var title: String { SettingTitle.quitOnClose }
     var needs: [Permission] { [.accessibility, .inputMonitoring] }
     let tab = SettingsTab.windows

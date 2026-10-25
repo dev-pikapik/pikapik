@@ -3,7 +3,7 @@ import SwiftUI
 @Observable
 final class WheelTool: Tool {
     let id = ToolID.wheelLines
-    let icon = "computermouse"
+    let icon = Symbol.computermouse
     var title: String { SettingTitle.wheelLines }
     let tab = SettingsTab.mouse
 

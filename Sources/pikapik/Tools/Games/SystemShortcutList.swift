@@ -37,7 +37,7 @@ struct SystemShortcutList: View {
                     Text("These apps don’t publish their shortcuts in the macOS catalogue.")
                         .font(.footnote).foregroundStyle(.secondary)
                 } label: {
-                    GameDisclosureLabel(title: String(localized: "Other apps watching keys"), detail: String(localized: "Apps that can observe or change keyboard input."), symbol: "app.connected.to.app.below.fill", count: listeners.count)
+                    GameDisclosureLabel(title: String(localized: "Other apps watching keys"), detail: String(localized: "Apps that can observe or change keyboard input."), symbol: .appConnectedToAppBelowFill, count: listeners.count)
                 }
                 .disclosureGroupStyle(GameDisclosureStyle())
             }
@@ -123,7 +123,7 @@ struct SystemShortcutRow: View {
 
     @ViewBuilder private var behaviour: some View {
         if entry.emergency {
-            Label("Always available", systemImage: "lock.open").font(.subheadline).foregroundStyle(.secondary)
+            Label("Always available", symbol: .lockOpen).font(.subheadline).foregroundStyle(.secondary)
         } else {
             GameShortcutPicker(entry: entry, rules: tool.rules, selection: Binding(get: { choice }, set: { tool.setSystemShortcut(entry.id, mode: $0) }))
                 .disabled(!tool.isEnabled)

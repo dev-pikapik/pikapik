@@ -121,7 +121,7 @@ struct Medal: View {
                     }
                 }
             }
-            Image(systemName: award.symbol)
+            Image(award.symbol)
                 .font(.system(size: size * 0.31, weight: .bold))
                 .foregroundStyle(earned ? AnyShapeStyle(LinearGradient(colors: [.white, Color(white: 0.88)], startPoint: .top, endPoint: .bottom)) : AnyShapeStyle(Color.secondary.opacity(0.7)))
                 .shadow(color: earned ? .black.opacity(0.35) : .white.opacity(dark ? 0 : 0.7), radius: 0.5, y: size * 0.012)
@@ -301,7 +301,7 @@ struct PetAwardsSection: View {
     }
 
     private var erase: some View {
-        Button("Erase Progress…", systemImage: "trash") { erasing = true }
+        Button("Erase Progress…", symbol: .trash) { erasing = true }
             .lineLimit(1)
             .fixedSize()
             .settingAnchor(SettingTitle.eraseProgress)

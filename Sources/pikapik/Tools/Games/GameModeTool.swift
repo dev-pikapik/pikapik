@@ -8,7 +8,7 @@ final class GameModeTool: Tool {
     static let shared = GameModeTool()
 
     let id = ToolID.gameMode
-    let icon = "gamecontroller"
+    let icon = Symbol.gamecontroller
     var title: String { SettingTitle.gameMode }
     let tab = SettingsTab.games
 
