@@ -940,6 +940,8 @@ enum AppRemoverTests {
         AppFootprint.onEntry = nil
         precondition(walked.all.isEmpty && took < 2, "the removal counted sizes itself: \(walked.all.count) entries in \(String(format: "%.1f", took)) s, expected none and under 2 s")
         precondition(report.removed == 3 && report.survivors.isEmpty && report.bytes == 4_321 && report.record?.bytes == 4_321, "\(report)")
+        precondition(report.uncounted.count == 2 && report.uncounted == report.record?.moves.filter { !$0.original.hasSuffix(cache) }.map(\.trash),
+                     "the sizes left to count in the Trash: \(report.uncounted)")
     }
 
     static func recordFirst() async {

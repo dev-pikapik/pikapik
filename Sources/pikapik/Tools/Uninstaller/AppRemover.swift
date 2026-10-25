@@ -109,6 +109,7 @@ final class AppRemover {
         var stillOpen: [String] = []
         var cancelled = false
         var record: Record?
+        var uncounted: [String] = []
     }
 
     struct Stay: Equatable {
@@ -157,10 +158,13 @@ final class AppRemover {
         var jobs: [Job] = []
         var services: Double
 
-        mutating func record(_ move: Move?, bytes: Int64) {
-            if let move { moves.append(move) }
+        mutating func record(_ move: Move?, size: Int64?) {
+            if let move {
+                moves.append(move)
+                if size == nil { report.uncounted.append(move.trash) }
+            }
             report.removed += 1
-            report.bytes += bytes
+            report.bytes += size ?? 0
         }
     }
 
@@ -238,7 +242,7 @@ final class AppRemover {
             case .same: break
             }
             switch await move(item) {
-            case .moved(let entry): work.record(entry, bytes: item.size ?? 0)
+            case .moved(let entry): work.record(entry, size: item.size)
             case .needsAdmin: queue.append(item)
             case .failed(let why):
                 work.why[item.id] = why
@@ -267,6 +271,15 @@ final class AppRemover {
 
     func records() -> [Record] {
         Self.recordsLock.withLock { prune() }
+    }
+
+    func update(_ id: String, bytes: Int64) {
+        Self.recordsLock.withLock {
+            var list = prune()
+            guard let index = list.firstIndex(where: { $0.id == id }) else { return }
+            list[index].bytes = bytes
+            write(list)
+        }
     }
 
     private func prune() -> [Record] {
@@ -460,7 +473,7 @@ final class AppRemover {
     private func runAdmin(_ queue: [Leftover], _ app: AppIdentity, _ work: inout Work) async {
         var moves: [String] = []
         var forgets: [String] = []
-        var movers: [(item: Leftover, destination: String, size: Int64)] = []
+        var movers: [(item: Leftover, destination: String)] = []
         var receipts: [String] = []
         var daemons: [Job] = []
         var taken: Set<String> = []
@@ -485,7 +498,7 @@ final class AppRemover {
                 daemons.append(Job(label: label, domain: "system", plist: item.url.path))
             }
             moves.append(step)
-            movers.append((item, destination, item.size ?? 0))
+            movers.append((item, destination))
         }
         guard !(moves + forgets).isEmpty else { return }
         let script = (moves + forgets + ["exit 0"]).joined(separator: "; ")
@@ -495,10 +508,10 @@ final class AppRemover {
             for item in queue { work.why[item.id] = .cancelled }
         default:
             for mover in movers where !exists(mover.item.url.path) && isSame(mover.destination, device: mover.item.device, inode: mover.item.inode) {
-                work.record(entry(mover.item, trash: mover.destination, needsAdmin: true), bytes: mover.size)
+                work.record(entry(mover.item, trash: mover.destination, needsAdmin: true), size: mover.item.size)
             }
             for id in receipts where footprint.roots.pkgutil(["--pkg-info", id]) == nil {
-                work.record(nil, bytes: 0)
+                work.record(nil, size: 0)
             }
             work.jobs += daemons
         }

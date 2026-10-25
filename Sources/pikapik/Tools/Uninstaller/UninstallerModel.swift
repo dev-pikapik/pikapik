@@ -70,6 +70,10 @@ actor UninstallerEngine {
         ready().remover.records()
     }
 
+    func update(_ id: String, bytes: Int64) {
+        ready().remover.update(id, bytes: bytes)
+    }
+
     func trashed() -> [AppIdentity] {
         ready().footprint.trashed()
     }
@@ -394,6 +398,7 @@ final class UninstallerModel {
 
     func putBack() {
         guard let current = session, case .removed(let report) = current.phase, let record = report.record else { return }
+        current.work?.cancel()
         current.phase = .restoring
         current.work = Task {
             await pause()
@@ -599,8 +604,30 @@ final class UninstallerModel {
             current.phase = .choosing
         } else {
             current.phase = .removed(report)
+            if !report.uncounted.isEmpty { current.work = Task { await count(current, report) } }
         }
         reload()
+    }
+
+    private func count(_ current: UninstallSession, _ report: AppRemover.Report) async {
+        let paths = report.uncounted
+        let job = Task.detached(priority: .userInitiated) { () -> Int64? in
+            var extra: Int64 = 0
+            for path in paths {
+                if Task.isCancelled { return nil }
+                extra += AppFootprint.allocatedSize(of: URL(fileURLWithPath: path))
+            }
+            return Task.isCancelled ? nil : extra
+        }
+        guard let extra = await withTaskCancellationHandler(operation: { await job.value }, onCancel: { job.cancel() }), !Task.isCancelled else { return }
+        var report = report
+        report.bytes += extra
+        report.uncounted = []
+        report.record?.bytes = report.bytes
+        current.phase = .removed(report)
+        guard let record = report.record else { return }
+        await engine.update(record.id, bytes: record.bytes)
+        updateRemoved(await engine.records())
     }
 
     private func say(_ text: String) {

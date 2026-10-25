@@ -22,7 +22,15 @@ enum SettingsWindow {
 extension AppRemover {
     static func live(footprint: AppFootprint, confirmQuit: @escaping ([String]) async -> Bool, confirmForceQuit: @escaping ([String]) async -> Bool) -> AppRemover {
         let hooks = AppRemover.Hooks(running: { _ in [] }, confirmQuit: { _ in false }, confirmForceQuit: { _ in false }, launchctl: { _ in 1 },
-                                     admin: { _, _ in .failed }, finder: { _ in .failed }, forget: { _ in })
+                                     admin: { script, _ in
+                                         precondition(!script.contains("launchctl") && !script.contains("pkgutil"), "a test reached a system tool: \(script)")
+                                         let shell = Process()
+                                         shell.executableURL = URL(fileURLWithPath: "/bin/sh")
+                                         shell.arguments = ["-c", script]
+                                         guard (try? shell.run()) != nil else { return .failed }
+                                         shell.waitUntilExit()
+                                         return shell.terminationStatus == 0 ? .done(nil) : .failed
+                                     }, finder: { _ in .failed }, forget: { _ in })
         let home = footprint.roots.home
         return AppRemover(footprint: footprint, hooks: hooks, store: home.deletingLastPathComponent().appendingPathComponent("store"), trash: home.appendingPathComponent(".Trash"))
     }
@@ -61,6 +69,19 @@ final class World {
         return AppIdentity.read(at: at(bundle), signed: false)!
     }
 
+    func leftover(_ path: String, entries: Int, size: Int64? = nil) -> Leftover {
+        folder(path)
+        for index in 0..<entries { folder("\(path)/\(index / 100)/\(index)") }
+        try! Data(repeating: 7, count: 65_536).write(to: at(path + "/blob"))
+        var info = stat()
+        lstat(at(path).path, &info)
+        return Leftover(url: at(path), kind: .appData, reason: .byName, preselected: true, needsAdmin: true, device: info.st_dev, inode: info.st_ino, size: size)
+    }
+
+    func stored() -> [AppRemover.Record] {
+        (try? Data(contentsOf: at("store/records.json"))).flatMap { try? JSONDecoder().decode([AppRemover.Record].self, from: $0) } ?? []
+    }
+
     var roots: AppRoots {
         AppRoots(home: at("home"), root: at("root"), userCache: at("cache"), userTemp: at("temp"), caskrooms: [at("root/opt/homebrew/Caskroom")],
                  pkgutil: { _ in nil }, isKnownApp: { _ in false })
@@ -94,9 +115,84 @@ enum UninstallerModelTests {
         await drawing(app)
         await lookingAgain()
         await flattening()
+        await counting()
+        await puttingBackEarly()
         world.destroy()
         precondition(problems.isEmpty, "\n" + problems.joined(separator: "\n"))
-        print("uninstaller model: pause, close and dismissing the sheet stop a long size walk, Trash bursts and reloads build the app list once, icons are drawn off the main thread: ok")
+        print("uninstaller model: pause, close and dismissing the sheet stop a long size walk, Trash bursts and reloads build the app list once, icons are drawn off the main thread, "
+              + "sizes left uncounted are counted in the Trash after Remove and Put Back stops that count: ok")
+    }
+
+    static func counting() async {
+        let world = World()
+        defer { world.destroy() }
+        let model = UninstallerModel(engine: world.engine(counting: Tally()))
+        let items = [world.leftover("root/Library/Application Support/Known", entries: 0, size: 1_000),
+                     world.leftover("root/Library/Application Support/Slow", entries: 1_000),
+                     world.leftover("root/Library/Caches/Slow", entries: 1_000)]
+        let full = 1_000 + items.dropFirst().map { AppFootprint.allocatedSize(of: $0.url) }.reduce(0, +)
+        _ = slowWalk()
+        model.open(leftovers: Remnant(app: AppIdentity(url: world.at("root/Applications/Gone.app"), bundleID: "com.example.gone"), items: items))
+        _ = await wait { model.session.map { if case .choosing = $0.phase { true } else { false } } == true }
+        let took = await seconds {
+            model.remove(reset: false)
+            _ = await wait { shown(model) != nil }
+        }
+        let pending = shown(model)
+        check(took < 1 && pending?.uncounted.count == 2 && pending?.bytes == 1_000 && pending?.record?.bytes == 1_000,
+              "Remove pressed before the sizes were counted took \(String(format: "%.2f", took)) s and reported \(String(describing: pending.map { ($0.bytes, $0.uncounted.count) })), "
+              + "expected under 1 s, 1000 bytes and 2 sizes still to count")
+        let counted = await wait { shown(model)?.uncounted.isEmpty == true }
+        AppFootprint.onEntry = nil
+        let report = shown(model)
+        let id = report?.record?.id ?? ""
+        let listed = await wait { model.removed.first { $0.id == id }?.record.bytes == full }
+        check(counted, "the sizes left uncounted were never counted in the Trash")
+        check(report?.bytes == full && report?.record?.bytes == full && world.stored().first { $0.id == id }?.bytes == full && listed,
+              "after the count the report shows \(String(describing: report?.bytes)), its record \(String(describing: world.stored().first { $0.id == id }?.bytes)) "
+              + "and Put Back \(String(describing: model.removed.first { $0.id == id }?.record.bytes)), expected \(full) everywhere")
+        model.close()
+    }
+
+    static func puttingBackEarly() async {
+        let world = World()
+        defer { world.destroy() }
+        let model = UninstallerModel(engine: world.engine(counting: Tally()))
+        let items = [world.leftover("root/Library/Application Support/Slow", entries: 6_000), world.leftover("root/Library/Caches/Slow", entries: 6_000)]
+        let entries = slowWalk()
+        model.open(leftovers: Remnant(app: AppIdentity(url: world.at("root/Applications/Gone.app"), bundleID: "com.example.gone"), items: items))
+        _ = await wait { model.session.map { if case .choosing = $0.phase { true } else { false } } == true }
+        let sizing = model.session?.work
+        model.remove(reset: false)
+        _ = await wait { shown(model) != nil }
+        await sizing?.value
+        let id = shown(model)?.record?.id ?? ""
+        let start = entries.count
+        let started = await wait { entries.count >= start + 200 }
+        let job = model.session?.work
+        let before = entries.count
+        model.putBack()
+        let took = await seconds { await job?.value }
+        let walked = entries.count - before
+        AppFootprint.onEntry = nil
+        let restoredAll = await wait {
+            guard let phase = model.session?.phase, case .restored(let result) = phase else { return false }
+            return result.restored == 2 && result.stayed.isEmpty
+        }
+        try? await Task.sleep(for: .milliseconds(300))
+        let stillRestored = model.session.map { if case .restored = $0.phase { true } else { false } } == true
+        let dropped = await wait { !model.removed.contains { $0.id == id } }
+        check(started, "Remove pressed before the sizes were counted never counted them in the Trash")
+        check(walked < 2_000 && took < 1, "the count in the Trash read \(walked) more entries (\(String(format: "%.2f", took)) s) after Put Back, at most 2000 and 1 s")
+        check(restoredAll && stillRestored && items.allSatisfy { FileManager.default.fileExists(atPath: $0.url.path) },
+              "Put Back during the count didn’t put everything back or the count replaced its result")
+        check(!world.stored().contains { $0.id == id } && dropped, "Put Back during the count left its record behind: \(world.stored().map(\.id)), listed: \(!dropped)")
+        model.close()
+    }
+
+    static func shown(_ model: UninstallerModel) -> AppRemover.Report? {
+        guard let phase = model.session?.phase, case .removed(let report) = phase else { return nil }
+        return report
     }
 
     static func pausing() async {
