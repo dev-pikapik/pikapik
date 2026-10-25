@@ -2,8 +2,7 @@ import AppKit
 
 extension AppRemover {
     static func live(footprint: AppFootprint, confirmQuit: @escaping ([String]) async -> Bool, confirmForceQuit: @escaping ([String]) async -> Bool) -> AppRemover {
-        let folder = Bundle.main.bundleIdentifier?.hasSuffix(".dev") == true ? "pikapik-dev" : "pikapik"
-        let store = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support/\(folder)/Uninstaller")
+        let store = footprint.store ?? AppFootprint.putBackStore(home: FileManager.default.homeDirectoryForCurrentUser, bundleID: Bundle.main.bundleIdentifier)
         return AppRemover(footprint: footprint, hooks: .live(confirmQuit: confirmQuit, confirmForceQuit: confirmForceQuit), store: store)
     }
 }

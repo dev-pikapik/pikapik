@@ -5,6 +5,7 @@ final class AppFootprint {
     let roots: AppRoots
     let installed: [AppIdentity]
     let system: [AppIdentity]
+    let store: URL?
     fileprivate let blocked: Set<String>
     fileprivate let index: OwnerIndex
     fileprivate var listings: [String: [String]] = [:]
@@ -20,14 +21,20 @@ final class AppFootprint {
     fileprivate lazy var thirdPartyPackages: [String] = (roots.pkgutil(["--pkgs"]) ?? "").split(separator: "\n").map(String.init)
         .filter { !$0.lowercased().hasPrefix("com.apple.") }
 
-    init(roots: AppRoots, installed: [AppIdentity], system: [AppIdentity] = []) {
+    init(roots: AppRoots, installed: [AppIdentity], system: [AppIdentity] = [], own: [AppIdentity] = [], store: URL? = nil) {
         self.roots = roots
         self.installed = installed
+        self.store = store
         let known = Set(installed.map { $0.url.path })
         let outside = system.filter { !known.contains($0.url.path) }
         self.system = outside
         blocked = Set(outside.flatMap { $0.names.map(AppNames.squash) })
-        index = OwnerIndex(installed + outside, blocked: blocked)
+        index = OwnerIndex(installed + outside + own, blocked: blocked)
+    }
+
+    static func putBackStore(home: URL, bundleID: String?) -> URL {
+        let folder = AppConstants.appName + (bundleID?.hasSuffix(".dev") == true ? "-dev" : "")
+        return home.appendingPathComponent("Library/Application Support/\(folder)/Uninstaller")
     }
 
     fileprivate static let userPlaces: [Place] = [
@@ -101,6 +108,7 @@ final class AppFootprint {
         var directories = places.map { directory($0) }
         directories += [roots.home.appendingPathComponent("Library/Audio/Plug-Ins"), roots.home, roots.root]
         directories += roots.caskrooms + AppFootprint.linkFolders(roots)
+        if let store { directories.append(store) }
         for url in directories {
             var current = url.standardizedFileURL
             while paths.insert(current.path).inserted, current.path != "/" { current = current.deletingLastPathComponent() }
@@ -315,8 +323,12 @@ extension AppFootprint {
     fileprivate static let orphanWalkLimit = 2000
     fileprivate static let orphanQuietPeriod: TimeInterval = 7 * 86_400
 
-    convenience init(roots: AppRoots = .live) {
-        self.init(roots: roots, installed: AppInventory.installed(roots), system: AppInventory.system(roots))
+    convenience init(roots: AppRoots = .live, running: AppIdentity? = AppIdentity.read(at: Bundle.main.bundleURL)) {
+        let apps = AppInventory.scan(roots)
+        var own = apps.own
+        if let running, !own.contains(where: { $0.url.resolvingSymlinksInPath() == running.url.resolvingSymlinksInPath() }) { own.append(running) }
+        self.init(roots: roots, installed: apps.installed, system: AppInventory.system(roots), own: own,
+                  store: running.map { AppFootprint.putBackStore(home: roots.home, bundleID: $0.bundleID) })
     }
 
     func isSystem(_ app: AppIdentity) -> Bool {

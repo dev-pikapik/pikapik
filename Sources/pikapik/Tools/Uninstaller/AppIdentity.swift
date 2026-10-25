@@ -50,7 +50,6 @@ struct OrphanGroup: Identifiable, Equatable {
 enum AppNames {
     static let caskroomPaths = ["/opt/homebrew/Caskroom", "/usr/local/Caskroom"]
     static let pkgutilPath = "/usr/sbin/pkgutil"
-    static let selfBundleIDPrefix = "com.pikapik.app"
     static let appleBundleIDPrefix = "com.apple."
     static let systemAppFolders = [
         "System/Applications", "System/Applications/Utilities", "System/Library/CoreServices",
@@ -214,7 +213,7 @@ struct AppIdentity: Equatable, Identifiable {
     var id: String { url.path }
     var displayName: String { url.deletingPathExtension().lastPathComponent }
     var vendors: [String] { AppNames.vendors(bundleID: bundleID, organization: organization) }
-    var isOwn: Bool { bundleID.hasPrefix(AppConstants.bundleIDPrefix) }
+    var isOwn: Bool { bundleID.lowercased().hasPrefix(AppConstants.bundleIDPrefix) }
 
     private var usableNested: [String] {
         nestedIDs.filter { $0.contains(".") && !AppNames.isIgnoredNested($0) }
@@ -420,20 +419,22 @@ enum AppInventory {
         return found
     }
 
-    static func installed(_ roots: AppRoots) -> [AppIdentity] {
+    static func installed(_ roots: AppRoots) -> [AppIdentity] { scan(roots).installed }
+
+    static func scan(_ roots: AppRoots) -> (installed: [AppIdentity], own: [AppIdentity]) {
         let systemPrefix = roots.root.resolvingSymlinksInPath().appendingPathComponent("System").path + "/"
         let candidates = [roots.atRoot("Applications"), roots.home.appendingPathComponent("Applications")].flatMap { bundles(in: $0, deep: true) }
         let found: [(AppIdentity, String)] = parallelMap(candidates) { candidate in
             let real = candidate.url.resolvingSymlinksInPath()
             guard !(real.path + "/").hasPrefix(systemPrefix), !isInTrash(real) else { return nil }
             guard let app = AppIdentity.read(at: candidate.url), !app.isPlatform else { return nil }
-            let id = app.bundleID.lowercased()
-            if id.hasPrefix(AppNames.selfBundleIDPrefix) || (id.hasPrefix(AppNames.appleBundleIDPrefix) && !candidate.direct) { return nil }
+            if app.bundleID.lowercased().hasPrefix(AppNames.appleBundleIDPrefix) && !candidate.direct { return nil }
             return (app, real.path)
         }
         var seen = Set<String>()
-        return found.filter { seen.insert($0.1).inserted }.map { $0.0 }
+        let apps = found.filter { seen.insert($0.1).inserted }.map { $0.0 }
             .sorted { $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending }
+        return (apps.filter { !$0.isOwn }, apps.filter(\.isOwn))
     }
 
     static func system(_ roots: AppRoots) -> [AppIdentity] {
