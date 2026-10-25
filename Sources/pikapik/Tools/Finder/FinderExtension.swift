@@ -102,7 +102,7 @@ final class FinderExtension {
 
     #if APPSTORE
     static func register() {}
-    static func refreshFinderRecord() {}
+    static func refreshFinderRecord(then done: @escaping () -> Void) { done() }
     #else
     private func ignoreOtherCopies() {
         guard MainCopy.canAct, Bundle.main.bundleIdentifier == MainCopyChoice.websiteID else { return }
@@ -120,8 +120,9 @@ final class FinderExtension {
         }
     }
 
-    static func refreshFinderRecord() {
+    static func refreshFinderRecord(then done: @escaping () -> Void) {
         DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 20) {
+            defer { DispatchQueue.main.async(execute: done) }
             let map = UserDefaults.standard.dictionary(forKey: Self.syncExtensionsDefaultsKey)?["dirMap"] as? [String: [String]] ?? [:]
             guard let id = finderPlugIns.compactMap(\.bundleIdentifier).first(where: { (map[$0]?.isEmpty ?? true) && pluginkit("-m", "-i", $0).hasPrefix("+") }) else { return }
             pluginkit("-e", "use", "-i", id)
@@ -187,11 +188,7 @@ final class FinderRestart {
                   Self.isStale(finder.processIdentifier)
             else { return }
             let safe = Self.isSafe(finder)
-            DispatchQueue.main.async {
-                if safe { return self.restart() }
-                self.isNeeded = true
-                UserDefaults.standard.removeObject(forKey: PreferenceKey.launchMaintenance)
-            }
+            DispatchQueue.main.async { safe ? self.restart() : (self.isNeeded = true) }
         }
     }
 

@@ -198,7 +198,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if FileManager.default.fileExists(atPath: PlayerPage.helper.path) { LSRegisterURL(PlayerPage.helper as CFURL, false) }
         #endif
         FinderRestart.shared.check()
-        FinderExtension.refreshFinderRecord()
-        defaults.set(stamp, forKey: PreferenceKey.launchMaintenance)
+        FinderExtension.refreshFinderRecord {
+            guard !FinderRestart.shared.isNeeded else { return Log.note("launch maintenance again next launch: Finder needs a restart") }
+            defaults.set(stamp, forKey: PreferenceKey.launchMaintenance)
+        }
     }
 }
