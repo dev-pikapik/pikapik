@@ -575,19 +575,27 @@ enum TestPlayerAirplay {
     }
 
     static func timeouts() throws {
-        let hung = DispatchSemaphore(value: 0)
+        let stalled = DispatchSemaphore(value: 0)
+        let asked = Counter(), back = Counter()
         let settings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC, AVSampleRateKey: 44100, AVNumberOfChannelsKey: 1]
         let started = Date()
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1.5) { stalled.signal() }
         do {
             _ = try AirPlaySegmentWriter.build(.audio, format: nil, settings: settings, start: .zero, number: 0, timeout: 0.5) {
-                hung.wait()
+                asked.add()
+                stalled.wait()
+                back.add()
                 return nil
             }
             check(false, "a writer that never finishes must give up")
         } catch {
-            check(Date().timeIntervalSince(started) < 3, "a writer that never finishes gives up after the limit: \(error)")
+            let waited = Date().timeIntervalSince(started)
+            check(back.value == 1, "a writer that gives up returns only after the stalled read is back, so the next piece never reads or decodes beside it: \(error)")
+            check(waited > 1.4, "it waits for the stalled read: \(waited) s")
+            check(waited < 4, "and gives up soon after it is back: \(waited) s")
         }
-        hung.signal()
+        usleep(300_000)
+        check(asked.value == 1, "after giving up it asks for nothing more")
         print("timeouts: ok")
     }
 

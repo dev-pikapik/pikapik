@@ -50,6 +50,13 @@ enum AirPlayBuildError: Error {
     case writer(String)
 }
 
+private final class WriterStop: @unchecked Sendable {
+    private let lock = NSLock()
+    private var stopped = false
+    var isSet: Bool { lock.withLock { stopped } }
+    func set() { lock.withLock { stopped = true } }
+}
+
 private final class SegmentSink: NSObject, AVAssetWriterDelegate {
     var initData = Data()
     var media = Data()
@@ -75,14 +82,12 @@ enum AirPlaySegmentWriter {
         writer.startSession(atSourceTime: start)
         let queue = DispatchQueue(label: "pikapik.airplay.writer")
         let done = DispatchSemaphore(value: 0)
+        let stop = WriterStop()
         input.requestMediaDataWhenReady(on: queue) {
-            while input.isReadyForMoreMediaData {
-                guard let sample = next() else {
-                    input.markAsFinished()
-                    done.signal()
-                    return
-                }
-                if !input.append(sample) {
+            while !stop.isSet, input.isReadyForMoreMediaData {
+                let sample = next()
+                guard !stop.isSet else { return }
+                guard let sample, input.append(sample) else {
                     input.markAsFinished()
                     done.signal()
                     return
@@ -91,7 +96,9 @@ enum AirPlaySegmentWriter {
         }
         func within(_ semaphore: DispatchSemaphore) throws {
             guard semaphore.wait(timeout: .now() + timeout) == .success else {
+                stop.set()
                 writer.cancelWriting()
+                queue.sync {}
                 throw AirPlayBuildError.writer("timed out")
             }
         }
