@@ -30,7 +30,7 @@ enum TestAppStoreNoStat {
         for arch in ["arm64", "x86_64"] {
             let folder = dir.appendingPathComponent(arch)
             try! fm.createDirectory(at: folder, withIntermediateDirectories: true)
-            run(["swiftc", "-parse-as-library", "-D", "APPSTORE", "-module-name", "Pikapik", "-target", "\(arch)-apple-macos14.0", "-c"]
+            run(["swiftc", "-swift-version", "5", "-parse-as-library", "-D", "APPSTORE", "-module-name", "Pikapik", "-target", "\(arch)-apple-macos14.0", "-c"]
                 + sources.map { repo.appendingPathComponent("Sources/pikapik/" + $0).path }, in: folder)
             for name in checked {
                 let object = folder.appendingPathComponent(name + ".o")
