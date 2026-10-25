@@ -116,11 +116,12 @@ enum UninstallerModelTests {
         await lookingAgain()
         await flattening()
         await counting()
+        await closingEarly()
         await puttingBackEarly()
         world.destroy()
         precondition(problems.isEmpty, "\n" + problems.joined(separator: "\n"))
         print("uninstaller model: pause, close and dismissing the sheet stop a long size walk, Trash bursts and reloads build the app list once, icons are drawn off the main thread, "
-              + "sizes left uncounted are counted in the Trash after Remove and Put Back stops that count: ok")
+              + "sizes left uncounted are counted in the Trash after Remove, closing the report doesn’t stop that count and Put Back does: ok")
     }
 
     static func counting() async {
@@ -154,6 +155,27 @@ enum UninstallerModelTests {
         model.close()
     }
 
+    static func closingEarly() async {
+        let world = World()
+        defer { world.destroy() }
+        let model = UninstallerModel(engine: world.engine(counting: Tally()))
+        let items = [world.leftover("root/Library/Application Support/Slow", entries: 1_000), world.leftover("root/Library/Caches/Slow", entries: 1_000)]
+        let full = items.map { AppFootprint.allocatedSize(of: $0.url) }.reduce(0, +)
+        _ = slowWalk()
+        model.open(leftovers: Remnant(app: AppIdentity(url: world.at("root/Applications/Gone.app"), bundleID: "com.example.gone"), items: items))
+        _ = await wait { model.session.map { if case .choosing = $0.phase { true } else { false } } == true }
+        model.remove(reset: false)
+        _ = await wait { shown(model) != nil }
+        let pending = shown(model)
+        let id = pending?.record?.id ?? ""
+        model.close()
+        let listed = await wait { model.removed.first { $0.id == id }?.record.bytes == full }
+        AppFootprint.onEntry = nil
+        check(pending?.uncounted.count == 2 && listed && world.stored().first { $0.id == id }?.bytes == full,
+              "closing the report while the Trash count ran left Put Back at \(String(describing: model.removed.first { $0.id == id }?.record.bytes)) "
+              + "and the record at \(String(describing: world.stored().first { $0.id == id }?.bytes)), expected \(full)")
+    }
+
     static func puttingBackEarly() async {
         let world = World()
         defer { world.destroy() }
@@ -169,7 +191,7 @@ enum UninstallerModelTests {
         let id = shown(model)?.record?.id ?? ""
         let start = entries.count
         let started = await wait { entries.count >= start + 200 }
-        let job = model.session?.work
+        let job = model.trashCounts[id]
         let before = entries.count
         model.putBack()
         let took = await seconds { await job?.value }
@@ -183,7 +205,7 @@ enum UninstallerModelTests {
         let stillRestored = model.session.map { if case .restored = $0.phase { true } else { false } } == true
         let dropped = await wait { !model.removed.contains { $0.id == id } }
         check(started, "Remove pressed before the sizes were counted never counted them in the Trash")
-        check(walked < 2_000 && took < 1, "the count in the Trash read \(walked) more entries (\(String(format: "%.2f", took)) s) after Put Back, at most 2000 and 1 s")
+        check(job != nil && walked < 2_000 && took < 1, "the count in the Trash read \(walked) more entries (\(String(format: "%.2f", took)) s) after Put Back, at most 2000 and 1 s")
         check(restoredAll && stillRestored && items.allSatisfy { FileManager.default.fileExists(atPath: $0.url.path) },
               "Put Back during the count didn’t put everything back or the count replaced its result")
         check(!world.stored().contains { $0.id == id } && dropped, "Put Back during the count left its record behind: \(world.stored().map(\.id)), listed: \(!dropped)")

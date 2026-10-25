@@ -258,6 +258,7 @@ final class UninstallerModel {
     @ObservationIgnored private var candidates: [URL] = []
     @ObservationIgnored private var dismissed: Set<String> = []
     @ObservationIgnored private(set) var draining = false
+    @ObservationIgnored private(set) var trashCounts: [String: Task<Void, Never>] = [:]
     @ObservationIgnored private var stale = false
 
     init(engine: UninstallerEngine = UninstallerEngine(), drawIcon: @escaping @Sendable (String, Bool) -> NSImage? = { UninstallerModel.picture(at: $0, app: $1) }) {
@@ -398,7 +399,7 @@ final class UninstallerModel {
 
     func putBack() {
         guard let current = session, case .removed(let report) = current.phase, let record = report.record else { return }
-        current.work?.cancel()
+        trashCounts[record.id]?.cancel()
         current.phase = .restoring
         current.work = Task {
             await pause()
@@ -410,6 +411,7 @@ final class UninstallerModel {
 
     func putBack(_ record: AppRemover.Record) {
         guard let index = removed.firstIndex(where: { $0.id == record.id }), case .idle = removed[index].state else { return }
+        trashCounts[record.id]?.cancel()
         removed[index].state = .working
         Task {
             await pause()
@@ -604,7 +606,7 @@ final class UninstallerModel {
             current.phase = .choosing
         } else {
             current.phase = .removed(report)
-            if !report.uncounted.isEmpty { current.work = Task { await count(current, report) } }
+            if !report.uncounted.isEmpty, let id = report.record?.id { trashCounts[id] = Task { await count(current, report); trashCounts[id] = nil } }
         }
         reload()
     }
@@ -624,7 +626,7 @@ final class UninstallerModel {
         report.bytes += extra
         report.uncounted = []
         report.record?.bytes = report.bytes
-        current.phase = .removed(report)
+        if case .removed(let shown) = current.phase, shown.record?.id == report.record?.id { current.phase = .removed(report) }
         guard let record = report.record else { return }
         await engine.update(record.id, bytes: record.bytes)
         updateRemoved(await engine.records())
