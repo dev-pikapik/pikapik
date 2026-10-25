@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage: scripts/check-strings.sh [dir with .stringsdata from swiftc -emit-localized-strings]
-# Without an argument it compiles the sources into a temporary dir first.
+# Without an argument it first extracts the strings of the direct and the App Store version into a temporary dir.
 # It also checks every Resources/*.xcstrings catalog: all 23 languages for every key, complete plural forms, nothing left to review or empty.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -17,23 +17,30 @@ if [ -z "$DIR" ]; then
         while IFS= read -r -d '' f; do SOURCES+=("$f"); done < <(find Private/Sources -name '*.swift' -print0)
         FLAGS+=(-D PIKA_PRIVATE)
     fi
-    echo "Extracting strings"
-    swiftc -wmo -c -module-name Pikapik -target arm64-apple-macos14.0 \
-        ${FLAGS[@]+"${FLAGS[@]}"} \
-        -Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend "$DIR" \
-        "${SOURCES[@]}" -o "$DIR/app.o"
-    for EXT in NewFile Compress Convert Archive Preview; do
-        SHARED=(Extensions/Shared/*.swift Sources/pikapik/Core/MainCopyChoice.swift)
-        [ "$EXT" != Archive ] || SHARED+=(Sources/pikapik/Tools/Archive/Archive.swift)
-        [ "$EXT" != Preview ] || SHARED=(-import-objc-header Extensions/Preview/libarchive.h)
-        swiftc -wmo -c -module-name "$EXT" -target arm64-apple-macos14.0 -application-extension \
-            -Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend "$DIR" \
-            Extensions/"$EXT"/*.swift ${SHARED[@]+"${SHARED[@]}"} -o "$DIR/$EXT.o"
+    extract() {
+        swiftc -wmo -emit-module -swift-version 5 -module-name "$1" -target arm64-apple-macos14.0 \
+            ${FLAGS[@]+"${FLAGS[@]}"} \
+            -Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend "$DIR/$VARIANT/$1" \
+            "${@:2}" -emit-module-path "$DIR/$VARIANT/$1/$1.swiftmodule"
+    }
+    for VARIANT in direct appstore; do
+        echo "Extracting the strings of the $VARIANT version"
+        if [ "$VARIANT" = appstore ]; then
+            FLAGS=(-D APPSTORE)
+            SOURCES=()
+            while IFS= read -r f; do SOURCES+=("$f"); done < <(./scripts/appstore-sources.sh)
+        fi
+        extract Pikapik "${SOURCES[@]}"
+        for EXT in NewFile Compress Convert Archive Preview; do
+            SHARED=(Extensions/Shared/*.swift Sources/pikapik/Core/MainCopyChoice.swift)
+            [ "$EXT" != Archive ] || SHARED+=(Sources/pikapik/Tools/Archive/Archive.swift)
+            [ "$EXT" != Preview ] || SHARED=(-import-objc-header Extensions/Preview/libarchive.h)
+            extract "$EXT" -application-extension Extensions/"$EXT"/*.swift "${SHARED[@]}"
+        done
+        [ "$VARIANT" = appstore ] || [ ! -d Vendor/ffmpeg/include ] || extract Player \
+            -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include \
+            Helper/Player/*.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,ImageLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift Sources/pikapik/Core/Symbol.swift Sources/pikapik/UI/SymbolImage.swift
     done
-    [ ! -d Vendor/ffmpeg/include ] || swiftc -wmo -c -module-name Player -target arm64-apple-macos14.0 \
-        -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include \
-        -Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend "$DIR" \
-        Helper/Player/*.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,ImageLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift Sources/pikapik/Core/Symbol.swift Sources/pikapik/UI/SymbolImage.swift -o "$DIR/Player.o"
 fi
 
 PYTHONPATH=scripts python3 -B - "$DIR" <<'PY'
