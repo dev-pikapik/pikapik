@@ -597,6 +597,8 @@ The script bumps the version in `Info.plist`, commits, tags `v1.3.0` and pushes.
 
 Before running the script, add the version to `CHANGELOG.md` under `## [1.3.0] - Unreleased` (the script fills in the date and the link) and add the version’s post to all 23 pages in `docs/whats-new/`: a short title, one sentence, a picture, a few short paragraphs and what to try. Pictures live in `docs/media/whats-new/<version>/`, and `scripts/render-media.sh <card>` draws them in light and dark. The script won’t start until every page has the post. It also stops unless you are on `main` with nothing to push or pull and the Build workflow has passed for that commit, so push the changelog and the posts first and wait until Build is green. The English post becomes the text of the GitHub release; `./scripts/release-notes.sh 1.3.0` shows it.
 
+To check the release jobs before a release, run the Release workflow by hand on `main` with **rehearse** ticked. A rehearsal does everything a release does up to publishing: it builds, signs and notarizes the version in `Info.plist`, checks it and waits for the Build run, then keeps the release notes and the cask it would publish as the `dry-run` artifact for a week. Nothing goes to Releases or the Homebrew tap. The signed app and its debug symbols stay with the run for a day. Only the owner can start a rehearsal, and only on `main`.
+
 ### Signing
 
 Every release is signed with the same certificate, so macOS keeps the Accessibility and Input Monitoring permissions across updates and the fan helper accepts the next version without a password. The certificate and the keys live in repository secrets:
