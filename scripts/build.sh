@@ -237,7 +237,7 @@ group_entitlements() {
 if [ -n "${APPSTORE:-}" ]; then
     /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $APPSTORE_ID" -c "Add :ITSAppUsesNonExemptEncryption bool false" "$APP/Contents/Info.plist"
     /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLName $APPSTORE_ID" "$APP/Contents/Info.plist"
-    /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 pikapik-store" -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:1 pikapik-store" "$APP/Contents/Info.plist"
+    /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 pikapik-store" -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:1 pika-tools-store" "$APP/Contents/Info.plist"
     for EXT in $EXTENSIONS; do
         PLIST="$APP/Contents/PlugIns/$EXT.appex/Contents/Info.plist"
         ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$PLIST")"
@@ -247,7 +247,7 @@ if [ -n "${APPSTORE:-}" ]; then
 elif [ -n "$DEV" ]; then
     /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.pikapik.app.dev" "$APP/Contents/Info.plist"
     /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLName com.pikapik.app.dev" "$APP/Contents/Info.plist"
-    /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 pikapik-dev" -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:1 pikapik-dev" "$APP/Contents/Info.plist"
+    /usr/libexec/PlistBuddy -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:0 pikapik-dev" -c "Set :CFBundleURLTypes:0:CFBundleURLSchemes:1 pika-tools-dev" "$APP/Contents/Info.plist"
     /usr/libexec/PlistBuddy -c "Set :NSServices:0:NSPortName pikapik-dev" -c "Set :NSServices:0:NSMenuItem:default Fix Wrong Keyboard Layout (Dev)" "$APP/Contents/Info.plist"
     for EXT in $EXTENSIONS; do
         PLIST="$APP/Contents/PlugIns/$EXT.appex/Contents/Info.plist"
