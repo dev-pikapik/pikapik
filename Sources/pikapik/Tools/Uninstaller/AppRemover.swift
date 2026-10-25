@@ -155,6 +155,7 @@ final class AppRemover {
         var why: [String: Survivor.Why] = [:]
         var moves: [Move] = []
         var jobs: [Job] = []
+        var services: Double
 
         mutating func record(_ move: Move?, bytes: Int64) {
             if let move { moves.append(move) }
@@ -169,17 +170,19 @@ final class AppRemover {
     let trash: URL
     let quitSeconds: Double
     let forgetSeconds: Double
+    let serviceSeconds: Double
     private let bases: [(path: String, real: String)]
     private let files = FileManager.default
     private static let recordsLock = NSLock()
 
-    init(footprint: AppFootprint, hooks: Hooks, store: URL, trash: URL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".Trash"), quitSeconds: Double = 5, forgetSeconds: Double = 10) {
+    init(footprint: AppFootprint, hooks: Hooks, store: URL, trash: URL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".Trash"), quitSeconds: Double = 5, forgetSeconds: Double = 10, serviceSeconds: Double = 10) {
         self.footprint = footprint
         self.hooks = hooks
         self.store = store
         self.trash = trash
         self.quitSeconds = quitSeconds
         self.forgetSeconds = forgetSeconds
+        self.serviceSeconds = serviceSeconds
         let roots = footprint.roots
         let known = [roots.root, roots.home, roots.atRoot("var"), roots.userCache, roots.userTemp].compactMap { $0 } + roots.caskrooms
         bases = known.map { (path: $0.path, real: Self.realPath($0.path) ?? $0.path) }.sorted { $0.path.count > $1.path.count }
@@ -199,7 +202,7 @@ final class AppRemover {
     }
 
     func remove(_ app: AppIdentity, items: [Leftover]) async -> Report {
-        var work = Work()
+        var work = Work(services: serviceSeconds)
         let attempted = items.filter { !AppInventory.isInTrash($0.url) }
         var plan: [Leftover] = []
         for item in attempted.sorted(by: { $0.url.pathComponents.count < $1.url.pathComponents.count }) {
@@ -214,9 +217,9 @@ final class AppRemover {
             work.report.cancelled = true
             return work.report
         }
-        let booted = bootOut(plan)
+        let booted = bootOut(plan, &work.services)
         if let open = await quit(running) {
-            booted.forEach(restart)
+            for job in booted { restart(job, &work.services) }
             work.report.stillOpen = open
             return work.report
         }
@@ -248,7 +251,7 @@ final class AppRemover {
             Self.recordsLock.withLock { write([record] + prune()) }
             work.report.record = record
         }
-        booted.filter { exists($0.plist) }.forEach(restart)
+        for job in booted where exists(job.plist) { restart(job, &work.services) }
         if work.report.removed > 0, AppInventory.isInTrash(app.url) || !exists(app.url.path) {
             var budget = forgetSeconds
             for id in app.ids {
@@ -312,7 +315,8 @@ final class AppRemover {
                 }
             }
         }
-        record.jobs.filter { $0.domain != "system" && back.contains($0.plist) }.forEach(restart)
+        var services = serviceSeconds
+        for job in record.jobs where job.domain != "system" && back.contains(job.plist) { restart(job, &services) }
         result.restored = back.count
         _ = records()
         return result
@@ -358,19 +362,28 @@ final class AppRemover {
         return real == base.real + parent.dropFirst(base.path.count)
     }
 
-    private func bootOut(_ plan: [Leftover]) -> [Job] {
+    private func bootOut(_ plan: [Leftover], _ budget: inout Double) -> [Job] {
         let domain = "gui/\(getuid())"
         return plan.compactMap { item in
             guard let label = item.jobLabel, !item.isDaemon, inspect(item) == .same,
-                  hooks.launchctl(["print", "\(domain)/\(label)"]) == 0,
-                  hooks.launchctl(["bootout", "\(domain)/\(label)"]) == 0
+                  launchctl(["print", "\(domain)/\(label)"], &budget) == 0,
+                  launchctl(["bootout", "\(domain)/\(label)"], &budget) == 0
             else { return nil }
             return Job(label: label, domain: domain, plist: item.url.path)
         }
     }
 
-    private func restart(_ job: Job) {
-        _ = hooks.launchctl(["bootstrap", job.domain, job.plist])
+    private func restart(_ job: Job, _ budget: inout Double) {
+        _ = launchctl(["bootstrap", job.domain, job.plist], &budget)
+    }
+
+    private func launchctl(_ arguments: [String], _ budget: inout Double) -> Int32 {
+        var status: Int32 = -1
+        guard Self.within(&budget, { status = self.hooks.launchctl(arguments) }) else {
+            Log.note("Uninstaller: launchctl \(arguments.joined(separator: " ")) ran out of time, skipped")
+            return -1
+        }
+        return status
     }
 
     private static func within(_ budget: inout Double, _ work: @escaping () -> Void) -> Bool {
@@ -467,7 +480,7 @@ final class AppRemover {
             }
             taken.insert(destination)
             var step = Self.guardedMove(item.url.path, to: destination, device: item.device, inode: item.inode)
-            if let label = item.jobLabel, item.isDaemon, hooks.launchctl(["print", "system/\(label)"]) == 0 {
+            if let label = item.jobLabel, item.isDaemon, launchctl(["print", "system/\(label)"], &work.services) == 0 {
                 step += " && \(Self.launchctlPath) bootout \(Self.quoted("system/\(label)"))"
                 daemons.append(Job(label: label, domain: "system", plist: item.url.path))
             }
