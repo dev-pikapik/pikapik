@@ -230,6 +230,7 @@ final class PlayerController: NSWindowController, NSWindowDelegate, NSMenuItemVa
         row.spacing = 10
         row.edgeInsets = NSEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
         row.setCustomSpacing(4, after: speaker)
+        for view in [row] + row.arrangedSubviews { view.userInterfaceLayoutDirection = .leftToRight }
         for view in [music, message, controls, row] as [NSView] { view.translatesAutoresizingMaskIntoConstraints = false }
         video.addSubview(music)
         video.addSubview(message)

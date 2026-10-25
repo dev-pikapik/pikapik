@@ -175,6 +175,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         func item(_ title: String, _ action: Selector?, _ key: String = "", _ modifiers: NSEvent.ModifierFlags = .command) -> NSMenuItem {
             let item = NSMenuItem(title: title, action: action, keyEquivalent: key)
             item.keyEquivalentModifierMask = modifiers
+            item.allowsAutomaticKeyEquivalentMirroring = false
             return item
         }
         func command(_ title: String, _ action: PlayerAction, _ selector: Selector = #selector(PlayerController.menuAction(_:))) -> NSMenuItem {
@@ -184,7 +185,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             return entry
         }
         func picture(_ title: String, _ action: ImageAction) -> NSMenuItem {
-            let binding = ImageAction.bindings.first { $0.action == action }
+            let binding = ImageAction.bindings(for: NSApp.userInterfaceLayoutDirection).first { $0.action == action }
             let entry = item(title, #selector(ImageController.imageAction(_:)), binding?.key ?? "", binding?.modifiers ?? [])
             entry.representedObject = action
             return entry

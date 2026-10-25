@@ -306,6 +306,7 @@ struct ArtKey<Label: View>: View {
             .frame(width: width, height: height)
             .shadow(color: .black.opacity(down ? 0.05 : 0.2), radius: down ? 0.5 : 2, y: down ? 0.5 : 2)
             .scaleEffect(down ? 0.93 : 1)
+            .environment(\.layoutDirection, .leftToRight)
     }
 }
 
@@ -439,6 +440,7 @@ struct ArtMouse: View {
             }
             .frame(width: 24, height: 38)
             .shadow(color: .black.opacity(0.18), radius: 2, y: 1.5)
+            .environment(\.layoutDirection, .leftToRight)
     }
 
     private func side(_ pressed: Bool) -> some View {
@@ -476,6 +478,7 @@ struct ArtTrackpad: View {
             }
             .frame(width: width, height: 42 * unit)
             .shadow(color: .black.opacity(0.18), radius: 2, y: 1.5)
+            .environment(\.layoutDirection, .leftToRight)
     }
 }
 
@@ -512,7 +515,7 @@ struct ArtMenuRow: View {
             }
             Spacer(minLength: 0)
             if submenu {
-                Image(.chevronRight)
+                Image(.chevronForward)
                     .font(.system(size: 7, weight: .bold))
                     .foregroundStyle(active ? Color.white : Color.secondary)
             }

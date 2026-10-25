@@ -91,6 +91,7 @@ struct FrameRatePicture: View {
             .accessibilityElement(children: .contain)
             .accessibilityLabel(SettingTitle.cornerForFPS)
         }
+        .environment(\.layoutDirection, .leftToRight)
     }
 
     private func row(_ left: FrameRateCorner, _ right: FrameRateCorner) -> some View {

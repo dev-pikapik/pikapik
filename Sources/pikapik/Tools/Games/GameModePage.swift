@@ -136,6 +136,7 @@ struct GameModePage: View {
             ForEach(rows, id: \.rule) { row in
                 VStack(spacing: 10) {
                     IllustrationRow { GameRuleArt(rule: row.rule, keys: row.keys, on: tool.rules.contains(row.rule)) }
+                        .environment(\.layoutDirection, .leftToRight)
                         .opacity(tool.isEnabled ? 1 : 0.5)
                     Toggle(isOn: Binding { tool.rules.contains(row.rule) } set: { if $0 { tool.rules.insert(row.rule) } else { tool.rules.remove(row.rule) } }) {
                         HStack(spacing: 12) {
@@ -236,5 +237,6 @@ struct GameModeArt: View {
                 .animation(reduceMotion ? nil : .smooth(duration: 0.5), value: step)
             }
         }
+        .environment(\.layoutDirection, .leftToRight)
     }
 }

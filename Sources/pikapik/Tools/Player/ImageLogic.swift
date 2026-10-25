@@ -61,18 +61,21 @@ enum ImageAction: Equatable {
 
     private static let (left, right) = ("\u{F702}", "\u{F703}")
 
-    static let bindings: [(action: ImageAction, key: String, modifiers: NSEvent.ModifierFlags)] = [
-        (.previous, left, []), (.next, right, []),
-        (.slideshow, "f", [.command, .shift]), (.slideshow, " ", []),
-        (.zoomIn, "+", .command), (.zoomIn, "=", .command), (.zoomIn, "+", [.command, .shift]), (.zoomIn, "=", [.command, .shift]), (.zoomOut, "-", .command),
-        (.fit, "0", .command), (.actualSize, "9", .command),
-        (.rotateLeft, "l", .command), (.rotateRight, "r", .command),
-        (.leaveFullScreen, "\u{1B}", []),
-    ]
+    static func bindings(for direction: NSUserInterfaceLayoutDirection) -> [(action: ImageAction, key: String, modifiers: NSEvent.ModifierFlags)] {
+        let (back, ahead) = direction == .rightToLeft ? (right, left) : (left, right)
+        return [
+            (.previous, back, []), (.next, ahead, []),
+            (.slideshow, "f", [.command, .shift]), (.slideshow, " ", []),
+            (.zoomIn, "+", .command), (.zoomIn, "=", .command), (.zoomIn, "+", [.command, .shift]), (.zoomIn, "=", [.command, .shift]), (.zoomOut, "-", .command),
+            (.fit, "0", .command), (.actualSize, "9", .command),
+            (.rotateLeft, "l", .command), (.rotateRight, "r", .command),
+            (.leaveFullScreen, "\u{1B}", []),
+        ]
+    }
 
-    init?(key: String, modifiers: NSEvent.ModifierFlags = []) {
+    init?(key: String, modifiers: NSEvent.ModifierFlags = [], direction: NSUserInterfaceLayoutDirection = .leftToRight) {
         let held = modifiers.intersection([.command, .control, .option, .shift])
-        guard let found = Self.bindings.first(where: { $0.key == key.lowercased() && $0.modifiers == held }) else { return nil }
+        guard let found = Self.bindings(for: direction).first(where: { $0.key == key.lowercased() && $0.modifiers == held }) else { return nil }
         self = found.action
     }
 }
