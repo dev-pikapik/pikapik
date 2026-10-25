@@ -232,9 +232,8 @@ final class AppRemover {
                 continue
             case .same: break
             }
-            let size = item.size ?? AppFootprint.allocatedSize(of: item.url)
             switch await move(item) {
-            case .moved(let entry): work.record(entry, bytes: size)
+            case .moved(let entry): work.record(entry, bytes: item.size ?? 0)
             case .needsAdmin: queue.append(item)
             case .failed(let why):
                 work.why[item.id] = why
@@ -450,7 +449,7 @@ final class AppRemover {
                 daemons.append(Job(label: label, domain: "system", plist: item.url.path))
             }
             moves.append(step)
-            movers.append((item, destination, item.size ?? AppFootprint.allocatedSize(of: item.url)))
+            movers.append((item, destination, item.size ?? 0))
         }
         guard !(moves + forgets).isEmpty else { return }
         let script = (moves + forgets + ["exit 0"]).joined(separator: "; ")

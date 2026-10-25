@@ -225,6 +225,16 @@ final class FakeApp {
     }
 }
 
+final class Calls {
+    private let lock = NSLock()
+    private var list: [String] = []
+
+    var all: [String] { lock.withLock { list } }
+
+    @discardableResult
+    func add(_ call: String) -> Int { lock.withLock { list.append(call); return list.count } }
+}
+
 final class Rig {
     static var real: Set<String> = []
 
@@ -293,6 +303,7 @@ enum AppRemoverTests {
         await jobs()
         await forgetting()
         await keeping()
+        await uncounted()
         await racing()
         messages()
         let left = Rig.real.filter(World.present)
@@ -318,13 +329,13 @@ enum AppRemoverTests {
         w.file(old)
         rig.launchctl.loaded = [rig.gui(label)]
         let moved = [
-            w.item("root/Applications/\(name).app", kind: .app, reason: .bundle),
-            w.item(data),
-            w.item(prefs, kind: .preferences),
-            w.item(agent, kind: .background, label: label),
+            w.item("root/Applications/\(name).app", kind: .app, reason: .bundle, size: 1),
+            w.item(data, size: 20),
+            w.item(prefs, kind: .preferences, size: 300),
+            w.item(agent, kind: .background, label: label, size: 4_000),
         ]
         let items = moved + [w.item(data + "/note.txt"), w.item(ghost), w.item(old)]
-        let bytes = moved.map { AppFootprint.allocatedSize(of: $0.url) }.reduce(0, +)
+        let bytes = moved.compactMap(\.size).reduce(0, +)
         let report = await rig.remove(app, items)
         precondition(report.removed == 4 && report.bytes == bytes && bytes > 0, "\(report)")
         precondition(report.survivors.isEmpty && !report.cancelled && report.stillOpen.isEmpty, "\(report)")
@@ -473,8 +484,8 @@ enum AppRemoverTests {
         let package = "com.example.pika-test.pkg-1"
         rig.packages.installed = [package]
         let receipt = w.item("root/var/db/receipts/\(package).plist", kind: .install, reason: .receipt(package), admin: true, package: package)
-        let moved = [w.item(odd, admin: true)] + twins.map { w.item($0, admin: true) } + [w.item(daemon, kind: .background, admin: true, label: label, daemon: true)]
-        let bytes = moved.map { AppFootprint.allocatedSize(of: $0.url) }.reduce(0, +)
+        let moved = [w.item(odd, admin: true, size: 1)] + twins.map { w.item($0, admin: true, size: 20) } + [w.item(daemon, kind: .background, admin: true, label: label, daemon: true, size: 300)]
+        let bytes = moved.compactMap(\.size).reduce(0, +)
         let report = await rig.remove(app, moved + [receipt])
 
         let trash = w.at("trash").path
@@ -884,6 +895,41 @@ enum AppRemoverTests {
             precondition(kept == Array(ids.suffix(10).reversed()), "\(kept)")
         }
         precondition(w.stored().map(\.id) == Array(ids.suffix(10).reversed()))
+    }
+
+    static func watchdog(_ name: String) -> DispatchWorkItem {
+        let bark = DispatchWorkItem {
+            print("app remover: \(name) still runs after 5 s")
+            exit(1)
+        }
+        DispatchQueue.global().asyncAfter(deadline: .now() + 5, execute: bark)
+        return bark
+    }
+
+    static func uncounted() async {
+        let dog = watchdog("uncounted")
+        defer { dog.cancel() }
+        let rig = Rig()
+        let w = rig.w
+        let name = w.unique("app")
+        let app = w.app(name, id: "com.example.uncounted")
+        let data = "root/Library/Application Support/\(w.unique("data"))"
+        let cache = "root/Library/Caches/\(w.unique("cache"))"
+        w.file(data + "/a")
+        w.file(data + "/b")
+        w.file(cache + "/c")
+        let walked = Calls()
+        AppFootprint.onEntry = {
+            walked.add("entry")
+            usleep(200_000)
+        }
+        let started = Date()
+        let report = await rig.remove(app, [w.item("root/Applications/\(name).app", kind: .app, reason: .bundle, admin: true), w.item(data, admin: true),
+                                            w.item(cache, admin: true, size: 4_321)])
+        let took = Date().timeIntervalSince(started)
+        AppFootprint.onEntry = nil
+        precondition(walked.all.isEmpty && took < 2, "the removal counted sizes itself: \(walked.all.count) entries in \(String(format: "%.1f", took)) s, expected none and under 2 s")
+        precondition(report.removed == 3 && report.survivors.isEmpty && report.bytes == 4_321 && report.record?.bytes == 4_321, "\(report)")
     }
 
     static func messages() {
