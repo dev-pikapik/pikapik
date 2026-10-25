@@ -27,7 +27,7 @@ final class HomeEndTool: Tool {
         "com.apple.Safari", "com.google.Chrome", "org.mozilla.", "com.microsoft.edgemac", "company.thebrowser.",
         "com.brave.Browser", "com.operasoftware.", "com.vivaldi.", "app.zen-browser.", "com.kagi.kagimacOS",
         "org.chromium.", "com.duckduckgo.", "ru.yandex.desktop.yandex-browser",
-        "com.apple.finder", "com.apple.Music",
+        AppConstants.finderBundleID, "com.apple.Music",
     ]
     #else
     private static let storeExcluded: [String] = []

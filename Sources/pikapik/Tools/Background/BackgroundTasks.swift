@@ -1,8 +1,8 @@
 import AppKit
 import ServiceManagement
 
-private let launchctlPath = "/bin/launchctl"
-private let systemSettingsAppURL = URL(fileURLWithPath: "/System/Applications/System Settings.app")
+private let launchctlPath = SystemPath.launchctl
+private let systemSettingsAppURL = URL(fileURLWithPath: SystemPath.systemSettingsApp)
 
 struct LaunchState {
     var pids: [String: Int] = [:]
@@ -99,7 +99,7 @@ enum BackgroundTasks {
 
     static func isOwn(_ id: String) -> Bool {
         let id = id.lowercased()
-        return id.hasPrefix("com.pikapik.app.direct") || id.hasPrefix("com.pikapik.app")
+        return id.hasPrefix(AppConstants.directBundleID) || id.hasPrefix(AppConstants.appStoreBundleID)
     }
 
     static func program(_ info: [String: Any], in app: URL? = nil) -> String? {

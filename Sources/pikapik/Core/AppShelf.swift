@@ -21,7 +21,7 @@ struct AppShelf: View {
                     ShelfTile(name: app.name, icon: app.icon, added: added.contains(key)) { toggle(key) }
                 }
                 if let other {
-                    ShelfTile(name: String(localized: "Other…"), icon: NSWorkspace.shared.icon(forFile: "/Applications"), added: false, action: other)
+                    ShelfTile(name: String(localized: "Other…"), icon: NSWorkspace.shared.icon(forFile: SystemPath.applications), added: false, action: other)
                 }
             }
             .padding(6)
@@ -41,9 +41,9 @@ struct AppShelf: View {
 
     static func dock() -> [URL] {
         func tiles(_ key: String) -> [URL] {
-            GameRules.dockFiles(CFPreferencesCopyAppValue(key as CFString, "com.apple.dock" as CFString) as? [Any])
+            GameRules.dockFiles(CFPreferencesCopyAppValue(key as CFString, AppConstants.dockBundleID as CFString) as? [Any])
         }
-        let recents = CFPreferencesCopyAppValue("show-recents" as CFString, "com.apple.dock" as CFString) as? Bool ?? true
+        let recents = CFPreferencesCopyAppValue("show-recents" as CFString, AppConstants.dockBundleID as CFString) as? Bool ?? true
         return tiles("persistent-apps") + (recents ? tiles("recent-apps") : [])
     }
 

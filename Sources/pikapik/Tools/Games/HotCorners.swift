@@ -1,7 +1,7 @@
 import Foundation
 
 #if !APPSTORE
-private let applicationServicesPath = "/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices"
+private let applicationServicesPath = SystemPath.applicationServicesFramework
 
 enum HotCorners {
     private static let journalKey = "hot-corners-before", oursKey = "hot-corners-ours"

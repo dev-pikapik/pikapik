@@ -26,8 +26,8 @@ enum PointerShortcuts {
     typealias Names = (_ table: String, _ key: String) -> String?
 
     static let first: Int32 = 100_000
-    static let dock = "com.apple.dock"
-    static let trackpads = ["com.apple.AppleMultitouchTrackpad", "com.apple.driver.AppleBluetoothMultitouch.trackpad"]
+    static let dock = AppConstants.dockBundleID
+    static let trackpads = [AppConstants.trackpadDomain, AppConstants.bluetoothTrackpadDomain]
     static let mice = ["com.apple.AppleMultitouchMouse", "com.apple.driver.AppleBluetoothMultitouch.mouse"]
     static let sides = ["tl", "tr", "bl", "br"]
     static let cornerNames = ["Top Left Hot Corner", "Top Right Hot Corner", "Bottom Left Hot Corner", "Bottom Right Hot Corner"]

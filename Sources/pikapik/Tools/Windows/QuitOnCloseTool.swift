@@ -12,7 +12,7 @@ final class QuitOnCloseTool: Tool {
     let tab = SettingsTab.windows
 
     private static let excludedKey = PreferenceKey.quitOnCloseExcluded
-    fileprivate static let alwaysExcluded: Set<String> = ["com.apple.finder", Bundle.main.bundleIdentifier ?? ""]
+    fileprivate static let alwaysExcluded: Set<String> = [AppConstants.finderBundleID, Bundle.main.bundleIdentifier ?? ""]
 
     private(set) var isActive = false
 

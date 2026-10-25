@@ -104,8 +104,8 @@ final class ArchiveCreateModel {
     init(items: [URL]) {
         let defaults = UserDefaults.standard
         self.items = items
-        format = Archive.Format.allCases.first { $0.fileExtension == defaults.string(forKey: "archive-format") } ?? .zip
-        split = ArchiveSplit(rawValue: Int64(defaults.integer(forKey: "archive-split"))) ?? .none
+        format = Archive.Format.allCases.first { $0.fileExtension == defaults.string(forKey: PreferenceKey.archiveFormat) } ?? .zip
+        split = ArchiveSplit(rawValue: Int64(defaults.integer(forKey: PreferenceKey.archiveSplit))) ?? .none
         if items.count == 1, let item = items.first {
             let isFolder = (try? item.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) == true
             name = isFolder ? item.lastPathComponent : item.deletingPathExtension().lastPathComponent
@@ -423,8 +423,8 @@ final class ArchiveCreatePrompt {
     private func finish(_ request: ArchiveCreateRequest?) {
         if let request {
             let defaults = UserDefaults.standard
-            defaults.set(request.format.fileExtension, forKey: "archive-format")
-            defaults.set(Int(request.split ?? 0), forKey: "archive-split")
+            defaults.set(request.format.fileExtension, forKey: PreferenceKey.archiveFormat)
+            defaults.set(Int(request.split ?? 0), forKey: PreferenceKey.archiveSplit)
         }
         panel?.dismiss()
         panel = nil

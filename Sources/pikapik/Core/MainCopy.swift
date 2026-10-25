@@ -47,8 +47,8 @@ final class MainCopy {
         guard let leader, let app = NSRunningApplication(processIdentifier: leader.pid), let url = app.bundleURL else { return ("", nil) }
         let version = Bundle(url: url)?.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
         switch leader.bundleID {
-        case MainCopyChoice.appStoreID: return (String(localized: "Mac App Store version \(version)"), nil)
-        case MainCopyChoice.websiteID: return (String(localized: "Website version \(version)"), nil)
+        case AppConstants.appStoreBundleID: return (String(localized: "Mac App Store version \(version)"), nil)
+        case AppConstants.directBundleID: return (String(localized: "Website version \(version)"), nil)
         default: return (version, url.path)
         }
     }

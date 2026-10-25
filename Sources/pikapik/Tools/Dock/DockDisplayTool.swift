@@ -19,7 +19,7 @@ final class DockDisplayTool: Tool {
         }
     }
 
-    private static let dock = "com.apple.dock" as CFString, key = "allow-display-switching" as CFString
+    private static let dock = AppConstants.dockBundleID as CFString, key = "allow-display-switching" as CFString
     @ObservationIgnored private var displays: NSObjectProtocol?
     @ObservationIgnored private var settle: DispatchWorkItem?
 

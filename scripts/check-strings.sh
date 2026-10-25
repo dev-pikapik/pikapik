@@ -32,7 +32,7 @@ if [ -z "$DIR" ]; then
         fi
         extract Pikapik "${SOURCES[@]}"
         for EXT in NewFile Compress Convert Archive Preview; do
-            SHARED=(Extensions/Shared/*.swift Sources/pikapik/Core/MainCopyChoice.swift)
+            SHARED=(Extensions/Shared/*.swift Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/MainCopyChoice.swift)
             [ "$EXT" != Archive ] || SHARED+=(Sources/pikapik/Tools/Archive/Archive.swift)
             [ "$EXT" != Preview ] || SHARED=(-import-objc-header Extensions/Preview/libarchive.h)
             extract "$EXT" -application-extension Extensions/"$EXT"/*.swift "${SHARED[@]}"

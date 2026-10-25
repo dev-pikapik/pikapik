@@ -30,7 +30,7 @@ struct DesktopIconsHost {
             _ = try? Process.run(URL(fileURLWithPath: SystemPath.killall), arguments: ["WindowManager"])
         },
         desktopMade: {
-            guard let finder = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first else { return false }
+            guard let finder = NSRunningApplication.runningApplications(withBundleIdentifier: AppConstants.finderBundleID).first else { return false }
             let list = CGWindowListCopyWindowInfo(.optionAll, kCGNullWindowID) as? [[String: Any]] ?? []
             return list.contains {
                 $0[kCGWindowOwnerPID as String] as? pid_t == finder.processIdentifier
@@ -44,7 +44,7 @@ struct DesktopIconsHost {
     )
 
     private static let windowManager = "com.apple.WindowManager" as CFString
-    private static let finder = "com.apple.finder" as CFString
+    private static let finder = AppConstants.finderBundleID as CFString
 }
 
 enum DesktopIcons {

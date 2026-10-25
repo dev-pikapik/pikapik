@@ -8,7 +8,7 @@ enum BackForward {
 
     private static let queue = DispatchQueue(label: "pikapik.back-forward", qos: .userInteractive)
     private static let swipeApps = ["com.apple.", "com.binarynights.ForkLift", "org.mozilla.firefox", "com.operasoftware.Opera"]
-    private static let commandBracket = ["com.apple.Music", "com.apple.AppStore", "com.apple.systempreferences", "com.apple.iBooksX", "com.apple.TV", "com.apple.Preview", "com.apple.AddressBook"]
+    private static let commandBracket = ["com.apple.Music", "com.apple.AppStore", AppConstants.systemSettingsBundleID, "com.apple.iBooksX", "com.apple.TV", "com.apple.Preview", "com.apple.AddressBook"]
     private static let optionCommandBracket = ["com.apple.Notes", "com.apple.freeform"]
 
     static func prepare() {

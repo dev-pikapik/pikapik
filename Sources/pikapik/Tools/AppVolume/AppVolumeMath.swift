@@ -26,14 +26,14 @@ struct AppVolumeMemory: Equatable {
     init(_ defaults: UserDefaults = .standard) {
         let key = AppVolumeMath.canonical
         levels = Dictionary(
-            (defaults.dictionary(forKey: "app-volume-levels") ?? [:]).compactMap { id, value in
+            (defaults.dictionary(forKey: PreferenceKey.appVolumeLevels) ?? [:]).compactMap { id, value in
                 (value as? NSNumber).map { (key(id), min(max($0.doubleValue, 0), 1)) }
             }.filter { $0.1 < 1 },
             uniquingKeysWith: min
         )
-        muted = Set((defaults.stringArray(forKey: "app-volume-muted") ?? []).map(key))
+        muted = Set((defaults.stringArray(forKey: PreferenceKey.appVolumeMuted) ?? []).map(key))
         names = Dictionary(
-            ((defaults.dictionary(forKey: "app-volume-names") as? [String: String]) ?? [:]).map { (key($0), $1) },
+            ((defaults.dictionary(forKey: PreferenceKey.appVolumeNames) as? [String: String]) ?? [:]).map { (key($0), $1) },
             uniquingKeysWith: { first, _ in first }
         )
     }
@@ -59,9 +59,9 @@ struct AppVolumeMemory: Equatable {
     }
 
     func save(to defaults: UserDefaults = .standard) {
-        defaults.set(levels, forKey: "app-volume-levels")
-        defaults.set(muted.sorted(), forKey: "app-volume-muted")
-        defaults.set(names, forKey: "app-volume-names")
+        defaults.set(levels, forKey: PreferenceKey.appVolumeLevels)
+        defaults.set(muted.sorted(), forKey: PreferenceKey.appVolumeMuted)
+        defaults.set(names, forKey: PreferenceKey.appVolumeNames)
     }
 }
 

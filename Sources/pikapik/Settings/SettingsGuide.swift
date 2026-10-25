@@ -89,7 +89,7 @@ struct SettingsGuide: View {
 
 extension SettingsGuide {
     static let reduceMotionLink: URL = {
-        let terms = Bundle(path: "/System/Library/ExtensionKit/Extensions/AccessibilitySettingsExtension.appex")?
+        let terms = Bundle(path: SystemPath.accessibilitySettingsExtension)?
             .url(forResource: "UniversalAccess", withExtension: "searchTerms").flatMap { NSDictionary(contentsOf: $0) }
         return URL(string: "x-apple.systempreferences:com.apple.preference.universalaccess?" + (terms?["AX_REDUCE_MOTION"] == nil ? "Seeing_Display" : "AX_REDUCE_MOTION"))!
     }()
@@ -468,7 +468,7 @@ enum GuideText {
     private static let root = "/System/Library/ExtensionKit/Extensions"
     private static var tables: [String: [[String: [String: String]]]] = [:]
     private static var cache: [String: String?] = [:]
-    private static let languages = CFPreferencesCopyValue("AppleLanguages" as CFString, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as? [String] ?? Locale.preferredLanguages
+    private static let languages = CFPreferencesCopyValue(PreferenceKey.appleLanguages as CFString, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as? [String] ?? Locale.preferredLanguages
 
     static let icon = NSWorkspace.shared.icon(forFile: Bundle.main.bundlePath)
 

@@ -13,7 +13,7 @@ enum SettingsBackup {
         ToolRegistry.shared.tools.forEach { $0.load() }
         KeepAwake.shared.load()
         #if !APPSTORE
-        let checks = defaults.object(forKey: "check-updates") as? Bool ?? true
+        let checks = defaults.object(forKey: PreferenceKey.checkUpdates) as? Bool ?? true
         MainActor.assumeIsolated { Updater.shared.checksAutomatically = checks }
         #endif
         Language.shared.load()

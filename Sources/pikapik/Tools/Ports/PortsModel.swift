@@ -33,8 +33,8 @@ struct PortQuestion {
 
 @MainActor @Observable final class PortsModel {
     static let shared = PortsModel()
-    static let activityMonitor = URL(fileURLWithPath: "/System/Applications/Utilities/Activity Monitor.app")
-    private static let sharing = URL(string: "x-apple.systempreferences:com.apple.Sharing-Settings.extension")!
+    static let activityMonitor = URL(fileURLWithPath: SystemPath.activityMonitorApp)
+    private static let sharing = URL(string: SystemPane.sharing)!
     private static let airPlay = URL(string: "x-apple.systempreferences:com.apple.AirDrop-Handoff-Settings.extension")!
     private static let notWeb: Set<UInt16> = [22, 1433, 3306, 5432, 5672, 6379, 9042, 11211, 27017]
 
