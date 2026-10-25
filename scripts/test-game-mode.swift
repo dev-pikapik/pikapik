@@ -147,7 +147,7 @@ enum TestGameMode {
         print("upgrade: ok")
 
         for (old, migrated) in [(true as Bool?, true as Bool?), (false, nil), (nil, nil)] {
-            let suite = "test-game-mode-migrate-\(UUID().uuidString)"
+            let suite = FileManager.default.temporaryDirectory.appendingPathComponent("test-game-mode-migrate-\(UUID().uuidString)").path
             let defaults = UserDefaults(suiteName: suite)!
             if let old { defaults.set(old, forKey: "ctrl-keys") }
             defaults.set(["com.apple.Terminal"], forKey: "ctrl-keys-excluded")
@@ -157,9 +157,10 @@ enum TestGameMode {
             GameRules.migrateControl(defaults)
             precondition(defaults.object(forKey: "game-mode-control") as? Bool == migrated)
             defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(atPath: suite + ".plist")
         }
         for value in [true, false] {
-            let suite = "test-game-mode-groups-\(UUID().uuidString)"
+            let suite = FileManager.default.temporaryDirectory.appendingPathComponent("test-game-mode-groups-\(UUID().uuidString)").path
             let defaults = UserDefaults(suiteName: suite)!
             GameRules.retiredKeys.forEach { defaults.set(value, forKey: $0) }
             GameRules.migrateGroups(defaults)
@@ -168,9 +169,10 @@ enum TestGameMode {
             }
             precondition(GameRules.retiredKeys.allSatisfy { defaults.object(forKey: $0) == nil })
             defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(atPath: suite + ".plist")
         }
         do {
-            let suite = "test-game-mode-groups-\(UUID().uuidString)"
+            let suite = FileManager.default.temporaryDirectory.appendingPathComponent("test-game-mode-groups-\(UUID().uuidString)").path
             let defaults = UserDefaults(suiteName: suite)!
             defaults.set(false, forKey: "game-mode-quit")
             defaults.set(true, forKey: GameRule.commandQ.key)
@@ -181,6 +183,7 @@ enum TestGameMode {
             precondition([GameRule.spotlight, .siri, .emoji, .lookUp, .globe].allSatisfy { defaults.object(forKey: $0.key) as? Bool == false })
             precondition(defaults.object(forKey: GameRule.missionControl.key) == nil && defaults.object(forKey: GameRule.hide.key) == nil)
             defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(atPath: suite + ".plist")
         }
         let file = GameRules.migrated(["game-mode-control": false, "game-mode-layout": true, "game-mode-switching": true, GameRule.hide.key: false, "x": 1])
         precondition(GameRules.retiredKeys.allSatisfy { file[$0] == nil })

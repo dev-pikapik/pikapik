@@ -3,9 +3,12 @@ import Foundation
 @main
 struct TestDockHideMigration {
     static func stored(_ switchOn: Bool?, _ action: String?, then enable: Bool = false) -> String? {
-        let name = "test-dock-hide-\(UUID().uuidString)"
+        let name = FileManager.default.temporaryDirectory.appendingPathComponent("test-dock-hide-\(UUID().uuidString)").path
         let defaults = UserDefaults(suiteName: name)!
-        defer { defaults.removePersistentDomain(forName: name) }
+        defer {
+            defaults.removePersistentDomain(forName: name)
+            try? FileManager.default.removeItem(atPath: name + ".plist")
+        }
         if let switchOn { defaults.set(switchOn, forKey: "dock-hide") }
         if let action { defaults.set(action, forKey: "dock-hide-action") }
         DockHideMigration.run(defaults, switchKey: "dock-hide", actionKey: "dock-hide-action")
