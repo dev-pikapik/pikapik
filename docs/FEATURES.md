@@ -475,7 +475,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Measures your internet download and upload speed, responsiveness and ping.
 
-**How it works:** `SpeedTestSettings` in `Sources/pikapik/Tools/SpeedTest/SpeedTest.swift`, `SpeedMeasure.swift`, `SpeedResult.swift`. Website: `/usr/bin/networkQuality` (“Takes about half a minute and runs on Apple’s servers. It can use a lot of data.”). App Store: an ephemeral URLSession against speed.cloudflare.com (“Takes about 15 seconds. The check uses speed.cloudflare.com.”). Only the last result is kept, in the app’s preferences. The button turns into Cancel while running.
+**How it works:** `SpeedTestSettings` in `Sources/pikapik/Tools/SpeedTest/SpeedTest.swift`, `SpeedResult.swift`. `/usr/bin/networkQuality` (“Takes about half a minute and runs on Apple’s servers. It can use a lot of data.”). Only the last result is kept, in the app’s preferences. The button turns into Cancel while running.
 
 **Options:**
 - Download — Mbit/s.
@@ -483,11 +483,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 - Responsiveness — how quickly things react while the internet is busy (`SpeedTestSettings` in `SpeedTest.swift`).
 - Ping — how long a signal takes to get there and back.
 - What it’s good for — after a result, a list from the last result (`SpeedTestSettings` in `SpeedTest.swift`): Movies and shows in 4K, Video calls, Online games and Big downloads (“A 10 GB game takes about …”), each with a verdict.
-- Speed Test — row with Copy Link under Buttons in Control Center and widgets (`SpeedTestSettings` in `SpeedTest.swift`, `SpeedTest.handle(_:)`): a link you can add to Shortcuts, Control Center or a widget to run the check in one click. App Store: scheme `pikapik-store`.
+- Speed Test — row with Copy Link under Buttons in Control Center and widgets (`SpeedTestSettings` in `SpeedTest.swift`, `SpeedTest.handle(_:)`): a link you can add to Shortcuts, Control Center or a widget to run the check in one click.
 
-**Nuances:** A check starts only from Check Speed, from the Speed Test card in the menu bar panel (hidden until added in Customize…) or from a `pikapik://speed-test` link (App Store: `pikapik-store://`). With no connection the page says “No internet connection”.
+**Nuances:** A check starts only from Check Speed, from the Speed Test card in the menu bar panel (hidden until added in Customize…) or from a `pikapik://speed-test` link. With no connection the page says “No internet connection”.
 
-**Edition:** Both; App Store differs: measures against speed.cloudflare.com, about 15 seconds.
+**Edition:** Website only (App Store: cut).
 
 **Test:**
 1. Run a full test → Download, Upload, Responsiveness and Ping fill in, then a result with a time (“Checked …”).
@@ -2225,7 +2225,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **How it works:** `SpeedTestRow`; hidden by default (add it in Customize…).
 
-**Edition:** Both.
+**Edition:** Website only (App Store: cut).
 
 **Test:**
 1. Customize… › turn on Speed Test › Done → press Check on the card → a check runs.
