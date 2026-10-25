@@ -11,6 +11,7 @@ protocol Tool: AnyObject {
     var tab: SettingsTab { get }
     var isDefault: Bool { get }
     var needs: [Permission] { get }
+    var uses: [Permission] { get }
     func refresh()
     func reset()
     func load()
@@ -20,6 +21,7 @@ extension Tool {
     var tab: SettingsTab { .keyboard }
     var isDefault: Bool { !isEnabled }
     var needs: [Permission] { [.accessibility] }
+    var uses: [Permission] { needs }
     func reset() { isEnabled = false }
     func load() { isEnabled = UserDefaults.standard.bool(forKey: id) }
 }
@@ -130,7 +132,7 @@ final class ToolRegistry {
     }
 
     var needsPermission: Bool {
-        tools.contains { $0.isEnabled && $0.needs.contains { !$0.isGranted } }
+        tools.contains { $0.isEnabled && $0.uses.contains { !$0.isGranted } }
     }
 
     private init() {

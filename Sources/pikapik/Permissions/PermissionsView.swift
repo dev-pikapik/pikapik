@@ -150,7 +150,7 @@ struct PermissionRow: View {
 
     private var pages: [String]? {
         guard permission == .accessibility || permission == .inputMonitoring else { return nil }
-        let tools = ToolRegistry.shared.tools.filter { $0.isEnabled && $0.needs.contains(permission) }
+        let tools = ToolRegistry.shared.tools.filter { $0.isEnabled && $0.uses.contains(permission) }
         return SettingsTab.allCases.filter { tab in tools.contains { $0.tab == tab } }.map(\.title)
     }
 
