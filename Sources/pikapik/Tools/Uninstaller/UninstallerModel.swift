@@ -231,7 +231,10 @@ final class UninstallerModel {
     var removed: [Removal] = []
     var session: UninstallSession? {
         didSet {
-            if session == nil, let ended = oldValue { settle(ended) }
+            if session == nil, let ended = oldValue {
+                if !ended.isBusy { ended.work?.cancel() }
+                settle(ended)
+            }
         }
     }
     private(set) var loaded = false

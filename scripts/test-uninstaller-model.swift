@@ -88,11 +88,12 @@ enum UninstallerModelTests {
         let app = world.app("Stub", id: "com.example.stub", folders: 6_000)
         await pausing()
         await closing(app)
+        await dismissing(app)
         await offering()
         await reloading()
         world.destroy()
         precondition(problems.isEmpty, "\n" + problems.joined(separator: "\n"))
-        print("uninstaller model: pause and close stop a long size walk, Trash bursts and reloads build the app list once: ok")
+        print("uninstaller model: pause, close and dismissing the sheet stop a long size walk, Trash bursts and reloads build the app list once: ok")
     }
 
     static func pausing() async {
@@ -121,6 +122,30 @@ enum UninstallerModelTests {
         AppFootprint.onEntry = nil
         check(started, "open() never reached the size walk")
         check(walked < 2_000 && took < 1, "the size walk read \(walked) more entries (\(String(format: "%.2f", took)) s) after close(), at most 2000 and 1 s")
+    }
+
+    static func dismissing(_ app: AppIdentity) async {
+        let model = UninstallerModel(engine: world.engine(counting: Tally()))
+        var entries = slowWalk()
+        model.open(app)
+        let started = await wait { entries.count >= 200 }
+        let work = model.session?.work
+        let before = entries.count
+        model.session = nil
+        await work?.value
+        let walked = entries.count - before
+        check(started, "open() never reached the size walk")
+        check(walked < 2_000, "the size walk read \(walked) more entries after the sheet was dismissed, at most 2000")
+        entries = slowWalk()
+        model.open(app)
+        _ = await wait { entries.count >= 200 }
+        model.session?.phase = .removing
+        let busy = model.session?.work
+        model.session = nil
+        check(busy?.isCancelled == false, "dismissing the sheet during a removal stopped the removal")
+        busy?.cancel()
+        await busy?.value
+        AppFootprint.onEntry = nil
     }
 
     static func offering() async {
