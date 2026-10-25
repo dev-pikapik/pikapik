@@ -25,16 +25,14 @@ final class CursorFence {
     let frame: CGRect?
     let blocksAll: Bool
     let except: Set<Int64>
-    let corners: Set<Int>
     fileprivate var holding: Bool?
     fileprivate private(set) var tap: CFMachPort?
     private var loop: CFRunLoop?
 
-    init(frame: CGRect?, blocksAll: Bool, except: Set<Int64>, corners: Set<Int>) {
+    init(frame: CGRect?, blocksAll: Bool, except: Set<Int64>) {
         self.frame = frame
         self.blocksAll = blocksAll
         self.except = except
-        self.corners = corners
         let mask = CGEventMask(blocksAll || !except.isEmpty ? 1 << 30 : 0)
         guard mask != 0, AXIsProcessTrusted() else { return }
         let ready = DispatchSemaphore(value: 0)

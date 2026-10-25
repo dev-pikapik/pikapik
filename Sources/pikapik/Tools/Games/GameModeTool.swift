@@ -334,7 +334,7 @@ final class GameModeTool: Tool {
         #endif
         guard fence == nil || fence?.frame != frame else { return }
         fence?.stop()
-        fence = CursorFence(frame: frame, blocksAll: swipes.blocksAll, except: swipes.except, corners: swipes.corners)
+        fence = CursorFence(frame: frame, blocksAll: swipes.blocksAll, except: swipes.except)
     }
 
     #if !APPSTORE
