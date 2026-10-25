@@ -171,6 +171,12 @@ Hide desktop icons writes its note before it hides the icons, so a copy that is 
 swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Tools/Finder/DesktopIcons.swift scripts/test-desktop-icons-force-quit.swift -o build/test-desktop-icons-force-quit && build/test-desktop-icons-force-quit
 ```
 
+Hide desktop icons and Show hidden files restart Finder only when it is not copying or moving files. They look at Finder twice, half a second apart, and while it does more than 5 ms of work or reads or writes the disk in between, they wait and say “Waiting for Finder to finish copying”. Finding Finder, measuring it, the restart and the half-second wait go through `FinderHost`, so the test drives a made-up Finder that copies, finishes or goes away and never touches the real one. It also measures its own process to check that the work is read in seconds.
+
+```bash
+swiftc -parse-as-library $(./scripts/test-core.sh $(find Sources -name '*.swift' ! -name main.swift ! -name App.swift) Extensions/Shared/*.swift Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift) scripts/test-finder-restart.swift -o build/test-finder-restart && build/test-finder-restart
+```
+
 A `Toggle` inside a `Menu` needs `.toggleStyle(.automatic)`: the switch style that Settings pages apply makes each item draw three rows that do nothing when chosen. The test reads every Swift file in `Sources` and fails on a `Toggle` in a `Menu` without it.
 
 ```bash

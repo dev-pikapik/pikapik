@@ -28,6 +28,20 @@ final class DesktopIconsTool: Tool {
     func refresh() { curtain.isOn = isEnabled && MainCopy.canAct }
 }
 #else
+struct FinderHost {
+    let pid: () -> pid_t?
+    let activity: (pid_t) -> (cpu: Double, io: UInt64)?
+    let terminate: (pid_t) -> Void
+    let later: (@escaping () -> Void) -> Void
+
+    static let system = FinderHost(
+        pid: { NSRunningApplication.runningApplications(withBundleIdentifier: AppConstants.finderBundleID).first?.processIdentifier },
+        activity: HiddenFilesTool.activity,
+        terminate: { kill($0, SIGTERM) },
+        later: { DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: $0) }
+    )
+}
+
 @Observable
 final class DesktopIconsTool: Tool {
     let id = ToolID.desktopIcons
@@ -39,6 +53,11 @@ final class DesktopIconsTool: Tool {
     var isEnabled: Bool { get { false } set {} }
     private(set) var hidden = DesktopIcons.hidden(.system)
     private(set) var finderBusy = false
+    @ObservationIgnored private let finder: FinderHost
+
+    init(finder: FinderHost = .system) {
+        self.finder = finder
+    }
 
     var isOn: Bool {
         get { hidden }
@@ -56,16 +75,16 @@ final class DesktopIconsTool: Tool {
         DesktopIcons.putBack(.system)
     }
 
-    private func restartFinder() {
-        guard let pid = NSRunningApplication.runningApplications(withBundleIdentifier: AppConstants.finderBundleID).first?.processIdentifier,
-              let before = HiddenFilesTool.activity(pid)
+    func restartFinder() {
+        guard let pid = finder.pid(),
+              let before = finder.activity(pid)
         else { finderBusy = false; return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
-            guard let after = HiddenFilesTool.activity(pid) else { finderBusy = false; return }
+        finder.later { [self] in
+            guard let after = finder.activity(pid) else { finderBusy = false; return }
             let busy = HiddenFilesTool.busy(before, after)
             if busy != finderBusy { finderBusy = busy }
             if busy { return restartFinder() }
-            kill(pid, SIGTERM)
+            finder.terminate(pid)
         }
     }
 }
@@ -86,6 +105,11 @@ final class HiddenFilesTool: Tool {
     private(set) var shown = HiddenFilesTool.read()
     private var finderBusy = false
     private var finderShows: Bool?
+    @ObservationIgnored private let finder: FinderHost
+
+    init(finder: FinderHost = .system) {
+        self.finder = finder
+    }
 
     var waitingForFinder: Bool { finderBusy && finderShows != shown }
 
@@ -119,19 +143,19 @@ final class HiddenFilesTool: Tool {
         if let after = activity(pid), !busy(before, after) { kill(pid, SIGTERM) }
     }
 
-    fileprivate static func busy(_ before: (cpu: Double, io: UInt64), _ after: (cpu: Double, io: UInt64)) -> Bool {
+    static func busy(_ before: (cpu: Double, io: UInt64), _ after: (cpu: Double, io: UInt64)) -> Bool {
         after.cpu - before.cpu > 0.005 || after.io != before.io
     }
 
-    private func restartFinder() {
-        guard let pid = NSRunningApplication.runningApplications(withBundleIdentifier: AppConstants.finderBundleID).first?.processIdentifier,
-              let before = Self.activity(pid) else { return finish() }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
-            guard let after = Self.activity(pid) else { return finish() }
+    func restartFinder() {
+        guard let pid = finder.pid(),
+              let before = finder.activity(pid) else { return finish() }
+        finder.later { [self] in
+            guard let after = finder.activity(pid) else { return finish() }
             let busy = Self.busy(before, after)
             if busy != finderBusy { finderBusy = busy }
             if busy { return restartFinder() }
-            if shown != finderShows { kill(pid, SIGTERM) }
+            if shown != finderShows { finder.terminate(pid) }
             finish()
         }
     }
