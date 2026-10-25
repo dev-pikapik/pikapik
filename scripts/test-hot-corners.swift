@@ -3,6 +3,16 @@ import Foundation
 @main
 struct TestHotCorners {
     static func main() {
+        let suite = FileManager.default.temporaryDirectory.appendingPathComponent("test-hot-corners-\(UUID().uuidString)").path
+        let defaults = UserDefaults(suiteName: suite)!
+        let standard: @convention(block) (AnyObject) -> UserDefaults = { _ in defaults }
+        method_setImplementation(class_getClassMethod(UserDefaults.self, #selector(getter: UserDefaults.standard))!, imp_implementationWithBlock(standard))
+        defer {
+            defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(atPath: suite + ".plist")
+        }
+        precondition(UserDefaults.standard === defaults, "the test keeps its settings in a temporary folder")
+
         var plan = HotCorners.choose(11, current: 2, saved: [:], side: "br")
         precondition(plan.write == 11 && plan.saved == ["br": 2])
         plan = HotCorners.choose(4, current: 11, saved: plan.saved, side: "br")
@@ -37,7 +47,6 @@ struct TestHotCorners {
         precondition(plan.write == nil && plan.saved == ["tl": 5])
         print("a crash in the middle of putting back keeps the journal until the write is done: ok")
 
-        ["hot-corners-before", "hot-corners-ours"].forEach(UserDefaults.standard.removeObject)
         var written: Int?
         HotCorners.apply("br", HotCorners.choose(11, current: 2, saved: HotCorners.before, side: "br")) { value in
             precondition(HotCorners.before == ["br": 2] && HotCorners.ours == ["br": 11])

@@ -15,8 +15,10 @@ enum TestNewMarks {
         var date = Date(timeIntervalSince1970: 1_800_000_000)
     }
 
+    static let folder = FileManager.default.temporaryDirectory.appendingPathComponent("test-new-marks-\(UUID().uuidString)")
+
     static func store(_ name: String) -> UserDefaults {
-        UserDefaults(suiteName: "pika-test-new-marks-\(name)")!
+        UserDefaults(suiteName: folder.appendingPathComponent(name).path)!
     }
 
     static func marks(_ name: String, appStore: Bool = true, clock: Clock = Clock()) -> NewMarks {
@@ -26,9 +28,8 @@ enum TestNewMarks {
     static func tabs(_ marks: NewMarks) -> [String] { marks.unseenTabs.sorted() }
 
     static func main() {
-        for name in ["fresh", "update", "direct", "seen", "expiry", "next", "old", "down", "website", "store", "gear"] {
-            UserDefaults.standard.removePersistentDomain(forName: "pika-test-new-marks-\(name)")
-        }
+        try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
 
         let fresh = marks("fresh")
         fresh.begin(version: "1.50.0", fresh: true)

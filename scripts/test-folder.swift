@@ -34,8 +34,12 @@ enum TestFolder {
         setvbuf(stdout, nil, _IOLBF, 0)
         guard ffmpeg != nil else { return print("skipped: no ffmpeg (set FFMPEG=/path/to/ffmpeg)") }
         NSApplication.shared.setActivationPolicy(.prohibited)
-        UserDefaults.standard.setVolatileDomain(["volume": Float(0)], forName: UserDefaults.argumentDomain)
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("pika-folder-\(UUID().uuidString)")
+        let defaults = UserDefaults(suiteName: folder.path)!
+        let standard: @convention(block) (AnyObject) -> UserDefaults = { _ in defaults }
+        method_setImplementation(class_getClassMethod(UserDefaults.self, #selector(getter: UserDefaults.standard))!, imp_implementationWithBlock(standard))
+        precondition(UserDefaults.standard === defaults, "the test keeps its settings in a temporary folder")
+        UserDefaults.standard.setVolatileDomain(["volume": Float(0)], forName: UserDefaults.argumentDomain)
         try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let clip = folder.appendingPathExtension("mp4")
         make(clip.lastPathComponent, in: folder.deletingLastPathComponent(), ["-f", "lavfi", "-i", "testsrc2=size=640x360:rate=25:duration=2", "-pix_fmt", "yuv420p"])
@@ -124,7 +128,7 @@ enum TestFolder {
         wait(0.5)
         check(center.nowPlayingInfo == nil && center.playbackState == .stopped, "closing the window clears Now Playing")
 
-        [folder, clip].forEach { try? FileManager.default.removeItem(at: $0) }
+        [folder, clip, folder.appendingPathExtension("plist")].forEach { try? FileManager.default.removeItem(at: $0) }
         print(failures == 0 ? "all folder checks passed" : "\(failures) folder checks FAILED")
         exit(failures == 0 ? 0 : 1)
     }

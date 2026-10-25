@@ -33,9 +33,8 @@ struct TestPointerPutBack {
     static let written = [linear: 1, "HIDMouseAcceleration": 78643]
 
     static func main() {
-        let suite = "test-pointer-put-back"
+        let suite = FileManager.default.temporaryDirectory.appendingPathComponent("test-pointer-put-back-\(UUID().uuidString)").path
         let journal = UserDefaults(suiteName: suite)!
-        journal.removePersistentDomain(forName: suite)
 
         PointerPutBack.save(["mouse": before], ["mouse": ours], to: journal)
         var notes = PointerPutBack.load(UserDefaults(suiteName: suite)!)
@@ -77,5 +76,6 @@ struct TestPointerPutBack {
         print("without notes of its own values, what pikapik writes now counts as its own: ok")
 
         journal.removePersistentDomain(forName: suite)
+        try? FileManager.default.removeItem(atPath: suite + ".plist")
     }
 }

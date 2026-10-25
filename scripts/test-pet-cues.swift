@@ -9,7 +9,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
 }
 
 struct Rig {
-    static let name = "pikapik-test-pet-cues"
+    static let name = FileManager.default.temporaryDirectory.appendingPathComponent("test-pet-cues-\(UUID().uuidString)").path
     static let defaults = UserDefaults(suiteName: name)!
     static let morning = Calendar.current.date(bySettingHour: 8, minute: 0, second: 0, of: Date())!
     static let afternoon = Calendar.current.date(bySettingHour: 14, minute: 0, second: 0, of: Date())!
@@ -188,5 +188,6 @@ enum TestPetCues {
         print("a new award excites the pet: ok")
 
         Rig.defaults.removePersistentDomain(forName: Rig.name)
+        try? FileManager.default.removeItem(atPath: Rig.name + ".plist")
     }
 }
