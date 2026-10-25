@@ -175,10 +175,11 @@ final class DockRestart {
     private let journal: () -> UserDefaults
     private let later: (DispatchWorkItem) -> Void
     private let kill: (Bool) -> Void
+    private let exclusive: (() -> Void) -> Void
     private var work: DispatchWorkItem?
 
-    init(journal: @escaping () -> UserDefaults, later: @escaping (DispatchWorkItem) -> Void, kill: @escaping (Bool) -> Void) {
-        (self.journal, self.later, self.kill) = (journal, later, kill)
+    init(journal: @escaping () -> UserDefaults, later: @escaping (DispatchWorkItem) -> Void, kill: @escaping (Bool) -> Void, exclusive: @escaping (() -> Void) -> Void) {
+        (self.journal, self.later, self.kill, self.exclusive) = (journal, later, kill, exclusive)
     }
 
     var isPending: Bool { journal().bool(forKey: Self.key) }
@@ -218,8 +219,11 @@ final class DockRestart {
 
     private func fire() {
         work = nil
-        kill(false)
-        Self.clear(journal())
+        exclusive {
+            guard isPending else { return }
+            kill(false)
+            Self.clear(journal())
+        }
     }
 }
 
@@ -263,7 +267,7 @@ class AnimationsEngine {
 
     init(_ host: AnimationsHost) {
         self.host = host
-        dockRestart = DockRestart(journal: host.journal, later: host.later, kill: { host.kill("Dock", $0) })
+        dockRestart = DockRestart(journal: host.journal, later: host.later, kill: { host.kill("Dock", $0) }, exclusive: host.exclusive)
         owned = Self.saved(host.local)
         own = Self.originals(host.journal())
         ours = Self.written(host.journal(), host.local)
@@ -351,11 +355,12 @@ class AnimationsEngine {
     }
 
     func powerOff() -> Bool {
-        let dock = Self.putBackNow(host) || dockRestart.isPending
+        var dock = false
+        host.exclusive {
+            dock = Self.putBackNow(host) || dockRestart.isPending
+            DockRestart.clear(host.journal())
+        }
         dockRestart.handOver()
-        let journal = host.journal()
-        DockRestart.clear(journal)
-        journal.synchronize()
         return dock
     }
 
@@ -400,20 +405,17 @@ class AnimationsEngine {
     }
 
     private static func putBack(_ host: AnimationsHost) -> Bool {
-        let dock = putBackNow(host)
+        var dock = false
+        host.exclusive { dock = putBackNow(host) }
         clearLeaving(host)
         return dock
     }
 
     private static func putBackNow(_ host: AnimationsHost) -> Bool {
-        var dock = false
-        host.exclusive {
-            let journal = host.journal()
-            let autohide = putBackAutohide(host)
-            let changes = AnimationSetting.putBack(own: originals(journal), ours: written(journal, host.local), system: snapshot(host), remember: { remember($0, $1, journal) }, willWrite: { if $0.contains(where: { $0.0.apply == .dock }) { DockRestart.mark(journal) } }, write: host.write)
-            dock = autohide || changes.contains { $0.0.apply == .dock }
-        }
-        return dock
+        let journal = host.journal()
+        let autohide = putBackAutohide(host)
+        let changes = AnimationSetting.putBack(own: originals(journal), ours: written(journal, host.local), system: snapshot(host), remember: { remember($0, $1, journal) }, willWrite: { if $0.contains(where: { $0.0.apply == .dock }) { DockRestart.mark(journal) } }, write: host.write)
+        return autohide || changes.contains { $0.0.apply == .dock }
     }
 
     private func apply(_ new: [AnimationSetting: Double]) {

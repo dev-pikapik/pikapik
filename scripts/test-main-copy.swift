@@ -619,6 +619,37 @@ struct TestMainCopy {
             precondition(a.engine.powerOff() && !mac.flag && mac.queue.allSatisfy(\.isCancelled), "a Dock restart that waits is done at power off instead")
         }
         print("when the Mac shuts down, the first copy to hear it puts everything back before it asks about other copies, the Dock restart is left to the caller, the other copy has nothing left, and after the restart the main copy brings its values back: ok")
+        for first in ["A", "B"] {
+            for waiting in [false, true] {
+                let mac = Mac(system: original)
+                let a = mac.party("A", "\(tools).a", 10, wantsA), b = mac.party("B", "\(tools).b", 20, wantsB)
+                mac.become(a)
+                a.engine.setAutohide(true)
+                if !waiting { mac.elapse() }
+                mac.kills = []
+                mac.poweringOff = true
+                let (one, two) = first == "A" ? (a, b) : (b, a)
+                var second = false
+                mac.afterExclusive = { second = two.engine.powerOff() }
+                let dock = one.engine.powerOff()
+                mac.elapse()
+                let restarts = [dock, second].filter { $0 }.count + mac.kills.count
+                precondition(restarts == 1 && mac.system == original && mac.journalEmpty, "first \(first), waiting \(waiting): the other copy hears the power off right after the first one has put everything back, and the Dock restarts once: \(restarts)")
+            }
+        }
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, wantsA), b = mac.party("B", "\(tools).b", 20, wantsB)
+            mac.become(a)
+            a.engine.setAutohide(true)
+            mac.kills = []
+            mac.poweringOff = true
+            let dock = b.engine.powerOff()
+            mac.elapse()
+            let restarts = [dock, a.engine.powerOff()].filter { $0 }.count + mac.kills.count
+            precondition(restarts == 1 && mac.system == original && mac.journalEmpty, "the main copy's waiting Dock restart is not done again after the other copy powered off first: \(mac.kills)")
+        }
+        print("two copies hear the power off together, or the main copy's waiting Dock restart comes due after the other copy has powered off: the Dock restarts once: ok")
         for uninstall in [false, true] {
             let mac = Mac(system: original)
             let a = mac.party("A", "\(tools).a", 10, wantsB)
@@ -1001,7 +1032,7 @@ struct TestMainCopy {
         var running: [Party] = []
         var strangers: [RunningCopy] = []
         var leader: Party?
-        var whileWaiting: (() -> Void)?, whileWriting: (() -> Void)?
+        var whileWaiting: (() -> Void)?, whileWriting: (() -> Void)?, afterExclusive: (() -> Void)?
         var contended: DispatchSemaphore?
         let lock = NSLock()
 
@@ -1055,6 +1086,10 @@ struct TestMainCopy {
                     body()
                     Thread.current.threadDictionary["exclusive"] = nil
                     self.lock.unlock()
+                    if let after = self.afterExclusive {
+                        self.afterExclusive = nil
+                        after()
+                    }
                 }
             )
             party.engine = AnimationsEngine(party.host)
