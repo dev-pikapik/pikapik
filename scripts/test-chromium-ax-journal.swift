@@ -72,7 +72,7 @@ struct TestChromiumAXJournal {
         precondition(writes.isEmpty, "putBackAfterCrash must return before it writes")
         TextFocus.isOn = { _ in false }
         let owner = NSObject()
-        TextFocus.watch(owner, front: nil)
+        TextFocus.watch(owner)
         precondition(TextFocus.enable("AXManualAccessibility", gone, "com.google.Chrome") == .success)
         precondition(writes == ["100 false [100]", "\(gone) true [\(gone)]"], "\(writes)")
         print("putting back runs off the main thread, the journal holds an app before its switch changes, and putting back finishes before a new switch: ok")
@@ -85,7 +85,7 @@ struct TestChromiumAXJournal {
 
         writes = []
         TextFocus.isOn = { $0 == gone }
-        TextFocus.watch(owner, front: nil)
+        TextFocus.watch(owner)
         precondition(TextFocus.enable("AXManualAccessibility", gone, "com.google.Chrome") == .success)
         precondition(TextFocus.enable("AXEnhancedUserInterface", gone, "com.google.Chrome") == .success)
         precondition(writes.isEmpty && Switched.load(TextFocus.journalKey).isEmpty, "\(writes)")
@@ -100,7 +100,7 @@ struct TestChromiumAXJournal {
             writes.append("\(attribute) \(on) \(Switched.load(TextFocus.journalKey).map(\.pid))")
             return attribute == "AXManualAccessibility" ? .attributeUnsupported : .notImplemented
         }
-        TextFocus.watch(owner, front: nil)
+        TextFocus.watch(owner)
         precondition(TextFocus.enable("AXManualAccessibility", gone, "com.google.Chrome") == .attributeUnsupported)
         precondition(TextFocus.enable("AXEnhancedUserInterface", gone, "com.google.Chrome") == .success)
         TextFocus.unwatch(owner, bundleID: chrome)
@@ -143,7 +143,7 @@ struct TestChromiumAXJournal {
             return busy ? .cannotComplete : .success
         }
         TextFocus.isOn = { _ in !busy && mode.values.contains(true) }
-        TextFocus.watch(owner, front: nil)
+        TextFocus.watch(owner)
         for _ in 0..<2 {
             precondition(TextFocus.enable("AXManualAccessibility", gone, "com.google.Chrome") == .cannotComplete)
             precondition(TextFocus.enable("AXEnhancedUserInterface", gone, "com.google.Chrome") == .cannotComplete)
@@ -160,7 +160,7 @@ struct TestChromiumAXJournal {
         mode = ["AXManualAccessibility": true]
         writes = []
         TextFocus.isOn = { _ in busy ? nil : mode.values.contains(true) }
-        TextFocus.watch(owner, front: nil)
+        TextFocus.watch(owner)
         for _ in 0..<10 {
             precondition(TextFocus.enable("AXManualAccessibility", gone, "com.google.Chrome") == .cannotComplete)
             precondition(TextFocus.enable("AXEnhancedUserInterface", gone, "com.google.Chrome") == .cannotComplete)
@@ -171,5 +171,93 @@ struct TestChromiumAXJournal {
         TextFocus.puttingBack.wait()
         precondition(mode == ["AXManualAccessibility": true] && writes.isEmpty && Switched.load(TextFocus.journalKey).isEmpty, "\(writes)")
         print("a Chrome that another program turned on and that does not answer is neither switched nor remembered, and stays on at quit: ok")
+
+        var idle = TextFocus.Awake()
+        precondition(!idle.activated(1, at: 0) && idle.due(at: 1000).isEmpty)
+        var awake = TextFocus.Awake()
+        precondition(awake.key(1) && !awake.key(1))
+        precondition(awake.activated(2, at: 0))
+        precondition(awake.due(at: 59).isEmpty && awake.due(at: 60) == [1] && awake.on.isEmpty)
+        _ = awake.key(1)
+        precondition(awake.activated(2, at: 0))
+        precondition(!awake.activated(1, at: 30) && awake.due(at: 60).isEmpty)
+        precondition(awake.activated(2, at: 40) && awake.due(at: 99).isEmpty && awake.due(at: 100) == [1])
+        _ = awake.key(1)
+        _ = awake.activated(2, at: 0)
+        awake.quit(1)
+        precondition(awake.due(at: 1000).isEmpty && awake.on.isEmpty)
+        for pid: pid_t in [3, 1, 2] { _ = awake.key(pid) }
+        precondition(awake.activated(9, at: 0) && awake.due(at: 60) == [1, 2, 3])
+        _ = awake.key(1)
+        _ = awake.activated(2, at: 0)
+        _ = awake.key(1)
+        precondition(awake.due(at: 60).isEmpty && awake.on == [1])
+        print("an app is put back after a minute in the background, coming back or a key keeps it on, and an app that quits is forgotten: ok")
+
+        let apps: [pid_t: String] = [7: "com.google.Chrome", 8: "com.tinyspeck.slackmacgap"]
+        var checked: [pid_t] = []
+        writes = []
+        TextFocus.write = { _, on, pid in
+            writes.append("\(pid) \(on) \(Switched.load(TextFocus.journalKey).map(\.pid))")
+            return .success
+        }
+        TextFocus.isOn = { _ in false }
+        TextFocus.chromium = { checked.append($0); return apps[$0] }
+        TextFocus.watch(owner)
+        precondition(TextFocus.wake(7))
+        TextFocus.switching.wait()
+        precondition(writes == ["7 true [7]"], "\(writes)")
+        precondition(!TextFocus.wake(7) && !TextFocus.wake(9) && !TextFocus.wake(9) && checked == [7, 9], "\(checked)")
+        TextFocus.activated(9, at: 0)
+        TextFocus.putBackIdle(at: 59, bundleID: { apps[$0] })
+        TextFocus.puttingBack.wait()
+        precondition(writes == ["7 true [7]"], "\(writes)")
+        TextFocus.putBackIdle(at: 60, bundleID: { apps[$0] })
+        TextFocus.puttingBack.wait()
+        precondition(writes == ["7 true [7]", "7 false [7]"] && Switched.load(TextFocus.journalKey).isEmpty, "\(writes)")
+        precondition(TextFocus.wake(7))
+        TextFocus.switching.wait()
+        precondition(TextFocus.wake(8))
+        TextFocus.switching.wait()
+        precondition(writes == ["7 true [7]", "7 false [7]", "7 true [7]", "8 true [7, 8]"], "\(writes)")
+        TextFocus.quit(7)
+        precondition(Switched.load(TextFocus.journalKey).map(\.pid) == [8] && writes.count == 4, "\(writes)")
+        TextFocus.unwatch(owner, bundleID: { apps[$0] })
+        TextFocus.puttingBack.wait()
+        precondition(writes.last == "8 false [8]" && writes.count == 5 && Switched.load(TextFocus.journalKey).isEmpty, "\(writes)")
+        precondition(!TextFocus.wake(7) && checked == [7, 9, 7, 8], "\(checked)")
+        print("an app is switched on at the first key and checked for Chromium once, put back after a minute in the background, switched on again at the next key, and dropped from the journal when it quits: ok")
+
+        for background in [false, true] {
+            writes = []
+            let sent = DispatchSemaphore(value: 0), landed = DispatchSemaphore(value: 0)
+            let chrome7: (pid_t) -> String? = { $0 == 7 ? "com.google.Chrome" : nil }
+            TextFocus.chromium = chrome7
+            TextFocus.write = { attribute, on, pid in
+                if on && attribute == "AXEnhancedUserInterface" { sent.signal(); landed.wait() }
+                writes.append("\(pid) \(on) \(Switched.load(TextFocus.journalKey).map(\.pid))")
+                return on ? .cannotComplete : .success
+            }
+            TextFocus.watch(owner)
+            precondition(TextFocus.wake(7))
+            sent.wait()
+            if background {
+                TextFocus.activated(9, at: 0)
+                TextFocus.putBackIdle(at: 60, bundleID: chrome7)
+                TextFocus.puttingBack.wait()
+            } else {
+                TextFocus.quit(7)
+            }
+            precondition(Switched.load(TextFocus.journalKey).isEmpty)
+            precondition(TextFocus.enable("AXManualAccessibility", 7, "com.google.Chrome") == .success && !TextFocus.wake(7))
+            landed.signal()
+            TextFocus.switching.wait()
+            TextFocus.puttingBack.wait()
+            let off = background ? ["7 false [7, 7]", "7 false [7]"] : []
+            precondition(writes == ["7 true [7]"] + off + ["7 true []", "7 false []"] && Switched.load(TextFocus.journalKey).isEmpty, "\(writes)")
+            TextFocus.unwatch(owner)
+            TextFocus.puttingBack.wait()
+        }
+        print("an app that quits or stays in the background while it is still being switched on ends switched off and out of the journal, and nothing switches it back on: ok")
     }
 }
