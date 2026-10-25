@@ -144,14 +144,13 @@ struct PermissionsView: View {
         .animation(.snappy, value: permissions.allGranted)
         .animation(.snappy, value: others)
         .onAppear {
-            permissions.refresh()
             FinderExtension.all.forEach { $0.refresh() }
             #if !APPSTORE
             FanControl.shared.probe()
             #endif
-            if !permissions.allGranted { permissions.startPolling() }
             if sync.state == .noAccess { sync.refresh() }
         }
+        .whileShown { permissions.watch($0) }
     }
 }
 

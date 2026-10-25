@@ -195,6 +195,12 @@ Animations writes hidden macOS preferences with `CFPreferencesSetAppValue`: the 
 swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Tools/Animations/AnimationSetting.swift scripts/test-animation-tweaks.swift -o build/test-animation-tweaks && build/test-animation-tweaks
 ```
 
+Only Allow on Settings > Permissions asks macOS for a permission. A dimmed switch, a "Needs a permission" row or an Allow bar on another page opens that page on the row (`Permissions.ask`), and the switch itself never asks. macOS sends no notice when a permission changes, so the page checks every 1.5 seconds while it is on screen, and after Allow for two minutes or until macOS grants what was asked (`PermissionPolling`); nothing checks otherwise. The test checks that rule and reads the sources: only `Permissions.swift` may call the macOS functions that show a prompt, and only from Allow:
+
+```bash
+swiftc -parse-as-library Sources/pikapik/Permissions/PermissionPolling.swift scripts/test-permission-prompts.swift -o build/test-permission-prompts && build/test-permission-prompts
+```
+
 Permissions left by deleted apps are read from the system TCC database (`/Library/Application Support/com.apple.TCC/TCC.db`), which needs Full Disk Access. A client counts as deleted when LaunchServices has no copy of it outside the Trash, no helper, launch agent or system extension with its id is left, and it is not on a disk that is unplugged; Apple apps and system paths are skipped. Remove calls `tccutil reset All <id>`. tccutil only accepts ids that LaunchServices knows, so pikapik registers a tiny placeholder app with that id in its Caches folder for a moment and deletes it right after. Path clients can’t be reset this way, so their row opens the list in System Settings instead. The parsing and the deleted check live in `LeftoverPermissions`, which you can test without the app:
 
 ```bash
