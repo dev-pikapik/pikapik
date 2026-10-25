@@ -17,6 +17,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - Animations, website version: the Hide the Dock automatically switch no longer disappears from the page after you turn it on. Restore Defaults now puts it back too, and you can press it when that switch is the only thing you changed.
 - Animations, website version: if you never changed whether the Dock hides, pikapik leaves that setting unset when it puts things back, instead of setting it to not hide.
 - Hide desktop icons: turning Stage Manager on or off while the icons are hidden no longer leaves them hidden after you quit pikapik, and Stage Manager keeps its own choice to show or hide desktop items.
+- Hide desktop icons, website version: if you never changed whether desktop icons show, pikapik leaves that setting unset when it puts them back, instead of setting it to show.
 
 ## [1.56.1] - 2026-10-24
 

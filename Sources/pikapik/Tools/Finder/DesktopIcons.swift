@@ -7,8 +7,8 @@ struct DesktopIconsHost {
 
     let journal: UserDefaults
     let iconsKey: () -> String
-    let iconsHidden: (String) -> Bool
-    let writeIcons: (String, Bool) -> Void
+    let iconsValue: (String) -> Bool?
+    let writeIcons: (String, Bool?) -> Void
     let desktopMade: () -> Bool
     let makeDesktop: () -> Void
 
@@ -18,14 +18,14 @@ struct DesktopIconsHost {
             CFPreferencesAppSynchronize(windowManager)
             return CFPreferencesGetAppBooleanValue("GloballyEnabled" as CFString, windowManager, nil) ? stageManagerKey : standardKey
         },
-        iconsHidden: { key in
+        iconsValue: { key in
             CFPreferencesAppSynchronize(windowManager)
             var valid: DarwinBoolean = false
             let value = CFPreferencesGetAppBooleanValue(key as CFString, windowManager, &valid)
-            return valid.boolValue ? value : key == stageManagerKey
+            return valid.boolValue ? value : nil
         },
         writeIcons: { key, hidden in
-            CFPreferencesSetAppValue(key as CFString, hidden as CFBoolean, windowManager)
+            CFPreferencesSetAppValue(key as CFString, hidden.map { $0 as CFBoolean }, windowManager)
             CFPreferencesAppSynchronize(windowManager)
             _ = try? Process.run(URL(fileURLWithPath: SystemPath.killall), arguments: ["WindowManager"])
         },
@@ -49,13 +49,14 @@ struct DesktopIconsHost {
 
 enum DesktopIcons {
     static func hidden(_ host: DesktopIconsHost) -> Bool {
-        host.iconsHidden(host.iconsKey()) || !host.desktopMade()
+        iconsHidden(host, host.iconsKey()) || !host.desktopMade()
     }
 
     static func hide(_ host: DesktopIconsHost) {
         guard !hidden(host) else { return }
         let key = host.iconsKey()
         host.journal.set(key, forKey: written)
+        host.journal.set(host.iconsValue(key) == nil, forKey: missing)
         OriginalValue.save(OriginalValue.Entry(before: false, ours: true), original, journal: host.journal)
         host.writeIcons(key, true)
     }
@@ -63,7 +64,7 @@ enum DesktopIcons {
     static func show(_ host: DesktopIconsHost, restartFinder: () -> Void) {
         putBack(host)
         let key = host.iconsKey()
-        if host.iconsHidden(key) { host.writeIcons(key, false) }
+        if iconsHidden(host, key) { host.writeIcons(key, false) }
         guard !host.desktopMade() else { return }
         host.makeDesktop()
         restartFinder()
@@ -71,12 +72,20 @@ enum DesktopIcons {
 
     static func putBack(_ host: DesktopIconsHost) {
         let key = host.journal.string(forKey: written) ?? host.iconsKey()
-        if OriginalValue.putBack(OriginalValue.load(original, journal: host.journal), current: host.iconsHidden(key)) == false { host.writeIcons(key, false) }
+        if OriginalValue.putBack(OriginalValue.load(original, journal: host.journal), current: iconsHidden(host, key)) == false {
+            host.writeIcons(key, host.journal.bool(forKey: missing) ? nil : false)
+        }
         OriginalValue.save(nil, original, journal: host.journal)
         host.journal.removeObject(forKey: written)
+        host.journal.removeObject(forKey: missing)
+    }
+
+    private static func iconsHidden(_ host: DesktopIconsHost, _ key: String) -> Bool {
+        host.iconsValue(key) ?? (key == DesktopIconsHost.stageManagerKey)
     }
 
     private static let original = "desktop-icons-original"
     private static let written = "desktop-icons-key"
+    private static let missing = "desktop-icons-missing"
 }
 #endif
