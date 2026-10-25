@@ -13,12 +13,22 @@ struct TestMainCopy {
     }
 
     static let crashKey = "test-main-copy-crash", systemKey = "test-main-copy-system"
+    static let run = UUID().uuidString
+
+    static func domain(_ name: String) -> String {
+        FileManager.default.temporaryDirectory.appendingPathComponent("test-main-copy-\(name)-\(run)").path
+    }
 
     static func main() {
         if CommandLine.arguments.dropFirst().first == "crash" {
             OriginalValue.save(OriginalValue.change(nil, current: false, to: true), crashKey)
             UserDefaults.standard.set(true, forKey: systemKey)
             _exit(0)
+        }
+        let standard = ProcessInfo.processInfo.processName
+        defer {
+            UserDefaults.standard.removePersistentDomain(forName: standard)
+            try? FileManager.default.removeItem(atPath: NSHomeDirectory() + "/Library/Preferences/\(standard).plist")
         }
 
         let website = MainCopyChoice.websiteID, store = MainCopyChoice.appStoreID
@@ -277,7 +287,12 @@ struct TestMainCopy {
 
     static func handover() {
         let website = MainCopyChoice.websiteID, store = MainCopyChoice.appStoreID
-        defer { ["journal", "local.A", "local.B", "local.C"].forEach { UserDefaults.standard.removePersistentDomain(forName: "test-main-copy.\($0)") } }
+        defer {
+            for name in ["journal", "local-A", "local-B", "local-C", "local-D"].map(domain) {
+                UserDefaults.standard.removePersistentDomain(forName: name)
+                try? FileManager.default.removeItem(atPath: name + ".plist")
+            }
+        }
         precondition(!MainCopyChoice.takesOver([], poweringOff: false))
         precondition(!MainCopyChoice.takesOver([copy(1, store, at: 5)], poweringOff: false))
         precondition(MainCopyChoice.takesOver([copy(1, website, at: 5)], poweringOff: false))
@@ -907,7 +922,7 @@ struct TestMainCopy {
     }
 
     final class Mac {
-        static let journalName = "test-main-copy.journal"
+        static let journalName = TestMainCopy.domain("journal")
         static let autohideKey = "animations-autohide-original"
 
         let journal = UserDefaults(suiteName: Mac.journalName)!
@@ -937,7 +952,7 @@ struct TestMainCopy {
         var leaving: [String] { journal.dictionaryRepresentation().keys.filter { $0.hasPrefix("animations-leaving-") }.sorted() }
 
         func party(_ name: String, _ bundleID: String, _ pid: Int32, _ wants: [AnimationSetting: Double], keep: Bool = false) -> Party {
-            let suite = "test-main-copy.local.\(name)"
+            let suite = TestMainCopy.domain("local-\(name)")
             let local = UserDefaults(suiteName: suite)!
             if !keep { local.removePersistentDomain(forName: suite) }
             let party = Party(name, bundleID, pid, wants)

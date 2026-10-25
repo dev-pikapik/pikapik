@@ -10,14 +10,16 @@ final class FakeDock {
     private let suite: String
 
     init(_ label: String, _ prefs: [String: Any], coreDock: Bool = true) {
-        suite = "test-dock-layers.\(label)"
-        UserDefaults.standard.removePersistentDomain(forName: suite)
+        suite = FileManager.default.temporaryDirectory.appendingPathComponent("test-dock-layers-\(label)-\(UUID().uuidString)").path
         journal = UserDefaults(suiteName: suite)!
         self.prefs = prefs
         self.coreDock = coreDock
     }
 
-    deinit { UserDefaults.standard.removePersistentDomain(forName: suite) }
+    deinit {
+        UserDefaults.standard.removePersistentDomain(forName: suite)
+        try? FileManager.default.removeItem(atPath: suite + ".plist")
+    }
 
     var host: DockHost {
         DockHost(journal: journal, read: { self.prefs[$0] }, write: { name, value in
