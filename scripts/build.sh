@@ -1,4 +1,8 @@
 #!/bin/bash
+# Usage: scripts/build.sh
+# Builds build/pikapik.app for Apple silicon and Intel at the same time and keeps the debug symbols of each of its programs in build/dSYM.
+# APPSTORE=1 builds the App Store version.
+# FAST=1 builds only the app itself, for Apple silicon and without optimization, to try a change quickly: without the fan helper, the player, the extensions and the strings check.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -8,6 +12,9 @@ MEDIA_EXTENSIONS="MediaReader MediaDecoder"
 PLAYER="$APP/Contents/Helpers/pikapik Player.app"
 PLAYER_SOURCES=(Helper/Player/*.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,ImageLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift Sources/pikapik/Core/Symbol.swift Sources/pikapik/UI/SymbolImage.swift)
 MIN_OS="14.0"
+ARCHS=(arm64 x86_64)
+HELPERS=$([ -n "${APPSTORE:-}" ] || echo 1)
+[ -z "${FAST:-}" ] || { ARCHS=(arm64); HELPERS=; EXTENSIONS=; MEDIA_EXTENSIONS=; }
 DEV_IDENTITY="pikapik Dev"
 if [ -z "${SIGN_IDENTITY:-}" ]; then
     SIGN_IDENTITY=-
@@ -27,15 +34,14 @@ fi
 
 APPSTORE_ID=com.pikapik.app
 rm -rf build
-mkdir -p "$APP/Contents/MacOS" build/strings
-[ -n "${APPSTORE:-}" ] || mkdir -p "$APP/Contents/Library/LaunchServices"
+mkdir -p "$APP/Contents/MacOS" build/strings build/dSYM
+[ -z "$HELPERS" ] || mkdir -p "$APP/Contents/Library/LaunchServices"
 [ -n "${APPSTORE:-}" ] || ./scripts/fetch-7zip.sh
-[ -n "${APPSTORE:-}" ] || ./scripts/fetch-ffmpeg.sh
-[ -n "${APPSTORE:-}" ] || /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string $(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" Sources/pikapik/Info.plist)" build/fan-helper.plist >/dev/null
+[ -z "$HELPERS" ] || ./scripts/fetch-ffmpeg.sh
+[ -z "$HELPERS" ] || /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string $(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" Sources/pikapik/Info.plist)" build/fan-helper.plist >/dev/null
 for EXT in $EXTENSIONS; do mkdir -p "$APP/Contents/PlugIns/$EXT.appex/Contents/MacOS"; done
 for EXT in $MEDIA_EXTENSIONS; do mkdir -p "$APP/Contents/Extensions/$EXT.appex/Contents/MacOS"; done
-[ -n "${APPSTORE:-}" ] || mkdir -p "$PLAYER/Contents/MacOS" "$PLAYER/Contents/Resources"
-EMIT=(-Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend build/strings)
+[ -z "$HELPERS" ] || mkdir -p "$PLAYER/Contents/MacOS" "$PLAYER/Contents/Resources"
 
 SOURCES=()
 while IFS= read -r -d '' f; do SOURCES+=("$f"); done < <(find Sources -name '*.swift' -print0)
@@ -55,51 +61,61 @@ elif [ -d Private/Sources ] && [ -n "$(find Private/Sources -name '*.swift' -pri
     echo "Including Private/Sources"
 fi
 
-for ARCH in arm64 x86_64; do
-    echo "Building $ARCH"
-    swiftc -O -whole-module-optimization \
-        -module-name Pikapik \
+SWIFTC=(swiftc -O -whole-module-optimization -num-threads "$(sysctl -n hw.ncpu)")
+if [ -n "${FAST:-}" ]; then
+    mkdir -p build/arm64
+    { echo '{'; for F in "${SOURCES[@]}"; do printf '"%s": {"object": "build/arm64/%s.o"},\n' "$F" "${F##*/}"; done; echo '"": {}}'; } > build/arm64/files.json
+    SWIFTC=(swiftc -Onone -enable-batch-mode -j "$(sysctl -n hw.ncpu)" -output-file-map build/arm64/files.json)
+fi
+SWIFTC+=(-emit-executable -g -swift-version 5 ${FLAGS[@]+"${FLAGS[@]}"})
+module() { echo "-module-name $1 -emit-module-path build/$ARCH/$1.swiftmodule"; }
+emit() { [ "$ARCH" != arm64 ] || [ -n "${FAST:-}" ] || echo "-Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend build/strings/$1"; }
+descendants() { local P; for P in $(pgrep -P "$1"); do echo "$P"; descendants "$P"; done; }
+trap 'kill $(descendants $$) 2>/dev/null || true' EXIT
+
+compile() {
+    "${SWIFTC[@]}" \
+        $(module Pikapik) \
         -target "$ARCH-apple-macos$MIN_OS" \
-        ${FLAGS[@]+"${FLAGS[@]}"} \
-        "${EMIT[@]}" \
+        $(emit Pikapik) \
         "${SOURCES[@]}" \
-        -o "build/pikapik-$ARCH"
-    [ -n "${APPSTORE:-}" ] || swiftc -O -whole-module-optimization \
-        -module-name FanHelper \
+        -o "build/$ARCH/pikapik"
+    [ -z "$HELPERS" ] || "${SWIFTC[@]}" \
+        $(module FanHelper) \
         -target "$ARCH-apple-macos$MIN_OS" \
         -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __info_plist -Xlinker build/fan-helper.plist \
         Helper/FanHelper/main.swift Sources/pikapik/Tools/Fans/SMC.swift Sources/pikapik/Tools/Fans/FanHelperProtocol.swift \
-        -o "build/fan-helper-$ARCH"
-    [ -n "${APPSTORE:-}" ] || swiftc -O -whole-module-optimization \
-        -module-name Player \
+        -o "build/$ARCH/fan-helper"
+    [ -z "$HELPERS" ] || "${SWIFTC[@]}" \
+        $(module Player) \
         -target "$ARCH-apple-macos$MIN_OS" \
-        "${EMIT[@]}" \
+        $(emit Player) \
         -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include \
         Vendor/ffmpeg/lib/*.dylib Vendor/ffmpeg/lib/libass.a -lc++ -liconv -framework CoreText -Xlinker -dead_strip_dylibs \
         -Xlinker -rpath -Xlinker @executable_path/../../../../Frameworks \
         "${PLAYER_SOURCES[@]}" \
-        -o "build/player-$ARCH"
+        -o "build/$ARCH/pikapik Player"
     for EXT in $EXTENSIONS; do
         SHARED=(Extensions/Shared/*.swift Sources/pikapik/Core/MainCopyChoice.swift)
         [ "$EXT" != Archive ] || SHARED+=(Sources/pikapik/Tools/Archive/Archive.swift)
         LINK=()
         [ "$EXT" != Preview ] || { SHARED=(); LINK=(-import-objc-header Extensions/Preview/libarchive.h -larchive); }
-        swiftc -O -whole-module-optimization \
-            -module-name "$EXT" \
+        "${SWIFTC[@]}" \
+            $(module "$EXT") \
             -target "$ARCH-apple-macos$MIN_OS" \
             -application-extension \
-            "${EMIT[@]}" \
+            $(emit "$EXT") \
             -Xlinker -e -Xlinker _NSExtensionMain \
             ${LINK[@]+"${LINK[@]}"} \
             Extensions/"$EXT"/*.swift ${SHARED[@]+"${SHARED[@]}"} \
-            -o "build/$EXT-$ARCH"
+            -o "build/$ARCH/$EXT"
     done
     for EXT in $MEDIA_EXTENSIONS; do
         MEDIA_SOURCES=(Extensions/MediaReader/*.swift)
         HEADER=MediaReader
         [ "$EXT" = MediaReader ] || { MEDIA_SOURCES=(Extensions/MediaDecoder/*.swift Extensions/MediaReader/Codecs.swift); HEADER=FFmpeg; }
-        swiftc -O -whole-module-optimization \
-            -module-name "$EXT" \
+        "${SWIFTC[@]}" \
+            $(module "$EXT") \
             -target "$ARCH-apple-macos15.0" \
             -application-extension \
             -parse-as-library \
@@ -108,22 +124,43 @@ for ARCH in arm64 x86_64; do
             Vendor/ffmpeg/lib/*.dylib -Xlinker -dead_strip_dylibs \
             -Xlinker -rpath -Xlinker @executable_path/../../../../Frameworks \
             "${MEDIA_SOURCES[@]}" \
-            -o "build/$EXT-$ARCH"
+            -o "build/$ARCH/$EXT"
     done
+}
+
+PIDS=()
+for ARCH in "${ARCHS[@]}"; do
+    echo "Building $ARCH"
+    mkdir -p "build/$ARCH"
+    compile > "build/$ARCH/build.log" 2>&1 &
+    PIDS+=($!)
+done
+for I in "${!ARCHS[@]}"; do
+    wait "${PIDS[$I]}" || { cat "build/${ARCHS[$I]}/build.log" >&2; echo "Building ${ARCHS[$I]} failed" >&2; exit 1; }
+    cat "build/${ARCHS[$I]}/build.log"
 done
 
-./scripts/check-strings.sh build/strings
+[ -n "${FAST:-}" ] || ./scripts/check-strings.sh build/strings
 rm -rf build/strings
 
-lipo -create build/pikapik-arm64 build/pikapik-x86_64 -output "$APP/Contents/MacOS/pikapik"
-rm build/pikapik-arm64 build/pikapik-x86_64
+universal() {
+    local IN=() DWARF=() ARCH
+    for ARCH in "${ARCHS[@]}"; do
+        IN+=("build/$ARCH/$1")
+        DWARF+=("build/$ARCH/$1.dSYM/Contents/Resources/DWARF/$1")
+        ditto "build/$ARCH/$1.dSYM" "build/dSYM/$1.dSYM"
+    done
+    lipo -create "${IN[@]}" -output "$2"
+    lipo -create "${DWARF[@]}" -output "build/dSYM/$1.dSYM/Contents/Resources/DWARF/$1"
+    strip -x "$2"
+}
+
+universal pikapik "$APP/Contents/MacOS/pikapik"
 ./scripts/make-lproj.sh
-if [ -z "${APPSTORE:-}" ]; then
-    lipo -create build/fan-helper-arm64 build/fan-helper-x86_64 -output "$APP/Contents/Library/LaunchServices/fan-helper"
-    rm build/fan-helper-arm64 build/fan-helper-x86_64
-    cp Vendor/7zip/7zz "$APP/Contents/MacOS/7zz"
-    lipo -create build/player-arm64 build/player-x86_64 -output "$PLAYER/Contents/MacOS/pikapik Player"
-    rm build/player-arm64 build/player-x86_64
+[ -n "${APPSTORE:-}" ] || cp Vendor/7zip/7zz "$APP/Contents/MacOS/7zz"
+if [ -n "$HELPERS" ]; then
+    universal fan-helper "$APP/Contents/Library/LaunchServices/fan-helper"
+    universal "pikapik Player" "$PLAYER/Contents/MacOS/pikapik Player"
     cp Helper/Player/Info.plist "$PLAYER/Contents/Info.plist"
     cp -R build/lproj/*.lproj "$PLAYER/Contents/Resources/"
     LOCAL_TEXT='pikapik Player shares the video you are playing with the AirPlay device you choose, only inside your local network.'
@@ -134,8 +171,7 @@ fi
 cp Sources/pikapik/Info.plist "$APP/Contents/Info.plist"
 for EXT in $EXTENSIONS; do
     APPEX="$APP/Contents/PlugIns/$EXT.appex"
-    lipo -create "build/$EXT-arm64" "build/$EXT-x86_64" -output "$APPEX/Contents/MacOS/$EXT"
-    rm "build/$EXT-arm64" "build/$EXT-x86_64"
+    universal "$EXT" "$APPEX/Contents/MacOS/$EXT"
     cp "Extensions/$EXT/Info.plist" "$APPEX/Contents/Info.plist"
     [ -z "${APPSTORE:-}" ] || { mkdir -p "$APPEX/Contents/Resources" && cp Resources/PrivacyInfo.xcprivacy "$APPEX/Contents/Resources/"; }
     for KEY in CFBundleShortVersionString CFBundleVersion; do
@@ -158,8 +194,7 @@ for EXT in $EXTENSIONS; do
 done
 for EXT in $MEDIA_EXTENSIONS; do
     APPEX="$APP/Contents/Extensions/$EXT.appex"
-    lipo -create "build/$EXT-arm64" "build/$EXT-x86_64" -output "$APPEX/Contents/MacOS/$EXT"
-    rm "build/$EXT-arm64" "build/$EXT-x86_64"
+    universal "$EXT" "$APPEX/Contents/MacOS/$EXT"
     cp "Extensions/$EXT/Info.plist" "$APPEX/Contents/Info.plist"
     for KEY in CFBundleShortVersionString CFBundleVersion; do
         /usr/libexec/PlistBuddy -c "Set :$KEY $(/usr/libexec/PlistBuddy -c "Print :$KEY" "$APP/Contents/Info.plist")" "$APPEX/Contents/Info.plist"
@@ -167,6 +202,7 @@ for EXT in $MEDIA_EXTENSIONS; do
     NAME="$(echo "$EXT" | tr a-z A-Z)_PROFILE"
     [ ! -f "${!NAME:-}" ] || cp "${!NAME}" "$APPEX/Contents/embedded.provisionprofile"
 done
+rm -rf build/arm64 build/x86_64
 
 RES="$APP/Contents/Resources"
 mkdir -p "$RES"
@@ -183,6 +219,8 @@ if [ -z "${APPSTORE:-}" ]; then
         grep -F "\"$FINDER_TEXT\" = " "$LPROJ/Localizable.strings" | sed 's/^"[^"]*"/"NSAppleEventsUsageDescription"/' >> "$RES/$(basename "$LPROJ")/InfoPlist.strings"
     done
     cp Vendor/7zip/License.txt "$RES/7-Zip License.txt"
+fi
+if [ -n "$HELPERS" ]; then
     mkdir -p "$APP/Contents/Frameworks"
     cp Vendor/ffmpeg/lib/*.dylib "$APP/Contents/Frameworks/"
     { printf 'pikapik Player plays DTS sound and shows the picture subtitles PGS, VobSub and DVB with the FFmpeg decoders dca, pgssub, dvdsub and dvbsub; like all of FFmpeg here, they are under the LGPL below.\n\n'; cat Vendor/ffmpeg/License.txt; } > "$RES/Player Licenses.txt"
@@ -208,7 +246,7 @@ else
     echo "Icon: prebuilt AppIcon.icns"
 fi
 rm -f build/icon-info.plist build/actool.log
-if [ -z "${APPSTORE:-}" ]; then
+if [ -n "$HELPERS" ]; then
     cp "$RES/AppIcon.icns" "$PLAYER/Contents/Resources/"
     for KEY in CFBundleShortVersionString CFBundleVersion; do
         /usr/libexec/PlistBuddy -c "Set :$KEY $(/usr/libexec/PlistBuddy -c "Print :$KEY" "$APP/Contents/Info.plist")" "$PLAYER/Contents/Info.plist"
@@ -260,7 +298,7 @@ elif [ -n "$DEV" ]; then
         ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$PLIST")"
         /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier ${ID/com.pikapik.app.direct./com.pikapik.app.dev.}" -c "Set :EXAppExtensionAttributes:ClassImplementationID ${ID/com.pikapik.app.direct./com.pikapik.app.dev.}" "$PLIST"
     done
-    /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.pikapik.app.dev.player" "$PLAYER/Contents/Info.plist"
+    [ -z "$HELPERS" ] || /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.pikapik.app.dev.player" "$PLAYER/Contents/Info.plist"
 fi
 APP_ENTITLEMENTS=()
 for EXT in $EXTENSIONS; do
@@ -268,7 +306,7 @@ for EXT in $EXTENSIONS; do
     [ -n "${APPSTORE:-}" ] && [ -n "${TEAM_ID:-}" ] && ENTITLEMENTS="$(group_entitlements "$ENTITLEMENTS" "$EXT" "$APP/Contents/PlugIns/$EXT.appex")"
     sign --entitlements "$ENTITLEMENTS" "$APP/Contents/PlugIns/$EXT.appex"
 done
-if [ -z "${APPSTORE:-}" ]; then
+if [ -n "$HELPERS" ]; then
     sign "$APP"/Contents/Frameworks/*.dylib
     for EXT in $MEDIA_EXTENSIONS; do sign --entitlements "Extensions/$EXT/$EXT.entitlements" "$APP/Contents/Extensions/$EXT.appex"; done
     cp Helper/Player/Player.entitlements build/player.entitlements
@@ -282,7 +320,7 @@ if [ -n "${APPSTORE:-}" ]; then
 else
     APP_ENTITLEMENTS=(--entitlements Resources/Direct.entitlements)
     BUNDLE_ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Contents/Info.plist")"
-    sign --identifier "$BUNDLE_ID.fans" "$APP/Contents/Library/LaunchServices/fan-helper"
+    [ -z "$HELPERS" ] || sign --identifier "$BUNDLE_ID.fans" "$APP/Contents/Library/LaunchServices/fan-helper"
     sign --identifier "$BUNDLE_ID.7zz" "$APP/Contents/MacOS/7zz"
 fi
 sign ${APP_ENTITLEMENTS[@]+"${APP_ENTITLEMENTS[@]}"} "$APP"
