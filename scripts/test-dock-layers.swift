@@ -144,8 +144,8 @@ struct TestDockLayers {
         print("a quit signal from shutdown or kill makes the main copy put everything back before it quits: ok")
 
         let terminate = app.components(separatedBy: "func applicationShouldTerminate")[1].components(separatedBy: "func applicationWillTerminate")[0]
-        let logout = terminate.range(of: "if Background.isLoggingOut { powerOff() }"), answer = terminate.range(of: "return .terminate")
-        precondition(logout != nil && answer != nil && logout!.lowerBound < answer!.lowerBound, "logout, restart and shutdown put everything back before pikapik answers the quit")
-        print("on logout, restart or shutdown every copy puts everything back before it answers the quit: ok")
+        let logout = terminate.range(of: "if Background.isLoggingOut { MainCopy.shared.logOut(); powerOff() }"), answer = terminate.range(of: "return .terminate")
+        precondition(logout != nil && answer != nil && logout!.lowerBound < answer!.lowerBound, "logout, restart and shutdown tell the other copies and put everything back before pikapik answers the quit")
+        print("on logout, restart or shutdown every copy tells the others and puts everything back before it answers the quit: ok")
     }
 }

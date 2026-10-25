@@ -196,7 +196,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 **Options:**
 - Make This Copy the Main One: starts a fresh copy that opens Settings and takes the lead.
 
-**Nuances:** Copies with the same bundle id that start later replace the older one. Older versions without this feature do not step back. A copy that crashes leaves its changes until the next copy starts. The Dock, DDC monitor brightness and the default apps for archives are not part of the handover. A copy started by running its binary from Terminal has no launch date, so the other copies do not see it and it does not see them: for tests start every copy with `open -n`.
+**Nuances:** Copies with the same bundle id that start later replace the older one. Older versions without this feature do not step back. A copy that crashes leaves its changes until the next copy starts. On log out, restart and shut down the main copy tells the others before it quits, and they wait 3 seconds for their own quit instead of taking over and changing the Dock and other settings again; if the log out is cancelled, the next copy takes over after those 3 seconds. The Dock, DDC monitor brightness and the default apps for archives are not part of the handover. A copy started by running its binary from Terminal has no launch date, so the other copies do not see it and it does not see them: for tests start every copy with `open -n`.
 
 **Edition:** Both; the website and App Store copies count as the same family.
 

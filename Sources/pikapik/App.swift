@@ -154,7 +154,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         let background = Background.shared
-        if Background.isLoggingOut { powerOff() }
+        if Background.isLoggingOut { MainCopy.shared.logOut(); powerOff() }
         if background.quitting || Background.isOutsideQuit { return .terminateNow }
         guard Background.isOn, MainCopy.shared.role != .passive, !NSEvent.modifierFlags.contains(.option) else {
             if MainCopy.canAct { KeepAwake.shared.set(.off) }
