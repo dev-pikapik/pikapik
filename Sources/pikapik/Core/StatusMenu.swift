@@ -6,7 +6,6 @@ import AppKit
     private var monitor: Any?
     #if DEBUG
     private var testMenu: DispatchSourceSignal?
-    private var testMove: DispatchSourceSignal?
     #endif
 
     func start() {
@@ -25,12 +24,6 @@ import AppKit
                 }
             }
             testMenu?.resume()
-            #if APPSTORE
-            signal(SIGUSR2, SIG_IGN)
-            testMove = DispatchSource.makeSignalSource(signal: SIGUSR2, queue: .main)
-            testMove?.setEventHandler { MainActor.assumeIsolated { FinderKeys.shared.moveHere() } }
-            testMove?.resume()
-            #endif
         }
         #endif
         monitor = NSEvent.addLocalMonitorForEvents(matching: [.rightMouseDown, .leftMouseDown]) { [weak self] event in
