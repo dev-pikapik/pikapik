@@ -1736,14 +1736,14 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Options:**
 - Corner for FPS — four corner buttons in the picture; hovering a corner shows its name (`FrameRateSettings` in `FrameRateArt.swift`).
-- Allow — under “Needs a permission. Click to allow it.”: asks Screen Recording and opens Permissions on the row (`FrameRateSettings` in `FrameRateArt.swift`).
+- Allow — under “To count frames, allow ‘Screen Recording’. No picture is kept or sent.”: asks Screen Recording and opens Permissions on the row (`FrameRateSettings` in `FrameRateArt.swift`).
 
 **Nuances:** pikapik never prompts during a game. On macOS 27 the Screen Recording row and the line appear only after a game the system could not count (an OpenGL one); they stay on later launches until allowed. If macOS asks to reopen pikapik after you allow it, do that. Never live-checked: the real Screen Recording grant flow, the relaunch after granting, and the handoff from trace to capture with the permission granted.
 
 **Edition:** Both; App Store differs: always the screen-recording counter.
 
 **Test:**
-1. Turn on Show FPS without Screen Recording on macOS 26 or in the App Store build → no prompt yet; the line “Needs a permission. Click to allow it.” shows under the switch and Permissions lists Screen Recording with “Needed to count frames”. Click Allow in the line → the Screen Recording prompt appears and Permissions opens on the row. Both go away once allowed and update when you come back from System Settings. Deny it → the pill shows a dimmed “—”, with no crash and no further prompts.
+1. Turn on Show FPS without Screen Recording on macOS 26 or in the App Store build → no prompt yet; the line “To count frames, allow ‘Screen Recording’. No picture is kept or sent.” shows under the switch and Permissions lists Screen Recording with “Needed to count frames”. Click Allow in the line → the Screen Recording prompt appears and Permissions opens on the row. Both go away once allowed and update when you come back from System Settings. Deny it → the pill shows a dimmed “—”, with no crash and no further prompts.
 2. (macOS 27, Website) Expected: no prompt and no Screen Recording row while games are counted by the system. Play a game the system cannot count (an OpenGL one) → after about three seconds the line and the row “Needed for some games” appear, still without a prompt during the game, and both stay on later launches until allowed.
 3. Start a game with Show FPS on → a small pill with a dash appears in the chosen corner of the game window (top corners sit below the title bar), then shows the frame rate. From 100 on the pill gets one digit wider and stays in its corner, with the small FPS on the same baseline. Quit the game → the pill fades out at once.
 4. Click each corner of the picture, then turn the switch off and on while the game runs → the pill in the picture and the one over the game move to the corner at once; off fades the pill out, on brings it back without restarting the game. With Reduce Motion on the pill appears and goes without fading.
