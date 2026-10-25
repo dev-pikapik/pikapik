@@ -96,7 +96,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **How it works:** Stored under `Background.key`; `Sources/pikapik/Core/Background.swift`, toggle at `GeneralSettings.swift` (`#if !APPSTORE`). Open pikapik again to bring the menu bar icon back; ⌥⌘Q (Quit Completely) really quits.
 
-**Nuances:** In the App Store build `Background.isOn` is always false, so Quit always quits.
+**Nuances:** In the App Store build `Background.isOn` is always false, so Quit always quits. On log out, restart and shut down pikapik quits even with this on (`Background.isLoggingOut`), and before anything else it puts back hot corners and the Dock delay from a game, animations, the Dock on one display, key repeat, desktop icons, the main display and hidden files, restarting the Dock at most once (`powerOff` in `App.swift`).
 
 **Edition:** Website only (App Store: cut — an App Store app has to quit when asked).
 
@@ -1113,7 +1113,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Hides the Dock until the pointer touches the edge.
 
-**How it works:** Website: `autohide` in `com.apple.dock` (`AnimationsTool.host` in `AnimationsTool.swift`). App Store: an animated guide (“Automatically hide and show the Dock” turned on) above an Open row to System Settings › Desktop & Dock (`AnimationLinksPage` in `SettingsWindow.swift`).
+**How it works:** Website: `autohide` in `com.apple.dock` (`AnimationsTool.host` in `AnimationsTool.swift`). If you never set it, the key stays missing: pikapik notes that (`animations-autohide-missing`) and removes the key again when it puts things back. The switch stays on the page after you turn it on, and Restore Defaults puts it back too. App Store: an animated guide (“Automatically hide and show the Dock” turned on) above an Open row to System Settings › Desktop & Dock (`AnimationLinksPage` in `SettingsWindow.swift`).
 
 **Edition:** Both; App Store differs: guide and Open button instead of the switch.
 
@@ -1836,7 +1836,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Drops Dock gestures (Mission Control, Spaces and similar swipes) and mouse button shortcuts while a game is in front.
 
-**How it works:** DockSwipe events (`CGEventType` 30, field 110 = 23; field 123 motion, 132 phase) are dropped at the “began” phase (`PointerShortcuts.swift`, `GameRules.dropsSwipe`). Hot corners: `DockEdges` zeroes only the paused corners. The motion codes came from event logging, not from Apple documents.
+**How it works:** DockSwipe events (`CGEventType` 30, field 110 = 23; field 123 motion, 132 phase) are dropped at the “began” phase (`PointerShortcuts.swift`, `GameRules.dropsSwipe`). Hot corners: `DockEdges` zeroes only the paused corners and, when the Dock hides, sets its delay to 1000 seconds. Your own values stay under the game’s in the `game-mode-dock` journal: during a game Settings shows and changes yours (`DockEdges.read`, `DockEdges.write`), and they come back after the game, when pikapik quits, and at log out, restart and shut down (`scripts/test-dock-layers.swift`). The motion codes came from event logging, not from Apple documents.
 
 **Options:**
 - Change… on a hot-corner row — menu of the actions macOS offers for a corner; picking one writes `com.apple.dock wvous-<corner>-corner` and restarts the Dock once (`HotCorners.swift`, `HotCornerMenu` in `SystemShortcutList.swift`). The first value is remembered, and Put Back in the same menu writes it back. Off while a game is in front. Website only; other rows and the App Store build still show Change in System Settings.

@@ -1,15 +1,14 @@
 import Foundation
 
 #if !APPSTORE
-private let killallURL = URL(fileURLWithPath: "/usr/bin/killall")
 private let applicationServicesPath = "/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices"
 
 enum HotCorners {
-    private static let journalKey = "hot-corners-before", oursKey = "hot-corners-ours", dock = "com.apple.dock" as CFString
+    private static let journalKey = "hot-corners-before", oursKey = "hot-corners-ours"
 
     static func key(_ side: String) -> String { "wvous-\(side)-corner" }
 
-    static var before: [String: Int] { UserDefaults.standard.dictionary(forKey: journalKey) as? [String: Int] ?? [:] }
+    static var before: [String: Int] { journal(.system).before }
 
     static func choose(_ action: Int, current: Int, saved: [String: Int], side: String) -> (saved: [String: Int], write: Int?) {
         guard action != current else { return (saved, nil) }
@@ -18,7 +17,7 @@ enum HotCorners {
         return (saved, action)
     }
 
-    static var ours: [String: Int] { UserDefaults.standard.dictionary(forKey: oursKey) as? [String: Int] ?? [:] }
+    static var ours: [String: Int] { journal(.system).ours }
 
     static func putBack(current: Int, saved: [String: Int], ours: Int? = nil, side: String) -> (saved: [String: Int], write: Int?) {
         var saved = saved
@@ -27,55 +26,56 @@ enum HotCorners {
         return (saved, original == current ? nil : original)
     }
 
-    static func choose(_ action: Int, side: String) { apply(side, choose(action, current: current(side), saved: before, side: side)) { put($0, side: side) } }
+    static func choose(_ action: Int, side: String, _ host: DockHost = .system) {
+        apply(side, choose(action, current: current(side, host), saved: journal(host).before, side: side), host) { put($0, side: side, host) }
+    }
 
-    static func putBack(side: String) { apply(side, putBack(current: current(side), saved: before, side: side)) { put($0, side: side) } }
+    static func putBack(side: String, _ host: DockHost = .system) {
+        apply(side, putBack(current: current(side, host), saved: journal(host).before, side: side), host) { put($0, side: side, host) }
+    }
 
-    static func putBackAll() {
-        CFPreferencesAppSynchronize(dock)
-        var saved = before, wrote: [String: Int] = [:]
-        let ours = ours
+    static func putBackAll(_ host: DockHost = .system) {
+        var saved = journal(host).before, wrote: [String: Int] = [:]
+        let ours = journal(host).ours
         for side in saved.keys {
-            let name = key(side) as CFString
-            let plan = putBack(current: (CFPreferencesCopyAppValue(name, dock) as? NSNumber)?.intValue ?? 0, saved: saved, ours: ours[side], side: side)
+            let plan = putBack(current: current(side, host), saved: saved, ours: ours[side], side: side)
             saved = plan.saved
-            guard let value = plan.write else { continue }
-            CFPreferencesSetAppValue(name, value as CFNumber, dock)
+            guard let value = plan.write, DockEdges.write(key(side), value, host) else { continue }
             wrote[key(side)] = value
         }
-        if !wrote.isEmpty {
-            CFPreferencesAppSynchronize(dock)
-            if !DockCorners.set(wrote) { _ = try? Process.run(killallURL, arguments: ["Dock"]) }
-        }
-        remember(saved, [:])
+        if !wrote.isEmpty, !host.setCorners(wrote) { host.relaunch() }
+        remember(saved, [:], host)
     }
 
     static func kept(_ old: [String: Int], _ new: [String: Int]) -> [String: Int] {
         old.merging(new) { $1 }
     }
 
-    static func apply(_ side: String, _ result: (saved: [String: Int], write: Int?), write: (Int) -> Void) {
-        var written = ours
+    static func apply(_ side: String, _ result: (saved: [String: Int], write: Int?), _ host: DockHost = .system, write: (Int) -> Void) {
+        let now = journal(host)
+        var written = now.ours
         written[side] = result.saved[side] == nil ? nil : (result.write ?? written[side])
-        remember(kept(before, result.saved), kept(ours, written))
+        remember(kept(now.before, result.saved), kept(now.ours, written), host)
         if let value = result.write { write(value) }
-        remember(result.saved, written)
+        remember(result.saved, written, host)
     }
 
-    private static func current(_ side: String) -> Int {
-        CFPreferencesAppSynchronize(dock)
-        return (CFPreferencesCopyAppValue(key(side) as CFString, dock) as? NSNumber)?.intValue ?? 0
+    private static func journal(_ host: DockHost) -> (before: [String: Int], ours: [String: Int]) {
+        (host.journal.dictionary(forKey: journalKey) as? [String: Int] ?? [:], host.journal.dictionary(forKey: oursKey) as? [String: Int] ?? [:])
     }
 
-    private static func put(_ value: Int, side: String) {
-        CFPreferencesSetAppValue(key(side) as CFString, value as CFNumber, dock)
-        CFPreferencesAppSynchronize(dock)
-        if !DockCorners.set([key(side): value]) { _ = try? Process.run(killallURL, arguments: ["Dock"]) }
+    private static func current(_ side: String, _ host: DockHost) -> Int {
+        (DockEdges.read(key(side), host) as? NSNumber)?.intValue ?? 0
     }
 
-    private static func remember(_ saved: [String: Int], _ ours: [String: Int]) {
-        UserDefaults.standard.set(saved.isEmpty ? nil : saved, forKey: journalKey)
-        UserDefaults.standard.set(ours.isEmpty ? nil : ours, forKey: oursKey)
+    private static func put(_ value: Int, side: String, _ host: DockHost) {
+        guard DockEdges.write(key(side), value, host), !host.setCorners([key(side): value]) else { return }
+        host.relaunch()
+    }
+
+    private static func remember(_ saved: [String: Int], _ ours: [String: Int], _ host: DockHost) {
+        host.journal.set(saved.isEmpty ? nil : saved, forKey: journalKey)
+        host.journal.set(ours.isEmpty ? nil : ours, forKey: oursKey)
     }
 }
 
