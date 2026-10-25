@@ -82,19 +82,22 @@ enum TestLayout {
     }
 
     static func words(_ language: String) -> [String] {
-        let data = (try? Data(contentsOf: URL(fileURLWithPath: "Resources/Localizable.xcstrings"))) ?? Data()
-        let root = (try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["strings"] as? [String: [String: Any]] ?? [:]
-        let values = root.values.compactMap { item -> String? in
-            guard let loc = (item["localizations"] as? [String: Any])?[language] as? [String: Any] else { return nil }
-            if let value = (loc["stringUnit"] as? [String: Any])?["value"] as? String { return value }
-            let plural = (loc["variations"] as? [String: Any])?["plural"] as? [String: Any]
-            return ((plural?["many"] ?? plural?["other"]) as? [String: Any]).flatMap { ($0["stringUnit"] as? [String: Any])?["value"] as? String }
-        }
-        precondition(!values.isEmpty, "no strings for \(language)")
+        let tokens = recorded("words", language, "") {
+            let data = (try? Data(contentsOf: URL(fileURLWithPath: "Resources/Localizable.xcstrings"))) ?? Data()
+            let root = (try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["strings"] as? [String: [String: Any]] ?? [:]
+            let values = root.values.compactMap { item -> String? in
+                guard let loc = (item["localizations"] as? [String: Any])?[language] as? [String: Any] else { return nil }
+                if let value = (loc["stringUnit"] as? [String: Any])?["value"] as? String { return value }
+                let plural = (loc["variations"] as? [String: Any])?["plural"] as? [String: Any]
+                return ((plural?["many"] ?? plural?["other"]) as? [String: Any]).flatMap { ($0["stringUnit"] as? [String: Any])?["value"] as? String }
+            }
+            precondition(!values.isEmpty, "no strings for \(language)")
+            return Set(values.flatMap { $0.split(whereSeparator: \.isWhitespace) }.filter { !$0.contains("%") }.map(String.init)).sorted()
+        }!
         var words = Set<String>()
-        for token in values.flatMap({ value in value.split(whereSeparator: \.isWhitespace) }) where !token.contains("%") {
-            words.insert(String(token))
-            if let core = KeyboardLayouts.core(String(token)) { words.insert(core) }
+        for token in tokens {
+            words.insert(token)
+            if let core = KeyboardLayouts.core(token) { words.insert(core) }
         }
         return words.sorted()
     }
