@@ -82,15 +82,19 @@ jobs:
           fi
 
       - name: Restore FFmpeg
+        id: ffmpeg
         uses: actions/cache@v4
         with:
           path: Vendor/ffmpeg
           key: ffmpeg-${{ hashFiles('scripts/fetch-ffmpeg.sh') }}
 
+      - name: Install the FFmpeg build tools
+        if: steps.ffmpeg.outputs.cache-hit != 'true'
+        run: brew install meson ninja nasm pkg-config
+
       - name: Build
         run: |
           xcodebuild -version
-          brew install meson ninja nasm pkg-config
           ./scripts/package.sh
 
       - name: Notarize
@@ -156,6 +160,20 @@ jobs:
             done
             [ "$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$CHECK/Contents/Info.plist")" = com.pikapik.app.direct ]
           done
+          # Each program built here has debug symbols from this same build; 7-Zip and the FFmpeg libraries ship without them
+          { find build/check/pikapik.app -type f -perm -u+x ! -name 7zz ! -name '*.dylib' -exec dwarfdump --uuid {} + 2>/dev/null || true; } | awk '{print $2}' | sort -u > build/check/app.uuid
+          dwarfdump --uuid build/dSYM/*.dSYM | awk '{print $2}' | sort -u > build/check/dSYM.uuid
+          [ -s build/check/dSYM.uuid ]
+          diff build/check/app.uuid build/check/dSYM.uuid || { echo "::error::The debug symbols in build/dSYM don't match the programs in the app"; exit 1; }
+
+      - name: Upload debug symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: pikapik-${{ env.VERSION }}-dSYM
+          path: build/dSYM
+          retention-days: 90
+          if-no-files-found: error
+          overwrite: true
 
       - name: Upload test build
         if: github.ref_type != 'tag'
