@@ -21,14 +21,15 @@ struct TestMainCopy {
 
     static func main() {
         if CommandLine.arguments.dropFirst().first == "crash" {
-            OriginalValue.save(OriginalValue.change(nil, current: false, to: true), crashKey)
-            UserDefaults.standard.set(true, forKey: systemKey)
+            let defaults = UserDefaults(suiteName: CommandLine.arguments[2])!
+            OriginalValue.save(OriginalValue.change(nil, current: false, to: true), crashKey, journal: defaults)
+            defaults.set(true, forKey: systemKey)
             _exit(0)
         }
-        let standard = ProcessInfo.processInfo.processName
+        let suite = domain("original"), defaults = UserDefaults(suiteName: suite)!
         defer {
-            UserDefaults.standard.removePersistentDomain(forName: standard)
-            try? FileManager.default.removeItem(atPath: NSHomeDirectory() + "/Library/Preferences/\(standard).plist")
+            UserDefaults.standard.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(atPath: suite + ".plist")
         }
 
         let website = MainCopyChoice.websiteID, store = MainCopyChoice.appStoreID
@@ -68,38 +69,36 @@ struct TestMainCopy {
         print("the original goes back only while the switch still holds our value: ok")
 
         let key = "test-main-copy-original"
-        defer { UserDefaults.standard.removeObject(forKey: key) }
-        OriginalValue.save(first, key)
-        precondition(OriginalValue.load(key) == first)
-        OriginalValue.save(nil, key)
-        precondition(OriginalValue.load(key) == nil)
+        OriginalValue.save(first, key, journal: defaults)
+        precondition(OriginalValue.load(key, journal: defaults) == first)
+        OriginalValue.save(nil, key, journal: defaults)
+        precondition(OriginalValue.load(key, journal: defaults) == nil)
         print("the remembered original survives a restart and can be cleared: ok")
 
         var system = false
-        var entry = OriginalValue.set(key, current: system, to: true) { value in
-            precondition(OriginalValue.load(key) == first)
+        var entry = OriginalValue.set(key, journal: defaults, current: system, to: true) { value in
+            precondition(OriginalValue.load(key, journal: defaults) == first)
             system = value
         }
-        precondition(system && entry == first && OriginalValue.load(key) == first)
-        entry = OriginalValue.set(key, current: system, to: false) { value in
-            precondition(OriginalValue.load(key) == first)
+        precondition(system && entry == first && OriginalValue.load(key, journal: defaults) == first)
+        entry = OriginalValue.set(key, journal: defaults, current: system, to: false) { value in
+            precondition(OriginalValue.load(key, journal: defaults) == first)
             system = value
         }
-        precondition(!system && entry == nil && OriginalValue.load(key) == nil)
+        precondition(!system && entry == nil && OriginalValue.load(key, journal: defaults) == nil)
         print("the original is saved before the switch is written and forgotten only after it is back: ok")
 
         let wanted = "test-main-copy-wanted"
-        defer { UserDefaults.standard.removeObject(forKey: wanted) }
-        OriginalValue.set(key, intent: wanted, current: system, to: true) { value in
-            precondition(OriginalValue.load(wanted) == first && OriginalValue.load(key) == first)
+        OriginalValue.set(key, intent: wanted, journal: defaults, local: defaults, current: system, to: true) { value in
+            precondition(OriginalValue.load(wanted, journal: defaults) == first && OriginalValue.load(key, journal: defaults) == first)
             system = value
         }
-        precondition(system && OriginalValue.load(wanted) == first && OriginalValue.load(key) == first)
-        OriginalValue.set(key, intent: wanted, current: system, to: false) { value in
-            precondition(OriginalValue.load(wanted) == nil && OriginalValue.load(key) == first)
+        precondition(system && OriginalValue.load(wanted, journal: defaults) == first && OriginalValue.load(key, journal: defaults) == first)
+        OriginalValue.set(key, intent: wanted, journal: defaults, local: defaults, current: system, to: false) { value in
+            precondition(OriginalValue.load(wanted, journal: defaults) == nil && OriginalValue.load(key, journal: defaults) == first)
             system = value
         }
-        precondition(!system && OriginalValue.load(wanted) == nil && OriginalValue.load(key) == nil)
+        precondition(!system && OriginalValue.load(wanted, journal: defaults) == nil && OriginalValue.load(key, journal: defaults) == nil)
         print("the wish to keep the switch on is written before the switch and forgotten before it is turned off: ok")
 
         let on = OriginalValue.Entry(before: false, ours: true)
@@ -155,22 +154,20 @@ struct TestMainCopy {
         precondition(OriginalValue.putBack(linear, ours: fast, current: ["linear": 1, "acceleration": 131072]) == ["acceleration": 57344])
         print("with acceleration off in System Settings only the speed goes back: ok")
 
-        let defaults = UserDefaults.standard
-        defer { defaults.removeObject(forKey: crashKey); defaults.removeObject(forKey: systemKey) }
         let crashed = Process()
         crashed.executableURL = Bundle.main.executableURL
-        crashed.arguments = ["crash"]
+        crashed.arguments = ["crash", suite]
         try! crashed.run()
         crashed.waitUntilExit()
-        CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication)
-        let current = defaults.bool(forKey: systemKey), saved = OriginalValue.load(crashKey)
+        CFPreferencesAppSynchronize(suite as CFString)
+        let current = defaults.bool(forKey: systemKey), saved = OriginalValue.load(crashKey, journal: defaults)
         precondition(current && saved == first)
         precondition(OriginalValue.change(saved, current: current, to: true) == first)
         let real = OriginalValue.putBack(saved, current: current)
         precondition(real == false)
         defaults.set(real, forKey: systemKey)
-        OriginalValue.save(nil, crashKey)
-        precondition(!defaults.bool(forKey: systemKey) && OriginalValue.load(crashKey) == nil)
+        OriginalValue.save(nil, crashKey, journal: defaults)
+        precondition(!defaults.bool(forKey: systemKey) && OriginalValue.load(crashKey, journal: defaults) == nil)
         print("after a crash the next launch keeps the real original and puts it back: ok")
 
         processStart()
