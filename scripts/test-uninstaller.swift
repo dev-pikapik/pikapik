@@ -1015,7 +1015,7 @@ enum UninstallerTests {
         w.link("root/Applications/Shortcut", to: w.at("root/Applications/Suite").path)
         precondition(AppInventory.isRealDirectory(w.at("root/Applications/Suite")) && !AppInventory.isRealDirectory(w.at("root/Applications/Shortcut")))
         precondition(!AppInventory.isRealDirectory(w.at("root/Applications/readme.txt")) && !AppInventory.isRealDirectory(w.at("root/Applications/Missing")))
-        let own = ["com.pikapik.app", "com.pikapik.app.direct", "com.pikapik.app.dev", "com.pikapik.app.direct.player", "com.pikapik.app.dev.player"]
+        let own = ["com.pikapik.tools", "com.pikapik.app.direct", "com.pikapik.app.dev", "com.pikapik.app.direct.player", "com.pikapik.app.dev.player"]
         for id in own + ["com.apple.Safari"] {
             precondition(AppIdentity(url: w.at("root/Applications/pikapik.app"), bundleID: id).isOwn == own.contains(id), id)
         }
