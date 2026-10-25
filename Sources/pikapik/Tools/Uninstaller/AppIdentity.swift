@@ -214,6 +214,7 @@ struct AppIdentity: Equatable, Identifiable {
     var id: String { url.path }
     var displayName: String { url.deletingPathExtension().lastPathComponent }
     var vendors: [String] { AppNames.vendors(bundleID: bundleID, organization: organization) }
+    var isOwn: Bool { bundleID.hasPrefix(AppConstants.bundleIDPrefix) }
 
     private var usableNested: [String] {
         nestedIDs.filter { $0.contains(".") && !AppNames.isIgnoredNested($0) }
