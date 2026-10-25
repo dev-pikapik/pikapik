@@ -4,8 +4,8 @@ import Foundation
 struct TestDesktopIconsForceQuit {
     static let key = "desktop-icons-original"
 
-    static func copy(_ journal: UserDefaults, icons: @escaping () -> Bool, writeIcons: @escaping (Bool) -> Void) -> DesktopIconsHost {
-        DesktopIconsHost(journal: journal, iconsHidden: icons, writeIcons: writeIcons, desktopMade: { true }, makeDesktop: {})
+    static func copy(_ journal: UserDefaults, icons: @escaping () -> Bool?, writeIcons: @escaping (Bool?) -> Void) -> DesktopIconsHost {
+        DesktopIconsHost(journal: journal, iconsKey: { DesktopIconsHost.standardKey }, iconsValue: { _ in icons() }, writeIcons: { _, hidden in writeIcons(hidden) }, desktopMade: { true }, makeDesktop: {})
     }
 
     static func main() {
@@ -27,10 +27,10 @@ struct TestDesktopIconsForceQuit {
         killed.waitUntilExit()
         precondition(killed.terminationStatus == 0, "the copy must stop while it hides the icons")
 
-        var icons = true
-        var writes: [Bool] = []
+        var icons: Bool? = true
+        var writes: [Bool?] = []
         DesktopIcons.putBack(copy(UserDefaults(suiteName: path)!, icons: { icons }, writeIcons: { icons = $0; writes.append($0) }))
-        precondition(writes == [false] && !icons, "the next launch must show the icons: \(writes)")
+        precondition(writes == [false] && icons == false, "the next launch must show the icons: \(writes)")
         precondition(NSDictionary(contentsOfFile: path + ".plist")?[key] == nil, "the next launch must forget the note")
         print("a copy force-quit while it hides the icons has already noted them, and the next launch brings them back: ok")
     }

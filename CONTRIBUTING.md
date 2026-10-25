@@ -168,7 +168,7 @@ swiftc -parse-as-library -D APPSTORE Sources/pikapik/Tools/Finder/DesktopCurtain
 Hide desktop icons writes its note before it hides the icons, so a copy that is force quit at that moment has already saved it, and its next launch brings the icons back and forgets the note. The test hides the icons in a second process that stops dead while hiding, with the journal in a temporary folder.
 
 ```bash
-swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Tools/Finder/DesktopIcons.swift scripts/test-desktop-icons-force-quit.swift -o build/test-desktop-icons-force-quit && build/test-desktop-icons-force-quit
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Tools/Finder/DesktopIcons.swift scripts/test-desktop-icons-force-quit.swift -o build/test-desktop-icons-force-quit && build/test-desktop-icons-force-quit
 ```
 
 Hide desktop icons and Show hidden files restart Finder only when it is not copying or moving files. They look at Finder twice, half a second apart, and while it does more than 5 ms of work or reads or writes the disk in between, they wait and say “Waiting for Finder to finish copying”. Finding Finder, measuring it, the restart and the half-second wait go through `FinderHost`, so the test drives a made-up Finder that copies, finishes or goes away and never touches the real one. It also measures its own process to check that the work is read in seconds.
