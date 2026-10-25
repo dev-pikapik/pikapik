@@ -207,6 +207,12 @@ In the App Store version the sandbox and macOS hide who was allowed, so Settings
 swiftc -parse-as-library Sources/pikapik/Permissions/PrivacyAsks.swift scripts/test-privacy-asks.swift -o build/test-privacy-asks && build/test-privacy-asks
 ```
 
+The App Store build and its extensions carry the privacy manifest `Resources/PrivacyInfo.xcprivacy`. Apple accepts some APIs only with a reason from its list: the app's own defaults, the time since startup for the pet and the FPS counter, file dates (`stat` and `lstat` on archives and the files you pick) and the free space checked before unpacking. The test reads the manifest, checks that every reason is on Apple's list, and fails when a file in `Sources` or `Extensions` calls one of these APIs while the manifest doesn't declare its category:
+
+```bash
+swiftc -parse-as-library scripts/test-privacy-manifest.swift -o build/test-privacy-manifest && build/test-privacy-manifest
+```
+
 App Volume (macOS 14.2 and later) changes one app’s volume without a driver. For every app whose slider is below 100% or that is muted, pikapik creates a Core Audio process tap (`CATapDescription`) that mutes the app’s own output, read through a private aggregate device that holds only the tap. A HAL output unit with its input off, set to the output the app plays to (the current output if it uses several), takes the sound from a ring buffer, multiplies it by the app’s gain and plays it there, so the microphone is never opened; an app at 100% gets no tap and is never touched. Helper processes, such as a browser’s audio service, are listed under the app that contains or started them; system daemons are left out. The gain follows the slider squared and moves through a 30 ms ramp so nothing clicks. macOS has no call that says whether System Audio Recording is allowed, so pikapik plays a tone too quiet to hear through a tap on itself and takes any sound that comes back as “allowed”; it asks again when a running tap delivers only silence. The gain, the ramp, the mixing, the ring buffer, the grouping, the saved levels (`AppVolumeMemory`, kept under the app’s bundle ID) and the merge of running and remembered apps into the list live in `AppVolumeMath`, which you can test without the app:
 
 ```bash

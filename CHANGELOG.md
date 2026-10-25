@@ -22,6 +22,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - AirPlay, website version: a film whose picture subtitles are broken or made to cause trouble no longer makes the player take gigabytes of memory and quit while it sends the film. Picture subtitles sent over AirPlay now have the same size limits as in the player window.
 - Player: a film whose picture the Mac can't decode, such as H.264 in full 4:4:4 colour, now says “Can’t play this file” right away. Before, it played only the sound over a black window, or opened as a song. A film without sound no longer stops with that message when macOS takes the video decoder away for a moment; it carries on, as films with sound already did.
 - AirPlay, website version: a film that can’t be sent to the AirPlay device now says so: the file may be damaged, or its picture can’t be converted, and it keeps playing on the Mac. Before, pikapik asked you to check that the device is on and on the same network, or said nothing, and it read the whole film again for each of the device’s retries.
+- App Store version: the privacy manifest now also declares file dates and free disk space, which the archive tools read, with the reasons Apple asks for. A new test fails when the code starts using such an API before the manifest declares it.
 
 ## [1.56.1] - 2026-10-24
 
