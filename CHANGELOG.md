@@ -6,6 +6,11 @@ Every update to pikapik, version by version. The same news, told simply with a p
 
 ### Changed
 - Pet: in Low Power Mode it sits down and falls asleep; a click, a drag or Space wakes it. With Reduce Motion it stays where it is, the ball is hidden, and the Pet page says why. The Pet page no longer asks for Input Monitoring: Space makes it jump when another tool already has that permission.
+- Permissions: the Accessibility and Input Monitoring rows now name the pages whose tools you turned on need them, for example “Needed by tools you turned on: Keyboard”, or say that no tool you turned on needs them. The menu bar icon turns into the warning triangle whenever a tool you turned on is missing a permission. Before, it did so only when no tool could work.
+- Russian: pikapik now uses the words macOS uses for apps, quitting, the battery and displays, and search finds more Russian words.
+- Settings: clearer hints for the tools that work only with a mouse, Magic Mouse scrolling, Work with the lid closed, the display timer in Keep Awake, Control Center buttons, Game Mode and the Uninstaller, and search finds pages by more words.
+- Retype words you typed in the wrong language and Home/End, website version: Chrome, Slack, VS Code and other apps built on Chromium are switched into the mode pikapik needs to see their text only at the first key that needs it, and put back after a minute in the background. Before, the mode came on as soon as such an app came to the front and stayed on until pikapik quit, which kept the app slower.
+- Uninstaller, website version: dropping pikapik or an app that comes with macOS on the page now says why it can’t be removed: pikapik can’t remove itself, or the app comes with macOS. Every copy of pikapik counts as pikapik itself: the App Store, website and dev copies. Before, it only said that the app can’t be removed.
 
 ### Fixed
 - Background and Ports, website version: only an administrator can turn services for the whole Mac off and on. Before, any account on the Mac, a standard one too, could ask pikapik’s helper to turn background daemons off, and Remote Login and Screen Sharing off and on. The helper now checks the account behind every request. A standard account sees these tasks without a switch, with a line that says to change them in System Settings, and Ports shows it only the System Settings hint. Fan control still works for every account. The helper updates itself, with no password.
@@ -27,6 +32,15 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - Settings sync: two Macs set up from one Mac with Migration Assistant, or restored from one backup, now pass changes to each other. Before, they shared one sync identity, so each took the other's file for its own and overwrote it again and again, and no change ever arrived.
 - Settings sync: a Mac with an older pikapik no longer deletes, on your other Macs, the settings of features that version doesn't have yet. Each settings file now lists the settings its version knows.
 - Green button enlarges the window, website version: a busy app under the green button no longer holds up the mouse and the keyboard. pikapik now waits at most 0.2 seconds for each answer from that app; before, a click there could wait about 6 seconds per question while the app was stuck, and macOS could then switch off pikapik’s other keyboard and mouse features until they restarted.
+- Retype words you typed in the wrong language: a word you typed is no longer swapped for the other layout’s letters when the spell checker doesn’t answer in time, or when those letters make a known word only with a capital letter, such as a name.
+- Settings: the hints that quote System Settings keep its words only in English and your language, and only while Settings is open, so pikapik uses less memory.
+- Permissions, App Store version: the shortcut that fixes the selected text now counts as a tool that needs Accessibility, so the Permissions page and the menu bar icon warn when Accessibility is off.
+- App Store version: the window that asks for a folder says “To continue, choose …” only when you picked a different folder. Before, it also said so when you had picked the right one but macOS didn’t give pikapik access to it.
+- Retype words you typed in the wrong language and Home/End, website version: a Chromium app that was busy when pikapik switched its mode on is now put back when pikapik quits. Before, it stayed slower after pikapik quit. An app too busy to say whether the mode is already on is asked again later, so a mode that Voice Control turned on is no longer taken for off and turned off at quit.
+- Hide desktop icons, App Store version: the wallpaper that covers the icons now shows its light or dark picture as the desktop does, and follows a switch between light and dark at once and a new wallpaper within two seconds. Before, a wallpaper with light and dark pictures always showed the same one, and a new wallpaper appeared only after you switched to another app.
+- Uninstall, website version: removing pikapik with the uninstall script now also deletes the empty settings file it could leave in ~/Library/Preferences.
+- Uninstaller, website version: removing an app now keeps the files another copy of pikapik uses, and pikapik’s Put Back history.
+- Archives: pikapik reads each unpacked file name only up to its end. Before, it read on past the end of short names in memory.
 
 ## [1.56.1] - 2026-10-24
 
