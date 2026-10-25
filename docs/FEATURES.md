@@ -892,7 +892,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 **How it works:** Writes the hidden key `com.apple.dock allow-display-switching` = false and restarts the Dock once (`DockDisplaySettings` in `Sources/pikapik/Tools/Dock/DockDisplayTool.swift`, `DockDisplaySwitch.swift`). No permission. The Dock reads it only at start. Turning off (and `--uninstall`) puts back the previous value.
 
 **Options:**
-- Main display — menu under the switch (two or more displays, enabled only while the switch is on); pick a display and pikapik makes it the main one with `CGConfigureDisplayOrigin`, shifting every display by the same amount so the arrangement keeps its shape, and the Dock goes with it (`MainDisplayRow` and `MainDisplayControl` in `DockDisplayTool.swift`, `MainDisplay` in `DockDisplaySwitch.swift`). The first arrangement is remembered by display ID; turning the switch off, `--uninstall` or the next launch with the switch off puts it back.
+- Main display — menu under the switch (two or more displays, enabled only while the switch is on); pick a display and pikapik makes it the main one with `CGConfigureDisplayOrigin`, shifting every display by the same amount so the arrangement keeps its shape, and the Dock goes with it (`MainDisplayRow` and `MainDisplayControl` in `DockDisplayTool.swift`, `MainDisplay` in `DockDisplaySwitch.swift`). Before anything moves, the first arrangement is saved for that set of displays, by display ID. Turning the switch off, `--uninstall` or the next launch with the switch off puts back the arrangement of the displays connected then; one saved for other displays waits and comes back when they are connected again while the switch is off. Quitting, logging out and updating keep the pick. If someone has made another display the main one since, the displays are left as they are.
 
 **Nuances:** Needs two displays and “Displays have separate Spaces” on (System Settings › Desktop & Dock).
 
@@ -900,10 +900,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Test:**
 1. (Website, two displays) Run `defaults read com.apple.dock allow-display-switching` and note the answer. Turn on Keep the Dock on one display → no permission prompt, the Dock restarts once, pushing the pointer against the bottom edge of the other display no longer moves it, and the command prints 0.
-2. Quit and reopen pikapik → the Dock does not restart.
+2. Quit pikapik → the Dock restarts once and the command prints what it printed before (or says the key does not exist). Reopen it → the Dock restarts once more and the command prints 0 again.
 3. Turn the switch off → the Dock restarts once, moves between displays again, and the command prints what it printed before (or says the key does not exist).
 4. Turn it on again and run `build/pikapik.app/Contents/MacOS/pikapik --uninstall` → same result as turning it off.
 5. Before it, run `Private/tools/vdisplay` (`vd hold 120`) for a second display and note both positions with `vd probe`. With the switch on, open Main display and pick the other display → no prompt, it moves to 0,0, the other display keeps its place next to it, and the Dock appears there. Pick the first display again → the arrangement is the original. Pick the other one, then turn the switch off → the arrangement is exactly the one in `vd probe` before the test.
+6. With `vd hold 120` and the switch on, pick the virtual display in Main display, then quit and reopen pikapik → the virtual display is still the main one. When `vd hold` ends and the virtual display goes away, turn the switch off → nothing moves. Run `vd hold 120` again → if `vd probe` shows the same display ID as before, within a few seconds the arrangement is the one noted before the test.
 
 ## Finder
 

@@ -60,14 +60,47 @@ struct TestDockDisplay {
         precondition(MainDisplay.moved(side, to: "a") == nil && MainDisplay.moved(side, to: "z") == nil)
         print("making a display the main one shifts every display by the same amount, so the arrangement keeps its shape: ok")
 
-        precondition(MainDisplay.remembered(side, now: moved!) == side)
-        precondition(MainDisplay.remembered([:], now: side) == side)
-        precondition(MainDisplay.remembered(side, now: ["a": .zero, "d": CGPoint(x: 5, y: 5)]) == ["a": .zero, "d": CGPoint(x: 5, y: 5)])
-        print("the first arrangement is the one remembered, unless the set of displays has changed: ok")
+        precondition(MainDisplay.origins([("a", CGPoint.zero), ("b", CGPoint(x: 1920, y: 0))]) == ["a": .zero, "b": CGPoint(x: 1920, y: 0)])
+        precondition(MainDisplay.origins([("a", CGPoint.zero), ("a", CGPoint(x: 1920, y: 0))]) == nil)
+        print("two displays with the same UUID are left alone instead of crashing pikapik: ok")
 
-        precondition(MainDisplay.restored(side, now: moved!) == side)
-        precondition(MainDisplay.restored(side, now: side) == nil)
-        precondition(MainDisplay.restored(side, now: ["a": .zero, "b": .zero]) == nil)
-        print("restoring writes the old arrangement only for the same displays and only when it differs: ok")
+        typealias Saved = MainDisplay.Saved
+        let home = ["a": CGPoint.zero, "d": CGPoint(x: 1512, y: -300)]
+        var journal = MainDisplay.remembered([:], now: side, main: "b")
+        precondition(journal == [MainDisplay.set(side): Saved(origins: side, main: "b")])
+        journal = MainDisplay.remembered(journal, now: moved!, main: "c")
+        precondition(journal == [MainDisplay.set(side): Saved(origins: side, main: "c")])
+        journal = MainDisplay.remembered(journal, now: home, main: "d")
+        precondition(journal == [MainDisplay.set(side): Saved(origins: side, main: "c"), MainDisplay.set(home): Saved(origins: home, main: "d")])
+        precondition(MainDisplay.set(["b": .zero, "a": .zero]) == MainDisplay.set(["a": .zero, "b": .zero]))
+        print("each set of displays keeps its own first arrangement, and a later pick only changes which display pikapik made the main one: ok")
+
+        let picked = [MainDisplay.set(side): Saved(origins: side, main: "b")]
+        let back = MainDisplay.restored(picked, now: moved!)
+        precondition(back.write == side && back.journal.isEmpty)
+        let same = MainDisplay.restored(picked, now: side)
+        precondition(same.write == nil && same.journal.isEmpty)
+        let theirs = MainDisplay.restored(picked, now: MainDisplay.moved(side, to: "c")!)
+        precondition(theirs.write == nil && theirs.journal.isEmpty)
+        precondition(MainDisplay.restored([MainDisplay.set(side): Saved(origins: side, main: nil)], now: MainDisplay.moved(side, to: "c")!).write == side)
+        print("restoring writes the old arrangement only when it differs and pikapik's pick is still the main display: ok")
+
+        let away = MainDisplay.restored(picked, now: home)
+        precondition(away.write == nil && away.journal == picked)
+        let unplugged = MainDisplay.restored(picked, now: ["a": .zero, "b": CGPoint(x: 1920, y: -120)])
+        precondition(unplugged.write == nil && unplugged.journal == picked)
+        let returned = MainDisplay.restored(unplugged.journal, now: moved!)
+        precondition(returned.write == side && returned.journal.isEmpty)
+        print("an arrangement saved for displays that aren't connected waits for them instead of being forgotten: ok")
+
+        let both = journal.merging([MainDisplay.set(["x": .zero]): Saved(origins: ["x": .zero], main: nil)]) { kept, _ in kept }
+        defaults.set(MainDisplay.stored(both), forKey: "dock-display-arrangements")
+        precondition(MainDisplay.journal(defaults.dictionary(forKey: "dock-display-arrangements"), old: nil) == both)
+        defaults.removeObject(forKey: "dock-display-arrangements")
+        let old = ["a": [0.0, 0.0], "b": [1920.0, -120.0], "c": [-1440.0, 60.0]]
+        precondition(MainDisplay.journal(nil, old: old) == [MainDisplay.set(side): Saved(origins: side, main: nil)])
+        precondition(MainDisplay.journal(MainDisplay.stored(picked), old: old) == picked)
+        precondition(MainDisplay.journal(["junk": 1, "bad": ["origins": ["a": [1.0]]]], old: ["a": [1.0, 2.0, 3.0]]).isEmpty)
+        print("the saved arrangements survive UserDefaults, and the one an older version saved is still put back: ok")
     }
 }
