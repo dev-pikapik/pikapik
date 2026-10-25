@@ -28,7 +28,7 @@ struct KeepAwakeSettings: View {
                             .fixedSize()
                     } label: {
                         HStack(alignment: .top, spacing: 10) {
-                            Image(systemName: "exclamationmark.triangle.fill")
+                            Image(.exclamationmarkTriangleFill)
                                 .font(.title2)
                                 .foregroundStyle(.orange)
                                 .accessibilityHidden(true)
@@ -101,7 +101,7 @@ struct KeepAwakeSettings: View {
                     .disabled(!keepAwake.worksWithLidClosed)
                     .settingAnchor(SettingTitle.stopOnLowBattery)
                     if let error = keepAwake.lidError {
-                        Label(error, systemImage: "exclamationmark.triangle.fill")
+                        Label(error, symbol: .exclamationmarkTriangleFill)
                             .foregroundStyle(.orange)
                     }
                 } footer: {
@@ -118,7 +118,7 @@ struct KeepAwakeSettings: View {
                     ShortcutLink(title: SettingTitle.workWithLidClosed, path: "lid-closed")
                 }
                 LabeledContent {
-                    Button("Open Shortcuts", systemImage: "arrow.up.forward.app") {
+                    Button("Open Shortcuts", symbol: .arrowUpForwardApp) {
                         NSWorkspace.shared.open(URL(fileURLWithPath: Self.shortcutsAppPath))
                     }
                 } label: {
@@ -201,7 +201,7 @@ struct KeepAwakeScene: View {
 
     private var face: some View {
         ZStack {
-            Image(systemName: "moon.zzz.fill")
+            Image(.moonZzzFill)
                 .font(.system(size: 15))
                 .foregroundStyle(.white.opacity(0.4))
                 .opacity(on ? 0 : 1)
@@ -209,7 +209,7 @@ struct KeepAwakeScene: View {
                 if let remaining {
                     Text(verbatim: remaining)
                 } else {
-                    Image(systemName: "infinity")
+                    Image(.infinity)
                 }
             }
             .font(.system(size: 10, weight: .semibold, design: .rounded))
@@ -236,7 +236,7 @@ struct ShortcutLink: View {
 
     var body: some View {
         LabeledContent {
-            Button(copied ? LocalizedStringKey("Copied") : "Copy Link", systemImage: copied ? "checkmark" : "link") {
+            Button(copied ? LocalizedStringKey("Copied") : "Copy Link", symbol: copied ? .checkmark : .link) {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(link, forType: .string)
                 copied = true

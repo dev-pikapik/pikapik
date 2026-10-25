@@ -21,13 +21,13 @@ struct PortsPage: View {
             }
             Section {
                 HStack(spacing: 8) {
-                    Image(systemName: "magnifyingglass").foregroundStyle(.secondary).accessibilityHidden(true)
+                    Image(.magnifyingglass).foregroundStyle(.secondary).accessibilityHidden(true)
                     TextField(text: $model.query, prompt: Text("Type a number, like 3000")) { Text("Port or program") }
                         .textFieldStyle(.plain)
                         .labelsHidden()
                     if !model.query.isEmpty {
                         Button { model.query = "" } label: {
-                            Image(systemName: "xmark.circle.fill").foregroundStyle(.tertiary)
+                            Image(.xmarkCircleFill).foregroundStyle(.tertiary)
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel(Text("Clear"))
@@ -39,13 +39,13 @@ struct PortsPage: View {
                         Label {
                             Text("Port \(String(port)) is free")
                         } icon: {
-                            Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                            Image(.checkmarkCircleFill).foregroundStyle(.green)
                         }
                     } else {
                         Label {
                             Text("Port \(String(port)) is taken by macOS or another user")
                         } icon: {
-                            Image(systemName: "lock.circle.fill").foregroundStyle(.secondary)
+                            Image(.lockCircleFill).foregroundStyle(.secondary)
                         }
                     }
                 } else if model.loaded, shown.isEmpty, searching {
@@ -126,14 +126,14 @@ private struct PortsArt: View {
                 ForEach(0..<3, id: \.self) { index in
                     door(Self.numbers[index], x: Self.columns[index], state: index == 0 ? Self.doors[step] : .free)
                 }
-                tile("cylinder.fill", Art.green).offset(x: Self.columns[1], y: -2)
-                tile("bolt.fill", Art.yellow)
+                tile(.cylinderFill, Art.green).offset(x: Self.columns[1], y: -2)
+                tile(.boltFill, Art.yellow)
                     .offset(x: Self.first[step].x, y: Self.first[step].y)
                     .opacity(Self.first[step].opacity)
-                tile("globe", .accentColor)
+                tile(.globe, .accentColor)
                     .offset(x: Self.second[step].x, y: Self.second[step].y)
                     .opacity(Self.second[step].opacity)
-                Image(systemName: "xmark.circle.fill")
+                Image(.xmarkCircleFill)
                     .font(.system(size: 16))
                     .foregroundStyle(Art.red)
                     .offset(x: Self.columns[0] + 26, y: -26)
@@ -163,13 +163,13 @@ private struct PortsArt: View {
         .offset(x: x, y: -12)
     }
 
-    private func tile(_ symbol: String, _ color: Color) -> some View {
+    private func tile(_ symbol: Symbol, _ color: Color) -> some View {
         let shape = RoundedRectangle(cornerRadius: 8, style: .continuous)
         return shape
             .fill(LinearGradient(colors: [color, color.opacity(0.7)], startPoint: .top, endPoint: .bottom))
             .overlay(shape.hairline(Color.white.opacity(0.25)))
             .overlay {
-                Image(systemName: symbol)
+                Image(symbol)
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(.white)
             }
@@ -293,7 +293,7 @@ private struct PortRow: View {
                 ? Text("macOS needs this port, so it stays taken.")
                 : Text("It belongs to another user or to the system, so pikapik doesn’t touch it. You can quit it in Activity Monitor.")
             Button { tip = true } label: {
-                Image(systemName: "info.circle").foregroundStyle(.secondary)
+                Image(.infoCircle).foregroundStyle(.secondary)
             }
             .buttonStyle(.borderless)
             .help(note)
@@ -328,7 +328,7 @@ private struct PortChip: View {
         HStack(spacing: 3) {
             Text(verbatim: port).monospacedDigit()
             if global {
-                Image(systemName: "globe").font(.caption2)
+                Image(.globe).font(.caption2)
             }
         }
         .font(.callout)

@@ -333,14 +333,14 @@ private struct AppName: View {
             if let app {
                 Image(nsImage: Self.icon(of: app, size: 16))
             } else {
-                Image(systemName: "questionmark.app.dashed")
+                Image(.questionmarkAppDashed)
                     .frame(width: 16, height: 16)
             }
             Text(verbatim: Self.name(of: app))
                 .lineLimit(1)
                 .truncationMode(.middle)
             if chevron {
-                Image(systemName: "chevron.up.chevron.down")
+                Image(.chevronUpChevronDown)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.tertiary)
             }

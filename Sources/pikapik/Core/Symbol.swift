@@ -1,4 +1,4 @@
-/// Every SF Symbol name pikapik uses, written once, so a typo is a build error instead of an empty button.
+/// Every SF Symbol name pikapik draws, written once, so a typo is a build error instead of an empty button.
 /// A case is named after its symbol: "sun.max.fill" is `.sunMaxFill`, and a name that starts with a digit gets "number" in front.
 /// Keep the cases sorted. `scripts/test-symbols.swift` checks that each one exists on the oldest macOS pikapik runs on.
 enum Symbol: String, CaseIterable {
@@ -11,18 +11,14 @@ enum Symbol: String, CaseIterable {
     case appleLogo = "apple.logo"
     case archivebox = "archivebox"
     case archiveboxFill = "archivebox.fill"
-    case arrowBackward = "arrow.backward"
     case arrowClockwise = "arrow.clockwise"
     case arrowCounterclockwise = "arrow.counterclockwise"
     case arrowDown = "arrow.down"
     case arrowDownCircle = "arrow.down.circle"
     case arrowDownCircleFill = "arrow.down.circle.fill"
     case arrowDownRightAndArrowUpLeft = "arrow.down.right.and.arrow.up.left"
-    case arrowForward = "arrow.forward"
-    case arrowLeft = "arrow.left"
     case arrowLeftArrowRight = "arrow.left.arrow.right"
     case arrowLeftToLine = "arrow.left.to.line"
-    case arrowRight = "arrow.right"
     case arrowTriangle2Circlepath = "arrow.triangle.2.circlepath"
     case arrowUp = "arrow.up"
     case arrowUpArrowDown = "arrow.up.arrow.down"
@@ -86,6 +82,7 @@ enum Symbol: String, CaseIterable {
     case eyeSlash = "eye.slash"
     case faceSmilingFill = "face.smiling.fill"
     case fan = "fan"
+    case film = "film"
     case flagCheckered = "flag.checkered"
     case folder = "folder"
     case folderFill = "folder.fill"
@@ -163,6 +160,7 @@ enum Symbol: String, CaseIterable {
     case powerplug = "powerplug"
     case puzzlepieceExtension = "puzzlepiece.extension"
     case puzzlepieceExtensionFill = "puzzlepiece.extension.fill"
+    case questionmarkAppDashed = "questionmark.app.dashed"
     case recordCircle = "record.circle"
     case rectangle = "rectangle"
     case rectangle3Group = "rectangle.3.group"

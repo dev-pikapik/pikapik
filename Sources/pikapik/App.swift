@@ -25,7 +25,7 @@ struct PikapikApp: App {
         } label: {
             Group {
                 if let symbol = registry.status.symbol {
-                    Image(systemName: symbol)
+                    Image(symbol)
                 } else {
                     Image(nsImage: registry.status == .off ? Self.logoOff : Self.logo)
                 }

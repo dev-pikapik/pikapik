@@ -3,6 +3,7 @@ import AppKit
 @main
 struct TestSymbols {
     static let catalog = "Sources/pikapik/Core/Symbol.swift"
+    static let drawers = ["Sources/pikapik/UI/SymbolViews.swift", "Sources/pikapik/UI/SymbolImage.swift"]
 
     /// "sun.max.fill" is `sunMaxFill`, and a name that starts with a digit gets "number" in front.
     static func caseName(_ name: String) -> String {
@@ -11,55 +12,8 @@ struct TestSymbols {
         return joined.first?.isNumber == true ? "number" + joined : joined
     }
 
-    /// The expression after each `systemName:`, `systemSymbolName:` or `systemImage:` label, up to the comma or bracket that ends the argument.
-    static func arguments(_ text: String) -> [(line: Int, expression: String)] {
-        guard let label = try? NSRegularExpression(pattern: #"\b(systemName|systemSymbolName|systemImage):"#) else { return [] }
-        let chars = Array(text.utf16)
-        var found: [(line: Int, expression: String)] = []
-        for match in label.matches(in: text, range: NSRange(location: 0, length: chars.count)) {
-            var i = match.range.location + match.range.length
-            var depth = 0
-            var quoted = false
-            while i < chars.count {
-                let c = chars[i]
-                if quoted {
-                    if c == 0x5C { i += 1 } else if c == 0x22 { quoted = false }
-                } else if c == 0x22 {
-                    quoted = true
-                } else if c == 0x28 || c == 0x5B || c == 0x7B {
-                    depth += 1
-                } else if c == 0x29 || c == 0x5D || c == 0x7D || c == 0x2C || c == 0x0A {
-                    if depth == 0 { break }
-                    if c != 0x2C && c != 0x0A { depth -= 1 }
-                }
-                i += 1
-            }
-            let start = match.range.location + match.range.length
-            let line = chars[..<match.range.location].filter { $0 == 0x0A }.count + 1
-            found.append((line: line, expression: String(decoding: chars[start..<min(i, chars.count)], as: UTF16.self)))
-        }
-        return found
-    }
-
-    static func literals(_ expression: String) -> [String] {
-        guard let literal = try? NSRegularExpression(pattern: #""((?:[^"\\]|\\.)*)""#) else { return [] }
-        return literal.matches(in: expression, range: NSRange(expression.startIndex..., in: expression)).compactMap {
-            Range($0.range(at: 1), in: expression).map { String(expression[$0]) }
-        }
-    }
-
     static func main() {
-        let sample = """
-        Image(systemName: "a.b")
-        Image(systemName: on ? "c" : "d.e").foregroundStyle(.red)
-        Label("Title, with a comma", systemImage: "f")
-        NSImage(systemSymbolName: name, accessibilityDescription: nil)
-        Button("x", systemImage: list[min(i, 2)]) { }
-        """
-        let parsed = arguments(sample)
-        precondition(parsed.map { $0.line } == [1, 2, 3, 4, 5] && parsed.map { literals($0.expression) } == [["a.b"], ["c", "d.e"], ["f"], [], []], "\(parsed)")
         precondition(caseName("sun.max.fill") == "sunMaxFill" && caseName("speaker.wave.2.fill") == "speakerWave2Fill" && caseName("7.square.fill") == "number7SquareFill")
-        print("symbol names are found after systemName, systemSymbolName and systemImage, both sides of a ?: included: ok")
 
         let all = Symbol.allCases
         precondition(all.count > 100)
@@ -110,25 +64,17 @@ struct TestSymbols {
         // The pictures in docs/media are drawn by a script built with the app's sources, so it uses the catalog too
         files["scripts/render-media.swift"] = try? String(contentsOfFile: "scripts/render-media.swift", encoding: .utf8)
         precondition(files.count > 150)
-        let names = Set(all.map(\.rawValue))
-        var written = 0
-        for (file, text) in files.sorted(by: { $0.key < $1.key }) {
-            for (line, expression) in arguments(text) {
-                for name in literals(expression) {
-                    written += 1
-                    if name.contains("\\(") {
-                        problems.append("\(file):\(line): \"\(name)\" puts a symbol name together from pieces; pick whole names from Symbol")
-                    } else if !names.contains(name) {
-                        problems.append("\(file):\(line): \"\(name)\" is not in \(catalog)")
-                    }
-                }
+        guard let label = try? NSRegularExpression(pattern: #"\b(systemName|systemSymbolName|systemImage):"#) else { preconditionFailure() }
+        for (file, text) in files.sorted(by: { $0.key < $1.key }) where !drawers.contains(file) {
+            for (index, line) in text.components(separatedBy: "\n").enumerated() where label.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)) != nil {
+                problems.append("\(file):\(index + 1): \(line.trimmingCharacters(in: .whitespaces))")
             }
         }
-        precondition(problems.isEmpty, problems.joined(separator: "\n"))
-        print("all \(written) symbol names written next to systemName, systemSymbolName or systemImage are in the catalog: ok")
+        precondition(problems.isEmpty, "draw these with a case of Symbol, like Image(.sunMaxFill), Label(\"Title\", symbol: .sunMaxFill), Button(\"Title\", symbol: .sunMaxFill) { } or NSImage(.sunMaxFill, accessibilityDescription: nil):\n" + problems.joined(separator: "\n"))
+        print("no file but \(drawers.joined(separator: " and ")) writes systemName, systemSymbolName or systemImage: ok")
 
         let code = files.values.joined(separator: "\n")
-        for symbol in all where !code.contains("\"\(symbol.rawValue)\"") && code.range(of: #"\.\#(symbol)\b"#, options: .regularExpression) == nil {
+        for symbol in all where code.range(of: #"\.\#(symbol)\b"#, options: .regularExpression) == nil {
             problems.append("\(symbol) = \"\(symbol.rawValue)\" isn't used anywhere: remove it from the catalog")
         }
         precondition(problems.isEmpty, problems.joined(separator: "\n"))

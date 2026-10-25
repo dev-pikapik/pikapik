@@ -159,7 +159,7 @@ private struct ChoiceView: View {
                     .foregroundStyle(.secondary)
             }
             if plan.needsAdmin() {
-                Label("Your Mac will ask for your password once.", systemImage: "lock")
+                Label("Your Mac will ask for your password once.", symbol: .lock)
                     .font(.callout)
                     .foregroundStyle(.secondary)
             }
@@ -207,7 +207,7 @@ private struct GroupHeader: View {
                     .toggleStyle(.checkbox)
                     .labelsHidden()
             }
-            Image(systemName: group.kind.symbol)
+            Image(group.kind.symbol)
                 .foregroundStyle(.secondary)
                 .frame(width: 20)
                 .accessibilityHidden(true)
@@ -236,7 +236,7 @@ private struct ItemRow: View {
             check
             Group {
                 if isReceipt {
-                    Image(systemName: "shippingbox.fill")
+                    Image(.shippingboxFill)
                         .foregroundStyle(.secondary)
                 } else {
                     Image(nsImage: model.icon(at: item.url))
@@ -268,7 +268,7 @@ private struct ItemRow: View {
                 .frame(width: 150, alignment: .trailing)
             Group {
                 if item.needsAdmin {
-                    Image(systemName: "lock.fill")
+                    Image(.lockFill)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .help(Text("Needs your password"))
@@ -281,7 +281,7 @@ private struct ItemRow: View {
                 .foregroundStyle(.secondary)
                 .frame(width: 72, alignment: .trailing)
             Button(action: preview) {
-                Image(systemName: "eye")
+                Image(.eye)
             }
             .buttonStyle(.borderless)
             .help(Text("Quick Look"))
@@ -304,7 +304,7 @@ private struct ItemRow: View {
 
     @ViewBuilder private var check: some View {
         if session.plan.isInert(item) {
-            Image(systemName: "trash")
+            Image(.trash)
                 .foregroundStyle(.secondary)
                 .frame(width: 16, height: 16)
                 .help(Text("Already in the Trash"))
@@ -330,7 +330,7 @@ private struct RemovedView: View {
                         if report.removed > 0 {
                             DrawnCheck()
                         } else {
-                            Image(systemName: "info.circle")
+                            Image(.infoCircle)
                                 .font(.system(size: 44))
                                 .foregroundStyle(.secondary)
                                 .frame(width: 64, height: 64)
@@ -411,7 +411,7 @@ private struct RestoredView: View {
                         if result.restored > 0 {
                             DrawnCheck()
                         } else {
-                            Image(systemName: "info.circle")
+                            Image(.infoCircle)
                                 .font(.system(size: 44))
                                 .foregroundStyle(.secondary)
                                 .frame(width: 64, height: 64)

@@ -100,7 +100,7 @@ struct TestUninstallerUI {
         locked.set(locked.items[0], on: true)
         precondition(!locked.isOn(locked.items[0]))
 
-        precondition(LeftoverKind.allCases.allSatisfy { !$0.title.isEmpty && !$0.symbol.isEmpty })
+        precondition(LeftoverKind.allCases.allSatisfy { !$0.title.isEmpty && !$0.symbol.rawValue.isEmpty })
         precondition(UninstallerText.used(now - 3 * 86_400, now: now) != UninstallerText.used(now - 86_400, now: now))
         precondition(!UninstallerText.size(12_400_000_000).isEmpty)
         precondition(UninstallerText.size(0).contains { $0.isNumber })

@@ -119,7 +119,7 @@ struct MenuView: View {
                                     }
                                     if keepAwake.lidSleepStuck {
                                         HStack(spacing: 10) {
-                                            Image(systemName: "exclamationmark.triangle.fill")
+                                            Image(.exclamationmarkTriangleFill)
                                                 .foregroundStyle(.orange)
                                                 .frame(width: 28)
                                                 .accessibilityHidden(true)

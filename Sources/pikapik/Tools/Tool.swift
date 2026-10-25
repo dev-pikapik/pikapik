@@ -36,11 +36,11 @@ enum ToolStatus {
         }
     }
 
-    var symbol: String? {
+    var symbol: Symbol? {
         switch self {
         case .active, .off: nil
-        case .needsAccess: "exclamationmark.triangle"
-        case .playing: "gamecontroller"
+        case .needsAccess: .exclamationmarkTriangle
+        case .playing: .gamecontroller
         }
     }
 

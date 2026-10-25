@@ -105,7 +105,7 @@ private struct RemovedRow: View {
                             .font(.callout)
                             .multilineTextAlignment(.trailing)
                     } icon: {
-                        Image(systemName: result.restored > 0 ? "checkmark.circle.fill" : "info.circle")
+                        Image(result.restored > 0 ? .checkmarkCircleFill : .infoCircle)
                             .foregroundStyle(result.restored > 0 ? Color.green : Color.secondary)
                     }
                     .frame(maxWidth: 190, alignment: .trailing)

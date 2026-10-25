@@ -1592,7 +1592,7 @@ private struct FormatOwnersScene: View {
                 .frame(width: 252, height: 104)
                 .position(x: 150, y: 64)
             row(y: Self.rowsY[0], caption: 30) { Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 22, height: 22) }
-            row(y: Self.rowsY[1], caption: 24) { tile("play.fill") }
+            row(y: Self.rowsY[1], caption: 24) { tile(.playFill) }
             ForEach(0..<Self.ours.count, id: \.self) { chip(Self.ours[$0], ours: 1).position(x: x($0), y: Self.rowsY[0]) }
             ForEach(0..<2, id: \.self) { chip(Self.theirs[$0], ours: 0).position(x: x($0), y: Self.rowsY[1]) }
             chip(Self.theirs[2], ours: moved)
@@ -1610,12 +1610,12 @@ private struct FormatOwnersScene: View {
         }
     }
 
-    private func tile(_ symbol: String) -> some View {
+    private func tile(_ symbol: Symbol) -> some View {
         let shape = RoundedRectangle(cornerRadius: 6, style: .continuous)
         return shape
             .fill(LinearGradient(colors: [Color(white: 0.42), Color(white: 0.24)], startPoint: .top, endPoint: .bottom))
             .overlay(shape.hairline(Color.white.opacity(0.25)))
-            .overlay(Image(systemName: symbol).font(.system(size: 10, weight: .semibold)).foregroundStyle(.white))
+            .overlay(Image(symbol).font(.system(size: 10, weight: .semibold)).foregroundStyle(.white))
             .frame(width: 22, height: 22)
             .shadow(color: .black.opacity(0.18), radius: 2, y: 1)
     }
@@ -1693,7 +1693,7 @@ private struct OpenWithScene: View {
                 .frame(width: 252, height: 70)
                 .position(x: 150, y: 43)
             row(y: Self.rowsY[0], caption: 26) { Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 22, height: 22) }
-            row(y: Self.rowsY[1], caption: 22) { tile("play.fill", size: 22, colors: [Color(white: 0.42), Color(white: 0.24)]) }
+            row(y: Self.rowsY[1], caption: 22) { tile(.playFill, size: 22, colors: [Color(white: 0.42), Color(white: 0.24)]) }
             chip("WebM", ours: 1).position(x: x(0), y: Self.rowsY[0])
             ForEach(0..<3, id: \.self) { chip(["MP4", "MOV", "AVI"][$0], ours: 0).position(x: x($0), y: Self.rowsY[1]) }
             chip("MKV", ours: ours).opacity(shown).position(mkv)
@@ -1720,15 +1720,15 @@ private struct OpenWithScene: View {
                     .frame(width: 110, height: 19)
                     .position(x: 59, y: y)
                 if item == 0 {
-                    Image(systemName: "checkmark").font(.system(size: 8, weight: .bold))
+                    Image(.checkmark).font(.system(size: 8, weight: .bold))
                         .foregroundStyle(lit ? Color.white : Color.primary)
                         .position(x: 13, y: y)
                 }
                 Group {
                     switch item {
                     case 0: Image(nsImage: NSApp.applicationIconImage).resizable().frame(width: 14, height: 14)
-                    case 1: tile("play.fill", size: 14, colors: [Color(white: 0.42), Color(white: 0.24)])
-                    default: tile("film", size: 14, colors: [Color(red: 0.35, green: 0.6, blue: 1), Color(red: 0.15, green: 0.35, blue: 0.85)])
+                    case 1: tile(.playFill, size: 14, colors: [Color(white: 0.42), Color(white: 0.24)])
+                    default: tile(.film, size: 14, colors: [Color(red: 0.35, green: 0.6, blue: 1), Color(red: 0.15, green: 0.35, blue: 0.85)])
                     }
                 }
                 .position(x: 30, y: y)
@@ -1749,12 +1749,12 @@ private struct OpenWithScene: View {
         }
     }
 
-    private func tile(_ symbol: String, size: CGFloat, colors: [Color]) -> some View {
+    private func tile(_ symbol: Symbol, size: CGFloat, colors: [Color]) -> some View {
         let shape = RoundedRectangle(cornerRadius: size * 0.27, style: .continuous)
         return shape
             .fill(LinearGradient(colors: colors, startPoint: .top, endPoint: .bottom))
             .overlay(shape.hairline(Color.white.opacity(0.25)))
-            .overlay(Image(systemName: symbol).font(.system(size: size * 0.45, weight: .semibold)).foregroundStyle(.white))
+            .overlay(Image(symbol).font(.system(size: size * 0.45, weight: .semibold)).foregroundStyle(.white))
             .frame(width: size, height: size)
             .shadow(color: .black.opacity(0.18), radius: 2, y: 1)
     }

@@ -62,7 +62,7 @@ private struct AppTile: View {
             .fill(LinearGradient(colors: [Color.accentColor, Color.accentColor.opacity(0.7)], startPoint: .top, endPoint: .bottom))
             .overlay(shape.hairline(Color.white.opacity(0.25)))
             .overlay {
-                Image(systemName: "square.grid.2x2.fill")
+                Image(.squareGrid2x2Fill)
                     .font(.system(size: 19, weight: .semibold))
                     .foregroundStyle(.white)
             }
