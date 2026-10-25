@@ -66,6 +66,17 @@ enum MainCopyChoice {
         extensionID.split(separator: ".").dropLast().joined(separator: ".")
     }
 
+    static func sameMenu(_ own: String, in ids: [String]) -> [String] {
+        let key = "." + (own.split(separator: ".").last ?? "")
+        return ids.filter { $0.hasSuffix(key) && ($0.hasPrefix(websiteID) || $0.hasPrefix("com.pikapik.")) }
+    }
+
+    static func ignored(_ own: String, in pluginkit: String) -> [String] {
+        let on = pluginkit.split(separator: "\n").filter { $0.hasPrefix("+") }.map { String($0.split(whereSeparator: \.isWhitespace).last?.prefix { $0 != "(" } ?? "") }
+        let store = appStoreID + "." + (own.split(separator: ".").last ?? "")
+        return sameMenu(own, in: on).filter { $0 != own && $0 != store }
+    }
+
     static func started(_ pid: Int32) -> Date? {
         var info = kinfo_proc()
         var size = MemoryLayout<kinfo_proc>.stride

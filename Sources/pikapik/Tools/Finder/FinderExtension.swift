@@ -106,11 +106,8 @@ final class FinderExtension {
     #else
     private func ignoreOtherCopies() {
         guard MainCopy.canAct, Bundle.main.bundleIdentifier == MainCopyChoice.websiteID else { return }
-        for line in Self.pluginkit("-m", "-p", Self.finderSyncExtensionPoint).split(separator: "\n") where line.hasPrefix("+") {
-            let other = String(line.split(whereSeparator: \.isWhitespace).last?.prefix { $0 != "(" } ?? "")
-            if other.hasPrefix(MainCopyChoice.websiteID) || other.hasPrefix("com.pikapik."), other.hasSuffix("." + key), ![id, MainCopyChoice.appStoreID + "." + key].contains(other) {
-                Self.pluginkit("-e", "ignore", "-i", other)
-            }
+        for other in MainCopyChoice.ignored(id, in: Self.pluginkit("-m", "-p", Self.finderSyncExtensionPoint)) {
+            Self.pluginkit("-e", "ignore", "-i", other)
         }
     }
 
