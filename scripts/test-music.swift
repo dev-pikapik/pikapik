@@ -65,7 +65,7 @@ enum TestMusic {
         }
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("pika-music-\(UUID().uuidString)")
         try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: folder) }
+        func finish(_ code: Int32) -> Never { try? FileManager.default.removeItem(at: folder); exit(code) }
 
         let picture = make(ffmpeg, "cover.jpg", in: folder, ["-f", "lavfi", "-i", "color=c=0xe94560:s=64x64", "-frames:v", "1"])
         let (title, artist, album) = ("Тест — 音楽 🎵 Ünïcode", "Артист Ω", "Альбом №1")
@@ -149,6 +149,6 @@ enum TestMusic {
         check((try? Engine(notMusic)) == nil, "a text file named .mp3 is refused")
 
         print(failures == 0 ? "all music checks passed" : "\(failures) music checks FAILED")
-        exit(failures == 0 ? 0 : 1)
+        finish(failures == 0 ? 0 : 1)
     }
 }

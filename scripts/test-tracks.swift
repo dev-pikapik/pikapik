@@ -298,7 +298,7 @@ enum TestTracks {
         }
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("pika-tracks-\(UUID().uuidString)")
         try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: folder) }
+        func finish(_ code: Int32) -> Never { try? FileManager.default.removeItem(at: folder); exit(code) }
 
         let english = write("1\n00:00:01,000 --> 00:00:03,000\nFirst English line\n\n2\n00:00:04,000 --> 00:00:06,000\nSecond <i>English</i> line\n", "en.srt", in: folder)
         let russian = write("1\n00:00:01,000 --> 00:00:03,000\nПервая русская строка\n\n2\n00:00:04,000 --> 00:00:06,000\nВторая <i>русская</i> строка\n", "ru.srt", in: folder)
@@ -437,7 +437,7 @@ enum TestTracks {
 
         guard let engine = try? Engine(tracks) else {
             check(false, "tracks.mkv did not open")
-            exit(1)
+            finish(1)
         }
         let audio = engine.audioTracks
         check(audio.count == 2 && audio.map(\.language) == ["eng", "rus"] && audio[0].title == "Main mix" && engine.audioTrack === audio[0], "the player lists both audio tracks and plays the first")
@@ -497,7 +497,7 @@ enum TestTracks {
 
         guard let single = try? Engine(plain) else {
             check(false, "plain.mp4 did not open")
-            exit(1)
+            finish(1)
         }
         check(single.audioTracks.count == 1 && single.audioTrack === single.audioTracks[0], "a file with one audio track lists just that one")
         single.selectAudio(single.audioTracks[0])
@@ -642,6 +642,6 @@ enum TestTracks {
         await assDrawing()
 
         print(failures == 0 ? "all track checks passed" : "\(failures) track checks FAILED")
-        exit(failures == 0 ? 0 : 1)
+        finish(failures == 0 ? 0 : 1)
     }
 }

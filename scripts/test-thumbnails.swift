@@ -93,7 +93,7 @@ enum TestThumbnails {
         NSApplication.shared.setActivationPolicy(.prohibited)
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("pikapik-thumbnails-\(getpid())")
         try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: folder) }
+        func finish(_ code: Int32) -> Never { try? FileManager.default.removeItem(at: folder); exit(code) }
         let picture = ["-f", "lavfi", "-i", "testsrc2=size=320x180:rate=25:duration=10"]
         let clips: [(String, URL)] = [
             ("H.264 in MP4 (decoded by VideoToolbox)", make(ffmpeg, "h264.mp4", in: folder, picture + ["-c:v", "libx264", "-g", "25", "-pix_fmt", "yuv420p"])),
@@ -186,6 +186,6 @@ enum TestThumbnails {
             check(thumbnail(url, size: CGSize(width: 320, height: 180), duration: 4, at: 0.5) == nil, "\(name): no picture, nothing breaks")
         }
         print(failures == 0 ? "all thumbnail checks passed" : "\(failures) thumbnail checks FAILED")
-        exit(failures == 0 ? 0 : 1)
+        finish(failures == 0 ? 0 : 1)
     }
 }
