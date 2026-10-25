@@ -31,9 +31,17 @@ cask "pikapik" do
             }
 
   zap launchctl: "com.pikapik.app.direct.fans",
+      script:    {
+        executable:   "/bin/bash",
+        args:         ["-c", 'f=/Library/PrivilegedHelperTools/com.pikapik.app.direct.fans; [ ! -e "\$f.turned-off" ] || { "\$f" --restore >/dev/null 2>&1 & p=\$!; (sleep 30; kill \$p) >/dev/null 2>&1 & w=\$!; wait \$p; kill \$w 2>/dev/null; }'],
+        sudo:         true,
+        must_succeed: false,
+      },
       delete:    [
         "/Library/LaunchDaemons/com.pikapik.app.direct.fans.plist",
         "/Library/PrivilegedHelperTools/com.pikapik.app.direct.fans",
+        "/Library/PrivilegedHelperTools/com.pikapik.app.direct.fans.new",
+        "/Library/PrivilegedHelperTools/com.pikapik.app.direct.fans.turned-off",
       ],
       trash:     [
     "~/Library/Application Scripts/com.pikapik.app.direct.archive",
