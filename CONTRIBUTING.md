@@ -129,6 +129,12 @@ In the website build, Retype words you typed in the wrong language and Home/End 
 swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/TextFocus.swift scripts/test-chromium-ax-journal.swift -o build/test-chromium-ax-journal && build/test-chromium-ax-journal
 ```
 
+Stopping leaves no Chromium app switched on. A switch-on that lands after pikapik has already put the app back is switched off again, a switch-on tried again after pikapik stopped watching does nothing, and an app stays on while Retype or Home/End still needs it, until the last of them is turned off or pikapik quits. The test keeps the journal in a temporary folder.
+
+```bash
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/TextFocus.swift scripts/test-chromium-ax-quit.swift -o build/test-chromium-ax-quit && build/test-chromium-ax-quit
+```
+
 Changing a hot corner from the Games page remembers the first action and puts it back on request, and a change to the same action writes nothing, so the Dock restarts only on a real change.
 
 ```bash
@@ -151,6 +157,12 @@ In the App Store build the curtain over the desktop icons shows the wallpaper fr
 
 ```bash
 swiftc -parse-as-library -D APPSTORE Sources/pikapik/Tools/Finder/DesktopCurtain.swift scripts/test-desktop-curtain.swift -o build/test-desktop-curtain && build/test-desktop-curtain
+```
+
+Hide desktop icons writes its note before it hides the icons, so a copy that is force quit at that moment has already saved it, and its next launch brings the icons back and forgets the note. The test hides the icons in a second process that stops dead while hiding, with the journal in a temporary folder.
+
+```bash
+swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Tools/Finder/DesktopIcons.swift scripts/test-desktop-icons-force-quit.swift -o build/test-desktop-icons-force-quit && build/test-desktop-icons-force-quit
 ```
 
 A `Toggle` inside a `Menu` needs `.toggleStyle(.automatic)`: the switch style that Settings pages apply makes each item draw three rows that do nothing when chosen. The test reads every Swift file in `Sources` and fails on a `Toggle` in a `Menu` without it.
