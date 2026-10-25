@@ -179,53 +179,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     @MainActor private func powerOff() {
         Background.shared.poweringOff = true
-        #if !APPSTORE
-        var restart = false
-        let dock = DockHost.offline { restart = true }
-        DockEdges.restore(dock)
-        HotCorners.putBackAll(dock)
-        if AnimationsTool.shared.powerOff() { restart = true }
-        if DockDisplayTool.powerOff() { restart = true }
-        KeyRepeatTool.putBack()
-        DesktopIconsTool.putBack()
-        UserDefaults.standard.synchronize()
-        if restart { AnimationsTool.killall("Dock") }
-        MainDisplayControl.restore()
-        HiddenFilesTool.putBack()
-        #endif
+        Lifecycle.run(.powerOff)
     }
 
     @MainActor private func startFeatures() {
-        #if !APPSTORE
-        TextFocus.putBackAfterCrash()
-        DesktopIconsTool.putBack()
-        #endif
-        ToolRegistry.shared.refresh()
-        Permissions.shared.checkSystemAudio()
-        SettingsSync.shared.refresh()
-        Brightness.shared.refresh()
-        KeepAwake.shared.resume()
-        KeepAwake.shared.restoreLidSleepIfNeeded()
-        #if !APPSTORE
-        Updater.shared.resume()
-        #endif
+        Lifecycle.run(.start)
     }
 
     @MainActor private func stopFeatures(quitting: Bool) {
-        ToolRegistry.shared.refresh()
-        SettingsSync.shared.refresh()
-        Brightness.shared.release()
-        if !quitting { KeepAwake.shared.suspend() }
-        #if !APPSTORE
-        FanControl.shared.handOff()
-        Updater.shared.pause()
-        DesktopIconsTool.putBack()
-        HiddenFilesTool.putBack()
-        HotCorners.putBackAll()
-        TextFocus.unwatch()
-        if quitting { _ = TextFocus.puttingBack.wait(timeout: .now() + 2) }
-        #endif
-        GameModeTool.shared.leave()
-        DockEdges.restore()
+        Lifecycle.run(quitting ? .quit : .handOver)
     }
 }

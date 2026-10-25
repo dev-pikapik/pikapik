@@ -111,6 +111,12 @@ Only one copy of pikapik acts on the Mac. Copies of the same family (the website
 swiftc -parse-as-library Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Core/MainCopy.swift Sources/pikapik/Tools/Animations/AnimationSetting.swift scripts/test-main-copy.swift -o build/test-main-copy && build/test-main-copy
 ```
 
+What a copy does when it starts, hands over to another copy, quits, when the Mac shuts down or the user logs out, and on `--uninstall` is one table, `Lifecycle.rows` in `Core/Lifecycle.swift`. Each row belongs to one owner, and a row whose owner changes something on the Mac says for every moment what happens to that change: a step that runs, the tools putting it back themselves, a call made elsewhere (`applicationWillTerminate` or `--uninstall` in `main.swift`), or why nothing is needed. `Lifecycle.run` goes through the rows top to bottom, logs each step it runs (for example `quit HotCorners`), and restarts the Dock at most once, at the Dock row, when a step above it asked. The test runs the runner on made-up rows, checks the real table's order for every moment, compares the table with `--uninstall` and `applicationWillTerminate`, and scans the sources for calls that change the Mac, so a new one cannot land without a row:
+
+```bash
+swiftc -parse-as-library $(find Sources -name '*.swift' ! -name main.swift ! -name App.swift) Extensions/Shared/*.swift Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift scripts/test-lifecycle.swift -o build/test-lifecycle && build/test-lifecycle
+```
+
 Every copy brings its own Finder extensions, and Finder asks every running one for its menu, so without a choice each copy adds its own New File, Make a Smaller Copy, Convert and Archive item. Before it adds an item, an extension asks `MainCopyChoice.showsMenu`: among the running extensions of the same kind (pikapik ids only), the item belongs to the one whose app is running, then to the website or App Store copy over dev and test copies, then to the app that started last (the main copy), so exactly one extension adds it, whatever copies are installed or running. When the main copy quits or is deleted, the item moves to a copy that is left. An extension that does not find itself in the list adds its item, so the item never disappears. The website copy, while it is the main one, also switches off the same extension of dev and test copies, which helps with copies built before this choice; it never switches off the App Store one, which only the user can turn back on.
 
 ```bash
