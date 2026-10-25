@@ -42,6 +42,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - Uninstall, website version: removing pikapik with the uninstall script now also deletes the empty settings file it could leave in ~/Library/Preferences.
 - Uninstaller, website version: removing an app now keeps the files another copy of pikapik uses, and pikapik’s Put Back history.
 - Archives: pikapik reads each unpacked file name only up to its end. Before, it read on past the end of short names in memory.
+- Uninstaller, website version: removing an app no longer hangs. Remove and Put Back stop the size count instead of waiting for it, and an item whose size isn’t counted yet is moved right away; its size shows up in the report and in Put Back once it’s counted. If macOS doesn’t answer while pikapik stops the app’s background services or clears its permissions, pikapik waits a few seconds and goes on, and the Put Back record is saved right after the move to the Trash. Esc stops the search and the size count like the Close button, many apps moved to the Trash at once update the list once, and an app’s icon on a slow disk or a network volume no longer freezes the window. Before, a big app, a slow disk or a macOS tool that didn’t answer could keep the window waiting forever.
 
 ## [1.56.1] - 2026-10-24
 
