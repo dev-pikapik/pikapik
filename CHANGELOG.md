@@ -24,6 +24,8 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - AirPlay, website version: a film that can’t be sent to the AirPlay device now says so: the file may be damaged, or its picture can’t be converted, and it keeps playing on the Mac. Before, pikapik asked you to check that the device is on and on the same network, or said nothing, and it read the whole film again for each of the device’s retries.
 - App Store version: the privacy manifest now also declares file dates and free disk space, which the archive tools read, with the reasons Apple asks for. A new test fails when the code starts using such an API before the manifest declares it.
 - Permissions: a dimmed switch or an Allow button outside Settings > Permissions now only opens that page on the right row, instead of also showing a macOS permission prompt. pikapik also stops checking permissions every 1.5 seconds once you leave the page, so it no longer keeps waking up in the background while a permission stays off.
+- Settings sync: two Macs set up from one Mac with Migration Assistant, or restored from one backup, now pass changes to each other. Before, they shared one sync identity, so each took the other's file for its own and overwrote it again and again, and no change ever arrived.
+- Settings sync: a Mac with an older pikapik no longer deletes, on your other Macs, the settings of features that version doesn't have yet. Each settings file now lists the settings its version knows.
 
 ## [1.56.1] - 2026-10-24
 

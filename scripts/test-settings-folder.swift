@@ -94,5 +94,54 @@ enum TestSettingsFolder {
         try! upload(sent, from: "new-mac").data().write(to: file)
         precondition((try? SettingsFile.read(file).get())?.modified == sent, "such a time comes back exactly, so the Mac that sent it sees nothing new")
         print("an upload that no change on this Mac caused loses to every real file: ok")
+
+        let twin = upload(real.addingTimeInterval(60), from: "copied")
+        precondition(SettingsFile.copiedDevice(local: real, remote: twin, device: "copied"), "a later file with this Mac's id came from a Mac that got the id from Migration Assistant or a backup")
+        precondition(!SettingsFile.copiedDevice(local: real.addingTimeInterval(60), remote: twin, device: "copied"), "this Mac's own last upload")
+        precondition(!SettingsFile.copiedDevice(local: real.addingTimeInterval(120), remote: twin, device: "copied"), "this Mac's own file from before its latest change")
+        precondition(!SettingsFile.copiedDevice(local: .distantPast, remote: twin, device: "copied"), "right after sync is turned on, most likely this Mac's own file from before")
+        precondition(!SettingsFile.copiedDevice(local: real, remote: upload(real.addingTimeInterval(60), from: "other"), device: "copied"))
+        precondition(!SettingsFile.copiedDevice(local: real, remote: nil, device: "copied"))
+
+        struct Mac { var device: String, modified: Date, pet: Bool }
+        var cloud: SettingsFile?
+        var uploads = 0
+        func exchange(_ mac: inout Mac) {
+            if SettingsFile.copiedDevice(local: mac.modified, remote: cloud, device: mac.device) { mac.device = UUID().uuidString }
+            switch SettingsFile.merge(local: mac.modified, remote: cloud, device: mac.device) {
+            case .apply:
+                mac.pet = cloud!.settings[ToolID.pet] as! Bool
+                mac.modified = cloud!.modified
+            case .upload:
+                cloud = SettingsFile(settings: [ToolID.pet: mac.pet], modified: mac.modified, device: mac.device)
+                uploads += 1
+            case .none:
+                break
+            }
+        }
+        var a = Mac(device: "copied", modified: real, pet: false), b = a
+        b.pet = true
+        b.modified = real.addingTimeInterval(60)
+        exchange(&b)
+        for _ in 1...3 { exchange(&a); exchange(&b) }
+        precondition(a.pet && b.pet && a.device != b.device && uploads == 1, "two Macs with one id overwrite each other: \(uploads) uploads")
+        a.pet = false
+        a.modified = real.addingTimeInterval(120)
+        exchange(&a)
+        for _ in 1...3 { exchange(&b); exchange(&a) }
+        precondition(!a.pet && !b.pet && uploads == 2, "a change on the other Mac travels back: \(uploads) uploads")
+        print("two Macs with one copied device id pass changes on instead of overwriting each other: ok")
+
+        func received(_ root: [String: Any]) -> SettingsFile {
+            let header: [String: Any] = ["app": SettingsFile.app, "modified": 1, "device": "old-mac"]
+            return SettingsFile(data: try! JSONSerialization.data(withJSONObject: root.merging(header) { value, _ in value }))!
+        }
+        let legacy = received(["settings": [ToolID.pet: true]])
+        precondition(legacy.removed == SettingsFile.keys.intersection(SettingsFile.olderKeys).subtracting([ToolID.pet]), "a file from 1.56.1 or older removes only keys 1.53.1 synced")
+        let older = received(["settings": [ToolID.pet: true], "keys": [ToolID.pet, PreferenceKey.petTalks, "retired-key"]])
+        precondition(older.removed == [PreferenceKey.petTalks], "a file from a version with fewer keys removes only keys that version knew: \(older.removed)")
+        let written = SettingsFile(data: try! SettingsFile(settings: [ToolID.pet: true], modified: real, device: "this-mac").data())!
+        precondition(written.known == SettingsFile.keys && written.removed == SettingsFile.keys.subtracting([ToolID.pet]), "a file from this version lists every key it syncs, so a setting put back to its default reaches the other Macs")
+        print("a file from an older version never removes settings that version doesn't have: ok")
     }
 }

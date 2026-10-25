@@ -161,7 +161,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 - Turn on iCloud Drive in System Settings — row with an Open button, Website only, when iCloud Drive is off.
 - Needs a permission. Click to allow it. — row with an Allow button, Website only, when access is missing (asks the iCloud Drive permission).
 
-**Nuances:** The switch appears only in a build signed with a provisioning profile that has the iCloud capability, so local builds usually do not show it. Pet awards and the outfit are never synced. Off by default. The app reads the synced settings again every time you switch to it, so a change made on another Mac shows up without a restart.
+**Nuances:** The switch appears only in a build signed with a provisioning profile that has the iCloud capability, so local builds usually do not show it. Pet awards and the outfit are never synced. Off by default. The app reads the synced settings again every time you switch to it, so a change made on another Mac shows up without a restart. Each file lists the keys its version syncs, so a Mac on an older version never deletes settings it doesn't have (`SettingsFile.removed`). Two Macs that got one sync id from Migration Assistant or a backup tell each other apart by a newer file with their own id, and the Mac that sees it takes a new id (`SettingsFile.copiedDevice`).
 
 **Edition:** Both; App Store differs: it uses iCloud key-value storage and never shows the iCloud Drive rows.
 
