@@ -176,7 +176,8 @@ final class Engine {
     var position: CMTime { lock.withLock { requested } ?? synchronizer.currentTime() }
 
     var failed: Bool {
-        layer.sampleBufferRenderer.status == .failed && !hasAudio || audio.status == .failed && !feeds.contains { $0.renderer !== audio }
+        let video = layer.sampleBufferRenderer
+        return video.status == .failed && !video.requiresFlushToResumeDecoding && !hasAudio || audio.status == .failed && !feeds.contains { $0.renderer !== audio }
     }
 
     init(_ url: URL) throws {
@@ -195,15 +196,20 @@ final class Engine {
         let demuxer = demuxer
         var feeds: [Feed] = []
         var size = CGSize.zero
+        var lostPicture = false
         for track in demuxer.streams where track.enabled {
             guard track.format.mediaType == kCMMediaType_Video else {
                 if Self.decodable(track.format.description) { feeds.append(Feed(track, audio, nil)) }
                 continue
             }
             let codec = CMFormatDescriptionGetMediaSubType(track.format.description)
+            let software = PikaCodec.video.contains { PikaCodec.fourCC($0.1) == codec }
             var decoder: FrameDecoder?
-            if PikaCodec.video.contains(where: { PikaCodec.fourCC($0.1) == codec }) || codec == kCMVideoCodecType_AV1 && !videoToolboxDecodes(track.format.description) {
-                guard let opened = try? FrameDecoder(track.format.description) else { continue }
+            if software || !videoToolboxDecodes(track.format.description) {
+                guard software || codec == kCMVideoCodecType_AV1, let opened = try? FrameDecoder(track.format.description) else {
+                    lostPicture = true
+                    continue
+                }
                 decoder = opened
             }
             feeds.append(Feed(track, layer.sampleBufferRenderer, decoder))
@@ -217,7 +223,7 @@ final class Engine {
             ((try? demuxer.last(feed.track)) ?? nil).map { feed.track.time($0.pts.plus($0.duration)) }
         }.max() ?? .zero
         chapters = demuxer.chapters()
-        guard !feeds.isEmpty else {
+        guard !feeds.isEmpty, !lostPicture else {
             close(fd)
             file = -1
             throw MediaError.unsupportedFeature

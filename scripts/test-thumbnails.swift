@@ -26,6 +26,17 @@ enum TestThumbnails {
         return url
     }
 
+    static func videoDescription(_ url: URL) -> CMFormatDescription? {
+        let fd = open(url.path, O_RDONLY)
+        guard fd >= 0 else { return nil }
+        defer { close(fd) }
+        let demuxer = try? Demuxer(name: url.lastPathComponent, size: lseek(fd, 0, SEEK_END), memoryLimit: 32 << 20) { buffer, count, offset in
+            let read = pread(fd, buffer, Int(count), offset)
+            return read < 0 ? -EIO : read == 0 ? PikaErrorEOF : Int32(read)
+        }
+        return demuxer?.streams.first { $0.format.mediaType == kCMMediaType_Video }?.format.description
+    }
+
     static func wait(_ seconds: Double, until done: () -> Bool) {
         let end = Date(timeIntervalSinceNow: seconds)
         while !done(), Date() < end { RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02)) }
@@ -132,6 +143,23 @@ enum TestThumbnails {
             engine.stop()
         } else {
             check(false, "MPEG-4 in AVI at 23.976 fps opens")
+        }
+
+        let fullColour = make(ffmpeg, "full-colour.mp4", in: folder, ["-f", "lavfi", "-i", "testsrc2=size=320x180:rate=25:duration=4", "-f", "lavfi", "-i", "sine=frequency=440:duration=4",
+                                                                      "-c:v", "libx264", "-pix_fmt", "yuv444p", "-c:a", "aac"])
+        if let description = videoDescription(fullColour) {
+            if videoToolboxDecodes(description) {
+                let engine = try? Engine(fullColour)
+                engine?.muted = true
+                engine?.seek(to: .zero, rate: 1)
+                wait(5) { (engine?.synchronizer.currentTime().seconds ?? 0) > 1.5 }
+                check(engine?.hasVideo == true && engine?.layer.sampleBufferRenderer.status != .failed, "H.264 in 4:4:4, which this Mac decodes, plays with its picture")
+                engine?.stop()
+            } else {
+                check((try? Engine(fullColour)) == nil, "H.264 in 4:4:4, which this Mac can't decode, is refused when it opens instead of playing its sound over a black picture")
+            }
+        } else {
+            check(false, "H.264 in 4:4:4 has a video track")
         }
 
         let tall = make(ffmpeg, "tall.mp4", in: folder, ["-f", "lavfi", "-i", "testsrc2=size=180x320:rate=25:duration=4", "-c:v", "libx264", "-pix_fmt", "yuv420p"])
