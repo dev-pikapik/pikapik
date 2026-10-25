@@ -96,13 +96,7 @@ final class LeftoverModel {
     }
 
     private static func run(_ path: String, _ arguments: String...) {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: path)
-        process.arguments = arguments
-        process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return }
-        process.waitUntilExit()
+        _ = AppRoots.run(path, arguments, seconds: 3)
     }
 }
 

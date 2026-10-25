@@ -134,8 +134,10 @@ final class FakePackages {
 final class FakeLaunchctl {
     var calls: [[String]] = []
     var loaded: Set<String> = []
+    var before: ([String]) -> Void = { _ in }
 
     func run(_ arguments: [String]) -> Int32 {
+        before(arguments)
         calls.append(arguments)
         switch arguments.first {
         case "print": return loaded.contains(arguments[1]) ? 0 : 113
@@ -249,9 +251,10 @@ final class Rig {
     var quitAsked: [[String]] = []
     var forceAsked: [[String]] = []
     var forgotten: [String] = []
+    var forgetting: (String) -> Void = { _ in }
     var remover: AppRemover!
 
-    init(quitSeconds: Double = 5) {
+    init(quitSeconds: Double = 5, forgetSeconds: Double = 10) {
         admin = FakeAdmin(stubs: w.stubs)
         finder = FakeFinder(trash: w.at("trash"))
         packages.stubs = w.stubs
@@ -268,9 +271,13 @@ final class Rig {
             launchctl: launchctl.run,
             admin: admin.run,
             finder: finder.run,
-            forget: { self.forgotten.append($0) })
+            forget: { id in
+                self.forgetting(id)
+                self.forgotten.append(id)
+            })
         let footprint = AppFootprint(roots: w.roots(pkgutil: packages.run), installed: [])
-        remover = AppRemover(footprint: footprint, hooks: hooks, store: w.at("store"), trash: w.at("trash"), quitSeconds: quitSeconds)
+        remover = AppRemover(footprint: footprint, hooks: hooks, store: w.at("store"), trash: w.at("trash"), quitSeconds: quitSeconds,
+                             forgetSeconds: forgetSeconds)
     }
 
     var stubs: Stubs { w.stubs }
@@ -304,6 +311,8 @@ enum AppRemoverTests {
         await forgetting()
         await keeping()
         await uncounted()
+        await recordFirst()
+        await forgetBudget()
         await racing()
         messages()
         let left = Rig.real.filter(World.present)
@@ -930,6 +939,51 @@ enum AppRemoverTests {
         AppFootprint.onEntry = nil
         precondition(walked.all.isEmpty && took < 2, "the removal counted sizes itself: \(walked.all.count) entries in \(String(format: "%.1f", took)) s, expected none and under 2 s")
         precondition(report.removed == 3 && report.survivors.isEmpty && report.bytes == 4_321 && report.record?.bytes == 4_321, "\(report)")
+    }
+
+    static func recordFirst() async {
+        let rig = Rig()
+        let w = rig.w
+        let name = w.unique("app")
+        let app = w.app(name, id: "com.example.first")
+        let label = w.unique("agent")
+        let agent = "home/Library/LaunchAgents/\(label).plist"
+        w.file(agent)
+        rig.launchctl.loaded = [rig.gui(label)]
+        rig.admin.answer = .failed
+        func saved() -> Int {
+            ((try? Data(contentsOf: w.at("store/records.json"))).flatMap { try? JSONDecoder().decode([AppRemover.Record].self, from: $0) } ?? []).count
+        }
+        var tail: [String] = []
+        rig.launchctl.before = { arguments in
+            if arguments.first == "bootstrap" { tail.append("bootstrap, \(saved()) saved") }
+        }
+        rig.forgetting = { tail.append("forget \($0), \(saved()) saved") }
+        let report = await rig.remove(app, [w.item("root/Applications/\(name).app", kind: .app, reason: .bundle, admin: true), w.item(agent, kind: .background, admin: true, label: label)])
+        precondition(report.removed == 1 && report.record?.moves.count == 1 && report.record?.jobs == [], "\(report)")
+        precondition(tail == ["bootstrap, 1 saved"] + app.ids.map { "forget \($0), 1 saved" }, "the Put Back record must be saved before services restart and permissions are forgotten: \(tail)")
+    }
+
+    static func forgetBudget() async {
+        let dog = watchdog("forgetBudget")
+        defer { dog.cancel() }
+        let rig = Rig(forgetSeconds: 0.3)
+        let w = rig.w
+        let name = w.unique("app")
+        var app = w.app(name, id: "com.example.hang")
+        app.nestedIDs = ["com.example.hang.helper", "com.example.hang.agent"]
+        let calls = Calls()
+        let release = DispatchSemaphore(value: 0)
+        rig.forgetting = { id in
+            if calls.add(id) == 1 { _ = release.wait(timeout: .now() + 3) }
+        }
+        let started = Date()
+        let report = await rig.remove(app, [w.item("root/Applications/\(name).app", kind: .app, reason: .bundle, admin: true)])
+        let took = Date().timeIntervalSince(started)
+        release.signal()
+        precondition(app.ids.count == 3 && took < 1.5 && calls.all == [app.ids[0]],
+                     "a hung forget kept the removal \(String(format: "%.1f", took)) s (budget 0.3 s, at most 1.5 s) and forgot \(calls.all), expected only \(app.ids[0])")
+        precondition(report.removed == 1 && report.record != nil && w.stored() == [report.record!], "\(report)")
     }
 
     static func messages() {

@@ -361,7 +361,7 @@ struct AppRoots {
 
     static func runPkgutil(_ arguments: [String]) -> String? { run(AppNames.pkgutilPath, arguments) }
 
-    static func run(_ tool: String, _ arguments: [String]) -> String? {
+    static func run(_ tool: String, _ arguments: [String], seconds: Double = 10) -> String? {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: tool)
         process.arguments = arguments
@@ -378,7 +378,7 @@ struct AppRoots {
             data = pipe.fileHandleForReading.readDataToEndOfFile()
             reader.leave()
         }
-        guard reader.wait(timeout: .now() + 10) == .success, finished.wait(timeout: .now() + 10) == .success else {
+        guard reader.wait(timeout: .now() + seconds) == .success, finished.wait(timeout: .now() + seconds) == .success else {
             process.terminate()
             return nil
         }

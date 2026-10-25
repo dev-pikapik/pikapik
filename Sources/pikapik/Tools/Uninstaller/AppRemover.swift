@@ -168,16 +168,18 @@ final class AppRemover {
     let store: URL
     let trash: URL
     let quitSeconds: Double
+    let forgetSeconds: Double
     private let bases: [(path: String, real: String)]
     private let files = FileManager.default
     private static let recordsLock = NSLock()
 
-    init(footprint: AppFootprint, hooks: Hooks, store: URL, trash: URL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".Trash"), quitSeconds: Double = 5) {
+    init(footprint: AppFootprint, hooks: Hooks, store: URL, trash: URL = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".Trash"), quitSeconds: Double = 5, forgetSeconds: Double = 10) {
         self.footprint = footprint
         self.hooks = hooks
         self.store = store
         self.trash = trash
         self.quitSeconds = quitSeconds
+        self.forgetSeconds = forgetSeconds
         let roots = footprint.roots
         let known = [roots.root, roots.home, roots.atRoot("var"), roots.userCache, roots.userTemp].compactMap { $0 } + roots.caskrooms
         bases = known.map { (path: $0.path, real: Self.realPath($0.path) ?? $0.path) }.sorted { $0.path.count > $1.path.count }
@@ -241,16 +243,21 @@ final class AppRemover {
             }
         }
         if !queue.isEmpty { await runAdmin(queue, app, &work) }
-        booted.filter { exists($0.plist) }.forEach(restart)
-        if work.report.removed > 0, AppInventory.isInTrash(app.url) || !exists(app.url.path) { app.ids.forEach(hooks.forget) }
-        work.report.survivors = attempted.filter(isPresent).map { item in
-            let why = work.why[item.id] ?? .failed
-            return Survivor(url: item.url, why: why, step: item.packageID == nil ? why.step : nil)
-        }
         if !work.moves.isEmpty {
             let record = Record(id: UUID().uuidString, appName: app.displayName, date: Date(), bytes: work.report.bytes, moves: work.moves, jobs: work.jobs.filter { !exists($0.plist) })
             Self.recordsLock.withLock { write([record] + prune()) }
             work.report.record = record
+        }
+        booted.filter { exists($0.plist) }.forEach(restart)
+        if work.report.removed > 0, AppInventory.isInTrash(app.url) || !exists(app.url.path) {
+            var budget = forgetSeconds
+            for id in app.ids {
+                if !Self.within(&budget, { self.hooks.forget(id) }) { Log.note("Uninstaller: forgetting \(id) ran out of time, skipped") }
+            }
+        }
+        work.report.survivors = attempted.filter(isPresent).map { item in
+            let why = work.why[item.id] ?? .failed
+            return Survivor(url: item.url, why: why, step: item.packageID == nil ? why.step : nil)
         }
         return work.report
     }
@@ -364,6 +371,22 @@ final class AppRemover {
 
     private func restart(_ job: Job) {
         _ = hooks.launchctl(["bootstrap", job.domain, job.plist])
+    }
+
+    private static func within(_ budget: inout Double, _ work: @escaping () -> Void) -> Bool {
+        guard budget > 0 else { return false }
+        let started = Date()
+        let finished = DispatchSemaphore(value: 0)
+        DispatchQueue.global().async {
+            work()
+            finished.signal()
+        }
+        guard finished.wait(timeout: .now() + budget) == .success else {
+            budget = 0
+            return false
+        }
+        budget -= Date().timeIntervalSince(started)
+        return true
     }
 
     private func quit(_ running: [Running]) async -> [String]? {
