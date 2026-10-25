@@ -40,12 +40,11 @@ struct TestDesktopIcons {
     static let hiddenBefore = OriginalValue.Entry(before: true, ours: false)
 
     static func main() {
-        var suites: [String] = []
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("test-desktop-icons-\(UUID().uuidString)")
+        try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
         func journal(_ name: String) -> UserDefaults {
-            let suite = "test-desktop-icons-\(name)"
-            suites.append(suite)
-            UserDefaults.standard.removePersistentDomain(forName: suite)
-            return UserDefaults(suiteName: suite)!
+            UserDefaults(suiteName: folder.appendingPathComponent(name).path)!
         }
 
         do {
@@ -196,7 +195,5 @@ struct TestDesktopIcons {
             precondition(mac.keys.isEmpty && mac.finderRestarts == 0, "turning the switch off must also take away a key that had no value: \(mac.keys)")
         }
         print("a desktop icons key that had no value is taken away again instead of being set to false: ok")
-
-        suites.forEach(UserDefaults.standard.removePersistentDomain)
     }
 }
