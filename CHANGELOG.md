@@ -16,6 +16,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - Log out, restart and shut down, website version: every copy of pikapik now puts your values back first thing, before macOS closes it: hot corners and the Dock delay from a game, animations and whether the Dock hides, the Dock on one display, key repeat and desktop icons, and the Dock restarts at most once. Before, when the Mac shut down with two copies of pikapik open and no window, it could start again with pikapik’s Dock values and with the desktop icons still hidden.
 - Animations, website version: the Hide the Dock automatically switch no longer disappears from the page after you turn it on. Restore Defaults now puts it back too, and you can press it when that switch is the only thing you changed.
 - Animations, website version: if you never changed whether the Dock hides, pikapik leaves that setting unset when it puts things back, instead of setting it to not hide.
+- Hide desktop icons: turning Stage Manager on or off while the icons are hidden no longer leaves them hidden after you quit pikapik, and Stage Manager keeps its own choice to show or hide desktop items.
 
 ## [1.56.1] - 2026-10-24
 

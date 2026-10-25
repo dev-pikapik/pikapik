@@ -3,11 +3,20 @@ import AppKit
 @main
 struct TestDesktopIcons {
     final class Mac {
-        var icons = false
+        var keys: [String: Bool] = [:]
+        var stageManager = false
         var createDesktop = true
         var desktop = true
         var iconWrites = 0
         var finderRestarts = 0
+
+        var key: String { stageManager ? DesktopIconsHost.stageManagerKey : DesktopIconsHost.standardKey }
+        var icons: Bool {
+            get { hidden(key) }
+            set { keys[key] = newValue }
+        }
+
+        func hidden(_ key: String) -> Bool { keys[key] ?? (key == DesktopIconsHost.stageManagerKey) }
 
         func restartFinder() {
             finderRestarts += 1
@@ -17,8 +26,9 @@ struct TestDesktopIcons {
         func copy(_ journal: UserDefaults) -> DesktopIconsHost {
             DesktopIconsHost(
                 journal: journal,
-                iconsHidden: { self.icons },
-                writeIcons: { self.icons = $0; self.iconWrites += 1 },
+                iconsKey: { self.key },
+                iconsHidden: { self.hidden($0) },
+                writeIcons: { self.keys[$0] = $1; self.iconWrites += 1 },
                 desktopMade: { self.desktop },
                 makeDesktop: { self.createDesktop = true }
             )
@@ -136,6 +146,35 @@ struct TestDesktopIcons {
             precondition(mac.iconWrites == 0 && mac.finderRestarts == 0)
         }
         print("a switch that already matches the desktop writes nothing and restarts nothing: ok")
+
+        do {
+            let standard = DesktopIconsHost.standardKey, stage = DesktopIconsHost.stageManagerKey
+            let mac = Mac()
+            let saved = journal("stage-manager-on")
+            DesktopIcons.hide(mac.copy(saved))
+            mac.stageManager = true
+            precondition(DesktopIcons.hidden(mac.copy(saved)), "Stage Manager hides desktop items until you show them")
+            DesktopIcons.putBack(mac.copy(saved))
+            precondition(mac.keys == [standard: false], "quitting after Stage Manager was turned on must show the icons again and leave Stage Manager's own setting alone: \(mac.keys)")
+
+            mac.keys = [stage: false]
+            let other = journal("stage-manager-off")
+            DesktopIcons.hide(mac.copy(other))
+            precondition(mac.keys == [stage: true])
+            mac.stageManager = false
+            DesktopIcons.putBack(mac.copy(other))
+            precondition(mac.keys == [stage: false], "quitting after Stage Manager was turned off must give Stage Manager back its desktop items: \(mac.keys)")
+
+            mac.keys = [:]
+            let switched = journal("stage-manager-switch")
+            DesktopIcons.hide(mac.copy(switched))
+            mac.stageManager = true
+            DesktopIcons.show(mac.copy(switched)) { mac.restartFinder() }
+            precondition(mac.keys == [standard: false, stage: false] && !DesktopIcons.hidden(mac.copy(switched)), "turning the switch off shows the icons in both modes: \(mac.keys)")
+            DesktopIcons.putBack(mac.copy(switched))
+            precondition(mac.keys == [standard: false, stage: false] && mac.finderRestarts == 0)
+        }
+        print("turning Stage Manager on or off while the icons are hidden puts back only the setting pikapik changed: ok")
 
         suites.forEach(UserDefaults.standard.removePersistentDomain)
     }
