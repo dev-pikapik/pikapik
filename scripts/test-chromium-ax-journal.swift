@@ -125,5 +125,43 @@ struct TestChromiumAXJournal {
         TextFocus.puttingBack.wait()
         precondition(writes == ["100 false [100]"] && Switched.load(TextFocus.journalKey).isEmpty, "\(writes)")
         print("a put-back stops trying once the app has quit: ok")
+
+        var busy = true
+        var mode: [String: Bool] = [:]
+        writes = []
+        TextFocus.write = { attribute, on, _ in
+            writes.append("\(attribute) \(on) \(Switched.load(TextFocus.journalKey).count)")
+            mode[attribute] = on
+            return busy ? .cannotComplete : .success
+        }
+        TextFocus.isOn = { _ in !busy && mode.values.contains(true) }
+        TextFocus.watch(owner, front: nil)
+        for _ in 0..<2 {
+            precondition(TextFocus.enable("AXManualAccessibility", gone, "com.google.Chrome") == .cannotComplete)
+            precondition(TextFocus.enable("AXEnhancedUserInterface", gone, "com.google.Chrome") == .cannotComplete)
+        }
+        busy = false
+        precondition(TextFocus.enable("AXManualAccessibility", gone, "com.google.Chrome") == .success)
+        TextFocus.unwatch(bundleID: chrome)
+        TextFocus.puttingBack.wait()
+        precondition(!mode.values.contains(true) && Switched.load(TextFocus.journalKey).isEmpty, "\(writes)")
+        precondition(writes == ["AXManualAccessibility true 1", "AXEnhancedUserInterface true 2", "AXManualAccessibility true 2", "AXEnhancedUserInterface true 2", "AXManualAccessibility false 2", "AXEnhancedUserInterface false 1"], "\(writes)")
+        print("a busy Chrome that turns on after answering too late is remembered once and turned off at quit: ok")
+
+        busy = true
+        mode = ["AXManualAccessibility": true]
+        writes = []
+        TextFocus.isOn = { _ in busy ? nil : mode.values.contains(true) }
+        TextFocus.watch(owner, front: nil)
+        for _ in 0..<10 {
+            precondition(TextFocus.enable("AXManualAccessibility", gone, "com.google.Chrome") == .cannotComplete)
+            precondition(TextFocus.enable("AXEnhancedUserInterface", gone, "com.google.Chrome") == .cannotComplete)
+        }
+        busy = false
+        precondition(TextFocus.enable("AXManualAccessibility", gone, "com.google.Chrome") == .success)
+        TextFocus.unwatch(bundleID: chrome)
+        TextFocus.puttingBack.wait()
+        precondition(mode == ["AXManualAccessibility": true] && writes.isEmpty && Switched.load(TextFocus.journalKey).isEmpty, "\(writes)")
+        print("a Chrome that another program turned on and that does not answer is neither switched nor remembered, and stays on at quit: ok")
     }
 }

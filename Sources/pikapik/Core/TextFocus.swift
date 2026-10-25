@@ -109,27 +109,30 @@ enum TextFocus {
 
     static func enable(_ attribute: String, _ pid: pid_t, _ bundleID: String) -> AXError {
         puttingBack.wait()
-        if isOn(pid) { return .success }
+        guard let on = isOn(pid) else { return .cannotComplete }
+        if on { return .success }
         let entry = Switched(bundleID: bundleID, pid: pid, attribute: attribute, before: false)
         lock.lock()
         let watching = observer != nil
-        if watching { enabled.append(entry) }
+        if watching && !enabled.contains(entry) { enabled.append(entry) }
         lock.unlock()
         guard watching else { return .success }
         var error = write(attribute, true, pid)
         if error == .notImplemented { error = .success }
         lock.lock()
-        if error != .success { enabled.removeAll { $0 == entry } }
+        if error != .success && error != .cannotComplete { enabled.removeAll { $0 == entry } }
         let dropped = error == .success && !enabled.contains(entry)
         lock.unlock()
         if dropped { _ = write(attribute, false, pid) }
         return error
     }
 
-    static var isOn: (pid_t) -> Bool = { pid in
+    static var isOn: (pid_t) -> Bool? = { pid in
         let app = AXUIElementCreateApplication(pid)
-        if ["AXManualAccessibility", "AXEnhancedUserInterface"].contains(where: { value(app, $0).0 as? Bool == true }) { return true }
-        var element = value(app, kAXFocusedUIElementAttribute).0
+        let reads = ["AXManualAccessibility", "AXEnhancedUserInterface", kAXFocusedUIElementAttribute].map { value(app, $0) }
+        if reads.prefix(2).contains(where: { $0.0 as? Bool == true }) { return true }
+        if reads.contains(where: { $0.1 == .cannotComplete }) { return nil }
+        var element = reads[2].0
         for _ in 0..<64 {
             guard let current = element, CFGetTypeID(current) == AXUIElementGetTypeID(), !CFEqual(current, app) else { return false }
             let axCurrent = unsafeBitCast(current, to: AXUIElement.self)
