@@ -217,6 +217,13 @@ private final class Opened: @unchecked Sendable {
     }
 }
 
+private final class Counter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var number = 0
+    var value: Int { lock.withLock { number } }
+    func add() { lock.withLock { number += 1 } }
+}
+
 private func token(of url: URL) -> String { url.pathComponents[1] }
 
 @main
@@ -552,8 +559,17 @@ enum TestPlayerAirplay {
         check(get(UInt16(own.url.port ?? 0), "/\(token(of: own.url))/master.m3u8").status == 200 && !own.hasBeenAsked, "this Mac's own player asking does not count as a device asking")
         own.close()
 
-        let broken = AirPlaySession(host: 0x7F00_0001, subnets: loopback, local: [], open: { nil })!
-        check(get(UInt16(broken.url.port ?? 0), "/\(token(of: broken.url))/master.m3u8").status == 500, "a film that cannot be opened is answered with an error")
+        let opens = Counter(), told = Counter()
+        let broken = AirPlaySession(host: 0x7F00_0001, subnets: loopback, local: [], open: {
+            opens.add()
+            return nil
+        })!
+        broken.onFailure = told.add
+        let (brokenPort, brokenToken) = (UInt16(broken.url.port ?? 0), token(of: broken.url))
+        check(get(brokenPort, "/\(brokenToken)/master.m3u8").status == 500, "a film that cannot be opened is answered with an error")
+        check(get(brokenPort, "/\(brokenToken)/master.m3u8").status == 500 && get(brokenPort, "/\(brokenToken)/v/h264/0.m4s").status == 500 && opens.value == 1,
+              "it is opened once, not read again for every request")
+        check(told.value == 1, "the player hears once that this film can't be sent")
         broken.close()
         print("session: ok")
     }

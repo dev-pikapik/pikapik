@@ -92,6 +92,9 @@ final class AirPlayLink: NSObject, AVRoutePickerViewDelegate {
             warned = true
             return
         }
+        made.onFailure = { [weak self, weak made] in
+            DispatchQueue.main.async { self?.cannotSend(made) }
+        }
         session = made
         let item = AVPlayerItem(url: made.url)
         observations = [
@@ -147,6 +150,14 @@ final class AirPlayLink: NSObject, AVRoutePickerViewDelegate {
         } else if old == .paused, new != .paused {
             onEvent(.playing(true))
         }
+    }
+
+    private func cannotSend(_ failed: AirPlaySession?) {
+        guard let failed, failed === session else { return }
+        let was = isActive
+        teardown()
+        if was { onEvent(.left(position(), resume: true)) }
+        onEvent(.problem(AirPlayAdvice.cannotSend))
     }
 
     private func stopped() {

@@ -294,6 +294,8 @@ enum AirPlayAdvice {
 
     static var unavailable: String { String(localized: "pikapik couldn’t start sharing this video with the AirPlay device. Check that this Mac is connected to Wi-Fi or Ethernet, then pick the device again.") }
 
+    static var cannotSend: String { String(localized: "This video can’t be sent to the AirPlay device: the file may be damaged, or its picture can’t be converted for AirPlay. It keeps playing on this Mac.") }
+
     static func text(blockAll: Bool?, asked: Bool) -> String {
         if asked {
             return String(localized: "The AirPlay device stopped playing this video, so playback continues on this Mac. Check that the device is turned on and on the same network, then pick it again.")

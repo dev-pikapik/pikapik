@@ -154212,6 +154212,149 @@
         }
       }
     },
+    "This video can’t be sent to the AirPlay device: the file may be damaged, or its picture can’t be converted for AirPlay. It keeps playing on this Mac.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تعذّر إرسال هذا الفيديو إلى جهاز AirPlay: قد يكون الملف تالفًا، أو لا يمكن تحويل صورته لتناسب AirPlay. يستمر التشغيل على هذا الـ Mac."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toto video nejde poslat do zařízení AirPlay: soubor může být poškozený, nebo jeho obraz nejde převést pro AirPlay. Přehrávání pokračuje na tomto Macu."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Video kann nicht an das AirPlay-Gerät gesendet werden: Die Datei ist vielleicht beschädigt, oder ihr Bild lässt sich nicht für AirPlay umwandeln. Das Video läuft auf diesem Mac weiter."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This video can’t be sent to the AirPlay device: the file may be damaged, or its picture can’t be converted for AirPlay. It keeps playing on this Mac."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este vídeo no se puede enviar al dispositivo AirPlay: puede que el archivo esté dañado o que su imagen no se pueda convertir para AirPlay. La reproducción continúa en este Mac."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cette vidéo ne peut pas être envoyée à l’appareil AirPlay : le fichier est peut-être endommagé, ou son image ne peut pas être convertie pour AirPlay. La lecture continue sur ce Mac."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "यह वीडियो AirPlay डिवाइस पर नहीं भेजा जा सकता: हो सकता है फ़ाइल ख़राब हो, या उसकी तस्वीर AirPlay के लिए बदली न जा सके। प्लेबैक इस Mac पर जारी है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video ini tidak dapat dikirim ke perangkat AirPlay: file mungkin rusak, atau gambarnya tidak dapat diubah untuk AirPlay. Pemutaran dilanjutkan di Mac ini."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questo video non può essere inviato al dispositivo AirPlay: il file potrebbe essere danneggiato, oppure la sua immagine non può essere convertita per AirPlay. La riproduzione continua su questo Mac."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このビデオはAirPlayデバイスに送れません。ファイルが壊れているか、映像をAirPlay用に変換できない可能性があります。このMacで再生を続けます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 비디오를 AirPlay 기기로 보낼 수 없습니다. 파일이 손상되었거나 화면을 AirPlay용으로 변환할 수 없을 수 있습니다. 이 Mac에서 계속 재생합니다."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deze video kan niet naar het AirPlay-apparaat worden gestuurd: het bestand is misschien beschadigd, of het beeld kan niet voor AirPlay worden omgezet. Het afspelen gaat verder op deze Mac."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tego wideo nie można wysłać do urządzenia AirPlay: plik może być uszkodzony albo jego obrazu nie da się przekonwertować dla AirPlay. Odtwarzanie trwa dalej na tym Macu."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este vídeo não pode ser enviado ao dispositivo AirPlay: o arquivo pode estar danificado, ou a imagem dele não pode ser convertida para o AirPlay. A reprodução continua neste Mac."
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acest videoclip nu poate fi trimis la dispozitivul AirPlay: fișierul poate fi deteriorat sau imaginea lui nu poate fi convertită pentru AirPlay. Redarea continuă pe acest Mac."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Это видео не получается передать на устройство AirPlay: файл может быть повреждён, или его картинку нельзя преобразовать для AirPlay. Видео продолжает играть на этом Mac."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videon kan inte skickas till AirPlay-enheten: filen kan vara skadad, eller så går bilden inte att konvertera för AirPlay. Uppspelningen fortsätter på den här Macen."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ส่งวิดีโอนี้ไปยังอุปกรณ์ AirPlay ไม่ได้ ไฟล์อาจเสียหาย หรือแปลงภาพของวิดีโอให้ใช้กับ AirPlay ไม่ได้ วิดีโอจะเล่นต่อบน Mac เครื่องนี้"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu video AirPlay aygıtına gönderilemiyor: dosya hasarlı olabilir ya da görüntüsü AirPlay için dönüştürülemiyor olabilir. Oynatma bu Mac’te devam ediyor."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Це відео не вдається передати на пристрій AirPlay: файл може бути пошкоджений, або його зображення не можна перетворити для AirPlay. Відео далі грає на цьому Mac."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không thể gửi video này đến thiết bị AirPlay: tệp có thể bị hỏng, hoặc hình ảnh của video không thể chuyển đổi cho AirPlay. Video tiếp tục phát trên Mac này."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法将此视频发送到 AirPlay 设备：文件可能已损坏，或者其画面无法转换为 AirPlay 可用的格式。这台 Mac 会继续播放。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法將此影片傳送到 AirPlay 裝置：檔案可能已損毀，或其畫面無法轉換成 AirPlay 可用的格式。這部 Mac 會繼續播放。"
+          }
+        }
+      }
+    },
     "This whole edge is my kingdom.": {
       "extractionState": "manual",
       "localizations": {
