@@ -100,7 +100,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>pikapik</string>
-				<string>pikapik</string>
+				<string>pika-tools</string>
 			</array>
 		</dict>
 	</array>
