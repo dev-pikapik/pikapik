@@ -222,6 +222,7 @@ private struct Loop: ViewModifier {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.artPlaying) private var playing
     @State private var visible = true
+    @State private var active = NSApp.isActive
     @State private var played = 0
 
     private struct Run: Equatable {
@@ -232,11 +233,11 @@ private struct Loop: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .settingsVisibility($visible)
-            .task(id: Run(visible: visible && playing, reduceMotion: reduceMotion, replay: replay)) {
+            .settingsVisibility($visible, active: $active)
+            .task(id: Run(visible: visible && active && playing, reduceMotion: reduceMotion, replay: replay)) {
                 let replaying = replay != played
                 played = replay
-                guard visible, playing, !reduceMotion || replaying else { return }
+                guard visible, active, playing, !reduceMotion || replaying else { return }
                 if replaying { tick = 0 }
                 var steps = reduceMotion ? rest ?? durations.count - 1 : Int.max
                 var deadline = ContinuousClock.now
@@ -256,15 +257,16 @@ struct ArtTimeline<Content: View>: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.artPlaying) private var playing
     @State private var visible = true
+    @State private var active = NSApp.isActive
     @State private var shown = false
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion || !visible || !shown || !playing)) { context in
+        TimelineView(.animation(minimumInterval: 1 / 30, paused: reduceMotion || !visible || !active || !shown || !playing)) { context in
             content(reduceMotion ? nil : context.date.timeIntervalSinceReferenceDate)
         }
         .onAppear { shown = true }
         .onDisappear { shown = false }
-        .settingsVisibility($visible)
+        .settingsVisibility($visible, active: $active)
     }
 }
 
@@ -280,11 +282,13 @@ private extension EnvironmentValues {
 }
 
 extension View {
-    func settingsVisibility(_ visible: Binding<Bool>) -> some View {
+    func settingsVisibility(_ visible: Binding<Bool>, active: Binding<Bool>) -> some View {
         onReceive(NotificationCenter.default.publisher(for: NSWindow.didChangeOcclusionStateNotification)) { note in
             guard let window = note.object as? NSWindow, window === SettingsWindow.window else { return }
             visible.wrappedValue = window.occlusionState.contains(.visible)
         }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in active.wrappedValue = true }
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification)) { _ in active.wrappedValue = false }
     }
 
     func hostedApart() -> some View {

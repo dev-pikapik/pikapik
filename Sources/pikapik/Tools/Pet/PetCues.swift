@@ -59,7 +59,7 @@ struct PetCues {
             if news > told { feel(.excited, now, &physics) }
             told = news
         }
-        if hello, physics.state == .walk {
+        if hello, physics.state == .walk || physics.state == .rest {
             hello = false
             feel(.happy, now, &physics)
             if (5..<12).contains(Calendar.current.component(.hour, from: date)), progress?.greet(date) == true, let noon = Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: date) { owed = (PetPhrases.morning, now + noon.timeIntervalSince(date)) }

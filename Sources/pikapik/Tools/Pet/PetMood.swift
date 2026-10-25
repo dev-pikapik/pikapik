@@ -143,6 +143,12 @@ struct PetMind {
         return .mix(goal, PetFace(), Self.ease((now - until) / Self.fall))
     }
 
+    func still(at now: Double) -> Double? {
+        if mood == .calm || now >= until + Self.fall { return .infinity }
+        if now < began + Self.rise || now >= until || mood == .sleepy || mood == .curious { return nil }
+        return until
+    }
+
     private static func ease(_ x: Double) -> CGFloat {
         let x = min(max(x, 0), 1)
         return CGFloat(x * x * (3 - 2 * x))

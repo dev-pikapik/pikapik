@@ -222,12 +222,13 @@ enum PetFigure {
 }
 
 extension PetPose {
-    init(_ pet: PetPhysics, scale: CGFloat, time: Double) {
+    init(_ pet: PetPhysics, scale: CGFloat, time: Double, blink: Bool, still: Bool = false) {
         self.init(
             step: Double(pet.walked / scale) * .pi * 5 / 28, lift: (pet.origin.y - pet.floor) / scale, floor: (pet.floor - pet.bounds.minY) / scale, facing: pet.facing
         )
         let fall = pet.calm ? 0 : .pi / 2 * pet.heading * pet.facing
         let sleepy = min(0.75, max(0, -pet.zest))
+        let still = pet.calm || still
         switch pet.state {
         case .jump:
             air = true
@@ -260,22 +261,23 @@ extension PetPose {
             squash = pet.landed < 0.15 ? 0.14 * (1 - pet.landed / 0.15) : 0
             lid = sleepy
             bounce = max(0, pet.zest)
-        case .turn:
+        case .turn, .rest:
             lid = sleepy
         case .doze:
             sit = Self.ease(pet.clock / 0.5)
-            squash = 0.04 * sin(pet.clock * 2 * .pi / 3.6)
+            squash = still ? 0 : 0.04 * sin(pet.clock * 2 * .pi / 3.6)
             lid = 1
-            nap = pet.calm ? (pet.clock > 1 ? 2.4 : 0) : pet.clock
+            nap = still ? (pet.clock > 1 ? 2.4 : 0) : pet.clock
         case .wake:
             let t = pet.clock / pet.hold
             sit = 1 - Self.ease(t / 0.45)
             squash = -0.12 * sin(.pi * min(1, t / 0.75))
             lid = sleepy + (1 - sleepy) * (1 - Self.ease((t - 0.3) / 0.4))
-            nap = pet.calm ? (pet.napped > 1 ? 2.4 : 0) : pet.napped + pet.clock
+            nap = still ? (pet.napped > 1 ? 2.4 : 0) : pet.napped + pet.clock
             dream = 1 - Self.ease(t / 0.35)
         }
-        blink = !dizzy && time.truncatingRemainder(dividingBy: 3.8) < 0.13
+        if pet.calm, !air { sit = 1 }
+        self.blink = !dizzy && lid < 1 && blink
     }
 
     static func ease(_ x: Double) -> CGFloat {

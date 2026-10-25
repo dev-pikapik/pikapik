@@ -1,7 +1,7 @@
 import CoreGraphics
 
 struct PetPhysics {
-    enum State { case walk, turn, jump, tumble, lie, getUp, sit, kick, held, thrown, doze, wake }
+    enum State { case walk, turn, jump, tumble, lie, getUp, sit, kick, held, thrown, doze, wake, rest }
     enum Event { case jump, leap, climb, tumble, fling, woke }
 
     static let size = CGSize(width: 30, height: 32)
@@ -46,6 +46,7 @@ struct PetPhysics {
     private var age = 0.0
     private var trail = Trail()
     private var beat: CGFloat = 0
+    private var hook = CGVector.zero
 
     init(bounds: CGRect, x: CGFloat? = nil, facing: CGFloat = 1) {
         self.bounds = bounds
@@ -59,7 +60,7 @@ struct PetPhysics {
         CGRect(x: origin.x - Self.size.width / 2, y: origin.y, width: Self.size.width, height: Self.size.height)
     }
 
-    var pace: CGFloat { (calm ? 22 : 36) * (1 + 0.45 * zest) }
+    var pace: CGFloat { 36 * (1 + 0.45 * zest) }
 
     var grounded: Bool { state != .jump && state != .tumble && state != .held && state != .thrown }
 
@@ -120,7 +121,7 @@ struct PetPhysics {
 
     @discardableResult
     mutating func jump() -> Bool {
-        guard state == .walk || state == .turn || state == .sit else { return false }
+        guard !calm, state == .walk || state == .turn || state == .sit else { return false }
         vx = state == .walk ? facing * pace : 0
         if state == .turn { facing = heading }
         vy = (2 * Self.gravity * min(Self.hop, headroom(to: origin.x + vx * 2 * (2 * Self.hop / Self.gravity).squareRoot()))).squareRoot()
@@ -134,7 +135,7 @@ struct PetPhysics {
         return events
     }
 
-    var canSit: Bool { state == .walk || state == .turn }
+    var canSit: Bool { state == .walk || state == .turn || state == .rest }
 
     @discardableResult
     mutating func sit(_ seconds: Double) -> Bool {
@@ -146,7 +147,7 @@ struct PetPhysics {
 
     @discardableResult
     mutating func doze() -> Bool {
-        guard state == .walk || state == .turn else { return false }
+        guard canSit else { return false }
         if state == .turn { facing = heading }
         enter(.doze)
         return true
@@ -168,6 +169,13 @@ struct PetPhysics {
         if idle >= Self.slumber { doze() } else if idle < Self.drowsy { wake() }
     }
 
+    mutating func wait(_ dt: Double) {
+        clock += dt
+        landed += dt
+        age += dt
+        shy = max(0, shy - dt)
+    }
+
     func touches(_ point: CGPoint) -> Bool {
         Self.touches(point, previous, frame)
     }
@@ -187,9 +195,9 @@ struct PetPhysics {
         let room = facing > 0 ? ball.bounds.maxX - b.maxX : b.minX - ball.bounds.minX
         let power = walked.truncatingRemainder(dividingBy: 97) / 97
         if room > 4 * Self.size.width {
-            ball.kick(CGVector(dx: facing * (calm ? 140 : 220 + 160 * power), dy: calm ? 60 : 140 + 160 * (1 - power)))
+            ball.kick(CGVector(dx: facing * (220 + 160 * power), dy: 140 + 160 * (1 - power)))
         } else {
-            ball.kick(CGVector(dx: -facing * (calm ? 120 : 170), dy: calm ? 420 : 520), over: true)
+            ball.kick(CGVector(dx: -facing * 170, dy: 520), over: true)
         }
         enter(.kick, 0.4)
         return true
@@ -208,6 +216,7 @@ struct PetPhysics {
         vx = 0
         vy = 0
         trail = Trail()
+        hook = calm ? CGVector(dx: origin.x - point.x, dy: origin.y + Self.size.height - Self.scruff - point.y) : .zero
         enter(.held)
         hang(point)
         previous = frame
@@ -273,6 +282,7 @@ struct PetPhysics {
         let a0 = frame
         switch state {
         case .walk:
+            if calm { return enter(.rest) }
             if shy == 0, let b1, ahead(b1) {
                 if !armed, gap(b1) < Self.margin { return turn(to: -facing) }
                 if armed, leap(b1) { return }
@@ -303,19 +313,21 @@ struct PetPhysics {
             }
         case .doze:
             break
+        case .rest:
+            if !calm { enter(.walk) }
         case .held:
             if let b1 { hang(CGPoint(x: b1.minX, y: b1.maxY)) }
             follow()
         case .jump, .tumble, .thrown:
             fly(CGFloat(h), from: a0)
         }
-        if let ledge, grounded { settle(ledge, from: a0) }
+        if let ledge, grounded, !calm { settle(ledge, from: a0) }
         if grounded, origin.y > bounds.minY, !standing {
             vx = state == .walk ? facing * pace : 0
             vy = 0
             enter(.jump)
         }
-        guard shy == 0, armed, let b0, let b1, state == .walk || state == .turn || state == .jump || state == .sit,
+        guard !calm, shy == 0, armed, let b0, let b1, state == .walk || state == .turn || state == .jump || state == .sit,
               let t = Self.sweep(a0, frame, b0, b1) else { return }
         let a1 = frame
         origin = CGPoint(x: a0.midX + (a1.midX - a0.midX) * t, y: grounded ? origin.y : a0.minY + (a1.minY - a0.minY) * t)
@@ -388,7 +400,7 @@ struct PetPhysics {
     }
 
     private mutating func hang(_ point: CGPoint) {
-        origin = CGPoint(x: clamp(point.x), y: level(point.y - Self.size.height + Self.scruff))
+        origin = CGPoint(x: clamp(point.x + hook.dx), y: level(point.y + hook.dy - Self.size.height + Self.scruff))
     }
 
     private mutating func follow() {
@@ -469,7 +481,7 @@ struct PetPhysics {
     }
 
     private mutating func enter(_ next: State, _ seconds: Double = 0) {
-        state = next
+        state = calm && next == .walk ? .rest : next
         clock = 0
         hold = seconds
         if next == .tumble { events.append(.tumble) }

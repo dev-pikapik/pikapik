@@ -236,7 +236,10 @@ struct ItemTile: View {
         let award = item.award
         let fresh = progress.fresh.contains(item.rawValue)
         Button {
-            if unlocked { progress.wear(item) } else if let award { open(award) }
+            if unlocked {
+                progress.wear(item)
+                PetStage.shared.stir()
+            } else if let award { open(award) }
         } label: {
             VStack(spacing: 4) {
                 PetThumb(outfit: [item.slot: item], lens: item.lens, ghost: !unlocked)
@@ -283,7 +286,10 @@ private struct LookCard: View {
         let ready = have == look.items.count
         let on = Set(progress.outfit.values) == Set(look.items)
         let progressText = String(localized: "\(have.formatted()) of \(look.items.count.formatted()) unlocked")
-        Button { progress.wear(look) } label: {
+        Button {
+            progress.wear(look)
+            PetStage.shared.stir()
+        } label: {
             VStack(spacing: 4) {
                 PetThumb(outfit: look.outfit, lens: Self.lens, ghost: !ready)
                     .frame(height: 70)
@@ -347,6 +353,7 @@ struct PetWardrobeSection: View {
                 Spacer()
                 Button("Take Everything Off", symbol: .hanger) {
                     for item in progress.outfit.values { progress.wear(item) }
+                    PetStage.shared.stir()
                 }
                 .disabled(progress.outfit.isEmpty)
             }

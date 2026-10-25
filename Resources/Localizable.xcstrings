@@ -138482,6 +138482,149 @@
         }
       }
     },
+    "Stays put while Reduce Motion is on.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يبقى في مكانه ما دام «تقليل الحركة» قيد التشغيل."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zůstává na místě, dokud je zapnuté „Omezit pohyb“."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bleibt an Ort und Stelle, solange „Bewegung reduzieren“ an ist."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stays put while Reduce Motion is on."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se queda en su sitio mientras «Reducir movimiento» esté activado."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reste sur place tant que « Réduire les animations » est activé."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "जब तक “मोशन कम करें” चालू है, अपनी जगह पर ही रहता है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tetap di tempat selama “Kurangi gerakan” menyala."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resta al suo posto finché «Riduci movimento» è attivo."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「視差効果を減らす」がオンの間は、その場から動きません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "‘동작 줄이기’가 켜져 있는 동안에는 제자리에 머무릅니다."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blijft op zijn plek zolang ‘Verminder beweging’ aanstaat."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zostaje na miejscu, dopóki opcja Ogranicz ruch jest włączona."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não sai do lugar enquanto Reduzir movimento estiver ativado."
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rămâne pe loc cât timp opțiunea Redu mișcarea e activată."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Остаётся на месте, пока включено «Уменьшение движения»."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stannar på plats medan Minska rörelse är på."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "อยู่กับที่ขณะที่ “ลดการเคลื่อนไหว” เปิดอยู่"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hareketi azalt seçeneği açıkken yerinde durur."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Залишається на місці, поки ввімкнено «Зменшити рух»."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ở yên một chỗ khi Giảm chuyển động đang bật."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“减弱动态效果”打开时，它会待在原地。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「減少動態效果」開啟時，它會待在原地。"
+          }
+        }
+      }
+    },
     "Stop": {
       "extractionState": "manual",
       "localizations": {
@@ -156067,149 +156210,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "要結束遊戲，請按 %@"
-          }
-        }
-      }
-    },
-    "To make it jump when you press Space, allow Input Monitoring": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ليقفز عند الضغط على مفتاح المسافة، اسمح بمراقبة الإدخال"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aby skákal po stisknutí mezerníku, povolte Monitorování vstupu"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Damit es bei der Leertaste hüpft, erlaube die Eingabeüberwachung"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "To make it jump when you press Space, allow Input Monitoring"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Para que salte al pulsar Espacio, permite la Monitorización de entrada"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pour qu’il saute avec la touche Espace, autorisez la Surveillance de l’entrée"
-          }
-        },
-        "hi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "स्पेस दबाने पर उछलने के लिए इनपुट मॉनिटरिंग की अनुमति दें"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Agar ia melompat saat Anda menekan Spasi, izinkan Pemantauan Input"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Per farlo saltare con Spazio, consenti il Monitoraggio input"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "スペースでジャンプさせるには、入力監視を許可してください"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "스페이스로 점프하게 하려면 입력 모니터링을 허용하십시오"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sta Invoermonitoring toe om het te laten springen met de spatiebalk"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Żeby skakał po naciśnięciu spacji, pozwól na Monitorowanie wprowadzania"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Para ele pular quando você aperta Espaço, permita o Monitoramento de Entrada"
-          }
-        },
-        "ro": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ca să sară la apăsarea tastei Spațiu, permiteți Monitorizare introducere"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Чтобы он прыгал по пробелу, разрешите мониторинг ввода"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tillåt Övervakning av inmatning så att det hoppar när du trycker på mellanslag"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "หากต้องการให้กระโดดเมื่อกดเว้นวรรค ให้อนุญาตการติดตามการป้อนข้อมูล"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Boşluk tuşuyla zıplaması için Girdi İzleme’ye izin verin"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Щоб він стрибав від пробілу, дозвольте моніторинг вводу"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Để nó nhảy khi bạn nhấn phím cách, hãy cho phép Theo dõi đầu vào"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "要让它在按空格键时跳起来，请允许“输入监控”"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "若要讓它在按空白鍵時跳起來，請允許「輸入監控」"
           }
         }
       }
