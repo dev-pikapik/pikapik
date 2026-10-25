@@ -11,13 +11,21 @@ struct TestChromiumAXJournal {
     }
 
     static func main() {
-        if CommandLine.arguments.dropFirst().first == "crash" {
+        let crash = CommandLine.arguments.dropFirst().first == "crash"
+        let folder = crash ? URL(fileURLWithPath: CommandLine.arguments[2]) : FileManager.default.temporaryDirectory.appendingPathComponent("test-chromium-ax-journal-\(UUID().uuidString)")
+        let suite = folder.appendingPathComponent("journal").path
+        let journal = UserDefaults(suiteName: suite)!
+        let standard: @convention(block) (AnyObject) -> UserDefaults = { _ in journal }
+        method_setImplementation(class_getClassMethod(UserDefaults.self, #selector(getter: UserDefaults.standard))!, imp_implementationWithBlock(standard))
+        precondition(UserDefaults.standard === journal, "the journal must stay in a temporary folder")
+        if crash {
             Switched.save([entry(100), entry(200, "com.tinyspeck.slackmacgap", "AXEnhancedUserInterface")], crashKey)
             _exit(0)
         }
 
+        try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
         let key = "test-chromium-ax-journal"
-        defer { [key, crashKey, TextFocus.journalKey].forEach(UserDefaults.standard.removeObject) }
         let saved = [entry(100), entry(200, "com.tinyspeck.slackmacgap", "AXEnhancedUserInterface")]
         precondition(Switched.load(key).isEmpty)
         Switched.save(saved, key)
@@ -44,10 +52,10 @@ struct TestChromiumAXJournal {
 
         let crashed = Process()
         crashed.executableURL = Bundle.main.executableURL
-        crashed.arguments = ["crash"]
+        crashed.arguments = ["crash", folder.path]
         try! crashed.run()
         crashed.waitUntilExit()
-        CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication)
+        CFPreferencesAppSynchronize(suite as CFString)
         precondition(Switched.load(crashKey) == saved)
         print("after a crash the next launch finds what was switched on: ok")
 
