@@ -92,7 +92,7 @@ struct AboutView: View {
     private func link(_ title: String, _ url: String, symbol: Symbol, color: Color, template: NSImage? = nil) -> some View {
         Link(destination: URL(string: url)!) {
             LabeledContent {
-                Image(.arrowUpRight)
+                Image(.arrowUpForward)
                     .foregroundStyle(.secondary)
             } label: {
                 HStack(spacing: 10) {

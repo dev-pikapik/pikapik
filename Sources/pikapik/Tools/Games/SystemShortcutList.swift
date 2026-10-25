@@ -75,6 +75,7 @@ struct SystemShortcutRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             IllustrationRow { SystemShortcutArt(entry: entry, on: mode != .system, background: mode == .background) }
+                .environment(\.layoutDirection, .leftToRight)
                 .opacity(tool.isEnabled ? 1 : 0.5)
             BesideOrBelow {
                 explanation

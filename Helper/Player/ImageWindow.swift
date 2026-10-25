@@ -30,7 +30,7 @@ final class ImageCanvas: NSView {
     }
 
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
-        guard let action = ImageAction(key: event.charactersIgnoringModifiers ?? "", modifiers: event.modifierFlags), controller?.perform(action) == true else { return super.performKeyEquivalent(with: event) }
+        guard let action = ImageAction(key: event.charactersIgnoringModifiers ?? "", modifiers: event.modifierFlags, direction: userInterfaceLayoutDirection), controller?.perform(action) == true else { return super.performKeyEquivalent(with: event) }
         controller?.showControls()
         return true
     }
@@ -201,8 +201,8 @@ final class ImageController: NSWindowController, NSWindowDelegate, NSMenuItemVal
         loading.appearance = NSAppearance(named: .darkAqua)
         controls.appearance = NSAppearance(named: .darkAqua)
 
-        configure(previousButton, .chevronLeft, String(localized: "Previous Image"), #selector(previous))
-        configure(nextButton, .chevronRight, String(localized: "Next Image"), #selector(next))
+        configure(previousButton, .chevronBackward, String(localized: "Previous Image"), #selector(previous))
+        configure(nextButton, .chevronForward, String(localized: "Next Image"), #selector(next))
         configure(rotateButton, .rotateLeft, String(localized: "Rotate Left"), #selector(rotateLeft))
         configure(zoomOutButton, .minusMagnifyingglass, String(localized: "Zoom Out"), #selector(zoomOut))
         configure(zoomInButton, .plusMagnifyingglass, String(localized: "Zoom In"), #selector(zoomIn))

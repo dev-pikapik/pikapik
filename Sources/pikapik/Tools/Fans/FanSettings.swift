@@ -173,6 +173,7 @@ struct FanScene: View {
                 fan(angle)
             }
         }
+        .environment(\.layoutDirection, .leftToRight)
     }
 
     private func fan(_ angle: Double) -> some View {

@@ -42,6 +42,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - Uninstall, website version: removing pikapik with the uninstall script now also deletes the empty settings file it could leave in ~/Library/Preferences.
 - Uninstaller, website version: removing an app now keeps the files another copy of pikapik uses, and pikapik’s Put Back history.
 - Archives: pikapik reads each unpacked file name only up to its end. Before, it read on past the end of short names in memory.
+- Arabic: arrows point the way the text reads. In the picture viewer ← shows the next picture and → the previous one, and the Go menu shows the same keys; the arrow next to Keep Awake in the menu and next to the Game Mode lists points left when closed and down when open, not up. The video panel and its keys stay left to right, and pictures of keyboards, mice, trackpads and the screen are no longer mirrored.
 
 ## [1.56.1] - 2026-10-24
 

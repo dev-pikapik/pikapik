@@ -168,6 +168,7 @@ struct SideButtonsArt: View {
             }
             .animation(reduceMotion ? nil : .smooth(duration: 0.35), value: step)
         }
+        .environment(\.layoutDirection, .leftToRight)
     }
 
     private func arrow(_ symbol: Symbol, pressed: Bool) -> some View {

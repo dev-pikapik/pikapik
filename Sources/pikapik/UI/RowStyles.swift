@@ -218,6 +218,16 @@ struct RowChevron: View {
     }
 }
 
+struct DisclosureChevron: View {
+    let isExpanded: Bool
+
+    var body: some View {
+        Image(.chevronForward)
+            .rotationEffect(.degrees(isExpanded ? 90 : 0))
+            .accessibilityHidden(true)
+    }
+}
+
 struct OpenWithRow: View {
     let title: String
     let formats: [(name: String, types: [UTType])]
