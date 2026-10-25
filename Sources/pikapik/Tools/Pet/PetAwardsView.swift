@@ -306,7 +306,10 @@ struct PetAwardsSection: View {
             .fixedSize()
             .settingAnchor(SettingTitle.eraseProgress)
             .confirmationDialog("Erase all progress?", isPresented: $erasing, titleVisibility: .visible) {
-                Button("Erase Progress", role: .destructive) { progress.erase() }
+                Button("Erase Progress", role: .destructive) {
+                    progress.erase()
+                    PetStage.shared.stir()
+                }
             } message: {
                 Text("Your awards, unlocked clothes and counters are erased from this Mac. This can’t be undone.")
             }

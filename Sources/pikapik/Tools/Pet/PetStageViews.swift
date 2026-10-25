@@ -6,7 +6,9 @@ final class FigureView<Pose: Equatable>: NSView {
     var shift: CGFloat = 0 { didSet { if shift != oldValue { render() } } }
     private let paint: (Pose, Bool, (Path, Color) -> Void) -> Void
     private var shapes: [CAShapeLayer] = []
+    private var dark: Bool?
     private let environment = EnvironmentValues()
+    private(set) var looping = false
 
     private var night: Bool { effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua }
 
@@ -24,15 +26,19 @@ final class FigureView<Pose: Equatable>: NSView {
 
     override func hitTest(_ point: NSPoint) -> NSView? { nil }
 
-    override func viewDidChangeEffectiveAppearance() { render() }
+    override func viewDidChangeEffectiveAppearance() {
+        render()
+        PetStage.shared.stir()
+    }
 
     override func viewDidChangeBackingProperties() {
         shapes.forEach { $0.contentsScale = window?.backingScaleFactor ?? 2 }
     }
 
     override func setFrameSize(_ newSize: NSSize) {
+        let changed = newSize != frame.size
         super.setFrameSize(newSize)
-        render()
+        if changed { render() }
     }
 
     private func render() {
@@ -53,9 +59,59 @@ final class FigureView<Pose: Equatable>: NSView {
         }
         CATransaction.begin()
         CATransaction.setDisableActions(true)
-        layer.shadowOpacity = night ? 0.5 : 0.22
+        if looping {
+            shapes.forEach { $0.removeAllAnimations() }
+            looping = false
+        }
+        if dark != night {
+            dark = night
+            layer.shadowOpacity = night ? 0.5 : 0.22
+        }
         paint(pose, night, fill)
         shapes[index...].forEach { $0.path = nil }
+        CATransaction.commit()
+    }
+
+    func loop(_ poses: [Pose], over period: Double) {
+        guard let layer, !poses.isEmpty else { return }
+        let night = night
+        let place = CGAffineTransform(translationX: bounds.midX + shift, y: PetStage.ground).scaledBy(x: PetStage.scale, y: -PetStage.scale)
+        let frames = poses.map { pose in
+            var frame: [(path: CGPath, color: CGColor)] = []
+            paint(pose, night) { path, color in frame.append((path.applying(place).cgPath, color.resolve(in: self.environment).cgColor)) }
+            return frame
+        }
+        let times = (0...poses.count).map { NSNumber(value: Double($0) / Double(poses.count)) }
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        if dark != night {
+            dark = night
+            layer.shadowOpacity = night ? 0.5 : 0.22
+        }
+        while shapes.count < frames.map(\.count).max() ?? 0 {
+            let shape = CAShapeLayer()
+            shape.contentsScale = window?.backingScaleFactor ?? 2
+            layer.addSublayer(shape)
+            shapes.append(shape)
+        }
+        for (index, shape) in shapes.enumerated() {
+            let paths = frames.map { index < $0.count ? $0[index].path : CGMutablePath() }
+            let colors = frames.map { index < $0.count ? $0[index].color : .clear }
+            shape.path = paths[0]
+            shape.fillColor = colors[0]
+            for (key, values) in [("path", paths as [AnyObject]), ("fillColor", colors as [AnyObject])] where values.contains(where: { !CFEqual($0, values[0]) }) {
+                let animation = CAKeyframeAnimation(keyPath: key)
+                animation.calculationMode = .discrete
+                animation.values = values
+                animation.keyTimes = times
+                animation.duration = period
+                animation.repeatCount = .infinity
+                animation.isRemovedOnCompletion = false
+                animation.preferredFrameRateRange = CAFrameRateRange(minimum: 8, maximum: 15, preferred: 12)
+                shape.add(animation, forKey: key)
+            }
+        }
+        looping = true
         CATransaction.commit()
     }
 }
@@ -66,6 +122,7 @@ final class PetHand: NSView {
     override func mouseDown(with event: NSEvent) { PetStage.shared.grab(at: event.locationInWindow, in: window) }
     override func mouseDragged(with event: NSEvent) { NSCursor.closedHand.set() }
     override func mouseUp(with event: NSEvent) { PetStage.shared.drop() }
+    override func mouseExited(with event: NSEvent) { PetStage.shared.stir() }
 }
 
 final class BubbleHost: NSHostingView<PetBubble> {

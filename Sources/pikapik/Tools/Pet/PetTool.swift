@@ -150,6 +150,7 @@ struct PetPage: View {
 private struct PetSettings: View {
     @Bindable var tool: PetTool
     @Environment(\.inSettings) private var inSettings
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var talksSubtitle: Text {
         #if APPSTORE
@@ -165,10 +166,15 @@ private struct PetSettings: View {
             title: SettingTitle.petOnDesktop,
             subtitle: Text("Walks along the bottom of the screen, behind your windows and the Dock. Try picking it up!"),
             hint: Text("Walks behind your windows"),
-            help: tool.listening ? Text("Press Space and it jumps. Put the pointer in its way and it jumps over it") : Text("Put the pointer in its way and it jumps over it"),
+            help: reduceMotion ? nil : tool.listening ? Text("Press Space and it jumps. Put the pointer in its way and it jumps over it") : Text("Put the pointer in its way and it jumps over it"),
             isOn: $tool.isEnabled
         )
         if inSettings {
+            if reduceMotion {
+                Text("Stays put while Reduce Motion is on.")
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             ToggleRow(
                 icon: .textBubble,
                 title: SettingTitle.petTalks,
@@ -189,13 +195,7 @@ private struct PetSettings: View {
                 subtitle: Text("A ball rolls along the bottom of the screen. Your pet kicks it, and you can kick it with the pointer or pick it up and throw it"),
                 isOn: $tool.ball
             )
-            .disabled(!tool.isEnabled)
-        }
-        if inSettings, tool.isEnabled, !tool.listening {
-            Text("To make it jump when you press Space, allow Input Monitoring")
-                .foregroundStyle(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .needs([.inputMonitoring])
+            .disabled(!tool.isEnabled || reduceMotion)
         }
     }
 }

@@ -52,7 +52,7 @@ enum TestPet {
             if next() < 0.03 { pet.jump() }
             var probe = pet
             let sat = probe.sit(1)
-            precondition(sat == [State.walk, .turn].contains(pet.state) && sat == pet.canSit && probe.state == (sat ? .sit : pet.state), "a pet may sit down only while it walks or turns: \(pet.state) \(sat)")
+            precondition(sat == [State.walk, .turn, .rest].contains(pet.state) && sat == pet.canSit && probe.state == (sat ? .sit : pet.state), "a pet may sit down only while it walks, turns or rests: \(pet.state) \(sat)")
             if next() < 0.005 { pet.sit(next() * 3) }
             if next() < 0.01 { pet.sense(idle: next() * 150, typed: next() * 2, next()) }
             if next() < 0.003 { pet.calm.toggle() }
@@ -63,6 +63,7 @@ enum TestPet {
             precondition(inside(pet), "out of bounds at step \(i): \(pet.frame) in \(pet.bounds)")
             precondition(pet.origin.y >= pet.bounds.minY, "below ground at step \(i)")
             precondition(!(dt > 1e-3 && lastState == .walk && pet.state == .walk && pet.origin == last), "stuck at step \(i)")
+            precondition(!(pet.calm && pet.state == .walk), "walked with Reduce Motion at step \(i)")
             last = pet.origin
             lastState = pet.state
         }
@@ -107,9 +108,9 @@ enum TestPet {
             let point = CGPoint(x: 552, y: 20)
             let rect = PetPhysics.cursorRect(at: point).insetBy(dx: 0.01, dy: 0.01)
             states = trace(&pet, 6, cursor: { _ in point }) { p, _ in precondition(!overlap(p.frame, rect)) }
-            let expected: [State] = calm ? [.walk, .turn, .walk] : [.walk, .tumble, .lie, .getUp, .walk]
-            precondition(Array(states.prefix(expected.count)) == expected, "\(states)")
-            precondition(pet.facing == -1 && pet.frame.maxX < rect.minX - 20)
+            let expected: [State] = calm ? [.walk, .rest] : [.walk, .tumble, .lie, .getUp, .walk]
+            precondition(calm ? states == expected : Array(states.prefix(expected.count)) == expected, "\(states)")
+            precondition(calm ? pet.facing == 1 && pet.origin.x == 450 : pet.facing == -1 && pet.frame.maxX < rect.minX - 20)
         }
         print("bump, fall and turn on a blocking cursor: ok")
 
@@ -138,7 +139,7 @@ enum TestPet {
                     triggers += 1
                     away = false
                 }
-                precondition(triggers >= 2 && triggers < 40, "\(triggers) triggers, cursor at \(x)")
+                precondition(calm ? triggers == 0 && pet.origin.x == 100 : triggers >= 2 && triggers < 40, "\(triggers) triggers, cursor at \(x), calm \(calm)")
             }
         }
         print("no re-trigger loop with a resting cursor: ok")
@@ -222,6 +223,7 @@ enum TestPet {
                 precondition(!(pet.calm && pet.state == .tumble), "tumbled with Reduce Motion")
                 precondition(t < 30, "never landed")
             }
+            precondition(!pet.calm || pet.state == .rest, "a calm pet landed into \(pet.state)")
         }
         for calm in [false, true] {
             pet = PetPhysics(bounds: room, x: 700)
@@ -231,7 +233,7 @@ enum TestPet {
             pet.step(0.1, cursor: CGPoint(x: 700, y: 500))
             pet.release()
             states = trace(&pet, 4)
-            precondition(states.contains(.tumble) != calm && states.last == .walk, "\(states)")
+            precondition(states.contains(.tumble) != calm && states.last == (calm ? .rest : .walk), "\(states)")
         }
         print("10 000 throws stay on screen: ok")
 
@@ -376,7 +378,10 @@ enum TestPet {
         pet.calm = true
         pet.bump(pet.frame.offsetBy(dx: 20, dy: 0))
         precondition(pet.state == .turn && pet.drain().isEmpty, "a calm bump on the ground counted as a tumble")
+        precondition(!pet.jump() && pet.state == .turn && pet.drain().isEmpty, "a calm pet jumped")
+        pet.calm = false
         pet.jump()
+        pet.calm = true
         pet.bump(pet.frame.offsetBy(dx: 20, dy: 0))
         precondition(pet.state == .tumble && pet.drain() == [.jump, .tumble])
         for calm in [false, true] {
@@ -648,10 +653,9 @@ enum TestPet {
             precondition(states.last == .walk)
         }
         for (wall, facing) in [(room.maxX - BallPhysics.radius, CGFloat(1)), (room.minX + BallPhysics.radius, -1)] {
-            for calm in [false, true] { for inset in [CGFloat(0), 3, 6, 12, 24, 40, 60, 90, 120, 160, 240] {
+            for inset in [CGFloat(0), 3, 6, 12, 24, 40, 60, 90, 120, 160, 240] {
                 let x = wall - facing * inset
                 pet = PetPhysics(bounds: room, x: x - facing * 200, facing: facing)
-                pet.calm = calm
                 ball = BallPhysics(bounds: room, x: x)
                 var kicks = 0, freed = false, chase = 0.0
                 for i in 0..<1800 {
@@ -667,8 +671,8 @@ enum TestPet {
                     if kicks > 0, abs(ball.center.x - wall) > max(inset, 60) + 100 { freed = true }
                     precondition(inBall(ball) && inside(pet))
                 }
-                precondition(kicks >= 3 && freed, "ball stuck in the corner, calm \(calm), inset \(inset), kicks \(kicks) at \(ball.center)")
-            } }
+                precondition(kicks >= 3 && freed, "ball stuck in the corner, inset \(inset), kicks \(kicks) at \(ball.center)")
+            }
         }
         pet = PetPhysics(bounds: room, x: 700, facing: 1)
         precondition(pet.face(400) && pet.state == .turn && !pet.face(400))
@@ -805,7 +809,42 @@ enum TestPet {
             lively.sense(idle: 0, typed: .infinity, 0.25)
             lively.step(0.25, cursor: nil)
         }
-        precondition([.walk, .turn].contains(lively.state) && abs(lively.zest) < 0.01, "with the rhythm off the pet stays sleepy: \(lively.state) \(lively.zest)")
+        precondition(lively.state == .rest && abs(lively.zest) < 0.01, "with the rhythm off the pet stays sleepy: \(lively.state) \(lively.zest)")
         print("typing perks the pet up, an idle pet dozes through the pointer, any input wakes it: ok")
+
+        var still = PetPhysics(bounds: screen, x: spot.x)
+        still.calm = true
+        still.sit(30)
+        precondition(trace(&still, 20, cursor: sweep) == [.sit] && still.origin.x == spot.x, "the pointer bumped a calm pet")
+        pet = PetPhysics(bounds: room, x: 300, facing: 1)
+        ball = BallPhysics(bounds: room, x: 300 + PetPhysics.size.width / 2 + BallPhysics.radius)
+        var eager = pet, spare = ball
+        eager.step(1.0 / 30, cursor: nil)
+        precondition(eager.kick(&spare), "the ball is out of reach, update this check")
+        pet.calm = true
+        states = trace(&pet, 600, cursor: { Int($0) % 60 < 30 ? nil : CGPoint(x: 1200, y: 300) }) { p, _ in
+            precondition(p.origin.x == 300 && p.state != .walk && p.state != .jump, "a calm pet moved: \(p.origin) \(p.state)")
+        }
+        precondition(states == [.walk, .rest] && !pet.jump() && !pet.kick(&ball) && pet.state == .rest, "a calm pet did not stay put: \(states) \(pet.state)")
+        pet.ledge = CGRect(x: 280, y: 0, width: 40, height: 20)
+        precondition(trace(&pet, 2) == [.rest] && pet.origin == CGPoint(x: 300, y: room.minY), "a selection shoved a calm pet: \(pet.origin)")
+        pet.ledge = nil
+        let grip = CGPoint(x: 308, y: 12)
+        precondition(pet.grab(at: grip) && pet.origin == CGPoint(x: 300, y: room.minY), "a calm grab pulled the pet to the pointer: \(pet.origin)")
+        for i in 1...8 {
+            let hand = CGPoint(x: grip.x + 30 * CGFloat(i), y: grip.y + 10 * CGFloat(i))
+            pet.step(1.0 / 60, cursor: hand)
+            precondition(pet.origin == CGPoint(x: hand.x + 300 - grip.x, y: hand.y + room.minY - grip.y), "a calm pet slid in the hand: \(pet.origin) under \(hand)")
+        }
+        let flung = pet.origin.x
+        pet.release()
+        precondition(abs(hypot(pet.vx, pet.vy) - PetPhysics.fling / 2) < 1e-6, "a calm throw is not held back: \(pet.vx), \(pet.vy)")
+        states = trace(&pet, 6)
+        precondition(states == [.thrown, .rest] && pet.origin.x > flung + 100 && pet.origin.y == room.minY, "a calm throw: \(states) \(pet.origin)")
+        let landing = pet.origin.x
+        pet.calm = false
+        states = trace(&pet, 1)
+        precondition(Array(states.prefix(2)) == [.rest, .walk] && pet.origin.x != landing, "with calm off the pet does not walk on: \(states)")
+        print("a calm pet stays put by the pointer, a selection and the ball, never jumps, keeps its grip, lands at rest and walks on when calm is off: ok")
     }
 }

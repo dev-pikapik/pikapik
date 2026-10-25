@@ -1,5 +1,6 @@
 import AppKit
 import CoreAudio
+import IOKit.ps
 import SwiftUI
 
 final class PetStage: NSObject {
@@ -40,13 +41,24 @@ final class PetStage: NSObject {
     private var full: Set<CGDirectDisplayID> = []
     private var watchdog: Timer?
     private var blind: Timer?
+    private var alarm: Timer?, peek: Timer?
+    private var source: CFRunLoopSource?
     private var nextTalk: TimeInterval
     private var deck: [PetPhrase] = []
     private var phrase: PetPhrase?
     private var nudging = false
     private var ticked = 0.0
     private var felt = 0.0
-    private var resting = false
+    private var waited = false, petCovered = false, toyCovered = false
+    private var lowPower = false, battery = false, hot = false
+    private var blinked = 0.0, advanced = 0.0, nextAsk = 0.0
+    private var hover = (point: CGPoint.zero, at: -Double.infinity)
+    private var probe: (point: CGPoint, time: Double, layer: Int?)?
+    private var snapshot: [[String: Any]]?
+    private var docked: CGRect?
+    private var frames: [CGRect] = []
+    private var heard = (at: -Double.infinity, on: false)
+    private var baked = PetPose()
     private var feelings = PetCues()
     private var cradled = 0.0, touched = ProcessInfo.processInfo.systemUptime
     private var nextCheer = 0.0, nextLook = 0.0, dull = Double.random(in: 20...40)
@@ -80,9 +92,14 @@ final class PetStage: NSObject {
         self.link = link
 
         let workspace = NSWorkspace.shared.notificationCenter, local = NotificationCenter.default, distributed = DistributedNotificationCenter.default()
-        watch(local, NSApplication.didChangeScreenParametersNotification) { $0.layout() }
+        watch(local, NSApplication.didChangeScreenParametersNotification) {
+            $0.nextAsk = 0
+            $0.layout()
+        }
         watch(local, NSWindow.didChangeOcclusionStateNotification, window) { $0.checkFullscreen() }
         watch(local, NSWindow.didChangeOcclusionStateNotification, field) { $0.checkFullscreen() }
+        watch(local, .NSProcessInfoPowerStateDidChange) { $0.power() }
+        watch(local, ProcessInfo.thermalStateDidChangeNotification) { $0.power() }
         watch(workspace, NSWorkspace.screensDidSleepNotification) { $0.asleep = true }
         watch(workspace, NSWorkspace.screensDidWakeNotification) {
             $0.asleep = false
@@ -92,9 +109,19 @@ final class PetStage: NSObject {
         watch(workspace, NSWorkspace.sessionDidBecomeActiveNotification) { $0.locked = false }
         watch(distributed, Notification.Name("com.apple.screenIsLocked")) { $0.locked = true }
         watch(distributed, Notification.Name("com.apple.screenIsUnlocked")) { $0.locked = false }
+        watch(distributed, Notification.Name("com.apple.dock.prefchanged")) {
+            $0.nextAsk = 0
+            $0.shelter()
+        }
         watch(workspace, NSWorkspace.accessibilityDisplayOptionsDidChangeNotification) { $0.physics.calm = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion }
         for name in [NSWorkspace.didLaunchApplicationNotification, NSWorkspace.didTerminateApplicationNotification] {
-            watch(workspace, name) { stage in DispatchQueue.main.asyncAfter(deadline: .now() + 1) { stage.shelter() } }
+            watch(workspace, name) { stage in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    stage.nextAsk = 0
+                    stage.shelter()
+                    stage.stir()
+                }
+            }
         }
         for name in [NSWorkspace.didActivateApplicationNotification, NSWorkspace.activeSpaceDidChangeNotification] {
             watch(workspace, name) { stage in
@@ -113,9 +140,14 @@ final class PetStage: NSObject {
         physics.calm = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         ball = BallPhysics(bounds: physics.bounds, x: width * (demo == nil ? .random(in: 0.1...0.9) : 0.4))
         shelter()
+        if let power = IOPSCreateLimitedPowerNotification({ _ in PetStage.shared.power() }, nil)?.takeRetainedValue() {
+            CFRunLoopAddSource(CFRunLoopGetMain(), power, .commonModes)
+            source = power
+        }
+        power()
         reconcile()
         watchdog = Timer.scheduledTimer(withTimeInterval: 2, repeats: true) { [weak self] _ in self?.reconcile() }
-        watchdog?.tolerance = 0.5
+        watchdog?.tolerance = 0.3
     }
 
     func stop() {
@@ -127,6 +159,12 @@ final class PetStage: NSObject {
         watchdog = nil
         blind?.invalidate()
         blind = nil
+        alarm?.invalidate()
+        alarm = nil
+        peek?.invalidate()
+        peek = nil
+        if let source { CFRunLoopRemoveSource(CFRunLoopGetMain(), source, .commonModes) }
+        source = nil
         observers.forEach { $0.0.removeObserver($0.1) }
         observers = []
         if let monitor { NSEvent.removeMonitor(monitor) }
@@ -139,11 +177,15 @@ final class PetStage: NSObject {
         field?.orderOut(nil)
         field = nil
         last = nil
+        probe = nil
+        waited = false
+        nextAsk = 0
     }
 
     func jump() {
         guard window?.isVisible == true else { return }
-        physics.jump()
+        if !(lowPower && physics.wake()) { physics.jump() }
+        stir()
     }
 
     func grab(at point: CGPoint, in panel: NSWindow?) {
@@ -165,6 +207,7 @@ final class PetStage: NSObject {
         NSCursor.closedHand.set()
         rise()
         place()
+        stir()
     }
 
     func drop() {
@@ -181,6 +224,7 @@ final class PetStage: NSObject {
         ball.release()
         if carried, hypot(ball.vx, ball.vy) >= BallPhysics.nudge { progress?.add(.plays) }
         NSCursor.arrow.set()
+        stir()
     }
 
     private static var level: NSWindow.Level {
@@ -203,7 +247,7 @@ final class PetStage: NSObject {
         panel.contentView?.wantsLayer = true
         panel.contentView?.addSubview(figure)
         panel.contentView?.addSubview(hand)
-        hand.addTrackingArea(NSTrackingArea(rect: .zero, options: [.cursorUpdate, .activeAlways, .inVisibleRect], owner: hand))
+        hand.addTrackingArea(NSTrackingArea(rect: .zero, options: [.cursorUpdate, .mouseEnteredAndExited, .activeAlways, .inVisibleRect], owner: hand))
         return panel
     }
 
@@ -212,6 +256,7 @@ final class PetStage: NSObject {
             guard let self else { return }
             action(self)
             self.update()
+            self.stir()
         }
         observers.append((center, token))
     }
@@ -235,6 +280,7 @@ final class PetStage: NSObject {
         physics.resize(bounds(pet))
         ball.resize(bounds(toy))
         arrange()
+        stir()
     }
 
     private func arrange() {
@@ -290,10 +336,9 @@ final class PetStage: NSObject {
     }
 
     #if APPSTORE
-    private static func fullscreen(_ screen: NSScreen) -> Bool {
+    private static func fullscreen(_ screen: NSScreen, in windows: [[String: Any]]) -> Bool {
         let top = NSScreen.screens.first?.frame.maxY ?? 0
         let frame = CGRect(x: screen.frame.minX, y: top - screen.frame.maxY, width: screen.frame.width, height: screen.frame.height)
-        let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
         let me = Int(ProcessInfo.processInfo.processIdentifier)
         return windows.contains { info in
             guard info[kCGWindowLayer as String] as? Int == 0, info[kCGWindowOwnerPID as String] as? Int != me,
@@ -319,7 +364,7 @@ final class PetStage: NSObject {
         }
     }()
 
-    private static func fullscreen(_ screen: NSScreen) -> Bool {
+    private static func fullscreen(_ screen: NSScreen, in _: [[String: Any]]) -> Bool {
         guard let space else { return false }
         if !NSScreen.screensHaveSeparateSpaces { return space("Main") == 4 }
         guard let uuid = CGDisplayCreateUUIDFromDisplayID(id(screen))?.takeRetainedValue(), let name = CFUUIDCreateString(nil, uuid) else { return false }
@@ -327,17 +372,25 @@ final class PetStage: NSObject {
     }
     #endif
 
-    private static func covered(_ body: CGRect, on screen: NSScreen) -> Bool {
+    private static func covered(_ body: CGRect, on screen: NSScreen, in windows: [[String: Any]], whole: Bool = false) -> Bool {
         let top = NSScreen.screens.first?.frame.maxY ?? 0
         let spot = CGRect(x: screen.frame.minX + body.minX, y: top - screen.frame.minY - body.maxY, width: body.width, height: body.height)
-        let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
         let me = Int(ProcessInfo.processInfo.processIdentifier)
         return windows.contains { info in
             guard info[kCGWindowLayer as String] as? Int == 0, info[kCGWindowOwnerPID as String] as? Int != me,
                   info[kCGWindowAlpha as String] as? Double ?? 1 > 0,
                   let bounds = (info[kCGWindowBounds as String] as? NSDictionary).flatMap({ CGRect(dictionaryRepresentation: $0) }) else { return false }
-            return bounds.contains(CGPoint(x: spot.midX, y: spot.midY))
+            return whole ? bounds.contains(spot) : bounds.contains(CGPoint(x: spot.midX, y: spot.midY))
         }
+    }
+
+    private static func obscured(_ panel: NSPanel?, _ body: CGRect, _ screen: NSScreen?, _ windows: [[String: Any]]) -> Bool {
+        guard let panel, let screen, panel.isVisible, panel.level == level else { return false }
+        return !panel.occlusionState.contains(.visible) || covered(body, on: screen, in: windows, whole: true)
+    }
+
+    private func onscreen() -> [[String: Any]] {
+        snapshot ?? CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as? [[String: Any]] ?? []
     }
 
     private static func strip(_ screen: NSScreen) -> CGRect {
@@ -348,17 +401,25 @@ final class PetStage: NSObject {
         guard let pet = petScreen, let toy = ballScreen else { return }
         physics.roof = Self.height
         ball.roof = Self.height
-        physics.dock = Self.dock(pet, physics.dock)
-        ball.dock = Self.id(toy) == Self.id(pet) ? physics.dock : Self.dock(toy, ball.dock)
+        #if !APPSTORE
+        let now = ProcessInfo.processInfo.systemUptime, current = NSScreen.screens.flatMap { [$0.frame, $0.visibleFrame] }
+        if PetPace.dock(now, next: nextAsk, moved: current != frames) {
+            docked = Self.tiles()
+            nextAsk = now + PetPace.recheck
+            frames = current
+        }
+        #endif
+        physics.dock = Self.dock(pet, physics.dock, docked)
+        ball.dock = Self.id(toy) == Self.id(pet) ? physics.dock : Self.dock(toy, ball.dock, docked)
     }
 
-    private static func dock(_ screen: NSScreen, _ known: CGRect?) -> CGRect? {
+    private static func dock(_ screen: NSScreen, _ known: CGRect?, _ tiles: CGRect?) -> CGRect? {
         let top = screen.visibleFrame.minY - screen.frame.minY
         guard top > ground + PetPhysics.size.height else { return nil }
         #if APPSTORE
         return CGRect(x: 0, y: 0, width: screen.frame.width, height: top)
         #else
-        guard let tiles = tiles() else { return known ?? CGRect(x: 0, y: 0, width: screen.frame.width, height: top) }
+        guard let tiles else { return known ?? CGRect(x: 0, y: 0, width: screen.frame.width, height: top) }
         return CGRect(x: tiles.minX - screen.frame.minX - 8, y: 0, width: tiles.width + 16, height: top)
         #endif
     }
@@ -371,6 +432,7 @@ final class PetStage: NSObject {
         var children: CFTypeRef?
         guard AXUIElementCopyAttributeValue(dock, kAXChildrenAttribute as CFString, &children) == .success, let children = children as? [AXUIElement] else { return nil }
         for child in children {
+            AXUIElementSetMessagingTimeout(child, 0.25)
             var role: CFTypeRef?, position: CFTypeRef?, size: CFTypeRef?
             var point = CGPoint.zero, extent = CGSize.zero
             guard AXUIElementCopyAttributeValue(child, kAXRoleAttribute as CFString, &role) == .success, role as? String == kAXListRole,
@@ -388,9 +450,10 @@ final class PetStage: NSObject {
     #endif
 
     func update() {
-        guard let window, let field, let link else { return }
-        let hidden = asleep || locked || fullscreen || GameModeTool.shared.isPlaying
-        let toy = PetTool.shared.ball && !hidden
+        guard let window, let field else { return }
+        let hidden = asleep || locked || fullscreen || hot || GameModeTool.shared.isPlaying
+        let toy = PetTool.shared.ball && !physics.calm && !hidden
+        let was = (window.isVisible, field.isVisible)
         if hidden {
             window.orderOut(nil)
             hideBubble()
@@ -399,29 +462,25 @@ final class PetStage: NSObject {
         }
         if toy != field.isVisible { toy ? field.orderFrontRegardless() : field.orderOut(nil) }
         if !toy, ball.held { drop() }
-        let occluded = !hidden && !window.occlusionState.contains(.visible) && !(toy && field.occlusionState.contains(.visible))
-        let paused = hidden || occluded
-        if paused {
+        if hidden || petCovered && (!toy || toyCovered) {
             drop()
             window.ignoresMouseEvents = true
             field.ignoresMouseEvents = true
         }
-        if paused, !link.isPaused { last = nil }
-        if !paused, link.isPaused { physics.resize(physics.bounds) }
-        link.isPaused = paused
-        if occluded, blind == nil {
-            let timer = Timer(timeInterval: 0.2, repeats: true) { [weak self] _ in self?.advance(CACurrentMediaTime()) }
-            timer.tolerance = 0.05
-            RunLoop.main.add(timer, forMode: .common)
-            blind = timer
-        } else if !occluded {
-            blind?.invalidate()
-            blind = nil
-        }
+        pace(ProcessInfo.processInfo.systemUptime)
+        if was != (window.isVisible, field.isVisible) { stir() }
+    }
+
+    func power() {
+        lowPower = ProcessInfo.processInfo.isLowPowerModeEnabled
+        hot = [.serious, .critical].contains(ProcessInfo.processInfo.thermalState)
+        battery = Battery.read()?.phase == .onBattery
+        update()
+        stir()
     }
 
     private func checkFullscreen() {
-        let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
+        let windows = onscreen()
         func rects(_ layer: Int) -> [CGRect] {
             windows.compactMap { info -> CGRect? in
                 guard info[kCGWindowLayer as String] as? Int == layer, info[kCGWindowAlpha as String] as? Double ?? 1 > 0,
@@ -434,7 +493,7 @@ final class PetStage: NSObject {
         let now = Set(screens.filter { screen in
             let display = CGDisplayBounds(Self.id(screen)), top = screen.safeAreaInsets.top
             let body = CGRect(x: display.minX, y: display.minY + top, width: display.width, height: display.height - top)
-            return Self.fullscreen(screen) || covers.contains { $0.contains(top > 0 ? body : display) } && !bars.contains { $0.intersects(display) }
+            return Self.fullscreen(screen, in: windows) || covers.contains { $0.contains(top > 0 ? body : display) } && !bars.contains { $0.intersects(display) }
         }.map(Self.id))
         var moved = now != full
         full = now
@@ -454,7 +513,11 @@ final class PetStage: NSObject {
         }
         if moved { layout() }
         fullscreen = !now.isEmpty
+        let was = (petCovered, toyCovered)
+        petCovered = Self.obscured(window, physics.frame, petScreen, windows)
+        toyCovered = Self.obscured(field, ball.frame, ballScreen, windows)
         update()
+        if was != (petCovered, toyCovered) { stir() }
     }
 
     private func reconcile() {
@@ -462,6 +525,13 @@ final class PetStage: NSObject {
         asleep = CGDisplayIsAsleep(CGMainDisplayID()) != 0
         locked = GameModeTool.screenLocked
         guard !asleep, !locked else { return update() }
+        snapshot = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as? [[String: Any]]
+        defer { snapshot = nil }
+        let now = ProcessInfo.processInfo.systemUptime
+        if let progress, window.isVisible, now >= ticked {
+            ticked = now + 30
+            progress.tick(now: Date())
+        }
         physics.recover()
         if physics.aloft != raised || ball.aloft != tossed {
             rise()
@@ -471,10 +541,8 @@ final class PetStage: NSObject {
         shelter()
         lift()
         checkFullscreen()
-        for panel in [window, field] where panel.isVisible {
-            let info = CGWindowListCopyWindowInfo(.optionIncludingWindow, CGWindowID(panel.windowNumber)) as? [[String: Any]]
-            if info?.first?[kCGWindowIsOnscreen as String] as? Bool != true { panel.orderFrontRegardless() }
-        }
+        let listed = Set(onscreen().compactMap { $0[kCGWindowNumber as String] as? Int })
+        for panel in [window, field] where panel.isVisible && !listed.contains(panel.windowNumber) { panel.orderFrontRegardless() }
     }
 
     @objc private func tick(_ link: CADisplayLink) {
@@ -482,16 +550,26 @@ final class PetStage: NSObject {
     }
 
     private func advance(_ time: CFTimeInterval) {
-        let dt = last.map { time - $0 } ?? 0
+        var dt = last.map { time - $0 } ?? 0
         last = time
+        let now = ProcessInfo.processInfo.systemUptime
+        if waited {
+            physics.wait(dt)
+            physics.resize(physics.bounds)
+            ball.resize(ball.bounds)
+            dt = 0
+            waited = false
+        }
+        advanced = now
         play(demo)
         guard let pet = petScreen, let pitch = ballScreen else { return }
         let point = fake ?? pointer(pet, physics.state == .held, physics.frame, window), reach = fake ?? pointer(pitch, ball.held, ball.frame, field)
         if NSEvent.pressedMouseButtons & 1 == 0 { press = nil }
         physics.ledge = demo == "platform" ? demoLedge : selection(pet)
         ball.ledge = demo == "platform" ? demoLedge : selection(pitch)
-        let now = ProcessInfo.processInfo.systemUptime
-        if demo == nil, now >= felt + 0.25 {
+        if lowPower {
+            if physics.canSit { physics.doze() }
+        } else if demo == nil, now >= felt + 0.25 {
             let on = PetTool.shared.rhythm
             let idle = on ? CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: Self.anyInput) : 0
             let typed = on ? CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: .keyDown) : .infinity
@@ -499,12 +577,8 @@ final class PetStage: NSObject {
             if idle < 1 { dull = .random(in: 20...40) } else if idle >= dull || (typed >= 5 && now - touched >= 600) { feel(.bored, now) }
             felt = now
         }
-        physics.step(dt, cursor: point)
-        let rest = physics.state == .doze && physics.clock > 1
-        if rest != resting, let link {
-            resting = rest
-            link.preferredFrameRateRange = rest ? CAFrameRateRange(minimum: 8, maximum: 15, preferred: 12) : CAFrameRateRange(minimum: 15, maximum: 30, preferred: 30)
-        }
+        if petCovered, physics.grounded { physics.wait(dt) } else { physics.step(dt, cursor: point) }
+        if now >= blinked + PetPace.blinks { blinked = now }
         let toy = field?.isVisible == true, together = Self.id(pet) == Self.id(pitch)
         if toy {
             if together, physics.kick(&ball) {
@@ -525,10 +599,6 @@ final class PetStage: NSObject {
         if let progress {
             events.compactMap(\.counter).forEach { progress.add($0) }
             progress.walk(physics.walked)
-            if now >= ticked {
-                ticked = now + 30
-                progress.tick(now: Date())
-            }
         }
         if physics.state == .held || ball.held, fake == nil, NSEvent.pressedMouseButtons & 1 == 0 { drop() }
         cues(point, events, now)
@@ -541,11 +611,144 @@ final class PetStage: NSObject {
         if let field, field.ignoresMouseEvents == (reachable || ball.held) { field.ignoresMouseEvents.toggle() }
         if phrase != nil, physics.state != .sit { hideBubble() }
         talk(ProcessInfo.processInfo.systemUptime)
+        bake(now)
+        pace(now)
+    }
+
+    private func gauge(_ now: Double) -> PetPace {
+        var pace = PetPace()
+        let toy = field?.isVisible == true
+        pace.hidden = window?.isVisible != true
+        pace.covered = petCovered && (!toy || toyCovered)
+        pace.lowPower = lowPower
+        pace.battery = battery
+        pace.baked = view.looping
+        if toy, !ball.resting { pace.flying = true }
+        if petCovered {
+            if !physics.grounded { pace.flying = true }
+        } else {
+            pace.watch(physics, still: lowPower, at: advanced)
+            if view.pose.lid < 1 {
+                pace.feel(feelings.mind.still(at: now))
+                pace.blink(after: blinked, at: now)
+            }
+            if view.pose.twinkle != 0 { pace.moving = true }
+        }
+        if !lowPower {
+            pace.expect(nextLook, after: advanced)
+            if let eager { pace.expect(max(eager + 60, nextCheer), after: advanced) }
+            if feelings.owed != nil { pace.expect(advanced + 1, after: advanced) }
+            if physics.state == .doze, PetTool.shared.rhythm { pace.expect(felt + 1, after: advanced) }
+        }
+        if demo == nil, physics.state == .walk || physics.state == .rest { pace.expect(nextTalk, after: advanced) }
+        pace.near = near(now)
+        if press != nil || fake != nil || demo != nil { pace.moving = true }
+        return pace
+    }
+
+    private func pace(_ now: Double) {
+        guard let link else { return }
+        let pace = gauge(now)
+        switch pace.mode(at: now) {
+        case .run(let minimum, let maximum, let preferred):
+            let range = CAFrameRateRange(minimum: minimum, maximum: maximum, preferred: preferred)
+            if link.preferredFrameRateRange != range { link.preferredFrameRateRange = range }
+            for timer in [peek, blind, alarm] { timer?.invalidate() }
+            (peek, blind, alarm) = (nil, nil, nil)
+            link.isPaused = false
+        case .blind:
+            link.isPaused = true
+            for timer in [peek, alarm] { timer?.invalidate() }
+            (peek, alarm) = (nil, nil)
+            if blind == nil {
+                let timer = Timer(timeInterval: 0.2, repeats: true) { [weak self] _ in self?.advance(CACurrentMediaTime()) }
+                timer.tolerance = 0.05
+                RunLoop.main.add(timer, forMode: .common)
+                blind = timer
+            }
+        case .wait(let until, let slack):
+            link.isPaused = true
+            blind?.invalidate()
+            blind = nil
+            waited = true
+            alarm?.invalidate()
+            alarm = nil
+            if until.isFinite {
+                let timer = Timer(timeInterval: max(0, until - now), repeats: false) { [weak self] _ in self?.advance(CACurrentMediaTime()) }
+                timer.tolerance = slack
+                RunLoop.main.add(timer, forMode: .common)
+                alarm = timer
+            }
+            if peek == nil { scout(now) }
+        case .off:
+            link.isPaused = true
+            for timer in [blind, peek, alarm] { timer?.invalidate() }
+            (blind, peek, alarm) = (nil, nil, nil)
+            waited = true
+            if pace.hidden { last = nil }
+        }
+    }
+
+    func stir() {
+        guard let link, window?.isVisible == true, link.isPaused else { return }
+        alarm?.invalidate()
+        alarm = nil
+        peek?.invalidate()
+        peek = nil
+        link.isPaused = false
+    }
+
+    private func scout(_ now: Double) {
+        let point = NSEvent.mouseLocation
+        let timer = Timer(timeInterval: bodies.map { PetPace.glance(point, $0, still: hover.at < now) }.min() ?? 0.5, repeats: false) { [weak self] _ in
+            guard let self else { return }
+            self.peek = nil
+            let now = ProcessInfo.processInfo.systemUptime
+            if self.near(now) { self.stir() } else { self.scout(now) }
+        }
+        timer.tolerance = 0.05
+        RunLoop.main.add(timer, forMode: .common)
+        peek = timer
+    }
+
+    private var bodies: [CGRect] {
+        var bodies: [CGRect] = []
+        if !petCovered, let pet = petScreen { bodies.append(physics.frame.offsetBy(dx: pet.frame.minX, dy: pet.frame.minY)) }
+        if field?.isVisible == true, !toyCovered, let toy = ballScreen { bodies.append(ball.frame.offsetBy(dx: toy.frame.minX, dy: toy.frame.minY)) }
+        return bodies
+    }
+
+    private func near(_ now: Double) -> Bool {
+        let point = NSEvent.mouseLocation
+        if hypot(point.x - hover.point.x, point.y - hover.point.y) > 2 { hover = (point, now) }
+        guard now - hover.at < PetPace.linger else { return false }
+        return window?.ignoresMouseEvents == false || field?.ignoresMouseEvents == false || bodies.contains { PetPace.near(point, $0) }
+    }
+
+    private func bake(_ now: Double) {
+        guard !view.looping, !petCovered, demo == nil, !lowPower, !physics.calm, physics.state == .doze, physics.clock >= 2.6 else { return }
+        let outfit = PetProgress.shared.outfit
+        let poses = (0..<130).map { i in
+            var copy = physics
+            copy.wait(Double(i) * 10.8 / 130)
+            var pose = PetPose(copy, scale: Self.scale, time: now, blink: false)
+            pose.outfit = outfit
+            return pose
+        }
+        view.loop(poses, over: 10.8)
+        baked = poses[0]
+    }
+
+    private static func same(_ a: PetPose, _ b: PetPose) -> Bool {
+        var a = a
+        a.squash = b.squash
+        a.nap = b.nap
+        return a == b
     }
 
     private func attune() {
         feelings.progress = progress
-        feelings.muted = demo != nil || blind != nil
+        feelings.muted = demo != nil || petCovered
     }
 
     @discardableResult
@@ -583,7 +786,7 @@ final class PetStage: NSObject {
             if idle >= dull, !(5..<23).contains(Calendar.current.component(.hour, from: Date())) || Battery.read().map({ $0.phase == .onBattery && $0.charge <= 10 }) == true { feel(.sleepy, now) }
         }
         if feelings.owed != nil {
-            let free = PetTool.shared.talks && !behindDock && CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: .keyDown) >= 5 && !Self.microphoneInUse
+            let free = PetTool.shared.talks && !behindDock && CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: .keyDown) >= 5 && !hearing(now)
             if let phrase = feelings.speak(now, &physics, free: free) { present(phrase) }
         }
     }
@@ -592,12 +795,14 @@ final class PetStage: NSObject {
         let point = NSEvent.mouseLocation
         guard held || screen.frame.contains(point) else { return nil }
         let local = CGPoint(x: point.x - screen.frame.minX, y: point.y - screen.frame.minY)
-        guard !held, let panel, body.insetBy(dx: -2 * PetPhysics.reach, dy: -2 * PetPhysics.reach).contains(local) else { return local }
-        let number = NSWindow.windowNumber(at: point, belowWindowWithWindowNumber: 0)
-        guard number > 0, ![window, field, bubble].contains(where: { $0?.windowNumber == number }),
-              let info = (CGWindowListCopyWindowInfo(.optionIncludingWindow, CGWindowID(number)) as? [[String: Any]])?.first,
-              let layer = info[kCGWindowLayer as String] as? Int, layer > panel.level.rawValue else { return local }
-        return nil
+        guard !held, let panel, PetPace.near(local, body) else { return local }
+        let now = ProcessInfo.processInfo.systemUptime
+        if probe.map({ PetPace.ask(point, now, after: ($0.point, $0.time)) }) ?? true {
+            let number = NSWindow.windowNumber(at: point, belowWindowWithWindowNumber: 0), ours = [window, field, bubble].contains { $0?.windowNumber == number }
+            let info = number > 0 && !ours ? (CGWindowListCopyWindowInfo(.optionIncludingWindow, CGWindowID(number)) as? [[String: Any]])?.first : nil
+            probe = (point, now, info?[kCGWindowLayer as String] as? Int)
+        }
+        return probe?.layer.map { $0 > panel.level.rawValue } == true ? nil : local
     }
 
     private func selection(_ screen: NSScreen) -> CGRect? {
@@ -616,13 +821,16 @@ final class PetStage: NSObject {
     }
 
     private func pressed(_ point: CGPoint) {
-        guard link?.isPaused == false || blind != nil, let screen = NSScreen.screens.first else { return press = nil }
+        defer { stir() }
+        guard window?.isVisible == true, let screen = NSScreen.screens.first else { return press = nil }
         if let pet = petScreen, let dock = physics.dock, dock.contains(CGPoint(x: point.x - pet.frame.minX, y: point.y - pet.frame.minY)) { return press = nil }
         let spot = CGPoint(x: point.x, y: screen.frame.maxY - point.y)
         let ours = [window, field, bubble].compactMap { $0?.windowNumber }
         drags = NSPasteboard(name: .drag).changeCount
-        let windows = (CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as? [[String: Any]] ?? []).compactMap { info -> (layer: Int, frame: CGRect)? in
-            guard !ours.contains(info[kCGWindowNumber as String] as? Int ?? 0), info[kCGWindowAlpha as String] as? Double ?? 1 > 0,
+        let number = NSWindow.windowNumber(at: point, belowWindowWithWindowNumber: 0)
+        let list = number > 0 && !ours.contains(number) ? CGWindowListCopyWindowInfo(.optionIncludingWindow, CGWindowID(number)) as? [[String: Any]] ?? [] : []
+        let windows = list.compactMap { info -> (layer: Int, frame: CGRect)? in
+            guard info[kCGWindowAlpha as String] as? Double ?? 1 > 0,
                   let bounds = info[kCGWindowBounds as String] as? NSDictionary, let rect = CGRect(dictionaryRepresentation: bounds) else { return nil }
             return (info[kCGWindowLayer as String] as? Int ?? 0, rect)
         }
@@ -630,17 +838,25 @@ final class PetStage: NSObject {
     }
 
     private func place() {
-        put(view, physics.origin.x)
         let now = ProcessInfo.processInfo.systemUptime
-        var pose = PetPose(physics, scale: Self.scale, time: now)
-        pose.outfit = PetProgress.shared.outfit
-        pose.face = feelings.mind.face(at: now)
-        pose.twinkle = pose.face.glow > 0 && !physics.calm ? now : 0
-        view.pose = pose
-        if grip.frame != physics.frame { grip.frame = physics.frame }
-        put(ballView, ball.center.x)
-        ballView.pose = BallPose(ball, scale: Self.scale)
-        if ballGrip.frame != ball.frame { ballGrip.frame = ball.frame }
+        if !petCovered {
+            put(view, physics.origin.x)
+            var pose = PetPose(physics, scale: Self.scale, time: now, blink: now < blinked + PetPace.shut, still: lowPower)
+            pose.outfit = PetProgress.shared.outfit
+            pose.face = feelings.mind.face(at: now)
+            pose.twinkle = pose.face.glow > 0 && !physics.calm && !lowPower ? now : 0
+            if pose.lid >= 1 {
+                pose.face = PetFace()
+                pose.twinkle = 0
+            }
+            if !view.looping || !Self.same(pose, baked) { view.pose = pose }
+            if grip.frame != physics.frame { grip.frame = physics.frame }
+        }
+        if field?.isVisible == true, !toyCovered {
+            put(ballView, ball.center.x)
+            ballView.pose = BallPose(ball, scale: Self.scale)
+            if ballGrip.frame != ball.frame { ballGrip.frame = ball.frame }
+        }
     }
 
     private func put<Pose>(_ figure: FigureView<Pose>, _ x: CGFloat) {
@@ -657,7 +873,7 @@ final class PetStage: NSObject {
             let number = panel.windowNumber
             if level != Self.front {
                 sunk.remove(number)
-            } else if panel.level == Self.level, !sunk.contains(number), let screen, fullscreen || Self.covered(CGRect(origin: CGPoint(x: body.minX, y: floor), size: body.size), on: screen) {
+            } else if panel.level == Self.level, !sunk.contains(number), let screen, fullscreen || Self.covered(CGRect(origin: CGPoint(x: body.minX, y: floor), size: body.size), on: screen, in: onscreen()) {
                 sunk.insert(number)
             }
             if sunk.contains(number) { level = Self.level }
@@ -672,8 +888,8 @@ final class PetStage: NSObject {
 
     private func rise() {
         guard physics.aloft != raised || ball.aloft != tossed else { return }
-        if physics.aloft, !raised, let pet = petScreen { hiddenUp = Self.covered(physics.frame, on: pet) }
-        if ball.aloft, !tossed, let toy = ballScreen { hiddenToss = Self.covered(ball.frame, on: toy) }
+        if physics.aloft, !raised, let pet = petScreen { hiddenUp = Self.covered(physics.frame, on: pet, in: onscreen()) }
+        if ball.aloft, !tossed, let toy = ballScreen { hiddenToss = Self.covered(ball.frame, on: toy, in: onscreen()) }
         raised = physics.aloft
         tossed = ball.aloft
         layout()
@@ -734,10 +950,10 @@ final class PetStage: NSObject {
         if let progress, progress.hasNews {
             if PetTool.shared.talks { nextTalk = min(nextTalk, now + 3) } else { progress.hush() }
         }
-        guard now >= nextTalk, physics.state == .walk, demo == nil else { return }
+        guard now >= nextTalk, physics.state == .walk || physics.state == .rest, demo == nil else { return }
         guard PetTool.shared.talks else { return nextTalk = now + .random(in: 1200...1800) }
         let typing = CGEventSource.secondsSinceLastEventType(.combinedSessionState, eventType: .keyDown) < 5
-        if typing || physics.zest < -0.2 || GameModeTool.shared.isPlaying || Self.microphoneInUse { return nextTalk = now + 45 }
+        if typing || physics.zest < -0.2 || GameModeTool.shared.isPlaying || hearing(now) { return nextTalk = now + 45 }
         guard !behindDock else { return }
         say(nextPhrase(), for: 4.4)
         nextTalk = now + .random(in: 1200...1800)
@@ -760,6 +976,11 @@ final class PetStage: NSObject {
         #endif
         if deck.isEmpty { deck = PetPhrases.all.filter { $0.id != "space" || PetTool.shared.listening }.shuffled() }
         return deck.removeLast()
+    }
+
+    private func hearing(_ now: Double) -> Bool {
+        if now - heard.at >= 1 { heard = (now, Self.microphoneInUse) }
+        return heard.on
     }
 
     private static var microphoneInUse: Bool {
