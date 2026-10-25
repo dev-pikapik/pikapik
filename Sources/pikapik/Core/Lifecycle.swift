@@ -178,7 +178,7 @@ enum Lifecycle {
                 .start: .byTools,
                 .handOver: .byTools,
                 .quit: .byTools,
-                .powerOff: .run { MainDisplayControl.restore() },
+                .powerOff: .none("the pick stays until the switch goes off, SYS-2/3"),
                 .uninstall: .none("DockDisplayTool.uninstall() puts it back"),
             ]),
             Row(owner: "HiddenFiles", changes: "com.apple.finder AppleShowAllFiles", cells: [

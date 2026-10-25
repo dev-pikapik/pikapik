@@ -78,7 +78,7 @@ enum TestLifecycle {
             .start: ["TextFocus", "DesktopIcons", "ToolRegistry", "Permissions", "SettingsSync", "Brightness", "KeepAwake", "Updater"],
             .handOver: ["TextFocus", "DesktopIcons", "ToolRegistry", "SettingsSync", "Brightness", "KeepAwake", "FanControl", "Updater", "GameMode", "DockEdges", "HotCorners", "HiddenFiles"],
             .quit: ["TextFocus", "DesktopIcons", "ToolRegistry", "SettingsSync", "Brightness", "FanControl", "Updater", "GameMode", "DockEdges", "HotCorners", "HiddenFiles", "TextFocus wait"],
-            .powerOff: ["DesktopIcons", "DockEdges", "HotCorners", "Animations", "DockDisplay", "KeyRepeat", "Journals", "Dock", "MainDisplay", "HiddenFiles"],
+            .powerOff: ["DesktopIcons", "DockEdges", "HotCorners", "Animations", "DockDisplay", "KeyRepeat", "Journals", "Dock", "HiddenFiles"],
             .uninstall: [],
         ]
         for moment in Lifecycle.Moment.allCases {
