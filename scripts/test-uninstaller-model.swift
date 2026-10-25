@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 
 enum Permission {
     case fullDisk
@@ -91,9 +91,12 @@ enum UninstallerModelTests {
         await dismissing(app)
         await offering()
         await reloading()
+        await drawing(app)
+        await lookingAgain()
+        await flattening()
         world.destroy()
         precondition(problems.isEmpty, "\n" + problems.joined(separator: "\n"))
-        print("uninstaller model: pause, close and dismissing the sheet stop a long size walk, Trash bursts and reloads build the app list once: ok")
+        print("uninstaller model: pause, close and dismissing the sheet stop a long size walk, Trash bursts and reloads build the app list once, icons are drawn off the main thread: ok")
     }
 
     static func pausing() async {
@@ -168,6 +171,68 @@ enum UninstallerModelTests {
         await model.pause()
         check(loaded, "reload() never loaded the app list")
         check(rebuilds.count <= 2, "10 reload() calls in a row built the app list \(rebuilds.count) times, at most 2")
+    }
+
+    static func drawing(_ app: AppIdentity) async {
+        let draws = Tally()
+        let onMain = Tally()
+        let gate = DispatchSemaphore(value: 0)
+        let drawn = NSImage()
+        let model = UninstallerModel(engine: world.engine(counting: Tally())) { _, _ in
+            if Thread.isMainThread { onMain.add() }
+            _ = gate.wait(timeout: .now() + 1)
+            draws.add()
+            return drawn
+        }
+        let took = await seconds { _ = model.icon(of: app) }
+        gate.signal()
+        let arrived = await wait { model.icon(of: app) === drawn }
+        for _ in 1...10 { _ = model.icon(at: app.url) }
+        check(took < 0.5 && onMain.count == 0, "the app’s icon was drawn on the main thread and froze the window for \(String(format: "%.2f", took)) s")
+        check(arrived, "the app’s icon never replaced the placeholder")
+        check(draws.count == 1, "the same icon was drawn \(draws.count) times, once is enough")
+    }
+
+    static func lookingAgain() async {
+        let looks = Tally()
+        let model = UninstallerModel(engine: world.engine(counting: Tally())) { _, _ in
+            looks.add()
+            return nil
+        }
+        let gone = AppIdentity(url: world.at("root/Applications/Gone.app"), bundleID: "")
+        let redraws = Tally()
+        withObservationTracking { _ = model.icon(of: gone) } onChange: { redraws.add() }
+        let again = await wait {
+            _ = model.icon(of: gone)
+            return looks.count >= 2
+        }
+        check(again, "an app that wasn’t there was never looked for again")
+        check(redraws.count == 0, "not finding an app redrew the page, which would look for it again and again")
+    }
+
+    static func flattening() async {
+        let file = world.at("Red.txt")
+        try! "x".write(to: file, atomically: false, encoding: .utf8)
+        let red = NSImage(size: NSSize(width: 256, height: 256), flipped: false) { rect in
+            NSColor(srgbRed: 1, green: 0, blue: 0, alpha: 1).setFill()
+            rect.fill()
+            return true
+        }
+        guard NSWorkspace.shared.setIcon(red, forFile: file.path, options: []) else { return }
+        let icon = await Task.detached { UninstallerModel.picture(at: file.path, app: false) }.value
+        try! FileManager.default.removeItem(at: file)
+        check(icon.map(isRed) == true, "an icon drawn off the main thread still read its file when it was shown")
+    }
+
+    static func isRed(_ image: NSImage) -> Bool {
+        let pixels = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: 40, pixelsHigh: 40, bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true,
+                                      isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = NSGraphicsContext(bitmapImageRep: pixels)
+        image.draw(in: NSRect(x: 0, y: 0, width: 40, height: 40))
+        NSGraphicsContext.restoreGraphicsState()
+        let middle = pixels.colorAt(x: 20, y: 20)!
+        return middle.redComponent > 0.8 && middle.greenComponent < 0.2
     }
 
     static func slowWalk() -> Tally {

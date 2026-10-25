@@ -242,7 +242,10 @@ final class UninstallerModel {
     @ObservationIgnored private let engine: UninstallerEngine
     @ObservationIgnored private var entries: [AppEntry] = []
     @ObservationIgnored private var known: [String: AppEntry] = [:]
-    @ObservationIgnored private var icons: [String: NSImage] = [:]
+    private var icons: [String: NSImage] = [:]
+    @ObservationIgnored private var wantedIcons: [(path: String, app: Bool)] = []
+    @ObservationIgnored private var askedIcons: Set<String> = []
+    @ObservationIgnored private let drawIcon: @Sendable (String, Bool) -> NSImage?
     @ObservationIgnored private var urgent: [AppEntry] = []
     @ObservationIgnored private var pending: [AppEntry] = []
     @ObservationIgnored private var fill: Task<Void, Never>?
@@ -253,8 +256,9 @@ final class UninstallerModel {
     @ObservationIgnored private(set) var draining = false
     @ObservationIgnored private var stale = false
 
-    init(engine: UninstallerEngine = UninstallerEngine()) {
+    init(engine: UninstallerEngine = UninstallerEngine(), drawIcon: @escaping @Sendable (String, Bool) -> NSImage? = { UninstallerModel.picture(at: $0, app: $1) }) {
         self.engine = engine
+        self.drawIcon = drawIcon
     }
 
     func appear() {
@@ -298,14 +302,45 @@ final class UninstallerModel {
     }
 
     func icon(at url: URL) -> NSImage {
-        if let icon = icons[url.path] { return icon }
-        let icon = NSWorkspace.shared.icon(forFile: url.path)
-        icons[url.path] = icon
-        return icon
+        icon(url.path, app: false)
     }
 
     func icon(of app: AppIdentity) -> NSImage {
-        icons[app.url.path] ?? (FileManager.default.fileExists(atPath: app.url.path) ? icon(at: app.url) : NSWorkspace.shared.icon(for: .applicationBundle))
+        icon(app.url.path, app: true)
+    }
+
+    private static let appIcon = NSWorkspace.shared.icon(for: .applicationBundle)
+    private static let noIcon = NSImage()
+
+    private func icon(_ path: String, app: Bool) -> NSImage {
+        if let icon = icons[path] { return icon }
+        if askedIcons.insert(path).inserted {
+            wantedIcons.append((path, app))
+            if wantedIcons.count == 1 { Task { await drawIcons() } }
+        }
+        return app ? Self.appIcon : Self.noIcon
+    }
+
+    private func drawIcons() async {
+        let wanted = wantedIcons
+        wantedIcons = []
+        let draw = drawIcon
+        let drawn = await Task.detached(priority: .userInitiated) { wanted.map { ($0.path, draw($0.path, $0.app)) } }.value
+        for (path, icon) in drawn where icon == nil { askedIcons.remove(path) }
+        let found = drawn.compactMap { path, icon in icon.map { (path, $0) } }
+        // Even an empty merge redraws every row, which would look for a missing app again and again.
+        if !found.isEmpty { icons.merge(found) { $1 } }
+    }
+
+    // macOS reads the picture inside an icon from the file only when the icon is drawn, so it is drawn here,
+    // off the main thread, and an app on a slow disk or network volume can't freeze the window.
+    // An app that isn't there keeps the placeholder and is looked for again the next time it's shown.
+    nonisolated static func picture(at path: String, app: Bool) -> NSImage? {
+        guard !app || FileManager.default.fileExists(atPath: path) else { return nil }
+        let icon = NSWorkspace.shared.icon(forFile: path)
+        var frame = NSRect(x: 0, y: 0, width: 128, height: 128)
+        guard let picture = icon.cgImage(forProposedRect: &frame, context: nil, hints: nil) else { return icon }
+        return NSImage(cgImage: picture, size: NSSize(width: 64, height: 64))
     }
 
     func open(_ app: AppIdentity, notice: String? = nil) {
