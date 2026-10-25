@@ -6,7 +6,7 @@ final class FanControl {
     private static let rpmKey = PreferenceKey.fansRPM
     private static let app = Bundle.main.bundleIdentifier ?? FanHelperInfo.appIdentifier
     private static let label = app + FanHelperInfo.suffix
-    private static let helperDir = "/Library/PrivilegedHelperTools"
+    private static let helperDir = SystemPath.privilegedHelperToolsDir
     private static let binary = helperDir + "/" + label
     private static let plist = "/Library/LaunchDaemons/" + label + ".plist"
     private static let record = binary + FanHelperInfo.recordSuffix

@@ -96,8 +96,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         defaults.set(true, forKey: "launchedBefore")
         ["double-space", "double-space-interval", "dock-display-anchor", "dock-display-return"].forEach(defaults.removeObject)
         for id in ["app-volume", "archive", "brightness", "convert", "desktop-icons", "dock-display", "fans", "finder-cut", "finder-delete", "finder-open", "game-mode", "hidden-files", "hide-app", "home-end", "layout-fix", "middle-click", "speed-test", "temperatures", "window-zoom"] where !defaults.bool(forKey: "quick-hidden-\(id)") {
-            if let hidden = defaults.string(forKey: "quick-hidden"), id != "convert" || hidden.split(separator: ",").contains("compress") {
-                defaults.set(hidden + ",\(id)", forKey: "quick-hidden")
+            if let hidden = defaults.string(forKey: PreferenceKey.quickHidden), id != "convert" || hidden.split(separator: ",").contains("compress") {
+                defaults.set(hidden + ",\(id)", forKey: PreferenceKey.quickHidden)
             }
             defaults.set(true, forKey: "quick-hidden-\(id)")
         }
@@ -154,7 +154,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         let background = Background.shared
-        if Background.isLoggingOut { powerOff() }
+        if Background.isLoggingOut { MainCopy.shared.logOut(); powerOff() }
         if background.quitting || Background.isOutsideQuit { return .terminateNow }
         guard Background.isOn, MainCopy.shared.role != .passive, !NSEvent.modifierFlags.contains(.option) else {
             if MainCopy.canAct { KeepAwake.shared.set(.off) }

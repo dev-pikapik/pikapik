@@ -144,12 +144,12 @@ enum SystemShortcutCatalog {
     }
 
     static func load() -> [SystemGameShortcut] {
-        CFPreferencesAppSynchronize("com.apple.symbolichotkeys" as CFString)
+        CFPreferencesAppSynchronize(AppConstants.symbolicHotKeysDomain as CFString)
         var array: Unmanaged<CFArray>?
         let status = CopySymbolicHotKeys(&array)
         let native = array?.takeRetainedValue() as? [[String: Any]] ?? []
         let metadata = metadata()
-        let configured = CFPreferencesCopyAppValue("AppleSymbolicHotKeys" as CFString, "com.apple.symbolichotkeys" as CFString) as? [String: Any] ?? [:]
+        let configured = CFPreferencesCopyAppValue("AppleSymbolicHotKeys" as CFString, AppConstants.symbolicHotKeysDomain as CFString) as? [String: Any] ?? [:]
         let known = Set(metadata.keys).union(configured.keys.compactMap(Int32.init))
         var values: [Int32: (character: UInt16, key: UInt16, modifiers: UInt64)] = [:]
         let ids = discover(count: status == noErr ? native.count : 300, known: known) { id in
@@ -260,7 +260,7 @@ enum SystemShortcutCatalog {
     static func strings(_ bundle: Bundle, _ name: String) -> [String: String] {
         let table = bundle.url(forResource: name, withExtension: "loctable")
             .flatMap { NSDictionary(contentsOf: $0) as? [String: Any] } ?? [:]
-        let languages = UserDefaults.standard.stringArray(forKey: "AppleLanguages")
+        let languages = UserDefaults.standard.stringArray(forKey: PreferenceKey.appleLanguages)
         let language = Bundle.preferredLocalizations(from: Array(table.keys), forPreferences: languages).first ?? "en"
         return (table[language] as? [String: Any] ?? [:]).compactMapValues { $0 as? String }
     }

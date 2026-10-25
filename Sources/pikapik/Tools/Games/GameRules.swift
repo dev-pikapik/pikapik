@@ -110,7 +110,7 @@ enum GameRules {
 
     static func shelf(_ keys: [String]) -> [String] {
         var seen = Set<String>()
-        return keys.filter { !$0.isEmpty && !$0.hasPrefix(AppConstants.bundleIDPrefix) && $0 != "com.apple.finder" && seen.insert($0).inserted }
+        return keys.filter { !$0.isEmpty && !$0.hasPrefix(AppConstants.bundleIDPrefix) && $0 != AppConstants.finderBundleID && seen.insert($0).inserted }
     }
 
     static func processIDs(_ text: String, names: (Int32) -> [String]) -> [Int32] {
@@ -295,7 +295,7 @@ enum SymbolicHotKeys {
     }
 
     static var gameInputs: [Int32] {
-        let configured = CFPreferencesCopyAppValue("AppleSymbolicHotKeys" as CFString, "com.apple.symbolichotkeys" as CFString) as? [String: Any] ?? [:]
+        let configured = CFPreferencesCopyAppValue("AppleSymbolicHotKeys" as CFString, AppConstants.symbolicHotKeysDomain as CFString) as? [String: Any] ?? [:]
         let ids = Set((0..<300).map(Int32.init) + configured.keys.compactMap(Int32.init))
         return ids.sorted().filter { id in
             guard let value = value(id), value.key != UInt16.max else { return false }

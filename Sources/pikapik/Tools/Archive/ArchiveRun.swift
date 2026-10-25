@@ -1,9 +1,9 @@
 import Foundation
 
 extension Archive {
-    static let ditto = URL(fileURLWithPath: "/usr/bin/ditto")
-    static let bsdtar = URL(fileURLWithPath: "/usr/bin/tar")
-    private static let processEnvironment = ["LC_ALL": "en_US.UTF-8", "PATH": "/usr/bin:/bin"]
+    static let ditto = URL(fileURLWithPath: SystemPath.ditto)
+    static let bsdtar = URL(fileURLWithPath: SystemPath.tar)
+    private static let processEnvironment = ["LC_ALL": "en_US.UTF-8", "PATH": SystemPath.standardBinPath]
 
     struct Stage {
         var executable: URL

@@ -3,7 +3,7 @@ import AppKit
 @Observable
 final class Background: NSObject {
     static let shared = Background()
-    static let key = "keep-running"
+    static let key = PreferenceKey.keepRunning
     private static let explainedKey = "keep-running-explained"
 
     var iconShown = true
@@ -36,7 +36,7 @@ final class Background: NSObject {
         let sender = event.attributeDescriptor(forKeyword: AEKeyword(keySenderPIDAttr)).flatMap {
             NSRunningApplication(processIdentifier: $0.int32Value)?.bundleIdentifier
         }
-        return sender != "com.apple.dock"
+        return sender != AppConstants.dockBundleID
     }
 
     static func quit() {

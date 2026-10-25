@@ -196,7 +196,7 @@ final class DockHideTool: Tool {
 
     private static func dockApp(at point: CGPoint) -> NSRunningApplication? {
         guard nearEdge(point),
-              let dock = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.dock").first
+              let dock = NSRunningApplication.runningApplications(withBundleIdentifier: AppConstants.dockBundleID).first
         else { return nil }
         let element = AXUIElementCreateApplication(dock.processIdentifier)
         AXUIElementSetMessagingTimeout(element, 0.25)
@@ -257,7 +257,7 @@ final class DockHideTool: Tool {
             .filter { $0 != pid }
             .compactMap { NSRunningApplication(processIdentifier: $0) }
             .first { $0.activationPolicy == .regular && !$0.isHidden }
-            ?? NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first
+            ?? NSRunningApplication.runningApplications(withBundleIdentifier: AppConstants.finderBundleID).first
     }
 
     private static func activate(_ app: NSRunningApplication?) {

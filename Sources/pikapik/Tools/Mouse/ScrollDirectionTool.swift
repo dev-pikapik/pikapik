@@ -7,8 +7,8 @@ final class ScrollDirectionTool: Tool {
     var title: String { SettingTitle.wheelDirection }
     let tab = SettingsTab.mouse
 
-    private static let trackpadKey = PreferenceKey.wheelDirectionTrackpad
-    private static let mouseKey = PreferenceKey.wheelDirectionMouse
+    private static let trackpadKey = PreferenceKey.wheelDirectionTrackpadNatural
+    private static let mouseKey = PreferenceKey.wheelDirectionNatural
 
     var isActive: Bool { isEnabled && ScrollTap.shared.isActive }
 

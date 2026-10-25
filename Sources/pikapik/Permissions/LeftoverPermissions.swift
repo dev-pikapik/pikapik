@@ -34,8 +34,8 @@ enum LeftoverPermissions {
         var home = NSHomeDirectory()
     }
 
-    static let systemDatabase = "/Library/Application Support/com.apple.TCC/TCC.db"
-    static var userDatabase: String { NSHomeDirectory() + "/Library/Application Support/com.apple.TCC/TCC.db" }
+    static let systemDatabase = SystemPath.systemTCCDatabase
+    static var userDatabase: String { NSHomeDirectory() + SystemPath.systemTCCDatabase }
 
     static func read(_ path: String) -> [PermissionGrant]? {
         var db: OpaquePointer?

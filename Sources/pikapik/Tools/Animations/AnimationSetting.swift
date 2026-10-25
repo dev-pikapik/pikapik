@@ -14,8 +14,8 @@ enum AnimationSetting: String, CaseIterable {
 
     var domain: CFString {
         switch self {
-        case .dockDelay, .dockSpeed, .minimize, .bounce: "com.apple.dock" as CFString
-        case .finder: "com.apple.finder" as CFString
+        case .dockDelay, .dockSpeed, .minimize, .bounce: AppConstants.dockBundleID as CFString
+        case .finder: AppConstants.finderBundleID as CFString
         case .windowOpen, .resize, .quickLook, .finderColumns: kCFPreferencesAnyApplication
         }
     }
@@ -257,7 +257,7 @@ class AnimationsEngine {
     @ObservationIgnored private let host: AnimationsHost
     @ObservationIgnored private let dockRestart: DockRestart
 
-    private static let speedKey = "animations-speed"
+    private static let speedKey = PreferenceKey.animationsSpeed
     private static let ownKey = "animations-own"
     private static let oursKey = "animations-ours"
     private static let autohideKey = "animations-autohide-original"

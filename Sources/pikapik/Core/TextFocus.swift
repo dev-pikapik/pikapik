@@ -16,7 +16,7 @@ enum TextFocus {
     private static let running: (pid_t) -> String? = { NSRunningApplication(processIdentifier: $0)?.bundleIdentifier }
     static let puttingBack = DispatchGroup()
     static let switching = DispatchGroup()
-    static let journalKey = "chromium-accessibility-original"
+    static let journalKey = PreferenceKey.chromiumAXJournal
     static var write: (String, Bool, pid_t) -> AXError = { attribute, on, pid in
         let app = AXUIElementCreateApplication(pid)
         AXUIElementSetMessagingTimeout(app, 0.15)

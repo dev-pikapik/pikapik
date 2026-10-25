@@ -235,7 +235,7 @@ enum PetAward: String, CaseIterable, Identifiable {
 }
 
 private enum PetKey {
-    static let counts = "pet-counts", awards = "pet-awards", seen = "pet-seen", fresh = "pet-fresh", outfit = "pet-outfit"
+    static let counts = PreferenceKey.petCounts, awards = PreferenceKey.petAwards, seen = PreferenceKey.petSeen, fresh = PreferenceKey.petFresh, outfit = PreferenceKey.petOutfit
     static let all = [counts, awards, seen, fresh, outfit]
 }
 

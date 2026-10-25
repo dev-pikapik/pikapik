@@ -32,7 +32,7 @@ struct TestMainCopy {
             try? FileManager.default.removeItem(atPath: suite + ".plist")
         }
 
-        let website = MainCopyChoice.websiteID, store = MainCopyChoice.appStoreID
+        let website = AppConstants.directBundleID, store = AppConstants.appStoreBundleID
         precondition(MainCopyChoice.family(website) == MainCopyChoice.family(store))
         precondition(MainCopyChoice.family("com.pikapik.e2e.tools.a") == MainCopyChoice.family("com.pikapik.e2e.tools.b"))
         precondition(MainCopyChoice.family("com.pikapik.e2e.tools.a") != MainCopyChoice.family(website))
@@ -175,6 +175,7 @@ struct TestMainCopy {
         handover()
         deferredActions()
         quittingStaysPassive()
+        loggingOutHolds()
 
         let leaked = MemoryDefaults.all.values.map(\.path).filter { FileManager.default.fileExists(atPath: $0 + ".plist") }
         leaked.forEach { try? FileManager.default.removeItem(atPath: $0 + ".plist") }
@@ -193,13 +194,13 @@ struct TestMainCopy {
         let first = MainCopyChoice.started(child.processIdentifier)
         precondition(first.map { abs($0.timeIntervalSince(launched)) < 1 } == true, "a child's start is the moment it was launched: \(String(describing: first)) vs \(launched)")
         precondition(MainCopyChoice.started(child.processIdentifier) == first, "reading a process's start twice gives the same date")
-        let me = RunningCopy(pid: getpid(), bundleID: MainCopyChoice.websiteID)!, peer = RunningCopy(pid: child.processIdentifier, bundleID: MainCopyChoice.websiteID)!
+        let me = RunningCopy(pid: getpid(), bundleID: AppConstants.directBundleID)!, peer = RunningCopy(pid: child.processIdentifier, bundleID: AppConstants.directBundleID)!
         precondition(me.launched == MainCopyChoice.started(getpid()), "a copy's own date is its process's start")
         precondition(peer.launched == MainCopyChoice.started(child.processIdentifier), "a peer's date is its own process's start, not ours: \(peer.launched) vs \(String(describing: MainCopyChoice.started(child.processIdentifier)))")
         precondition(peer.launched > me.launched, "the later process is the later copy")
         child.terminate()
         child.waitUntilExit()
-        precondition(MainCopyChoice.started(Int32.max) == nil && RunningCopy(pid: Int32.max, bundleID: MainCopyChoice.websiteID) == nil, "a process that does not exist has no start and is no copy")
+        precondition(MainCopyChoice.started(Int32.max) == nil && RunningCopy(pid: Int32.max, bundleID: AppConstants.directBundleID) == nil, "a process that does not exist has no start and is no copy")
         print("a process's start comes from the kernel: this one is in the past, a child's is its launch moment and never changes, a missing one has none: ok")
     }
 
@@ -209,7 +210,7 @@ struct TestMainCopy {
         let own = RunningCopy.own(started: { asked.append($0); return sentinel })
         precondition(own.pid == getpid() && own.launched == sentinel && asked == [getpid()], "a copy's own date comes from the start lookup of its own pid: \(own) \(asked)")
         precondition(RunningCopy.own().launched == MainCopyChoice.started(getpid()), "a copy's own date is the kernel start of this process")
-        let unknown = RunningCopy.own(started: { _ in nil }), peer = copy(5, MainCopyChoice.websiteID, at: 5)
+        let unknown = RunningCopy.own(started: { _ in nil }), peer = copy(5, AppConstants.directBundleID, at: 5)
         precondition(unknown.launched == .distantPast && MainCopyChoice.leader(unknown, among: [peer]) == peer, "a copy that does not know its start counts as the oldest, so any other copy leads: \(unknown)")
         precondition(RunningCopy(NSRunningApplication.current) == nil, "a process LaunchServices does not know is no copy")
         let child = Process()
@@ -219,18 +220,18 @@ struct TestMainCopy {
         defer { child.terminate(); child.waitUntilExit() }
         let pid = child.processIdentifier, start = MainCopyChoice.started(child.processIdentifier)
         precondition(pid != getpid() && start != nil && start != MainCopyChoice.started(getpid()), "the child is another process with its own start")
-        let app = StubApp(pid: pid, terminated: false, id: MainCopyChoice.websiteID)
-        precondition(RunningCopy(app) == RunningCopy(pid: pid, bundleID: MainCopyChoice.websiteID, launched: start ?? .distantPast), "an app maps to a copy with its own pid, bundle id and kernel start: \(String(describing: RunningCopy(app)))")
+        let app = StubApp(pid: pid, terminated: false, id: AppConstants.directBundleID)
+        precondition(RunningCopy(app) == RunningCopy(pid: pid, bundleID: AppConstants.directBundleID, launched: start ?? .distantPast), "an app maps to a copy with its own pid, bundle id and kernel start: \(String(describing: RunningCopy(app)))")
         var lookedUp: [Int32] = []
         precondition(RunningCopy(app, started: { lookedUp.append($0); return sentinel })?.launched == sentinel && lookedUp == [pid], "the start lookup gets the app's pid and its answer is the date: \(lookedUp)")
         precondition(RunningCopy(app, started: { _ in nil }) == nil, "an app with no start time is no copy")
-        precondition(RunningCopy(StubApp(pid: pid, terminated: true, id: MainCopyChoice.websiteID), started: { _ in sentinel }) == nil, "an app that has quit is no copy")
+        precondition(RunningCopy(StubApp(pid: pid, terminated: true, id: AppConstants.directBundleID), started: { _ in sentinel }) == nil, "an app that has quit is no copy")
         precondition(RunningCopy(StubApp(pid: pid, terminated: false, id: nil), started: { _ in sentinel }) == nil, "an app with no bundle id is no copy")
         print("a running app maps to a copy with the kernel start of its own pid, our own copy to this process's start, and an unknown start counts as the oldest: ok")
     }
 
     static func quittingStaysPassive() {
-        let website = MainCopyChoice.websiteID, store = MainCopyChoice.appStoreID
+        let website = AppConstants.directBundleID, store = AppConstants.appStoreBundleID
         enum Path: String, CaseIterable { case mainLeft = "the main copy leaves", timeout = "the claim times out", released = "the last copy answers", peersGone = "the other copies are gone" }
         for path in Path.allCases {
             for quitting in [true, false] {
@@ -266,6 +267,61 @@ struct TestMainCopy {
         print("a copy that is quitting never becomes main, whether the main copy leaves, the claim times out, the last copy answers or the others are gone: ok")
     }
 
+    static func loggingOutHolds() {
+        let website = AppConstants.directBundleID, store = AppConstants.appStoreBundleID
+        enum Case: String, CaseIterable { case own = "its own logging out", leaves = "the wait ends", quits = "its own quit comes during the wait", timeout = "the claim times out during the wait", again = "a second logging out" }
+        for test in Case.allCases {
+            let waiting = test == .timeout
+            let me = copy(10, website, at: waiting ? 30 : 10), other = copy(20, store, at: 20)
+            var running = [me, other], timers: [DispatchWorkItem] = [], posted: [Notification.Name] = []
+            var activated = 0
+            let main = MainCopy(me: me, running: { running }, later: { timers.append($0) }, post: { name, _ in posted.append(name) })
+            Background.shared.quitting = false
+            main.start(activate: { activated += 1 }, deactivate: { _ in })
+            precondition(main.role == (waiting ? .waiting : .passive) && timers.count == (waiting ? 1 : 0) && activated == 0, "\(test.rawValue): the copy starts \(waiting ? "waiting" : "passive"): \(main.role)")
+            switch test {
+            case .own:
+                posted = []
+                main.logOut()
+                precondition(posted == [Notification.Name("org.pikapik.main-copy.logging-out")], "logging out tells the other copies once: \(posted)")
+                main.loggingOut(by: me.pid)
+                running = [me]
+                main.evaluate()
+                precondition(timers.isEmpty && main.role == .main && activated == 1, "a copy ignores its own logging out and takes over at once when the main copy leaves: \(main.role)")
+            case .leaves, .quits:
+                main.loggingOut(by: other.pid)
+                running = [me]
+                main.evaluate()
+                precondition(timers.count == 1 && main.role == .passive && activated == 0, "\(test.rawValue): when the main copy logs out and leaves, the passive copy waits and changes nothing: \(main.role)")
+                Background.shared.quitting = test == .quits
+                timers[0].perform()
+                if test == .quits {
+                    precondition(main.role == .passive && activated == 0, "a copy whose own quit comes during the wait stays passive: \(main.role)")
+                } else {
+                    precondition(main.role == .main && activated == 1, "after the wait the copy that is left becomes main once: \(main.role)")
+                }
+            case .timeout:
+                main.loggingOut(by: other.pid)
+                timers[0].perform()
+                main.evaluate()
+                precondition(timers.count == 2 && main.role == .waiting && activated == 0, "a waiting copy whose claim times out during the wait does not become main: \(main.role)")
+                timers[1].perform()
+                precondition(main.role == .main && activated == 1, "the waiting copy becomes main when the wait ends, even while an older copy that never stepped back still runs: \(main.role)")
+            case .again:
+                main.loggingOut(by: other.pid)
+                main.loggingOut(by: other.pid)
+                running = [me]
+                main.evaluate()
+                timers[0].perform()
+                precondition(timers.count == 2 && main.role == .passive && activated == 0, "a second logging out replaces the first wait, so the end of the first one does nothing: \(main.role)")
+                timers[1].perform()
+                precondition(main.role == .main && activated == 1, "the copy becomes main when the second wait ends: \(main.role)")
+            }
+        }
+        Background.shared.quitting = false
+        print("when another copy logs out, a copy waits before it takes over, even when its claim times out, stays passive if its own quit comes first, ignores its own notice and waits again after a second one: ok")
+    }
+
     static func deferredActions() {
         var deferred = DeferredActions()
         var log: [String] = []
@@ -288,7 +344,7 @@ struct TestMainCopy {
     static let tools = "com.pikapik.e2e.tools"
 
     static func handover() {
-        let website = MainCopyChoice.websiteID, store = MainCopyChoice.appStoreID
+        let website = AppConstants.directBundleID, store = AppConstants.appStoreBundleID
         precondition(!MainCopyChoice.takesOver([], poweringOff: false))
         precondition(!MainCopyChoice.takesOver([copy(1, store, at: 5)], poweringOff: false))
         precondition(MainCopyChoice.takesOver([copy(1, website, at: 5)], poweringOff: false))

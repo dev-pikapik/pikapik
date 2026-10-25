@@ -23,7 +23,7 @@ extension AppRemover.Hooks {
             running: running,
             confirmQuit: confirmQuit,
             confirmForceQuit: confirmForceQuit,
-            launchctl: { AppRoots.run("/bin/launchctl", $0, seconds: 3) == nil ? -1 : 0 },
+            launchctl: { AppRoots.run(SystemPath.launchctl, $0, seconds: 3) == nil ? -1 : 0 },
             admin: { script, prompt in
                 await onBackground {
                     outcome(KeepAwake.runScript("do shell script \(KeepAwake.scriptQuoted(script)) with prompt \(KeepAwake.scriptQuoted(prompt)) with administrator privileges").error)

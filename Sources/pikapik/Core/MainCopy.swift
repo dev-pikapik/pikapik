@@ -22,6 +22,7 @@ final class MainCopy {
 
     private static let claim = Notification.Name("org.pikapik.main-copy.claim")
     private static let released = Notification.Name("org.pikapik.main-copy.released")
+    private static let loggingOut = Notification.Name("org.pikapik.main-copy.logging-out")
     private static let patience = 3.0
 
     private(set) var role = Role.waiting
@@ -30,6 +31,7 @@ final class MainCopy {
     @ObservationIgnored private var deactivate: (Bool) -> Void = { _ in }
     @ObservationIgnored private var awaited: Set<Int32> = []
     @ObservationIgnored private var timeout: DispatchWorkItem?
+    @ObservationIgnored private var hold: DispatchWorkItem?
     @ObservationIgnored private var deferred = DeferredActions()
     @ObservationIgnored private var watching: NSKeyValueObservation?
     @ObservationIgnored let me: RunningCopy
@@ -45,8 +47,8 @@ final class MainCopy {
         guard let leader, let app = NSRunningApplication(processIdentifier: leader.pid), let url = app.bundleURL else { return ("", nil) }
         let version = Bundle(url: url)?.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
         switch leader.bundleID {
-        case MainCopyChoice.appStoreID: return (String(localized: "Mac App Store version \(version)"), nil)
-        case MainCopyChoice.websiteID: return (String(localized: "Website version \(version)"), nil)
+        case AppConstants.appStoreBundleID: return (String(localized: "Mac App Store version \(version)"), nil)
+        case AppConstants.directBundleID: return (String(localized: "Website version \(version)"), nil)
         default: return (version, url.path)
         }
     }
@@ -59,6 +61,9 @@ final class MainCopy {
         }
         distributed.addObserver(forName: Self.released, object: nil, queue: .main) { [self] note in
             if let pid = Self.sender(note) { released(by: pid) }
+        }
+        distributed.addObserver(forName: Self.loggingOut, object: nil, queue: .main) { [self] note in
+            if let pid = Self.sender(note) { loggingOut(by: pid) }
         }
         start(activate: activate, deactivate: deactivate)
     }
@@ -84,6 +89,21 @@ final class MainCopy {
     func released(by pid: Int32) {
         awaited.remove(pid)
         proceedIfAlone()
+    }
+
+    func loggingOut(by pid: Int32) {
+        guard pid != me.pid else { return }
+        hold?.cancel()
+        let work = DispatchWorkItem { [self] in
+            hold = nil
+            role == .waiting ? become() : evaluate()
+        }
+        hold = work
+        later(work)
+    }
+
+    func logOut() {
+        post(Self.loggingOut)
     }
 
     func retire() {
@@ -126,6 +146,7 @@ final class MainCopy {
     }
 
     private func become() {
+        guard hold == nil else { return }
         timeout?.cancel()
         awaited = []
         leader = nil

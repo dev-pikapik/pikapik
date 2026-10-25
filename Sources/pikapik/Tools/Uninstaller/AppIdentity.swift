@@ -48,8 +48,8 @@ struct OrphanGroup: Identifiable, Equatable {
 }
 
 enum AppNames {
-    static let caskroomPaths = ["/opt/homebrew/Caskroom", "/usr/local/Caskroom"]
-    static let pkgutilPath = "/usr/sbin/pkgutil"
+    static let caskroomPaths = SystemPath.homebrewCaskrooms
+    static let pkgutilPath = SystemPath.pkgutil
     static let appleBundleIDPrefix = "com.apple."
     static let systemAppFolders = [
         "System/Applications", "System/Applications/Utilities", "System/Library/CoreServices",

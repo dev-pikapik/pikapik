@@ -3,7 +3,7 @@ import ServiceManagement
 @Observable
 final class LoginItem {
     static let shared = LoginItem()
-    private static let key = "open-at-login"
+    private static let key = PreferenceKey.openAtLogin
 
     private(set) var status = SMAppService.mainApp.status
 

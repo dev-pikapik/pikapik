@@ -89,7 +89,7 @@ final class Battery {
     static let isPresent = read() != nil
     static let ratedCycles = 1000
     #if !APPSTORE
-    private static let systemProfilerExecutableURL = URL(fileURLWithPath: "/usr/sbin/system_profiler")
+    private static let systemProfilerExecutableURL = URL(fileURLWithPath: SystemPath.systemProfiler)
     #endif
 
     private(set) var state: BatteryState?

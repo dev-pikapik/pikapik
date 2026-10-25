@@ -5,8 +5,8 @@ import SwiftUI
 final class SystemShortcuts {
     static let shared = SystemShortcuts()
     private static let finderAppPath = SystemPath.finderApp
-    private static let keyboardSettingsAppexPath = SystemPath.keyboardSettingsAppex
-    private static let systemPreferencesBundleID = "com.apple.systempreferences"
+    private static let keyboardSettingsAppexPath = SystemPath.keyboardSettingsExtension
+    private static let systemPreferencesBundleID = AppConstants.systemSettingsBundleID
 
     struct Place {
         let url: URL
@@ -34,10 +34,10 @@ final class SystemShortcuts {
     }
 
     func refresh() {
-        ["com.apple.symbolichotkeys", "com.apple.finder"].forEach { CFPreferencesAppSynchronize($0 as CFString) }
-        let hotKeys = CFPreferencesCopyAppValue("AppleSymbolicHotKeys" as CFString, "com.apple.symbolichotkeys" as CFString) as? NSDictionary ?? [:]
+        [AppConstants.symbolicHotKeysDomain, AppConstants.finderBundleID].forEach { CFPreferencesAppSynchronize($0 as CFString) }
+        let hotKeys = CFPreferencesCopyAppValue("AppleSymbolicHotKeys" as CFString, AppConstants.symbolicHotKeysDomain as CFString) as? NSDictionary ?? [:]
         if hotKeys != self.hotKeys { self.hotKeys = hotKeys }
-        let domains = ["com.apple.finder" as CFString, kCFPreferencesAnyApplication].map {
+        let domains = [AppConstants.finderBundleID as CFString, kCFPreferencesAnyApplication].map {
             CFPreferencesCopyValue("NSUserKeyEquivalents" as CFString, $0, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as? [String: Any]
         }
         let cut = Shortcut.equivalent(for: Self.cutTitle, in: domains).map { Shortcut.menu($0, code: Keyboard.code)?.shortcut } ?? .cut
@@ -73,7 +73,7 @@ final class SystemShortcuts {
     }
 
     private static var cutTitle: String {
-        let languages = CFPreferencesCopyAppValue("AppleLanguages" as CFString, "com.apple.finder" as CFString) as? [String]
+        let languages = CFPreferencesCopyAppValue(PreferenceKey.appleLanguages as CFString, AppConstants.finderBundleID as CFString) as? [String]
         guard let finder = Bundle(path: finderAppPath),
               let language = Bundle.preferredLocalizations(from: finder.localizations, forPreferences: languages).first,
               let path = finder.path(forResource: "MenuBar", ofType: "strings", inDirectory: nil, forLocalization: language),
@@ -171,7 +171,7 @@ final class SystemShortcuts {
         guard let bundle = Bundle(path: keyboardSettingsAppexPath) else { return ([:], [:], [:], [:], button, []) }
         func strings(_ name: String) -> [String: String] {
             let table = bundle.url(forResource: name, withExtension: "loctable").flatMap { NSDictionary(contentsOf: $0) as? [String: Any] } ?? [:]
-            let language = Bundle.preferredLocalizations(from: Array(table.keys), forPreferences: CFPreferencesCopyAppValue("AppleLanguages" as CFString, systemPreferencesBundleID as CFString) as? [String]).first ?? "en"
+            let language = Bundle.preferredLocalizations(from: Array(table.keys), forPreferences: CFPreferencesCopyAppValue(PreferenceKey.appleLanguages as CFString, systemPreferencesBundleID as CFString) as? [String]).first ?? "en"
             return table[language] as? [String: String] ?? [:]
         }
         func list(_ name: String) -> [[String: Any]] {
