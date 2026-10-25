@@ -127,7 +127,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         signals = [SIGTERM, SIGINT, SIGHUP].map { number in
             signal(number, SIG_IGN)
             let source = DispatchSource.makeSignalSource(signal: number, queue: .main)
-            source.setEventHandler { Background.quit() }
+            source.setEventHandler { [self] in
+                MainActor.assumeIsolated { if MainCopy.canAct { powerOff() } }
+                Background.quit()
+            }
             source.resume()
             return source
         }

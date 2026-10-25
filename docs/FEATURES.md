@@ -96,7 +96,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **How it works:** Stored under `Background.key`; `Sources/pikapik/Core/Background.swift`, toggle at `GeneralSettings.swift` (`#if !APPSTORE`). Open pikapik again to bring the menu bar icon back; ⌥⌘Q (Quit Completely) really quits.
 
-**Nuances:** In the App Store build `Background.isOn` is always false, so Quit always quits. On log out, restart and shut down pikapik quits even with this on (`Background.isLoggingOut`), and before anything else it puts back hot corners and the Dock delay from a game, animations, the Dock on one display, key repeat, desktop icons, the main display and hidden files, restarting the Dock at most once (`powerOff` in `App.swift`).
+**Nuances:** In the App Store build `Background.isOn` is always false, so Quit always quits. On log out, restart and shut down pikapik quits even with this on (`Background.isLoggingOut`), and before anything else it puts back hot corners and the Dock delay from a game, animations, the Dock on one display, key repeat, desktop icons, the main display and hidden files, restarting the Dock at most once (`powerOff` in `App.swift`). The main copy does the same first when a signal stops it (`sudo shutdown`, `kill`), before it quits.
 
 **Edition:** Website only (App Store: cut — an App Store app has to quit when asked).
 

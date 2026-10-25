@@ -134,5 +134,11 @@ struct TestDockLayers {
         precondition(mac.number(br) == 2 && mac.prefs[delay] == nil && mac.clean, "on shutdown the user's values are back: \(mac.prefs)")
         precondition(restart && mac.relaunches == 0 && mac.corners.isEmpty, "on shutdown nothing talks to the Dock, the restart is only noted: \(mac.relaunches) \(mac.corners)")
         print("on shutdown the game's and the Games page's values go back without talking to the Dock, which restarts once at the end: ok")
+
+        let app = try! String(contentsOfFile: "Sources/pikapik/App.swift", encoding: .utf8)
+        let handler = app.components(separatedBy: "[SIGTERM, SIGINT, SIGHUP]")[1].components(separatedBy: "source.resume()")[0]
+        let putBack = handler.range(of: "if MainCopy.canAct { powerOff() }"), quit = handler.range(of: "Background.quit()")
+        precondition(putBack != nil && quit != nil && putBack!.lowerBound < quit!.lowerBound, "a quit signal puts everything back before pikapik quits")
+        print("a quit signal from shutdown or kill makes the main copy put everything back before it quits: ok")
     }
 }
