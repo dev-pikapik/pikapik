@@ -111,6 +111,7 @@ enum KeyboardLayouts {
     private static var byLanguage: [String: KeyboardLayout] = [:]
     private static var dictionaries: [String: String?] = [:]
     private static var lenient: Set<String> = []
+    private static var completed: [String: String] = [:]
 
     static var all: [KeyboardLayout] {
         get {
@@ -236,12 +237,22 @@ enum KeyboardLayouts {
     private static func startsWords(_ text: String, _ length: Int) -> Bool {
         guard let word = core(text), let names = dictionaries(word) else { return true }
         let prefix = String(word.lowercased().prefix(length))
-        return names.contains { !completions(prefix, $0).isEmpty }
+        return names.contains { name in
+            guard let found = answer(prefix, name) else { return true }
+            guard found.isEmpty else { return true }
+            return answer(completed[name] ?? String(prefix.prefix(1)), name)?.isEmpty ?? true
+        }
     }
 
     private static func completions(_ prefix: String, _ dictionary: String) -> [String] {
+        answer(prefix, dictionary) ?? []
+    }
+
+    private static func answer(_ prefix: String, _ dictionary: String) -> [String]? {
         let range = NSRange(location: 0, length: (prefix as NSString).length)
-        return (NSSpellChecker.shared.completions(forPartialWordRange: range, in: prefix, language: dictionary, inSpellDocumentWithTag: 0) ?? []).map { $0.lowercased() }
+        guard let found = NSSpellChecker.shared.completions(forPartialWordRange: range, in: prefix, language: dictionary, inSpellDocumentWithTag: 0)?.map({ $0.lowercased() }) else { return nil }
+        if !found.isEmpty { completed[dictionary] = prefix }
+        return found
     }
 
     private static func dictionaries(_ word: String) -> [String]? {
