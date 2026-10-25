@@ -67,7 +67,6 @@ struct PermissionsView: View {
             : String(localized: "Some tools also need a permission from the list below")
         let done = othersGranted ? String(localized: "All set") : String(localized: "Both permissions are on")
         Form {
-            #if APPSTORE
             SettingsHeader(
                 tab: .permissions,
                 title: permissions.allGranted ? done : String(localized: "Permissions for some tools"),
@@ -75,15 +74,6 @@ struct PermissionsView: View {
                     ? allSet
                     : String(localized: "Only some tools need these permissions, and the rest work without them")
             )
-            #else
-            SettingsHeader(
-                tab: .permissions,
-                title: permissions.allGranted ? done : String(localized: "pikapik needs two permissions"),
-                text: permissions.allGranted
-                    ? allSet
-                    : String(localized: "Without them, macOS won’t let the app see or change clicks and keys. Open System Settings › Privacy & Security and turn on pikapik in these two lists:")
-            )
-            #endif
             Section {
                 if let page = Permission.allCases.first(where: { $0.guidePage != nil && $0.isShown && !$0.isGranted })?.guidePage {
                     SettingsGuide(pane: .privacy, steps: [.page(page), .app(on: true)])
@@ -158,11 +148,26 @@ struct PermissionRow: View {
     let permission: Permission
     @State private var confirming = false
 
+    private var pages: [String]? {
+        guard permission == .accessibility || permission == .inputMonitoring else { return nil }
+        let tools = ToolRegistry.shared.tools.filter { $0.isEnabled && $0.needs.contains(permission) }
+        return SettingsTab.allCases.filter { tab in tools.contains { $0.tab == tab } }.map(\.title)
+    }
+
+    private var usage: String? {
+        guard let pages else { return nil }
+        let list = pages.formatted(.list(type: .and))
+        if pages.isEmpty { return String(localized: "No tool you turned on needs it") }
+        return permission.isGranted
+            ? String(localized: "Used by tools you turned on: \(list)")
+            : String(localized: "Needed by tools you turned on: \(list)")
+    }
+
     @ViewBuilder
     private var label: some View {
         let content = HStack(spacing: 10) {
             PermissionIcon(type: permission.icon, symbol: permission.symbol)
-            RowLabel(Text(permission.title), Text(permission.subtitle))
+            RowLabel(Text(permission.title), Text(verbatim: usage.map { permission.subtitle + "\n" + $0 } ?? permission.subtitle))
         }
         if permission == .systemAudio {
             content.help(Text("pikapik passes each app’s sound through itself to change its volume. Nothing is recorded or saved."))
@@ -187,7 +192,7 @@ struct PermissionRow: View {
                 }
                 Image(granted ? .checkmarkCircleFill : .xmarkCircleFill)
                     .font(.title3)
-                    .foregroundStyle(granted ? .green : .orange)
+                    .foregroundStyle(granted ? .green : pages?.isEmpty == true ? .secondary : .orange)
                     .contentTransition(.symbolEffect(.replace))
                     .accessibilityLabel(granted ? String(localized: "Allowed") : String(localized: "Not allowed"))
             }

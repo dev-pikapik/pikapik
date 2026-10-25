@@ -1945,7 +1945,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows each permission, whether it is granted, and one button: Allow or Turn Off.
 
-**How it works:** `Sources/pikapik/Permissions/Permissions.swift` (`PermissionsView`, `PermissionRow` and `PermissionBar` in `PermissionsView.swift`). The header reads “All set” when everything is on, “Both permissions are on” when the two main ones are on but a tool still lacks another, and otherwise “pikapik needs two permissions” (Website) or “Permissions for some tools” (App Store). pikapik rechecks every 1.5 seconds. A tool that needs a missing permission is half-grey and does nothing; clicking it opens this tab on the row (Accessibility, Input Monitoring and Screen Recording also show the macOS prompt in the App Store build). A bar on each tool tab shows when its tools need a missing permission, and names that permission and what it is for. While Accessibility (on macOS 27: Device Control and Data Access), Input Monitoring or Screen & System Audio Recording is shown and not granted, an animated guide at the top of the first section walks through System Settings: Privacy & Security, that list, then turn on pikapik (`Permission.guidePage` in `Permissions.swift`, `PermissionsView` in `PermissionsView.swift`, `Sources/pikapik/Settings/SettingsGuide.swift`; both editions).
+**How it works:** `Sources/pikapik/Permissions/Permissions.swift` (`PermissionsView`, `PermissionRow` and `PermissionBar` in `PermissionsView.swift`). The header reads “All set” when everything is on, “Both permissions are on” when the two main ones are on but a tool still lacks another, and otherwise “Permissions for some tools”, in both editions. Under Accessibility and Input Monitoring a second line names the Settings pages whose switched-on tools use the permission (“Needed by tools you turned on: Keyboard and Mouse”, or “Used by tools you turned on: …” once it is allowed); when none does, it says “No tool you turned on needs it” and the mark is grey instead of orange (`PermissionRow` in `PermissionsView.swift`). pikapik rechecks every 1.5 seconds. A tool that needs a missing permission is half-grey and does nothing; clicking it opens this tab on the row (Accessibility, Input Monitoring and Screen Recording also show the macOS prompt in the App Store build). A bar on each tool tab shows when its tools need a missing permission, and names that permission and what it is for. While Accessibility (on macOS 27: Device Control and Data Access), Input Monitoring or Screen & System Audio Recording is shown and not granted, an animated guide at the top of the first section walks through System Settings: Privacy & Security, that list, then turn on pikapik (`Permission.guidePage` in `Permissions.swift`, `PermissionsView` in `PermissionsView.swift`, `Sources/pikapik/Settings/SettingsGuide.swift`; both editions).
 
 **Options:**
 - Allow — asks, or opens System Settings with an arrow icon when the permission can only be granted there.
@@ -1955,12 +1955,13 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Test:**
 1. Launch after `tccutil reset All <bundle id>` → no system prompt at launch, in both editions; the first launch opens General Settings, later launches open no window, and the tools that need a permission are grey. The menu bar icon appears. Already-granted permissions stay on.
-2. Turn on any Keyboard, Mouse or Windows tool (for example Scroll by lines) → the Accessibility prompt, then Input Monitoring if needed. The status shows “Needs Access” until granted, then “Active”.
-3. Revoke a permission in System Settings while the app runs → status returns to “Needs Access” without a crash; granting again restores the tool without relaunch.
+2. Turn on any Keyboard, Mouse or Windows tool (for example Scroll by lines) → the Accessibility prompt, then Input Monitoring if needed. The menu bar icon is a warning triangle (VoiceOver: “pikapik: Permissions needed”) until granted, then the pikapik mark.
+3. Revoke a permission in System Settings while the app runs → the menu bar icon turns back into the warning triangle without a crash; granting again restores the tool without relaunch.
 4. Click a grey tool → this tab opens on the row to allow.
 5. (App Store) Turn Off on Accessibility and Input Monitoring → the right System Settings list opens. (Website) Turn Off → the restart alert.
 6. A missing permission shows the animated guide; it points at the right list and the pikapik switch, and goes away once every permission in it is granted.
 7. (App Store) Settings has no Fans, Animations (full page), Uninstaller, Key repeat, Pointer, Updates, iCloud sync or “Stay in the background after Quit” rows.
+8. Turn off every tool except the pet → Accessibility and Input Monitoring say “No tool you turned on needs it”, with grey marks. Turn on Home and End → Accessibility says “Needed by tools you turned on: Keyboard” with an orange mark, and the menu bar icon is the warning triangle although the pet walks; after Allow the line says “Used by tools you turned on: Keyboard”.
 
 ### Accessibility
 
@@ -2168,7 +2169,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 - Settings… — icon button at the bottom of the panel that opens Settings (⌘,; `MenuView.swift`).
 - Quit — icon button at the bottom of the panel that quits pikapik (⌘Q; `MenuView.swift`). Website: with Stay in the background after Quit on it only closes windows.
 
-**Nuances:** Nothing is asked at launch; Settings opens on first launch, later from the menu.
+**Nuances:** Nothing is asked at launch; Settings opens on first launch, later from the menu. The icon is the pikapik mark while tools work, the same mark turned pale when everything is off, a game controller while you play, and a warning triangle whenever a switched-on tool lacks a permission, even while other tools such as the pet work (`ToolRegistry.status` in `Tools/Tool.swift`).
 
 **Edition:** Both; App Store differs: no macOS 27 press workaround.
 
@@ -2249,14 +2250,14 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 ### Tool rows
 
-**Does:** One switch per tool, grouped by tab, with the status Active, Off, Needs Access or Game Mode.
+**Does:** One switch per tool, grouped by tab, with the status Active, Off, Permissions needed or Game Mode.
 
 **How it works:** `MenuView.swift`, `ToolStatus` in `Tool.swift`; only the tools registered in the edition appear; a row whose tool needs a permission is half-grey.
 
 **Edition:** Both; App Store differs: fewer tools.
 
 **Test:**
-1. Switch a tool on and off in the panel → the Settings switch follows; with a missing permission the row shows Needs Access and opens Permissions.
+1. Switch a tool on and off in the panel → the Settings switch follows; with a missing permission the row is half-grey, the menu bar icon is the warning triangle, and a click opens Permissions.
 
 ### App Volume
 

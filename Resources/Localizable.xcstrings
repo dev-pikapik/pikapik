@@ -8491,7 +8491,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Есть доступ"
+            "value": "Разрешено"
           }
         },
         "sv": {
@@ -8515,7 +8515,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Є доступ"
+            "value": "Дозволено"
           }
         },
         "vi": {
@@ -16356,7 +16356,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Оба доступа включены"
+            "value": "Оба разрешения включены"
           }
         },
         "sv": {
@@ -16380,7 +16380,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Обидва доступи ввімкнено"
+            "value": "Обидва дозволи ввімкнено"
           }
         },
         "vi": {
@@ -16499,7 +16499,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Доступы есть, все инструменты работают"
+            "value": "Оба разрешения включены, все инструменты работают"
           }
         },
         "sv": {
@@ -16523,7 +16523,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Доступи є, усі інструменти працюють"
+            "value": "Обидва дозволи ввімкнено, усі інструменти працюють"
           }
         },
         "vi": {
@@ -85951,6 +85951,149 @@
         }
       }
     },
+    "Needed by tools you turned on: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحتاج إليه الأدوات التي شغّلتها: %@"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Potřebují ho zapnuté nástroje: %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nötig für eingeschaltete Tools: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Needed by tools you turned on: %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lo necesitan las herramientas activadas: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nécessaire aux outils activés : %@"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "आपके चालू किए टूल को इसकी ज़रूरत है: %@"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diperlukan oleh alat yang Anda aktifkan: %@"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Serve agli strumenti attivi: %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オンにしたツールで必要です：%@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "켜 둔 도구에 필요합니다: %@"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nodig voor functies die je hebt aangezet: %@"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Potrzebne włączonym narzędziom: %@"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Necessária para as ferramentas ativadas: %@"
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Necesară pentru instrumentele activate: %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нужно для включённых инструментов: %@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Behövs av verktyg som du har slagit på: %@"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เครื่องมือที่คุณเปิดไว้ต้องใช้: %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açtığınız araçlar için gerekli: %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Потрібен для ввімкнених інструментів: %@"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Các công cụ bạn đã bật cần quyền này: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已开启的工具需要它：%@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已開啟的工具需要它：%@"
+          }
+        }
+      }
+    },
     "Needed for some games": {
       "extractionState": "manual",
       "localizations": {
@@ -86233,149 +86376,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "用於計算影格數"
-          }
-        }
-      }
-    },
-    "Needs Access": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "يحتاج إلى إذن"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Vyžaduje přístup"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zugriff nötig"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Needs Access"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Falta acceso"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Accès requis"
-          }
-        },
-        "hi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ऐक्सेस चाहिए"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Perlu Akses"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Serve l’accesso"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "アクセス権が必要"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "권한 필요"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Toegang nodig"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wymaga dostępu"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Precisa de acesso"
-          }
-        },
-        "ro": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Necesită acces"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Нужен доступ"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Behöver åtkomst"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ต้องการการเข้าถึง"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erişim gerekiyor"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Потрібен доступ"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cần quyền truy cập"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "需要权限"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "需要權限"
           }
         }
       }
@@ -90241,6 +90241,149 @@
         }
       }
     },
+    "No tool you turned on needs it": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا تحتاج إليه أي أداة شغّلتها"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Žádný zapnutý nástroj ho nepotřebuje"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein eingeschaltetes Tool braucht sie"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tool you turned on needs it"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninguna herramienta activada lo necesita"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun outil activé n’en a besoin"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "आपके चालू किए किसी भी टूल को इसकी ज़रूरत नहीं है"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tidak ada alat aktif yang memerlukannya"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuno strumento attivo ne ha bisogno"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オンにしたツールでは必要ありません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "켜 둔 도구 중 이 권한이 필요한 도구가 없습니다"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geen functie die je hebt aangezet heeft deze nodig"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Żadne włączone narzędzie go nie potrzebuje"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhuma ferramenta ativada precisa dela"
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niciun instrument activat nu are nevoie de ea"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пока не нужно ни одному включённому инструменту"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inget verktyg som du har slagit på behöver den"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่มีเครื่องมือที่คุณเปิดไว้ต้องใช้"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açtığınız araçların hiçbiri buna ihtiyaç duymuyor"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Поки не потрібен жодному ввімкненому інструменту"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không công cụ nào bạn đã bật cần quyền này"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已开启的工具都不需要它"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已開啟的工具都不需要它"
+          }
+        }
+      }
+    },
     "None": {
       "extractionState": "manual",
       "localizations": {
@@ -91195,7 +91338,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Нет доступа"
+            "value": "Не разрешено"
           }
         },
         "sv": {
@@ -91219,7 +91362,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Немає доступу"
+            "value": "Не дозволено"
           }
         },
         "vi": {
@@ -134431,7 +134574,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Некоторым инструментам нужен ещё доступ из списка ниже"
+            "value": "Некоторым инструментам нужно ещё разрешение из списка ниже"
           }
         },
         "sv": {
@@ -134455,7 +134598,7 @@
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Деяким інструментам потрібен ще доступ зі списку нижче"
+            "value": "Деяким інструментам потрібен ще дозвіл зі списку нижче"
           }
         },
         "vi": {
@@ -164651,6 +164794,149 @@
         }
       }
     },
+    "Used by tools you turned on: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تستخدمه الأدوات التي شغّلتها: %@"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Používají ho zapnuté nástroje: %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genutzt von eingeschalteten Tools: %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Used by tools you turned on: %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lo usan las herramientas activadas: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisée par les outils activés : %@"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "आपके चालू किए टूल इसका इस्तेमाल कर रहे हैं: %@"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dipakai oleh alat yang Anda aktifkan: %@"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usato dagli strumenti attivi: %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オンにしたツールで使用中：%@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "켜 둔 도구에서 사용 중: %@"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gebruikt door functies die je hebt aangezet: %@"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Używane przez włączone narzędzia: %@"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usada pelas ferramentas ativadas: %@"
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folosită de instrumentele activate: %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Используется включёнными инструментами: %@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Används av verktyg som du har slagit på: %@"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เครื่องมือที่คุณเปิดไว้กำลังใช้: %@"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Açtığınız araçlar kullanıyor: %@"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Використовується ввімкненими інструментами: %@"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Các công cụ bạn đã bật đang dùng quyền này: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已开启的工具正在使用：%@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已開啟的工具正在使用：%@"
+          }
+        }
+      }
+    },
     "Version %@": {
       "extractionState": "manual",
       "localizations": {
@@ -169938,149 +170224,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "按住 ⇧ 時選取，按住 ⌘ 時跳到文字開頭或結尾"
-          }
-        }
-      }
-    },
-    "Without them, macOS won’t let the app see or change clicks and keys. Open System Settings › Privacy & Security and turn on pikapik in these two lists:": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "بدونهما، لن يسمح macOS للتطبيق برؤية النقرات والمفاتيح أو تغييرها. افتح إعدادات النظام › الخصوصية والأمن وشغّل pikapik في هاتين القائمتين:"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bez nich macOS nedovolí aplikaci vidět ani měnit kliknutí a stisky kláves. Otevřete Nastavení systému › Soukromí a zabezpečení a zapněte pikapik v těchto dvou seznamech:"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ohne sie lässt macOS die App keine Klicks und Tasten sehen oder ändern. Öffne Systemeinstellungen › Datenschutz & Sicherheit und aktiviere pikapik in diesen zwei Listen:"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Without them, macOS won’t let the app see or change clicks and keys. Open System Settings › Privacy & Security and turn on pikapik in these two lists:"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sin ellos, macOS no deja que la app vea ni cambie clics y teclas. Abre Ajustes del Sistema › Privacidad y seguridad y activa pikapik en estas dos listas:"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sans elles, macOS empêche l’app de voir ou de modifier les clics et les touches. Ouvrez Réglages Système › Confidentialité et sécurité et activez pikapik dans ces deux listes :"
-          }
-        },
-        "hi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "इनके बिना macOS ऐप को क्लिक और कुंजियाँ देखने या बदलने नहीं देगा। सिस्टम सेटिंग › गोपनीयता और सुरक्षा खोलें और इन दो सूचियों में pikapik चालू करें:"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tanpa izin ini, macOS tidak mengizinkan app melihat atau mengubah klik dan tombol. Buka Pengaturan Sistem › Privasi & Keamanan, lalu nyalakan pikapik di dua daftar ini:"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Senza, macOS non permette all’app di vedere o modificare clic e tasti. Apri Impostazioni di Sistema › Privacy e sicurezza e attiva pikapik in queste due liste:"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "これがないと、macOS はアプリにクリックやキー入力の確認・変更を許可しません。「システム設定」›「プライバシーとセキュリティ」を開き、次の 2 つのリストで pikapik をオンにしてください："
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "권한이 없으면 macOS가 앱이 클릭과 키 입력을 확인하거나 변경하지 못하게 합니다. 시스템 설정 › 개인정보 보호 및 보안을 열고 다음 두 목록에서 pikapik을 켜십시오:"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zonder deze toestemmingen laat macOS de app geen klikken en toetsen zien of wijzigen. Open Systeeminstellingen › Privacy en beveiliging en zet pikapik aan in deze twee lijsten:"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bez nich macOS nie pozwoli aplikacji widzieć ani zmieniać kliknięć i klawiszy. Otwórz Ustawienia systemowe › Prywatność i ochrona i włącz pikapik na tych dwóch listach:"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sem elas, o macOS não deixa o app ver nem alterar cliques e teclas. Abra Ajustes do Sistema › Privacidade e Segurança e ative o pikapik nestas duas listas:"
-          }
-        },
-        "ro": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fără ele, macOS nu permite aplicației să vadă sau să modifice clicurile și tastele. Deschideți Configurări sistem › Confidențialitate și securitate și activați pikapik în aceste două liste:"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Без них macOS не пустит приложение к кликам и клавишам. Откройте Системные настройки › Конфиденциальность и безопасность и включите pikapik в двух списках:"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Utan dem låter macOS inte appen se eller ändra klick och tangenttryckningar. Öppna Systeminställningar › Integritet och säkerhet och slå på pikapik i de här två listorna:"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "หากไม่มีการอนุญาตเหล่านี้ macOS จะไม่ให้แอปดูหรือเปลี่ยนการคลิกและการกดปุ่ม เปิดการตั้งค่าระบบ › ความเป็นส่วนตัวและความปลอดภัย แล้วเปิด pikapik ในสองรายการนี้:"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bunlar olmadan macOS, uygulamanın tıklamaları ve tuşları görmesine veya değiştirmesine izin vermez. Sistem Ayarları › Gizlilik ve Güvenlik’i açın ve bu iki listede pikapik’i etkinleştirin:"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Без них macOS не пустить програму до кліків і клавіш. Відкрий Системні параметри › Приватність і безпека та увімкни pikapik у двох списках:"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nếu không có các quyền này, macOS sẽ không cho ứng dụng xem hoặc thay đổi thao tác bấm và phím. Hãy mở Cài đặt hệ thống › Quyền riêng tư & bảo mật và bật pikapik trong hai danh sách sau:"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "没有这些权限，macOS 不允许应用查看或更改点按和按键。请打开“系统设置” › “隐私与安全性”，在以下两个列表中开启 pikapik："
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "沒有這些權限，macOS 不會讓 App 讀取或更改點按和按鍵。請打開「系統設定」›「隱私權與安全性」，在下列兩個列表中開啟 pikapik："
           }
         }
       }
@@ -188671,149 +188814,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "pikapik 仍在背景執行"
-          }
-        }
-      }
-    },
-    "pikapik needs two permissions": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "يحتاج pikapik إلى إذنين"
-          }
-        },
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik potřebuje dvě oprávnění"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik braucht zwei Berechtigungen"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik needs two permissions"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik necesita dos permisos"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik a besoin de deux autorisations"
-          }
-        },
-        "hi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik को दो अनुमतियाँ चाहिए"
-          }
-        },
-        "id": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik memerlukan dua izin"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik ha bisogno di due permessi"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik には 2 つのアクセス権が必要です"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik에 두 가지 권한이 필요합니다"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik heeft twee toestemmingen nodig"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik potrzebuje dwóch uprawnień"
-          }
-        },
-        "pt-BR": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "O pikapik precisa de duas permissões"
-          }
-        },
-        "ro": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik are nevoie de două permisiuni"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Дайте pikapik два разрешения"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik behöver två behörigheter"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik ต้องการการอนุญาตสองรายการ"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik’in iki izne ihtiyacı var"
-          }
-        },
-        "uk": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Дай pikapik два дозволи"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik cần hai quyền"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik 需要两项权限"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "pikapik 需要兩項權限"
           }
         }
       }

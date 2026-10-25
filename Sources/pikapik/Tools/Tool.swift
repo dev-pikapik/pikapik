@@ -31,7 +31,7 @@ enum ToolStatus {
         switch self {
         case .active: String(localized: "Active")
         case .off: String(localized: "Off")
-        case .needsAccess: String(localized: "Needs Access")
+        case .needsAccess: String(localized: "Permissions needed")
         case .playing: String(localized: "Game Mode")
         }
     }
@@ -126,7 +126,7 @@ final class ToolRegistry {
     var status: ToolStatus {
         if GameModeTool.shared.isPlaying { return .playing }
         guard tools.contains(where: \.isEnabled) else { return .off }
-        return tools.contains(where: \.isActive) ? .active : .needsAccess
+        return !needsPermission && tools.contains(where: \.isActive) ? .active : .needsAccess
     }
 
     var needsPermission: Bool {
