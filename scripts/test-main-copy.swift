@@ -175,6 +175,11 @@ struct TestMainCopy {
         handover()
         deferredActions()
         quittingStaysPassive()
+
+        let leaked = MemoryDefaults.all.values.map(\.path).filter { FileManager.default.fileExists(atPath: $0 + ".plist") }
+        leaked.forEach { try? FileManager.default.removeItem(atPath: $0 + ".plist") }
+        precondition(leaked.isEmpty, "the journal and the copies' settings never reach the disk: \(leaked)")
+        print("the journal and the copies' settings stay in memory: ok")
     }
 
     static func processStart() {
@@ -284,12 +289,6 @@ struct TestMainCopy {
 
     static func handover() {
         let website = MainCopyChoice.websiteID, store = MainCopyChoice.appStoreID
-        defer {
-            for name in ["journal", "local-A", "local-B", "local-C", "local-D"].map(domain) {
-                UserDefaults.standard.removePersistentDomain(forName: name)
-                try? FileManager.default.removeItem(atPath: name + ".plist")
-            }
-        }
         precondition(!MainCopyChoice.takesOver([], poweringOff: false))
         precondition(!MainCopyChoice.takesOver([copy(1, store, at: 5)], poweringOff: false))
         precondition(MainCopyChoice.takesOver([copy(1, website, at: 5)], poweringOff: false))
@@ -956,11 +955,44 @@ struct TestMainCopy {
         var running: RunningCopy { TestMainCopy.copy(pid, bundleID, at: Double(pid)) }
     }
 
+    final class MemoryDefaults: UserDefaults {
+        static var all: [String: MemoryDefaults] = [:]
+        let path: String
+        private let lock = NSLock()
+        private var values: [String: Any] = [:]
+
+        static func named(_ name: String) -> MemoryDefaults {
+            if let defaults = all[name] { return defaults }
+            let defaults = MemoryDefaults(TestMainCopy.domain("memory-\(name)"))
+            all[name] = defaults
+            return defaults
+        }
+
+        private init(_ path: String) {
+            self.path = path
+            super.init(suiteName: path)!
+        }
+
+        override func object(forKey key: String) -> Any? { lock.withLock { values[key] } }
+        override func set(_ value: Any?, forKey key: String) { lock.withLock { values[key] = value } }
+        override func set(_ value: Bool, forKey key: String) { set(value as Any?, forKey: key) }
+        override func set(_ value: Double, forKey key: String) { set(value as Any?, forKey: key) }
+        override func removeObject(forKey key: String) { set(nil as Any?, forKey: key) }
+        override func bool(forKey key: String) -> Bool { object(forKey: key) as? Bool ?? false }
+        override func array(forKey key: String) -> [Any]? { object(forKey: key) as? [Any] }
+        override func dictionary(forKey key: String) -> [String: Any]? { object(forKey: key) as? [String: Any] }
+        override func dictionaryRepresentation() -> [String: Any] { lock.withLock { values } }
+        override func persistentDomain(forName domainName: String) -> [String: Any]? { dictionaryRepresentation() }
+        override func setPersistentDomain(_ domain: [String: Any], forName domainName: String) { lock.withLock { values = domain } }
+        override func removePersistentDomain(forName domainName: String) { setPersistentDomain([:], forName: domainName) }
+        override func synchronize() -> Bool { true }
+    }
+
     final class Mac {
-        static let journalName = TestMainCopy.domain("journal")
+        static let journalName = "journal"
         static let autohideKey = "animations-autohide-original"
 
-        let journal = UserDefaults(suiteName: Mac.journalName)!
+        let journal = MemoryDefaults.named(Mac.journalName)
         var system: [AnimationSetting: Double]
         var dockAutohide: Bool? = false, poweringOff = false, withoutJournal = false
         var lookups = 0
@@ -987,8 +1019,8 @@ struct TestMainCopy {
         var leaving: [String] { journal.dictionaryRepresentation().keys.filter { $0.hasPrefix("animations-leaving-") }.sorted() }
 
         func party(_ name: String, _ bundleID: String, _ pid: Int32, _ wants: [AnimationSetting: Double], keep: Bool = false) -> Party {
-            let suite = TestMainCopy.domain("local-\(name)")
-            let local = UserDefaults(suiteName: suite)!
+            let suite = "local-\(name)"
+            let local = MemoryDefaults.named(suite)
             if !keep { local.removePersistentDomain(forName: suite) }
             let party = Party(name, bundleID, pid, wants)
             party.host = AnimationsHost(
