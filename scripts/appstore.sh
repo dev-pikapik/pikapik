@@ -32,7 +32,7 @@ for EXT in Archive Preview; do
         cp "${!NAME}" "$APP/Contents/PlugIns/$EXT.appex/Contents/embedded.provisionprofile"
     else
         echo "$NAME is not set: leaving $EXT.appex out of the package." >&2
-        rm -rf "$APP/Contents/PlugIns/$EXT.appex"
+        rm -rf "$APP/Contents/PlugIns/$EXT.appex" "build/dSYM/$EXT.dSYM"
         [ "$EXT" != Archive ] || /usr/libexec/PlistBuddy -c "Delete :CFBundleDocumentTypes" "$APP/Contents/Info.plist"
     fi
 done
@@ -56,4 +56,4 @@ sign --entitlements build/app.entitlements "$APP"
 
 codesign --verify --deep --strict "$APP"
 productbuild --component "$APP" /Applications --sign "$INSTALLER_IDENTITY" build/pikapik.pkg
-echo "Done: build/pikapik.pkg (upload with Transporter or: xcrun altool --upload-package)"
+echo "Done: build/pikapik.pkg (upload with Transporter or: xcrun altool --upload-package) and its debug symbols in build/dSYM"
