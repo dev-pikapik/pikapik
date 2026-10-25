@@ -175,6 +175,7 @@ struct TestMainCopy {
         handover()
         deferredActions()
         quittingStaysPassive()
+        loggingOutHolds()
 
         let leaked = MemoryDefaults.all.values.map(\.path).filter { FileManager.default.fileExists(atPath: $0 + ".plist") }
         leaked.forEach { try? FileManager.default.removeItem(atPath: $0 + ".plist") }
@@ -264,6 +265,61 @@ struct TestMainCopy {
         }
         Background.shared.quitting = false
         print("a copy that is quitting never becomes main, whether the main copy leaves, the claim times out, the last copy answers or the others are gone: ok")
+    }
+
+    static func loggingOutHolds() {
+        let website = MainCopyChoice.websiteID, store = MainCopyChoice.appStoreID
+        enum Case: String, CaseIterable { case own = "its own logging out", leaves = "the wait ends", quits = "its own quit comes during the wait", timeout = "the claim times out during the wait", again = "a second logging out" }
+        for test in Case.allCases {
+            let waiting = test == .timeout
+            let me = copy(10, website, at: waiting ? 30 : 10), other = copy(20, store, at: 20)
+            var running = [me, other], timers: [DispatchWorkItem] = [], posted: [Notification.Name] = []
+            var activated = 0
+            let main = MainCopy(me: me, running: { running }, later: { timers.append($0) }, post: { name, _ in posted.append(name) })
+            Background.shared.quitting = false
+            main.start(activate: { activated += 1 }, deactivate: { _ in })
+            precondition(main.role == (waiting ? .waiting : .passive) && timers.count == (waiting ? 1 : 0) && activated == 0, "\(test.rawValue): the copy starts \(waiting ? "waiting" : "passive"): \(main.role)")
+            switch test {
+            case .own:
+                posted = []
+                main.logOut()
+                precondition(posted == [Notification.Name("org.pikapik.main-copy.logging-out")], "logging out tells the other copies once: \(posted)")
+                main.loggingOut(by: me.pid)
+                running = [me]
+                main.evaluate()
+                precondition(timers.isEmpty && main.role == .main && activated == 1, "a copy ignores its own logging out and takes over at once when the main copy leaves: \(main.role)")
+            case .leaves, .quits:
+                main.loggingOut(by: other.pid)
+                running = [me]
+                main.evaluate()
+                precondition(timers.count == 1 && main.role == .passive && activated == 0, "\(test.rawValue): when the main copy logs out and leaves, the passive copy waits and changes nothing: \(main.role)")
+                Background.shared.quitting = test == .quits
+                timers[0].perform()
+                if test == .quits {
+                    precondition(main.role == .passive && activated == 0, "a copy whose own quit comes during the wait stays passive: \(main.role)")
+                } else {
+                    precondition(main.role == .main && activated == 1, "after the wait the copy that is left becomes main once: \(main.role)")
+                }
+            case .timeout:
+                main.loggingOut(by: other.pid)
+                timers[0].perform()
+                main.evaluate()
+                precondition(timers.count == 2 && main.role == .waiting && activated == 0, "a waiting copy whose claim times out during the wait does not become main: \(main.role)")
+                timers[1].perform()
+                precondition(main.role == .main && activated == 1, "the waiting copy becomes main when the wait ends, even while an older copy that never stepped back still runs: \(main.role)")
+            case .again:
+                main.loggingOut(by: other.pid)
+                main.loggingOut(by: other.pid)
+                running = [me]
+                main.evaluate()
+                timers[0].perform()
+                precondition(timers.count == 2 && main.role == .passive && activated == 0, "a second logging out replaces the first wait, so the end of the first one does nothing: \(main.role)")
+                timers[1].perform()
+                precondition(main.role == .main && activated == 1, "the copy becomes main when the second wait ends: \(main.role)")
+            }
+        }
+        Background.shared.quitting = false
+        print("when another copy logs out, a copy waits before it takes over, even when its claim times out, stays passive if its own quit comes first, ignores its own notice and waits again after a second one: ok")
     }
 
     static func deferredActions() {
