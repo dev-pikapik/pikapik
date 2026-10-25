@@ -10,7 +10,7 @@ struct UninstallerPage: View {
 
     var body: some View {
         Form {
-            SettingsHeader(tab: .uninstaller, text: String(localized: "Remove an app and its files, and put them back if you change your mind"))
+            SettingsHeader(tab: .uninstaller, text: String(localized: "Remove an app and its files, and put them back any time before you empty the Trash"))
             Section {
                 watch.settingsView
                     .needs(watch.needs)

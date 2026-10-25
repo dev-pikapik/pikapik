@@ -61,9 +61,10 @@ cask "pikapik" do
   ]
 
   caveats <<~EOS
-    pikapik needs two permissions in System Settings › Privacy & Security:
-      Accessibility and Input Monitoring
-    The app opens a window that walks you through them.
+    Tools that change keys, clicks or windows need two permissions in
+    System Settings › Privacy & Security: Accessibility (Device Control
+    and Data Access on macOS 27) and Input Monitoring.
+    Settings › Permissions in pikapik shows which tools use them.
   EOS
 end
 EOF

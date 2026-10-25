@@ -35,7 +35,7 @@ enum Permission: CaseIterable {
             ("", .waveform, SettingTitle.systemAudioRecording, String(localized: "To change each app’s volume"))
         #if !APPSTORE
         case .fans:
-            ("", .lockShield, SettingTitle.adminAccess, String(localized: "Lets the app change the fan speed and turn off services for the whole Mac"))
+            ("", .lockShield, SettingTitle.adminAccess, String(localized: "Lets the app change the fan speed and turn off background tasks for the whole Mac"))
         #endif
         case .finder:
             ("", .puzzlepieceExtension,
@@ -49,7 +49,7 @@ enum Permission: CaseIterable {
              SettingTitle.iCloudDrive, String(localized: "Lets the app keep your settings in iCloud Drive to sync them"))
         case .fullDisk:
             ("com.apple.graphic-icon.privacy", .handRaisedFill,
-             SettingTitle.fullDiskAccess, String(localized: "Lets the app find permissions left by deleted apps"))
+             SettingTitle.fullDiskAccess, String(localized: "Lets the app find all of an app’s files, and permissions left by deleted apps"))
         #endif
         }
     }
@@ -77,7 +77,7 @@ enum Permission: CaseIterable {
     var subtitle: String { info.subtitle }
 
     var barText: String {
-        self == .systemAudio ? String(localized: "To change each app’s volume, allow “\(title)”") : "\(title): \(subtitle)"
+        self == .systemAudio ? String(localized: "To change each app’s volume, allow “\(title)”. Nothing is recorded or saved.") : "\(title): \(subtitle)"
     }
 
     private var pane: String {
@@ -247,6 +247,8 @@ final class Permissions {
 
     @ObservationIgnored var onChange: (() -> Void)?
     @ObservationIgnored private var timer: Timer?
+    @ObservationIgnored private var pageShown = false
+    @ObservationIgnored private var asked: (permissions: [Permission], until: Date) = ([], .distantPast)
 
     private init() {}
 
@@ -278,11 +280,11 @@ final class Permissions {
             CGRequestScreenCaptureAccess()
         }
         if wanted.contains(.systemAudio) { systemAudioRequested = true }
+        asked = (wanted, Date.now.addingTimeInterval(PermissionPolling.afterAllow))
         startPolling()
     }
 
     func ask(_ missing: [Permission]) {
-        request(missing)
         SettingsWindow.show(.permissions)
         if let first = missing.first {
             SettingsWindow.model.open(SettingsItem(tab: .permissions, title: first.title))
@@ -323,16 +325,24 @@ final class Permissions {
         if #available(macOS 14.2, *) { AudioCaptureProbe.shared.check() }
     }
 
-    func startPolling() {
+    func watch(_ shown: Bool) {
+        pageShown = shown
+        guard shown else { return }
+        refresh()
+        startPolling()
+    }
+
+    private func startPolling() {
         guard timer == nil else { return }
-        timer = Timer.scheduledTimer(withTimeInterval: 1.5, repeats: true) { [weak self] timer in
+        timer = Timer.scheduledTimer(withTimeInterval: PermissionPolling.interval, repeats: true) { [weak self] timer in
             guard let self else { return timer.invalidate() }
             refresh()
-            if allGranted {
+            if !PermissionPolling.continues(pageShown: pageShown, askedUntil: asked.until, askedGranted: asked.permissions.allSatisfy(\.isGranted)) {
                 timer.invalidate()
                 self.timer = nil
             }
         }
+        timer?.tolerance = 0.5
     }
 
     func openSettings(_ pane: String) {

@@ -119,7 +119,7 @@ The app keeps plain totals of what the user and the pet do (steps, pick-ups, hig
 Settings > General has Import Settings… and Export Settings…; the user picks the file in the standard Open or Save panel. The file holds the app's settings only, not pet progress.
 
 ### Show FPS
-Settings > Games: turn on Game Mode, then Show FPS. The line "Needs a permission. Click to allow it." appears under the switch. Its Allow button opens the Permissions page on the Screen Recording row, and the system Screen Recording prompt appears. Show FPS counts frames from a tiny low-resolution ScreenCaptureKit view of the game's display. Only the number of changed frames is kept; no picture is ever stored, logged or sent.
+Settings > Games: turn on Game Mode, then Show FPS. The line "To count frames, allow “Screen Recording”. No picture is kept or sent." appears under the switch. Its Allow button opens the Permissions page on the Screen Recording row, and the system Screen Recording prompt appears. Show FPS counts frames from a tiny low-resolution ScreenCaptureKit view of the game's display. Only the number of changed frames is kept; no picture is ever stored, logged or sent.
 
 ### Diagnostics
 One line in the macOS system log at launch: the macOS version, whether Accessibility and Input Monitoring are allowed, and how many system shortcuts macOS reports. App Volume adds debug-level lines about its audio connections (process numbers, output device, sound levels), which macOS does not keep unless debug logging is turned on. No key, click, scroll or sound is ever logged, and nothing leaves the Mac.

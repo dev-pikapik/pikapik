@@ -156,8 +156,7 @@ enum BackgroundTasks {
     static func isMissing(_ path: String) -> Bool {
         guard path.hasPrefix("/") else { return false }
         if AppInventory.isInTrash(URL(fileURLWithPath: path)) { return true }
-        var info = stat()
-        return stat(path, &info) != 0 && errno == ENOENT
+        return access(path, F_OK) != 0 && errno == ENOENT
     }
 
     static func collect(_ footprint: AppFootprint, launchd: Launchd, own: URL, loginItems: [URL], turnedOff: [URL] = [], turnedOffServices: [String] = [], admin: Bool = false,

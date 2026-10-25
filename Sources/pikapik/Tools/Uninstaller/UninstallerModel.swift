@@ -10,7 +10,7 @@ actor UninstallerEngine {
 
     enum Dropped {
         case app(AppIdentity)
-        case refused(String)
+        case refused(String, own: Bool)
     }
 
     private struct Parts {
@@ -40,8 +40,8 @@ actor UninstallerEngine {
 
     func identify(_ url: URL) -> Dropped? {
         guard let app = AppIdentity.read(at: url) else { return nil }
-        let protected = app.bundleID.hasPrefix(AppConstants.bundleIDPrefix) || ready().footprint.isSystem(app)
-        return protected ? .refused(app.displayName) : .app(app)
+        let protected = app.isOwn || ready().footprint.isSystem(app)
+        return protected ? .refused(app.displayName, own: app.isOwn) : .app(app)
     }
 
     func scan(_ app: AppIdentity) -> [Leftover] {
@@ -316,7 +316,8 @@ final class UninstallerModel {
         Task {
             switch await engine.identify(url) {
             case .app(let app): open(app)
-            case .refused(let name): say(String(localized: "“\(name)” can’t be removed."))
+            case .refused(_, own: true): say(String(localized: "pikapik can’t remove itself."))
+            case .refused(let name, own: false): say(String(localized: "“\(name)” comes with macOS and can’t be removed."))
             case nil: break
             }
         }

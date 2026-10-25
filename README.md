@@ -18,7 +18,7 @@ Open Terminal, paste this line and press Return:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"
 ```
 
-It downloads the latest version from GitHub and installs it only if it is signed by its developer and has passed Apple's malware check. pikapik appears in the menu bar at the top of the screen. Everything stays off until you turn it on.
+It downloads the latest version from GitHub and installs it only if it is signed by its developer and has passed Apple's malware check. pikapik appears in the menu bar at the top of the screen. Only the pet comes on by itself; every other tool stays off until you turn it on.
 
 <details>
 <summary>Other ways: Homebrew or a dmg</summary>
@@ -31,7 +31,7 @@ brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
 
 Or download [pikapik.dmg](https://github.com/dev-pikapik/pikapik/releases/latest/download/pikapik.dmg), open it and drag the app to Applications.
 
-The command above and Homebrew both put the app in `/Applications`, launch it, ask for permissions and turn on Open at Login. After that the app updates itself, see **Updates**. To remove it, see **Uninstall**.
+The command above and Homebrew both put the app in `/Applications`, launch it and turn on Open at Login. After that the app updates itself, see **Updates**. To remove it, see **Uninstall**.
 
 </details>
 
@@ -280,12 +280,12 @@ The command above and Homebrew both put the app in `/Applications`, launch it, a
 <details>
 <summary>First launch</summary>
 
-pikapik needs two permissions. On first launch it opens Settings on the Permissions page, which walks you through them, and macOS shows its own prompts. Go to **System Settings › Privacy & Security** and turn on pikapik in:
+On first launch pikapik opens its Settings: pick a page on the left and turn on what you need. Tools that change keys, clicks or windows need two permissions, and the rest work without them. A tool that is missing one looks half-grey; click it, and the Permissions page shows where to turn pikapik on in **System Settings › Privacy & Security**:
 
-- **Accessibility**, so the app can change a key press or click before it reaches other apps.
+- **Accessibility** (on macOS 27: **Device Control and Data Access**), so the app can change a key press or click before it reaches other apps.
 - **Input Monitoring**, so the app can watch key presses and clicks without changing them, as Switch language does.
 
-The app picks up the change within a couple of seconds, no restart needed.
+Under each of the two, the Permissions page names the pages whose tools you turned on need it. The app picks up the change within a couple of seconds, no restart needed.
 
 Some features ask for more when you use them: **Administrator access**, **Finder Extensions**, **iCloud Drive**, **Full Disk Access**, **Screen Recording** and **System Audio Recording**. They're all on the Permissions page in Settings: each permission has a line about what it's for, a green check or an orange cross, and one button, **Allow** when it's missing and **Turn Off** when it's on. So you can take any permission back right there.
 
@@ -362,13 +362,11 @@ A window asks for the password, **Stop** cancels any job, and from a damaged or 
 
 **Game Mode.** Add your games, and while you play one, your Mac doesn’t pull you out of it. Spotlight, Siri, ⌘Tab, Mission Control and swipes between desktops don’t open over the game, ⌘Q and ⌘W don’t close it by accident, the wheel keeps switching your hotbar slots while you hold Shift, the pointer doesn’t slip onto the Dock, the menu bar or another screen, and the screen stays on. Each of these has its own switch on the Games page, and pikapik suggests games it finds on your Mac. In a game, Ctrl-click stays a click, and Ctrl+arrows don’t switch the desktop. Minecraft is recognized too: add the Minecraft Launcher or CurseForge, and Game Mode turns on inside Minecraft itself. To leave a game, press ⇧⌘Q; to close its window, press ⇧⌘W. ⌥⌘Esc always works. As soon as you leave the game, everything works as usual. Off by default.
 
-Turn on Game Mode and play. More game settings holds the catalogue published by your Mac, with current key assignments and an animated preview for every action.
+**More game settings** on the Games page lists the shortcuts your Mac publishes, with their current keys and an animated preview of each action. For each one you pick **Follow Game Mode rules**, **Disable in games** or **Allow in games**. A language shortcut can also **Switch language on every press**: a quick, deliberate press changes the input source without opening anything over the game, and keys you hold to run or jump keep priority, so the language doesn’t change by accident.
 
-Automatic pauses actions that open windows or move focus. A quick deliberate language shortcut switches the input source silently. Held movement keys keep their priority, so running and jumping don’t change the language by accident.
+In **More game settings**, the **Mouse and trackpad** group lists only what is turned on in macOS on your Mac, with Apple’s own names and a small drawing for each: shortcuts on a mouse button, swiping between desktops and full-screen apps, Mission Control and App Exposé, pinching for Apps and spreading for the Desktop, the swipe in from the right edge for Notification Center, and every hot corner with the action it runs. While a game is in front they are paused, so a stray swipe or a brush against a screen corner can’t pull you out of it. Gestures inside the game keep working. Each one can be set to work as usual. In the website version, **Change…** on a hot corner picks another action for it right there, and **Put Back** returns the first one; each change restarts the Dock once.
 
-Settings → Games → More game settings has a group called Mouse and trackpad. It lists only what is turned on in macOS on your Mac, with Apple’s own names and a small drawing for each: shortcuts on a mouse button, swiping between desktops and full-screen apps, Mission Control and App Exposé, pinching for Apps and spreading for the Desktop, the swipe in from the right edge for Notification Centre, and every hot corner with the action it runs. While a game is in front they are paused, so a stray swipe or a brush against a screen corner can’t pull you out of it. Gestures inside the game keep working. Each one can be set to work as usual. In the website version, **Change…** on a hot corner picks another action for it right there, and **Put Back** returns the first one; each change restarts the Dock once.
-
-Open Settings → Games → Add a Game and click your running game. Games through Java and other runtimes appear here too, even without an app bundle. Minecraft appears as Minecraft instead of java. Find the game’s process and drag its row onto Your games in Settings → Games.
+To add a game, click **Add a Game…** on the Games page and click your game among the open apps or the ones in your Dock. A game that runs through Java or another runtime and has no app of its own shows up there too, and Minecraft shows as Minecraft instead of java. You can also drag a game from Finder onto the list, or its row from Activity Monitor.
 
 **Show FPS.** FPS means frames per second: how many pictures the game draws each second. Switch on **Show FPS** on the Games page, and while Game Mode is on, a small dark label with that number sits in a corner of any game. Click a corner on the picture above the switch to choose it. A dash means the first frames haven’t arrived yet, and a faded 0 means the game has stopped drawing. On macOS 27 most games are counted by macOS itself, with no permission. A game it can’t count, mostly an older one, is counted through screen recording: the Screen Recording row then appears on the Permissions page, pikapik never asks during a game, and the number can’t go above the screen’s refresh rate. On macOS 14 to 26 and in the Mac App Store version every game is counted this way, so the row appears as soon as you switch Show FPS on, and **Allow** under the switch takes you to it. No picture is kept or sent. Off by default.
 
@@ -419,7 +417,7 @@ Shows how fast your internet is right now. Click **Check Speed** in Settings ›
 
 Open Settings from the menu with **Settings…** or ⌘, or launch pikapik again from Finder, Launchpad or Spotlight. While the window is open, the app shows up in the Dock and in ⌘Tab.
 
-- **General**: open at login, appearance (System, Light or Dark), language, updates, and backup: export and import settings as a file, or sync them through iCloud Drive.
+- **General**: open at login, staying in the background after Quit, appearance (System, Light or Dark), language, and backup: export and import settings as a file, or sync them through iCloud Drive.
 - **Battery**: charge, time until full or time left, condition, maximum capacity, cycle count, power adapter and watts, and tips to make it last. It only shows information: the charge limit stays in **System Settings › Battery**. Only on a Mac with a battery.
 - **Keep Awake**: duration, display and lid options.
 - **Brightness**: a slider for each monitor that macOS can’t adjust, the brightness keys, and dimming the picture instead.
@@ -433,13 +431,14 @@ Open Settings from the menu with **Settings…** or ⌘, or launch pikapik again
 - **Windows**: enlarge with the green button (with a list of exceptions), ⌘Q and ⌘W protection, quit on last window (with a list of exceptions).
 - **Dock**: minimize or hide with a click in the Dock and keep the Dock on one display.
 - **Finder**: new file, smaller copy, conversion and archives, Enter to open, ⌘X to cut, Delete to move to the Trash, hiding desktop icons and showing hidden files.
+- **Animations**: how fast windows, Quick Look and Finder animate, all the way to instant, when and how fast the hidden Dock slides in, the minimize effect and bouncing Dock icons.
 - **Player**: open a video in its own window, the formats it plays, a menu to choose which app opens each of them, and the FFmpeg, dav1d, libass, FreeType, HarfBuzz and FriBidi licenses.
 - **Uninstaller**: remove an app with its files, put it all back later, and clean up what removed apps left behind.
 - **Background Tasks**: everything that runs in the background, which app added it, and a button to turn them off and back on without opening System Settings.
 - **Games**: your list of games and the Game Mode options.
 - **Pet**: turn the little friend on or off, let it chat, follow your rhythm and play with a ball, dress it up and see your awards.
-- **Permissions**: every permission pikapik uses, each with its status and one button to allow it or turn it off. A tool that is missing a permission looks half-grey, and clicking it opens this page at the right row.
-- **About**: version, links to the changelog and to report a problem.
+- **Permissions**: every permission pikapik uses, each with its status and one button to allow it or turn it off; the two main ones also name the pages whose tools need them. A tool that is missing a permission looks half-grey, and clicking it opens this page at the right row.
+- **About**: version and updates, links to the changelog and to report a problem.
 
 Many settings come with a small picture of what they do, such as a Mac staying awake or a window hiding behind the Dock. The picture changes together with the switch and stands still when Reduce Motion is on in System Settings.
 
@@ -454,11 +453,11 @@ Every page has a **Restore Defaults…** button at the bottom. It asks first, th
 <details>
 <summary>Updates</summary>
 
-pikapik checks for new versions at launch and every 6 hours. You can turn that off in Settings › General. When one is out, an **Update to …** button appears in the menu: one click and the app downloads the update, installs it and restarts. You can also check by hand with **Check Now** in Settings › General.
+pikapik checks for new versions at launch and every 6 hours. You can turn that off in Settings › About. When one is out, an **Update to …** button appears in the menu: one click and the app downloads the update, installs it and restarts. You can also check by hand with **Check Now** in Settings › About.
 
 With Homebrew you can also run `brew upgrade --cask pikapik`.
 
-Starting with 1.3, permissions stay in place after updates.
+Permissions stay in place after updates.
 
 </details>
 
@@ -479,7 +478,7 @@ Both quit the app, remove it from login items and delete it. The script also res
 <summary>FAQ</summary>
 
 **Why does it need two permissions?**
-macOS splits keyboard and mouse access in two. Accessibility lets the app change a key press or click, and most features need only that. Input Monitoring lets it just watch, and that is all Switch language needs.
+macOS splits keyboard and mouse access in two. Accessibility (Device Control and Data Access on macOS 27) lets the app change a key press or click, and most features need only that. Input Monitoring lets it just watch, and that is all Switch language needs.
 
 **macOS says the app is from an unidentified developer.**
 pikapik is signed by its developer and passes Apple's malware check, so this message shouldn't appear. If it does, open **System Settings › Privacy & Security** and click **Open Anyway**.

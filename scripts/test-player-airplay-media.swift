@@ -224,6 +224,33 @@ enum TestPlayerAirplayMedia {
                          part(4.0, 0x16, cleared), part(4.0, 0x17, window), part(4.0, 0x80, [])))
     }
 
+    static func picturePacket(width: Int, height: Int) -> Data {
+        func segment(_ type: UInt8, _ body: [UInt8]) -> [UInt8] { join([type], be(body.count, 2), body) }
+        let line: [UInt8] = width < 64 ? [0x00, 0x80 | UInt8(width), 0x01, 0x00, 0x00] : [0x00, 0xC0 | UInt8(width >> 8), UInt8(width & 0xFF), 0x01, 0x00, 0x00]
+        let lines = (0..<height).flatMap { _ in line }
+        let shown = join(be(width, 2), be(height, 2), [0x10], be(0, 2), [0x80, 0x00, 0x00, 1], be(0, 2), [0, 0], be(0, 2), be(0, 2))
+        let image = join(be(0, 2), [0, 0xC0], be(4 + lines.count, 3), be(width, 2), be(height, 2), lines)
+        return Data(join(segment(0x16, shown), segment(0x14, [0, 0, 1, 235, 128, 128, 255]), segment(0x15, image), segment(0x80, [])))
+    }
+
+    static func pictureLimits() {
+        var allocated = avcodec_parameters_alloc()
+        defer { avcodec_parameters_free(&allocated) }
+        guard let parameters = allocated else { return check(false, "FFmpeg allocates codec parameters") }
+        parameters.pointee.codec_type = AVMEDIA_TYPE_SUBTITLE
+        parameters.pointee.codec_id = AV_CODEC_ID_HDMV_PGS_SUBTITLE
+        func shown(_ packets: [(time: Double, data: Data)]) -> [CGSize] {
+            let pictures = AirPlayPictures(parameters: parameters, packets: packets.map { AirPlayRawPacket(time: $0.time, duration: 0, data: $0.data) }, fallback: CGSize(width: 1920, height: 1080))
+            return pictures.events(from: 0, to: 60).flatMap { $0.images.map(\.frame.size) }
+        }
+        check(shown([(1, picturePacket(width: 400, height: 50))]) == [CGSize(width: 400, height: 50)], "a picture subtitle of normal size is burnt in")
+        check(shown([(1, picturePacket(width: 9000, height: 10))]).isEmpty, "a picture subtitle wider than 8192 pixels is left out, as in the player window")
+        let budget = AirPlayPictures.pixelBudget
+        AirPlayPictures.pixelBudget = 30_000
+        check(shown([(1, picturePacket(width: 200, height: 100)), (3, picturePacket(width: 200, height: 100))]).count == 1, "picture subtitles beyond the budget of one piece are left out")
+        AirPlayPictures.pixelBudget = budget
+    }
+
     static func burned() async throws {
         let sup = folder.appendingPathComponent("words.sup")
         try subtitleFile().write(to: sup)
@@ -258,8 +285,10 @@ enum TestPlayerAirplayMedia {
     }
 
     static func main() async throws {
+        pictureLimits()
         guard let found = ((ProcessInfo.processInfo.environment["FFMPEG"].map { [$0] } ?? []) + ["/opt/homebrew/bin/ffmpeg", "/usr/local/bin/ffmpeg"]).first(where: { FileManager.default.isExecutableFile(atPath: $0) }) else {
             print("skipped: no ffmpeg command to make the test films (set FFMPEG)")
+            if failures > 0 { exit(1) }
             return
         }
         tool = found

@@ -217,6 +217,13 @@ private final class Opened: @unchecked Sendable {
     }
 }
 
+private final class Counter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var number = 0
+    var value: Int { lock.withLock { number } }
+    func add() { lock.withLock { number += 1 } }
+}
+
 private func token(of url: URL) -> String { url.pathComponents[1] }
 
 @main
@@ -552,26 +559,43 @@ enum TestPlayerAirplay {
         check(get(UInt16(own.url.port ?? 0), "/\(token(of: own.url))/master.m3u8").status == 200 && !own.hasBeenAsked, "this Mac's own player asking does not count as a device asking")
         own.close()
 
-        let broken = AirPlaySession(host: 0x7F00_0001, subnets: loopback, local: [], open: { nil })!
-        check(get(UInt16(broken.url.port ?? 0), "/\(token(of: broken.url))/master.m3u8").status == 500, "a film that cannot be opened is answered with an error")
+        let opens = Counter(), told = Counter()
+        let broken = AirPlaySession(host: 0x7F00_0001, subnets: loopback, local: [], open: {
+            opens.add()
+            return nil
+        })!
+        broken.onFailure = told.add
+        let (brokenPort, brokenToken) = (UInt16(broken.url.port ?? 0), token(of: broken.url))
+        check(get(brokenPort, "/\(brokenToken)/master.m3u8").status == 500, "a film that cannot be opened is answered with an error")
+        check(get(brokenPort, "/\(brokenToken)/master.m3u8").status == 500 && get(brokenPort, "/\(brokenToken)/v/h264/0.m4s").status == 500 && opens.value == 1,
+              "it is opened once, not read again for every request")
+        check(told.value == 1, "the player hears once that this film can't be sent")
         broken.close()
         print("session: ok")
     }
 
     static func timeouts() throws {
-        let hung = DispatchSemaphore(value: 0)
+        let stalled = DispatchSemaphore(value: 0)
+        let asked = Counter(), back = Counter()
         let settings: [String: Any] = [AVFormatIDKey: kAudioFormatMPEG4AAC, AVSampleRateKey: 44100, AVNumberOfChannelsKey: 1]
         let started = Date()
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1.5) { stalled.signal() }
         do {
             _ = try AirPlaySegmentWriter.build(.audio, format: nil, settings: settings, start: .zero, number: 0, timeout: 0.5) {
-                hung.wait()
+                asked.add()
+                stalled.wait()
+                back.add()
                 return nil
             }
             check(false, "a writer that never finishes must give up")
         } catch {
-            check(Date().timeIntervalSince(started) < 3, "a writer that never finishes gives up after the limit: \(error)")
+            let waited = Date().timeIntervalSince(started)
+            check(back.value == 1, "a writer that gives up returns only after the stalled read is back, so the next piece never reads or decodes beside it: \(error)")
+            check(waited > 1.4, "it waits for the stalled read: \(waited) s")
+            check(waited < 4, "and gives up soon after it is back: \(waited) s")
         }
-        hung.signal()
+        usleep(300_000)
+        check(asked.value == 1, "after giving up it asks for nothing more")
         print("timeouts: ok")
     }
 

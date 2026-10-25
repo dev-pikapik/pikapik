@@ -43,5 +43,6 @@ say "Resetting permissions and settings"
 tccutil reset Accessibility "$BUNDLE_ID" >/dev/null 2>&1 || true
 tccutil reset ListenEvent "$BUNDLE_ID" >/dev/null 2>&1 || true
 defaults delete "$BUNDLE_ID" >/dev/null 2>&1 || true
+rm -f "$HOME/Library/Preferences/$BUNDLE_ID.plist"
 
 echo "pikapik is uninstalled."

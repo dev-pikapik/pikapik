@@ -38,17 +38,25 @@ struct TestSystemShortcuts {
         let sandboxed = SymbolicHotKeys.table(native: records, defaults: apple, ids: [])
         let agree = sandboxed.filter { id, entry in SymbolicHotKeys.value(id).map { $0.key == entry.key && $0.modifiers == entry.modifiers && SymbolicHotKeys.isEnabled(id) == entry.enabled } ?? false }
         print("without IDs: \(sandboxed.count) of \(apple.count) Apple defaults are in the live list, \(agree.count) agree with the SkyLight reader")
+        func differing(_ ids: [Int32], _ rebuilt: [Int32: SymbolicHotKeys.Entry]) -> [Int32] {
+            ids.filter { id in
+                guard let entry = rebuilt[id], let value = SymbolicHotKeys.value(id) else { return true }
+                return entry.key != value.key || entry.modifiers != value.modifiers || entry.enabled != SymbolicHotKeys.isEnabled(id)
+            }
+        }
         guard let listed = SymbolicHotKeys.order(records.count) else {
-            precondition(ProcessInfo.processInfo.operatingSystemVersion.majorVersion != 27, "macOS 27 publishes \(records.count) system shortcut records, but the ID list in SymbolicHotKeys.ids has \(SymbolicHotKeys.ids.count), or one fewer without 164")
-            return print("live check skipped: \(records.count) records, the ID list has \(SymbolicHotKeys.ids.count) (another macOS version)")
+            let read = SystemShortcutCatalog.discover(count: records.count, known: []) { SymbolicHotKeys.value($0) != nil }
+            let names = Dictionary(SystemShortcutCatalog.load().map { ($0.id, $0.name) }) { first, _ in first }
+            let configured = CFPreferencesCopyAppValue("AppleSymbolicHotKeys" as CFString, "com.apple.symbolichotkeys" as CFString) as? [String: [String: Any]] ?? [:]
+            let added = read.filter { !SymbolicHotKeys.ids.contains($0) }.map { "\($0) \(names[$0] ?? "")" }
+            let gone = SymbolicHotKeys.ids.filter { !read.contains($0) }.map { "\($0) \((configured[String($0)]?["value"] as? [String: Any])?["type"] ?? "unset")" }
+            let found = "\(records.count) records, the ID list has \(SymbolicHotKeys.ids.count) or one fewer without 164; SkyLight reads \(read.count) IDs, records out of place: \(read.count == records.count ? "\(differing(read, SymbolicHotKeys.table(native: records, defaults: apple, ids: read)))" : "all"), not in the list: \(added), not read: \(gone)"
+            precondition(ProcessInfo.processInfo.operatingSystemVersion.majorVersion != 27, "macOS 27 publishes \(found)")
+            return print("live check skipped: \(found) (another macOS version)")
         }
-        let rebuilt = SymbolicHotKeys.table(native: records, defaults: apple)
-        let differing = listed.filter { id in
-            guard let entry = rebuilt[id], let value = SymbolicHotKeys.value(id) else { return true }
-            return entry.key != value.key || entry.modifiers != value.modifiers || entry.enabled != SymbolicHotKeys.isEnabled(id)
-        }
-        precondition(differing.isEmpty, "differs from the SkyLight reader: \(differing)")
-        print("live: all \(rebuilt.count) records match the SkyLight reader by position")
+        let wrong = differing(listed, SymbolicHotKeys.table(native: records, defaults: apple))
+        precondition(wrong.isEmpty, "differs from the SkyLight reader: \(wrong)")
+        print("live: all \(records.count) records match the SkyLight reader by position")
     }
 
     static func main() {
@@ -216,10 +224,11 @@ struct TestSystemShortcuts {
         let picked = SystemShortcutCatalog.selected(everything, rules: all, values: ["100001:pause", "100011:pause"], appSwitcher: true)
         precondition(picked.contains(32) && picked.contains(500) && picked.contains(60) && picked.allSatisfy { !PointerShortcuts.isSynthetic($0) })
         precondition(!SystemShortcutCatalog.selected(everything, rules: all, values: ["500:system"], appSwitcher: true).contains(500))
-        let suite = UserDefaults(suiteName: "pikapik-test-pointer")!
+        let suite = FileManager.default.temporaryDirectory.appendingPathComponent("test-system-shortcuts-\(UUID().uuidString)").path
         var switched: [Int32] = []
-        HotKeyTrace(defaults: suite, isEnabled: { _ in true }, setEnabled: { id, on in if !on { switched.append(id) } }).disable(picked)
-        suite.removePersistentDomain(forName: "pikapik-test-pointer")
+        HotKeyTrace(defaults: UserDefaults(suiteName: suite)!, isEnabled: { _ in true }, setEnabled: { id, on in if !on { switched.append(id) } }).disable(picked)
+        UserDefaults(suiteName: suite)!.removePersistentDomain(forName: suite)
+        try? FileManager.default.removeItem(atPath: suite + ".plist")
         precondition(switched.contains(32) && switched.allSatisfy { !PointerShortcuts.isSynthetic($0) })
         precondition(everything.allSatisfy { SettingsItem.shortcut($0).matches($0.name) })
         print("mouse buttons, gestures and hot corners: ok")

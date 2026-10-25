@@ -101,11 +101,14 @@ final class WindowZoomTool: Tool {
         AXUIElementSetMessagingTimeout(app, 0.2)
         var hit: AXUIElement?
         guard AXUIElementCopyElementAtPosition(app, Float(point.x), Float(point.y), &hit) == .success, let hit,
-              !CFEqual(hit, app),
-              Self.value(hit, kAXSubroleAttribute) as? String == kAXFullScreenButtonSubrole as String,
+              !CFEqual(hit, app)
+        else { return false }
+        AXUIElementSetMessagingTimeout(hit, 0.2)
+        guard Self.value(hit, kAXSubroleAttribute) as? String == kAXFullScreenButtonSubrole as String,
               let windowRef = Self.value(hit, kAXWindowAttribute), CFGetTypeID(windowRef) == AXUIElementGetTypeID()
         else { return false }
         let window = unsafeBitCast(windowRef, to: AXUIElement.self)
+        AXUIElementSetMessagingTimeout(window, 0.2)
         guard Self.isSettable(window, kAXSizeAttribute),
               let button = Self.frame(of: hit)
         else { return false }

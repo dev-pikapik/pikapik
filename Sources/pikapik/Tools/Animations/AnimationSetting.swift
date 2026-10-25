@@ -175,10 +175,11 @@ final class DockRestart {
     private let journal: () -> UserDefaults
     private let later: (DispatchWorkItem) -> Void
     private let kill: (Bool) -> Void
+    private let exclusive: (() -> Void) -> Void
     private var work: DispatchWorkItem?
 
-    init(journal: @escaping () -> UserDefaults, later: @escaping (DispatchWorkItem) -> Void, kill: @escaping (Bool) -> Void) {
-        (self.journal, self.later, self.kill) = (journal, later, kill)
+    init(journal: @escaping () -> UserDefaults, later: @escaping (DispatchWorkItem) -> Void, kill: @escaping (Bool) -> Void, exclusive: @escaping (() -> Void) -> Void) {
+        (self.journal, self.later, self.kill, self.exclusive) = (journal, later, kill, exclusive)
     }
 
     var isPending: Bool { journal().bool(forKey: Self.key) }
@@ -218,8 +219,11 @@ final class DockRestart {
 
     private func fire() {
         work = nil
-        kill(false)
-        Self.clear(journal())
+        exclusive {
+            guard isPending else { return }
+            kill(false)
+            Self.clear(journal())
+        }
     }
 }
 
@@ -232,8 +236,8 @@ struct AnimationsHost {
     let local: UserDefaults
     let read: (AnimationSetting) -> Double?
     let write: (AnimationSetting, Double?) -> Void
-    let readAutohide: () -> Bool
-    let writeAutohide: (Bool) -> Void
+    let readAutohide: () -> Bool?
+    let writeAutohide: (Bool?) -> Void
     let later: (DispatchWorkItem) -> Void
     let kill: (String, Bool) -> Void
     let exclusive: (() -> Void) -> Void
@@ -247,6 +251,7 @@ class AnimationsEngine {
     private(set) var system: [AnimationSetting: Double] = [:]
     private(set) var storedSpeed: Double?
     private(set) var autohide = false
+    private(set) var holdsAutohide = false
     private(set) var appsPending = false
     private(set) var finderPending = false
     @ObservationIgnored private let host: AnimationsHost
@@ -257,11 +262,12 @@ class AnimationsEngine {
     private static let oursKey = "animations-ours"
     private static let autohideKey = "animations-autohide-original"
     private static let wantedAutohideKey = "animations-autohide-wanted"
+    private static let missingKey = "animations-autohide-missing"
     private static let leavingPrefix = "animations-leaving-"
 
     init(_ host: AnimationsHost) {
         self.host = host
-        dockRestart = DockRestart(journal: host.journal, later: host.later, kill: { host.kill("Dock", $0) })
+        dockRestart = DockRestart(journal: host.journal, later: host.later, kill: { host.kill("Dock", $0) }, exclusive: host.exclusive)
         owned = Self.saved(host.local)
         own = Self.originals(host.journal())
         ours = Self.written(host.journal(), host.local)
@@ -278,9 +284,14 @@ class AnimationsEngine {
         (ours[setting] == nil ? system[setting] : own[setting]) ?? setting.macOS
     }
 
+    var changed: Bool { !owned.isEmpty || holdsAutohide }
+
+    var showsAutohide: Bool { !autohide || holdsAutohide }
+
     func reload() {
         system = Self.snapshot(host)
-        autohide = host.readAutohide()
+        autohide = host.readAutohide() ?? false
+        holdsAutohide = OriginalValue.load(Self.wantedAutohideKey, journal: host.local) != nil
         own = Self.originals(host.journal())
         ours = Self.written(host.journal(), host.local)
     }
@@ -304,8 +315,13 @@ class AnimationsEngine {
     func setAutohide(_ on: Bool) {
         guard host.canAct() else { return }
         restartDock()
-        OriginalValue.set(Self.autohideKey, intent: Self.wantedAutohideKey, journal: host.journal(), local: host.local, current: host.readAutohide(), to: on, write: host.writeAutohide)
+        let journal = host.journal(), current = host.readAutohide()
+        if OriginalValue.load(Self.autohideKey, journal: journal) == nil { journal.set(current == nil ? true : nil, forKey: Self.missingKey) }
+        let missing = journal.bool(forKey: Self.missingKey)
+        let entry = OriginalValue.set(Self.autohideKey, intent: Self.wantedAutohideKey, journal: journal, local: host.local, current: current ?? false, to: on) { host.writeAutohide($0 || !missing ? $0 : nil) }
+        if entry == nil { journal.removeObject(forKey: Self.missingKey) }
         autohide = on
+        holdsAutohide = entry != nil
     }
 
     func restartDock() {
@@ -320,6 +336,9 @@ class AnimationsEngine {
     func reset() {
         storedSpeed = nil
         apply([:])
+        if host.canAct(), Self.putBackAutohide(host) { restartDock() }
+        OriginalValue.save(nil, Self.wantedAutohideKey, journal: host.local)
+        reload()
     }
 
     func refresh() {
@@ -333,6 +352,16 @@ class AnimationsEngine {
         host.journal().set(host.me.launched, forKey: Self.leavingKey(host.me.pid))
         guard !host.canAct(), staying().isEmpty else { return }
         putBack()
+    }
+
+    func powerOff() -> Bool {
+        var dock = false
+        host.exclusive {
+            dock = Self.putBackNow(host) || dockRestart.isPending
+            DockRestart.clear(host.journal())
+        }
+        dockRestart.handOver()
+        return dock
     }
 
     func load() {
@@ -363,6 +392,8 @@ class AnimationsEngine {
         case .forget:
             OriginalValue.save(nil, Self.wantedAutohideKey, journal: host.local)
             OriginalValue.save(nil, Self.autohideKey, journal: journal)
+            journal.removeObject(forKey: Self.missingKey)
+            holdsAutohide = false
         case .keep: break
         }
     }
@@ -375,14 +406,16 @@ class AnimationsEngine {
 
     private static func putBack(_ host: AnimationsHost) -> Bool {
         var dock = false
-        host.exclusive {
-            let journal = host.journal()
-            let autohide = putBackAutohide(host)
-            let changes = AnimationSetting.putBack(own: originals(journal), ours: written(journal, host.local), system: snapshot(host), remember: { remember($0, $1, journal) }, willWrite: { if $0.contains(where: { $0.0.apply == .dock }) { DockRestart.mark(journal) } }, write: host.write)
-            clearLeaving(host)
-            dock = autohide || changes.contains { $0.0.apply == .dock }
-        }
+        host.exclusive { dock = putBackNow(host) }
+        clearLeaving(host)
         return dock
+    }
+
+    private static func putBackNow(_ host: AnimationsHost) -> Bool {
+        let journal = host.journal()
+        let autohide = putBackAutohide(host)
+        let changes = AnimationSetting.putBack(own: originals(journal), ours: written(journal, host.local), system: snapshot(host), remember: { remember($0, $1, journal) }, willWrite: { if $0.contains(where: { $0.0.apply == .dock }) { DockRestart.mark(journal) } }, write: host.write)
+        return autohide || changes.contains { $0.0.apply == .dock }
     }
 
     private func apply(_ new: [AnimationSetting: Double]) {
@@ -391,7 +424,7 @@ class AnimationsEngine {
             return remember(owned: new)
         }
         remember(owned: new)
-        let applied = AnimationSetting.set(new, own: own, ours: ours, system: system, remember: remember(own:ours:), willWrite: { [self] in dockRestart.restart(for: $0, autohide: host.readAutohide()) }, write: host.write)
+        let applied = AnimationSetting.set(new, own: own, ours: ours, system: system, remember: remember(own:ours:), willWrite: { [self] in dockRestart.restart(for: $0, autohide: host.readAutohide() ?? false) }, write: host.write)
         (own, ours, owned) = (applied.own, applied.ours, new)
         let changes = applied.changes
         guard !changes.isEmpty else { return }
@@ -426,12 +459,13 @@ class AnimationsEngine {
     private static func putBackAutohide(_ host: AnimationsHost) -> Bool {
         let journal = host.journal()
         let entry = OriginalValue.load(autohideKey, journal: journal)
-        let value = OriginalValue.putBack(entry, current: host.readAutohide())
+        let value = OriginalValue.putBack(entry, current: host.readAutohide() ?? false)
         if let value {
             DockRestart.mark(journal)
-            host.writeAutohide(value)
+            host.writeAutohide(value || !journal.bool(forKey: missingKey) ? value : nil)
         } else if entry != nil { OriginalValue.save(nil, wantedAutohideKey, journal: host.local) }
         OriginalValue.save(nil, autohideKey, journal: journal)
+        journal.removeObject(forKey: missingKey)
         return value != nil
     }
 

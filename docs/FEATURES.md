@@ -96,7 +96,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **How it works:** Stored under `Background.key`; `Sources/pikapik/Core/Background.swift`, toggle at `GeneralSettings.swift` (`#if !APPSTORE`). Open pikapik again to bring the menu bar icon back; ⌥⌘Q (Quit Completely) really quits.
 
-**Nuances:** In the App Store build `Background.isOn` is always false, so Quit always quits.
+**Nuances:** In the App Store build `Background.isOn` is always false, so Quit always quits. On log out, restart and shut down pikapik quits even with this on (`Background.isLoggingOut`), and before anything else it puts back hot corners and the Dock delay from a game, animations, the Dock on one display, key repeat, desktop icons and hidden files, restarting the Dock at most once (`powerOff` in `App.swift`). The main copy does the same first when a signal stops it (`sudo shutdown`, `kill`), before it quits.
 
 **Edition:** Website only (App Store: cut — an App Store app has to quit when asked).
 
@@ -161,7 +161,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 - Turn on iCloud Drive in System Settings — row with an Open button, Website only, when iCloud Drive is off.
 - Needs a permission. Click to allow it. — row with an Allow button, Website only, when access is missing (asks the iCloud Drive permission).
 
-**Nuances:** The switch appears only in a build signed with a provisioning profile that has the iCloud capability, so local builds usually do not show it. Pet awards and the outfit are never synced. Off by default. The app reads the synced settings again every time you switch to it, so a change made on another Mac shows up without a restart.
+**Nuances:** The switch appears only in a build signed with a provisioning profile that has the iCloud capability, so local builds usually do not show it. Pet awards and the outfit are never synced. Off by default. The app reads the synced settings again every time you switch to it, so a change made on another Mac shows up without a restart. Each file lists the keys its version syncs, so a Mac on an older version never deletes settings it doesn't have (`SettingsFile.removed`). Two Macs that got one sync id from Migration Assistant or a backup tell each other apart by a newer file with their own id, and the Mac that sees it takes a new id (`SettingsFile.copiedDevice`).
 
 **Edition:** Both; App Store differs: it uses iCloud key-value storage and never shows the iCloud Drive rows.
 
@@ -473,7 +473,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Measures your internet download and upload speed, responsiveness and ping.
 
-**How it works:** `SpeedTestSettings` in `Sources/pikapik/Tools/SpeedTest/SpeedTest.swift`, `SpeedMeasure.swift`, `SpeedResult.swift`. Website: `/usr/bin/networkQuality` (“Takes about half a minute. The check runs on Apple’s servers.”). App Store: an ephemeral URLSession against speed.cloudflare.com (“Takes about 15 seconds. The check uses speed.cloudflare.com.”). Only the last result is kept, in the app’s preferences. The button turns into Cancel while running.
+**How it works:** `SpeedTestSettings` in `Sources/pikapik/Tools/SpeedTest/SpeedTest.swift`, `SpeedMeasure.swift`, `SpeedResult.swift`. Website: `/usr/bin/networkQuality` (“Takes about half a minute and runs on Apple’s servers. It can use a lot of data.”). App Store: an ephemeral URLSession against speed.cloudflare.com (“Takes about 15 seconds. The check uses speed.cloudflare.com.”). Only the last result is kept, in the app’s preferences. The button turns into Cancel while running.
 
 **Options:**
 - Download — Mbit/s.
@@ -717,7 +717,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Makes the pointer move the same distance for the same hand movement, with no speed-up.
 
-**How it works:** Website: the private `IOHIDEventSystemClient` (`HIDPointerAccelerationType`), no permission; restored when pikapik quits (`AppDelegate.stopFeatures(quitting:)` in `Sources/pikapik/App.swift`, `PointerTool.restore()` in `Sources/pikapik/Tools/Mouse/PointerTool.swift`), but not by `--uninstall`. App Store: replaced by an animated guide and a row with an Open button to System Settings › Mouse (`ToolsSettings` in `SettingsWindow.swift`, `com.apple.Mouse-Settings.extension`) because an App Store app cannot change it. The guide (`SettingsGuide`, `Sources/pikapik/Settings/SettingsGuide.swift`) shows where to click: Advanced…, then “Pointer acceleration” off; its labels come from your Mac, in its language. System Settings shows the Mouse page only while a mouse is connected.
+**How it works:** Website: the private `IOHIDEventSystemClient` (`HIDPointerAccelerationType`), no permission; restored when pikapik quits (`AppDelegate.stopFeatures(quitting:)` in `Sources/pikapik/App.swift`, `PointerTool.restore()` in `Sources/pikapik/Tools/Mouse/PointerTool.swift`), and by `--uninstall` the same way, from what pikapik noted before its first change (`PointerTool.uninstall()`, `PointerPutBack` in `Sources/pikapik/Tools/Mouse/PointerPutBack.swift`). App Store: replaced by an animated guide and a row with an Open button to System Settings › Mouse (`ToolsSettings` in `SettingsWindow.swift`, `com.apple.Mouse-Settings.extension`) because an App Store app cannot change it. The guide (`SettingsGuide`, `Sources/pikapik/Settings/SettingsGuide.swift`) shows where to click: Advanced…, then “Pointer acceleration” off; its labels come from your Mac, in its language. System Settings shows the Mouse page only while a mouse is connected.
 
 **Options:**
 - Tracking speed — slider, disabled while the switch is off (`PointerSettings` in `PointerTool.swift`). Website only; in the App Store guide it is the system’s own slider.
@@ -727,7 +727,8 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 **Test:**
 1. (Website) Turn it on, move the mouse slowly and quickly → the distance per hand movement is the same; move Tracking speed → the pointer speed changes. Turn it off → acceleration returns.
 2. Quit pikapik → acceleration is restored.
-3. (App Store) The row shows an animation (click Advanced…, turn off Pointer acceleration) above Open; press Open → System Settings opens on Mouse. With Reduce Motion on, the animation is one still frame with the click marked. Search for “Tracking speed” in Settings → nothing.
+3. (Website) Turn it on and end pikapik with `pkill -9 pikapik` → acceleration stays off. Run `build/pikapik.app/Contents/MacOS/pikapik --uninstall` → acceleration is restored.
+4. (App Store) The row shows an animation (click Advanced…, turn off Pointer acceleration) above Open; press Open → System Settings opens on Mouse. With Reduce Motion on, the animation is one still frame with the click marked. Search for “Tracking speed” in Settings → nothing.
 
 ### Scroll by lines
 
@@ -892,7 +893,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 **How it works:** Writes the hidden key `com.apple.dock allow-display-switching` = false and restarts the Dock once (`DockDisplaySettings` in `Sources/pikapik/Tools/Dock/DockDisplayTool.swift`, `DockDisplaySwitch.swift`). No permission. The Dock reads it only at start. Turning off (and `--uninstall`) puts back the previous value.
 
 **Options:**
-- Main display — menu under the switch (two or more displays, enabled only while the switch is on); pick a display and pikapik makes it the main one with `CGConfigureDisplayOrigin`, shifting every display by the same amount so the arrangement keeps its shape, and the Dock goes with it (`MainDisplayRow` and `MainDisplayControl` in `DockDisplayTool.swift`, `MainDisplay` in `DockDisplaySwitch.swift`). The first arrangement is remembered by display ID; turning the switch off, `--uninstall` or the next launch with the switch off puts it back.
+- Main display — menu under the switch (two or more displays, enabled only while the switch is on); pick a display and pikapik makes it the main one with `CGConfigureDisplayOrigin`, shifting every display by the same amount so the arrangement keeps its shape, and the Dock goes with it (`MainDisplayRow` and `MainDisplayControl` in `DockDisplayTool.swift`, `MainDisplay` in `DockDisplaySwitch.swift`). Before anything moves, the first arrangement is saved for that set of displays, by display ID. Turning the switch off, `--uninstall` or the next launch with the switch off puts back the arrangement of the displays connected then; one saved for other displays waits and comes back when they are connected again while the switch is off. Quitting, logging out and updating keep the pick. If someone has made another display the main one since, the displays are left as they are.
 
 **Nuances:** Needs two displays and “Displays have separate Spaces” on (System Settings › Desktop & Dock).
 
@@ -900,10 +901,11 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Test:**
 1. (Website, two displays) Run `defaults read com.apple.dock allow-display-switching` and note the answer. Turn on Keep the Dock on one display → no permission prompt, the Dock restarts once, pushing the pointer against the bottom edge of the other display no longer moves it, and the command prints 0.
-2. Quit and reopen pikapik → the Dock does not restart.
+2. Quit pikapik → the Dock restarts once and the command prints what it printed before (or says the key does not exist). Reopen it → the Dock restarts once more and the command prints 0 again.
 3. Turn the switch off → the Dock restarts once, moves between displays again, and the command prints what it printed before (or says the key does not exist).
 4. Turn it on again and run `build/pikapik.app/Contents/MacOS/pikapik --uninstall` → same result as turning it off.
 5. Before it, run `Private/tools/vdisplay` (`vd hold 120`) for a second display and note both positions with `vd probe`. With the switch on, open Main display and pick the other display → no prompt, it moves to 0,0, the other display keeps its place next to it, and the Dock appears there. Pick the first display again → the arrangement is the original. Pick the other one, then turn the switch off → the arrangement is exactly the one in `vd probe` before the test.
+6. With `vd hold 120` and the switch on, pick the virtual display in Main display, then quit and reopen pikapik → the virtual display is still the main one. When `vd hold` ends and the virtual display goes away, turn the switch off → nothing moves. Run `vd hold 120` again → if `vd probe` shows the same display ID as before, within a few seconds the arrangement is the one noted before the test.
 
 ## Finder
 
@@ -1058,14 +1060,14 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Clears the desktop of files and folders before a call or a screen recording, and brings them back to the same places.
 
-**How it works:** Website: `StandardHideDesktopIcons` in `com.apple.WindowManager` (`DesktopIconsHost` in `Sources/pikapik/Tools/Finder/DesktopIcons.swift`); no Finder restart; the switch always follows System Settings › Desktop & Dock › Show items › On Desktop; works with Stage Manager. App Store: the sandbox can’t change that setting, so the switch puts a curtain over the icons: one borderless window per screen one level above the desktop icons (`CGWindowLevelForKey(.desktopIconWindow)+1`, ordered back so the pet stays on top), `ignoresMouseEvents` so clicks reach the desktop, showing the wallpaper from `NSWorkspace.desktopImageURL` decoded at screen size with the Fill/Fit/Stretch/Center option (`Sources/pikapik/Tools/Finder/DesktopCurtain.swift`). A wallpaper inside the home folder is read through the home folder access (`FolderAccess.reopen()`); without that access it gets the plain color. A moving (Aerial) wallpaper reports `DefaultDesktop.heic`, so it gets the wallpaper’s fill color or the window background instead; no Screen Recording. Rebuilt on screen and Space changes, when another app becomes active (a new wallpaper) and on wake; gone when turned off or on quit. Below it in Settings: the animated guide (Show items › On Desktop turned off) and an Open button to System Settings › Desktop & Dock, subtitled Turn off “On Desktop” (`DesktopIconsSettings`, `DesktopTools.swift`, `SystemSettingsRow`).
+**How it works:** Website: `StandardHideDesktopIcons` in `com.apple.WindowManager` (`DesktopIconsHost` in `Sources/pikapik/Tools/Finder/DesktopIcons.swift`); no Finder restart; the switch always follows System Settings › Desktop & Dock › Show items › On Desktop; works with Stage Manager. App Store: the sandbox can’t change that setting, so the switch puts a curtain over the icons: one borderless window per screen one level above the desktop icons (`CGWindowLevelForKey(.desktopIconWindow)+1`, ordered back so the pet stays on top), `ignoresMouseEvents` so clicks reach the desktop, showing the wallpaper from `NSWorkspace.desktopImageURL` decoded at screen size with the Fill/Fit/Stretch/Center option (`Sources/pikapik/Tools/Finder/DesktopCurtain.swift`). A wallpaper inside the home folder is read through the home folder access (`FolderAccess.reopen()`); without that access it gets the plain color. A moving (Aerial) wallpaper reports `DefaultDesktop.heic`, so it gets the wallpaper’s fill color or the window background instead; no Screen Recording. A wallpaper with light and dark frames (`apple_desktop:apr` in its metadata, or the `ap` entry of `apple_desktop:solar` and `apple_desktop:h24`) shows the frame for the current look, any other picture its first frame (`WallpaperFrame`); the frame and the window background follow the macOS look like the desktop. When pikapik’s General › Appearance is Light or Dark, its own look (`NSApp.effectiveAppearance`) no longer changes with macOS, so the curtain reads the macOS look from `AppleInterfaceStyle` (`WallpaperFrame.dark`) and notices a switch within about two seconds. Rebuilt on screen and Space changes, at once on a switch between light and dark, when another app becomes active and on wake; while it is on, it also compares the wallpaper every 1.5 seconds (macOS sends no notice of a new wallpaper) and redraws only when it changed. Gone when turned off or on quit. Below it in Settings: the animated guide (Show items › On Desktop turned off) and an Open button to System Settings › Desktop & Dock, subtitled Turn off “On Desktop” (`DesktopIconsSettings`, `DesktopTools.swift`, `SystemSettingsRow`).
 
 **Edition:** Both; App Store differs: the switch covers the icons with the wallpaper instead of hiding them, and a guide with an Open button to System Settings sits below it.
 
 **Test:**
 1. (Website) Write down `defaults read com.apple.WindowManager StandardHideDesktopIcons`. Turn on Hide desktop icons → the icons leave the desktop without Finder restarting, the files stay in the Desktop folder, and System Settings › Desktop & Dock › Show items › On Desktop turns off. Turn it off → the icons come back to the same places.
 2. Change On Desktop in System Settings and open the menu → the switch follows. Repeat with Stage Manager on.
-3. (App Store) Turn on Hide desktop icons with a picture wallpaper → the icons are covered by the same picture on every display, the pet stays on top; click, double-click and right-click where an icon was → the desktop gets them. Switch to a Space with another wallpaper, pick a new wallpaper, connect or remove a display → the curtain follows. Pick a moving wallpaper → a plain color covers the icons. Turn it off or quit pikapik → the icons are back and no window is left.
+3. (App Store) Turn on Hide desktop icons with a picture wallpaper → the icons are covered by the same picture on every display, the pet stays on top; click, double-click and right-click where an icon was → the desktop gets them. Switch to a Space with another wallpaper, pick a new wallpaper, connect or remove a display → the curtain follows. Pick a new wallpaper and stay in System Settings → the curtain follows within about two seconds. With Sonoma, switch between Light and Dark → the curtain shows the same frame as the desktop at once. Set pikapik’s Appearance to Dark while macOS is Light → the curtain shows the light frame like the desktop; switch macOS to Dark → it follows within about two seconds. Pick a moving wallpaper → a plain color covers the icons. Turn it off or quit pikapik → the icons are back and no window is left.
 4. (App Store) Below the switch in Settings: the animation (Show items › On Desktop off) and Open → System Settings opens on Desktop & Dock.
 
 ### Show hidden files
@@ -1113,7 +1115,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Hides the Dock until the pointer touches the edge.
 
-**How it works:** Website: `autohide` in `com.apple.dock` (`AnimationsTool.host` in `AnimationsTool.swift`). App Store: an animated guide (“Automatically hide and show the Dock” turned on) above an Open row to System Settings › Desktop & Dock (`AnimationLinksPage` in `SettingsWindow.swift`).
+**How it works:** Website: `autohide` in `com.apple.dock` (`AnimationsTool.host` in `AnimationsTool.swift`). If you never set it, the key stays missing: pikapik notes that (`animations-autohide-missing`) and removes the key again when it puts things back. The switch stays on the page after you turn it on, and Restore Defaults puts it back too. App Store: an animated guide (“Automatically hide and show the Dock” turned on) above an Open row to System Settings › Desktop & Dock (`AnimationLinksPage` in `SettingsWindow.swift`).
 
 **Edition:** Both; App Store differs: guide and Open button instead of the switch.
 
@@ -1735,14 +1737,14 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Options:**
 - Corner for FPS — four corner buttons in the picture; hovering a corner shows its name (`FrameRateSettings` in `FrameRateArt.swift`).
-- Allow — under “Needs a permission. Click to allow it.”: asks Screen Recording and opens Permissions on the row (`FrameRateSettings` in `FrameRateArt.swift`).
+- Allow — under “To count frames, allow ‘Screen Recording’. No picture is kept or sent.”: asks Screen Recording and opens Permissions on the row (`FrameRateSettings` in `FrameRateArt.swift`).
 
 **Nuances:** pikapik never prompts during a game. On macOS 27 the Screen Recording row and the line appear only after a game the system could not count (an OpenGL one); they stay on later launches until allowed. If macOS asks to reopen pikapik after you allow it, do that. Never live-checked: the real Screen Recording grant flow, the relaunch after granting, and the handoff from trace to capture with the permission granted.
 
 **Edition:** Both; App Store differs: always the screen-recording counter.
 
 **Test:**
-1. Turn on Show FPS without Screen Recording on macOS 26 or in the App Store build → no prompt yet; the line “Needs a permission. Click to allow it.” shows under the switch and Permissions lists Screen Recording with “Needed to count frames”. Click Allow in the line → the Screen Recording prompt appears and Permissions opens on the row. Both go away once allowed and update when you come back from System Settings. Deny it → the pill shows a dimmed “—”, with no crash and no further prompts.
+1. Turn on Show FPS without Screen Recording on macOS 26 or in the App Store build → no prompt yet; the line “To count frames, allow ‘Screen Recording’. No picture is kept or sent.” shows under the switch and Permissions lists Screen Recording with “Needed to count frames”. Click Allow in the line → the Screen Recording prompt appears and Permissions opens on the row. Both go away once allowed and update when you come back from System Settings. Deny it → the pill shows a dimmed “—”, with no crash and no further prompts.
 2. (macOS 27, Website) Expected: no prompt and no Screen Recording row while games are counted by the system. Play a game the system cannot count (an OpenGL one) → after about three seconds the line and the row “Needed for some games” appear, still without a prompt during the game, and both stay on later launches until allowed.
 3. Start a game with Show FPS on → a small pill with a dash appears in the chosen corner of the game window (top corners sit below the title bar), then shows the frame rate. From 100 on the pill gets one digit wider and stays in its corner, with the small FPS on the same baseline. Quit the game → the pill fades out at once.
 4. Click each corner of the picture, then turn the switch off and on while the game runs → the pill in the picture and the one over the game move to the corner at once; off fades the pill out, on brings it back without restarting the game. With Reduce Motion on the pill appears and goes without fading.
@@ -1836,7 +1838,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Drops Dock gestures (Mission Control, Spaces and similar swipes) and mouse button shortcuts while a game is in front.
 
-**How it works:** DockSwipe events (`CGEventType` 30, field 110 = 23; field 123 motion, 132 phase) are dropped at the “began” phase (`PointerShortcuts.swift`, `GameRules.dropsSwipe`). Hot corners: `DockEdges` zeroes only the paused corners. The motion codes came from event logging, not from Apple documents.
+**How it works:** DockSwipe events (`CGEventType` 30, field 110 = 23; field 123 motion, 132 phase) are dropped at the “began” phase (`PointerShortcuts.swift`, `GameRules.dropsSwipe`). Hot corners: `DockEdges` zeroes only the paused corners and, when the Dock hides, sets its delay to 1000 seconds. Your own values stay under the game’s in the `game-mode-dock` journal: during a game Settings shows and changes yours (`DockEdges.read`, `DockEdges.write`), and they come back after the game, when pikapik quits, and at log out, restart and shut down (`scripts/test-dock-layers.swift`). The motion codes came from event logging, not from Apple documents.
 
 **Options:**
 - Change… on a hot-corner row — menu of the actions macOS offers for a corner; picking one writes `com.apple.dock wvous-<corner>-corner` and restarts the Dock once (`HotCorners.swift`, `HotCornerMenu` in `SystemShortcutList.swift`). The first value is remembered, and Put Back in the same menu writes it back. Off while a game is in front. Website only; other rows and the App Store build still show Change in System Settings.
@@ -1944,7 +1946,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Shows each permission, whether it is granted, and one button: Allow or Turn Off.
 
-**How it works:** `Sources/pikapik/Permissions/Permissions.swift` (`PermissionsView`, `PermissionRow` and `PermissionBar` in `PermissionsView.swift`). The header reads “All set” when everything is on, “Both permissions are on” when the two main ones are on but a tool still lacks another, and otherwise “pikapik needs two permissions” (Website) or “Permissions for some tools” (App Store). pikapik rechecks every 1.5 seconds. A tool that needs a missing permission is half-grey and does nothing; clicking it opens this tab on the row (Accessibility, Input Monitoring and Screen Recording also show the macOS prompt in the App Store build). A bar on each tool tab shows when its tools need a missing permission, and names that permission and what it is for. While Accessibility (on macOS 27: Device Control and Data Access), Input Monitoring or Screen & System Audio Recording is shown and not granted, an animated guide at the top of the first section walks through System Settings: Privacy & Security, that list, then turn on pikapik (`Permission.guidePage` in `Permissions.swift`, `PermissionsView` in `PermissionsView.swift`, `Sources/pikapik/Settings/SettingsGuide.swift`; both editions).
+**How it works:** `Sources/pikapik/Permissions/Permissions.swift` (`PermissionsView`, `PermissionRow` and `PermissionBar` in `PermissionsView.swift`). The header reads “All set” when everything is on, “Both permissions are on” when the two main ones are on but a tool still lacks another, and otherwise “Permissions for some tools”, in both editions. Under Accessibility and Input Monitoring a second line names the Settings pages whose switched-on tools use the permission (“Needed by tools you turned on: Keyboard and Mouse”, or “Used by tools you turned on: …” once it is allowed); when none does, it says “No tool you turned on needs it” and the mark is grey instead of orange (`PermissionRow` in `PermissionsView.swift`). A tool counts by `Tool.uses`, which is its `needs` except for Fix the selected text in the App Store build: its Services menu needs no permission, but its shortcut uses Accessibility (`LayoutFixTool`). pikapik rechecks every 1.5 seconds while this tab is on screen and for two minutes after Allow, and otherwise when it becomes the active app or its menu bar panel opens (`PermissionPolling.swift`, `App.swift`, `MenuView.swift`). A tool that needs a missing permission is half-grey and does nothing; clicking it opens this tab on the row, and only Allow on this tab asks macOS (`Permissions.ask` and `Permissions.request` in `Permissions.swift`). A bar on each tool tab shows when its tools need a missing permission, and names that permission and what it is for. While Accessibility (on macOS 27: Device Control and Data Access), Input Monitoring or Screen & System Audio Recording is shown and not granted, an animated guide at the top of the first section walks through System Settings: Privacy & Security, that list, then turn on pikapik (`Permission.guidePage` in `Permissions.swift`, `PermissionsView` in `PermissionsView.swift`, `Sources/pikapik/Settings/SettingsGuide.swift`; both editions).
 
 **Options:**
 - Allow — asks, or opens System Settings with an arrow icon when the permission can only be granted there.
@@ -1954,12 +1956,14 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Test:**
 1. Launch after `tccutil reset All <bundle id>` → no system prompt at launch, in both editions; the first launch opens General Settings, later launches open no window, and the tools that need a permission are grey. The menu bar icon appears. Already-granted permissions stay on.
-2. Turn on any Keyboard, Mouse or Windows tool (for example Scroll by lines) → the Accessibility prompt, then Input Monitoring if needed. The status shows “Needs Access” until granted, then “Active”.
-3. Revoke a permission in System Settings while the app runs → status returns to “Needs Access” without a crash; granting again restores the tool without relaunch.
+2. Turn on any Keyboard, Mouse or Windows tool (for example Scroll by lines) → no prompt; the tool is half-grey and the menu bar icon is a warning triangle (VoiceOver: “pikapik: Permissions needed”). Allow on this tab shows the Accessibility prompt, then Input Monitoring if needed; once granted, the icon is the pikapik mark.
+3. Revoke a permission in System Settings while the app runs, then click the menu bar icon → the icon turns back into the warning triangle without a crash; granting again and clicking the icon restores the tool without relaunch.
 4. Click a grey tool → this tab opens on the row to allow.
 5. (App Store) Turn Off on Accessibility and Input Monitoring → the right System Settings list opens. (Website) Turn Off → the restart alert.
 6. A missing permission shows the animated guide; it points at the right list and the pikapik switch, and goes away once every permission in it is granted.
 7. (App Store) Settings has no Fans, Animations (full page), Uninstaller, Key repeat, Pointer, Updates, iCloud sync or “Stay in the background after Quit” rows.
+8. Turn off every tool except the pet → Accessibility and Input Monitoring say “No tool you turned on needs it”, with grey marks. Turn on Home and End → Accessibility says “Needed by tools you turned on: Keyboard” with an orange mark, and the menu bar icon is the warning triangle although the pet walks; after Allow the line says “Used by tools you turned on: Keyboard”.
+9. (App Store) Turn on Fix the selected text on the Keyboard tab, then turn Accessibility off in System Settings → Accessibility says “Needed by tools you turned on: Keyboard” with an orange mark, and the menu bar icon is the warning triangle.
 
 ### Accessibility
 
@@ -2167,7 +2171,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 - Settings… — icon button at the bottom of the panel that opens Settings (⌘,; `MenuView.swift`).
 - Quit — icon button at the bottom of the panel that quits pikapik (⌘Q; `MenuView.swift`). Website: with Stay in the background after Quit on it only closes windows.
 
-**Nuances:** Nothing is asked at launch; Settings opens on first launch, later from the menu.
+**Nuances:** Nothing is asked at launch; Settings opens on first launch, later from the menu. The icon is the pikapik mark while tools work, the same mark turned pale when everything is off, a game controller while you play, and a warning triangle whenever a switched-on tool lacks a permission, even while other tools such as the pet work (`ToolRegistry.status` in `Tools/Tool.swift`).
 
 **Edition:** Both; App Store differs: no macOS 27 press workaround.
 
@@ -2248,14 +2252,14 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 ### Tool rows
 
-**Does:** One switch per tool, grouped by tab, with the status Active, Off, Needs Access or Game Mode.
+**Does:** One switch per tool, grouped by tab, with the status Active, Off, Permissions needed or Game Mode.
 
 **How it works:** `MenuView.swift`, `ToolStatus` in `Tool.swift`; only the tools registered in the edition appear; a row whose tool needs a permission is half-grey.
 
 **Edition:** Both; App Store differs: fewer tools.
 
 **Test:**
-1. Switch a tool on and off in the panel → the Settings switch follows; with a missing permission the row shows Needs Access and opens Permissions.
+1. Switch a tool on and off in the panel → the Settings switch follows; with a missing permission the row is half-grey, the menu bar icon is the warning triangle, and a click opens Permissions.
 
 ### App Volume
 

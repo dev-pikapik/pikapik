@@ -76,6 +76,7 @@ enum PreferenceKey {
     static let keepRunning = "keep-running"
     static let checkUpdates = "check-updates"
     static let quickHidden = "quick-hidden"
+    static let launchMaintenance = "launch-maintenance"
 
     static let commandKeysQuit = "command-keys-quit"
     static let commandKeysClose = "command-keys-close"

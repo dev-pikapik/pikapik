@@ -113,6 +113,13 @@ enum BackgroundTests {
         file("home/.Trash/Old.app/Contents/MacOS/old")
         precondition(BackgroundTasks.isMissing(at("gone").path) && BackgroundTasks.isMissing(at("home/.Trash/Old.app/Contents/MacOS/old").path))
         precondition(!BackgroundTasks.isMissing("/bin/sh") && !BackgroundTasks.isMissing("relative"))
+        file("tasks/here")
+        file("tasks/locked/inside")
+        try! FileManager.default.createSymbolicLink(atPath: at("tasks/broken").path, withDestinationPath: at("tasks/nowhere").path)
+        precondition(chmod(at("tasks/locked").path, 0) == 0)
+        let unreadable = BackgroundTasks.isMissing(at("tasks/locked/inside").path)
+        precondition(chmod(at("tasks/locked").path, 0o755) == 0)
+        precondition(!BackgroundTasks.isMissing(at("tasks/here").path) && BackgroundTasks.isMissing(at("tasks/broken").path) && !unreadable)
     }
 
     static func collected() {

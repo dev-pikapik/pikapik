@@ -18,7 +18,7 @@ Open Terminal, plak deze regel en druk op Return:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"
 ```
 
-De opdracht downloadt de nieuwste versie van GitHub en installeert die alleen als die door de ontwikkelaar is ondertekend en de controle van Apple op schadelijke software heeft doorstaan. pikapik staat daarna in de menubalk bovenaan het scherm. Alles blijft uit tot je het zelf aanzet.
+De opdracht downloadt de nieuwste versie van GitHub en installeert die alleen als die door de ontwikkelaar is ondertekend en de controle van Apple op schadelijke software heeft doorstaan. pikapik staat daarna in de menubalk bovenaan het scherm. Alleen het huisdiertje gaat vanzelf aan; alle andere tools blijven uit tot je ze zelf aanzet.
 
 <details>
 <summary>Andere manieren: Homebrew of een dmg</summary>
@@ -31,7 +31,7 @@ brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
 
 Of download [pikapik.dmg](https://github.com/dev-pikapik/pikapik/releases/latest/download/pikapik.dmg), open het bestand en sleep de app naar de map Apps.
 
-Zowel de opdracht hierboven als Homebrew zetten de app in `/Applications`, openen hem, vragen om de toestemmingen en zetten ‘Open bij inloggen’ aan. Daarna werkt de app zichzelf bij, zie **Updates**. Verwijderen staat bij **Verwijderen**.
+Zowel de opdracht hierboven als Homebrew zetten de app in `/Applications`, openen hem en zetten ‘Open bij inloggen’ aan. Daarna werkt de app zichzelf bij, zie **Updates**. Verwijderen staat bij **Verwijderen**.
 
 </details>
 
@@ -280,12 +280,12 @@ Zowel de opdracht hierboven als Homebrew zetten de app in `/Applications`, opene
 <details>
 <summary>Eerste keer openen</summary>
 
-pikapik heeft twee toestemmingen nodig. De eerste keer opent de app de instellingen op de pagina Toestemmingen, die je stap voor stap helpt, en macOS toont zijn eigen meldingen. Ga naar **Systeeminstellingen › Privacy en beveiliging** en zet pikapik aan bij:
+De eerste keer opent pikapik zijn instellingen: kies links een pagina en zet aan wat je nodig hebt. Tools die toetsen, klikken of vensters aanpassen, hebben twee toestemmingen nodig; de rest werkt zonder. Een tool waarvoor een van beide ontbreekt, ziet er half grijs uit; klik erop, en de pagina Toestemmingen laat zien waar je pikapik aanzet in **Systeeminstellingen › Privacy en beveiliging**:
 
-- **Toegankelijkheid**, zodat de app een toetsaanslag of klik kan aanpassen voordat die bij andere apps aankomt.
+- **Toegankelijkheid** (onder macOS 27: **Apparaatbeheer en gegevenstoegang**), zodat de app een toetsaanslag of klik kan aanpassen voordat die bij andere apps aankomt.
 - **Invoerbewaking**, zodat de app toetsaanslagen en klikken kan zien zonder ze aan te passen. Zo werkt het wisselen van taal.
 
-De app merkt de wijziging binnen een paar seconden op, opnieuw opstarten is niet nodig.
+Onder elk van de twee laat de pagina Toestemmingen zien op welke pagina’s je tools hebt aangezet die deze toestemming nodig hebben. De app merkt de wijziging binnen een paar seconden op, opnieuw opstarten is niet nodig.
 
 Sommige functies vragen om meer als je ze gebruikt: **Beheerderstoegang**, **Finder-extensies**, **iCloud Drive**, **Volledige schijftoegang**, **Schermopname** en **Opname van systeemaudio**. Alles staat op de pagina Toestemmingen in de instellingen: elke toestemming heeft een regel over waarvoor ze dient, een groen vinkje of een oranje kruisje en één knop: **Toestaan** als ze ontbreekt, **Zet uit** als ze aan staat. Zo trek je elke toestemming meteen terug.
 
@@ -353,8 +353,8 @@ Sommige apps en games tellen scrollen in exacte pixels: zet daarvoor dezelfde in
 pikapik opent ook wat macOS niet kan openen: RAR, zelfs verdeeld over delen, 7Z met een wachtwoord, reeksen zoals .001, .z01, .r00 en .part1.rar, en ZIPX, CAB, LZH, ARJ, ZST, LZMA, WIM en meer. Dubbelklikken opent ze in pikapik. Bestandsnamen in oude ZIP-bestanden, bijvoorbeeld in Cyrillisch, Japans of Chinees, komen leesbaar uit de bus. Met de rij **Open archieven in pikapik** in Instellingen › Finder kies je in een menu de app voor ZIP en 7Z, bijvoorbeeld pikapik, terwijl TAR en GZ bij de ingebouwde archiefapp blijven, die daar al goed mee overweg kan. pikapik kan RAR uitpakken maar niet maken: de RAR-licentie staat alleen uitpakken toe.
 
 Een venster vraagt om het wachtwoord, **Stop** breekt elke taak af, en uit een beschadigd of onvolledig archief haalt pikapik wat nog te lezen is. Het vraagt eerst om bevestiging voordat het een archief uitpakt dat tot een enorme omvang zou opzwellen, stopt op tijd als de schijf vol dreigt te raken en blokkeert archieven die buiten hun eigen map proberen te schrijven. Selecteer een archief in de Finder en druk op de spatiebalk om te zien wat erin zit.
-**Archieven in de versie uit de Mac App Store.** Ze werken daar ook, maar met de tools die in macOS zitten in plaats van het meegeleverde 7-Zip, dus er zijn beperkingen: alleen ZIP kan een wachtwoord hebben, 7Z niet; een archief kan niet in delen worden gesplitst, en archieven in meerdere delen (.001, .part1.rar, .z01 en dergelijke) kunnen niet worden geopend; losse .xz-, .lzma- en .zst-bestanden kunnen niet worden geopend (.gz en .bz2 wel); 7Z en RAR met wachtwoord kunnen niet worden geopend; en de rij **Open archieven in pikapik** ontbreekt. De eerste keer vraagt pikapik toegang tot je thuismap, net als bij Nieuw bestand en Kleinere kopie, omdat deze versie alleen mag schrijven waar jij dat hebt toegestaan. Zet de Finder-extensie aan in Systeeminstellingen › Algemeen › Inlogonderdelen en extensies; pikapik laat zien waar je moet klikken.
 
+**Archieven in de versie uit de Mac App Store.** Ze werken daar ook, maar met de tools die in macOS zitten in plaats van het meegeleverde 7-Zip, dus er zijn beperkingen: alleen ZIP kan een wachtwoord hebben, 7Z niet; een archief kan niet in delen worden gesplitst, en archieven in meerdere delen (.001, .part1.rar, .z01 en dergelijke) kunnen niet worden geopend; losse .xz-, .lzma- en .zst-bestanden kunnen niet worden geopend (.gz en .bz2 wel); 7Z en RAR met wachtwoord kunnen niet worden geopend; en de rij **Open archieven in pikapik** ontbreekt. De eerste keer vraagt pikapik toegang tot je thuismap, net als bij Nieuw bestand en Kleinere kopie, omdat deze versie alleen mag schrijven waar jij dat hebt toegestaan. Zet de Finder-extensie aan in Systeeminstellingen › Algemeen › Inlogonderdelen en extensies; pikapik laat zien waar je moet klikken.
 
 **Bureaubladsymbolen verbergen.** Zet het aan voor een gesprek, een schermopname of een schermafbeelding, en de bestanden en mappen op het bureaublad verdwijnen. Zet het uit, en ze staan weer op hun plek. Er wordt niets verplaatst: de bestanden blijven in de map ‘Bureaublad’ in de Finder. Het is de instelling **Toon onderdelen › Op bureaublad** uit Systeeminstellingen › Bureaublad en Dock, alleen dichter bij de hand, dus de twee komen altijd overeen. In de versie uit de Mac App Store bedekt deze rij in plaats daarvan de symbolen op elk scherm met de bureaubladachtergrond, of met een effen kleur als de achtergrond beweegt, en klikken komen nog steeds op het bureaublad aan. In Instellingen opent de knop **Open** eronder nog steeds die pagina van Systeeminstellingen.
 
@@ -362,13 +362,11 @@ Een venster vraagt om het wachtwoord, **Stop** breekt elke taak af, en uit een b
 
 **Gamemodus.** Voeg je games toe, en zolang je speelt, haalt je Mac je niet uit de game. Spotlight, Siri, ⌘Tab, Mission Control en vegen tussen bureaubladen openen niet boven de game, ⌘Q en ⌘W sluiten hem niet per ongeluk, de aanwijzer glipt niet naar het Dock, de menubalk of een ander scherm, en het scherm blijft aan. Houd je Shift ingedrukt, dan wisselt het muiswiel nog steeds van hotbar-slot. Elk hiervan heeft een eigen schakelaar op de pagina Games, en pikapik stelt games voor die het op je Mac vindt. In een game blijft Control-klik een klik, en Control met pijltjes wisselt niet van bureaublad. Ook Minecraft wordt herkend: voeg Minecraft Launcher of CurseForge toe, en de modus gaat aan in Minecraft zelf. Druk op ⇧⌘Q om een game te verlaten en op ⇧⌘W om het venster te sluiten. ⌥⌘Esc werkt altijd. Zodra je de game verlaat, werkt alles weer zoals gewoonlijk. Standaard uit.
 
-Zet Spelmodus aan en speel. Meer spelinstellingen bevat de catalogus van je Mac, actuele toetsen en een bewegende preview voor elke actie.
+Het onderdeel **Meer spelinstellingen** op de pagina Games laat de toetscombinaties zien die je Mac zelf aanbiedt, met hun huidige toetsen en een bewegende preview van elke actie. Per toetscombinatie kies je **Volg de regels van Gamemodus**, **Uitschakelen in games** of **Toestaan in games**. Toetscombinaties voor de taal hebben daarnaast de optie **Taal wisselen bij elke druk**: een korte, bewuste druk wisselt de invoerbron zonder iets boven de game te openen, en toetsen die je ingedrukt houdt om te rennen of te springen behouden voorrang, zodat de taal niet per ongeluk wisselt.
 
-Automatisch pauzeert acties die vensters openen of focus verplaatsen. Een kort bewust taalkortcommando wisselt de bron zonder systeemvenster. Vastgehouden bewegingstoetsen hebben voorrang, zodat rennen en springen niet per ongeluk de taal wisselen.
+In **Meer spelinstellingen** toont de groep **Muis en trackpad** alleen wat in macOS op je Mac is ingeschakeld, met de namen van Apple en een kleine tekening bij elk onderdeel: toetscombinaties op een muisknop, vegen tussen bureaubladen en apps in volledig scherm, Mission Control en App Exposé, knijpen voor apps en spreiden voor het bureaublad, vegen vanaf de rechterrand voor het Berichtencentrum en elke actieve hoek met de actie die erbij hoort. Zolang een game vooraan staat, zijn ze gepauzeerd, zodat een onbedoelde veeg of een aanraking van een hoek van het scherm je niet uit de game haalt. Gebaren in de game blijven gewoon werken. Elk onderdeel kan zo worden ingesteld dat het werkt zoals gewoonlijk. In de versie van de website kies je met **Wijzig…** bij een hoek meteen een andere actie, en **Zet terug** brengt de eerste terug; elke wijziging start het Dock één keer opnieuw.
 
-In Instellingen → Spellen → Meer spelinstellingen staat een groep ‘Muis en trackpad’. Daarin staat alleen wat in macOS op je Mac is ingeschakeld, met de namen van Apple en een kleine tekening bij elk onderdeel: toetscombinaties op een muisknop, vegen tussen bureaubladen en apps in volledig scherm, Mission Control en App Exposé, knijpen voor apps en spreiden voor het bureaublad, vegen vanaf de rechterrand voor het Berichtencentrum en elke actieve hoek met de actie die erbij hoort. Zolang een game vooraan staat, zijn ze gepauzeerd, zodat een onbedoelde veeg of een aanraking van een hoek van het scherm je niet uit de game haalt. Gebaren in de game blijven gewoon werken. Elk onderdeel kan zo worden ingesteld dat het werkt zoals gewoonlijk. In de versie van de website kies je met **Wijzig…** bij een hoek meteen een andere actie, en **Zet terug** brengt de eerste terug; elke wijziging start het Dock één keer opnieuw.
-
-Open Instellingen → Spellen → Spel toevoegen en klik op je draaiende spel. Ook spellen via Java en andere omgevingen verschijnen hier, zelfs zonder .app-bestand. Minecraft heet Minecraft in plaats van java. Zoek het spelproces en sleep de rij naar Je spellen in Instellingen → Spellen.
+Om een game toe te voegen, klik je op de pagina Games op **Voeg game toe…** en daarna op je game tussen de geopende apps of de apps in je Dock. Een game die via Java of een andere runtime draait en geen eigen app heeft, verschijnt daar ook, en Minecraft heet Minecraft in plaats van java. Daarnaast kun je een game vanuit de Finder naar de lijst slepen, of zijn rij vanuit Activiteitenweergave.
 
 **FPS tonen.** FPS betekent beelden per seconde: hoeveel beelden de game elke seconde tekent. Zet **FPS tonen** aan op de pagina Games, en zolang de Gamemodus aanstaat, staat er in een hoek van elke game een klein donker labeltje met dat getal. Kies de hoek door erop te klikken in het plaatje boven de schakelaar. Een streepje betekent dat de eerste beelden er nog niet zijn, en een vervaagde 0 dat de game niets meer tekent. Onder macOS 27 telt macOS de meeste games zelf, zonder toestemming. Een game die macOS niet kan tellen, meestal een oudere game, wordt geteld via schermopname: dan verschijnt op de pagina Toestemmingen de rij **Schermopname**, vraagt pikapik er nooit om tijdens een game en kan het getal niet hoger zijn dan de verversingssnelheid van het scherm. Onder macOS 14 tot en met 26 en in de versie uit de Mac App Store wordt elke game zo geteld, dus de rij verschijnt zodra je **FPS tonen** aanzet, en de knop **Toestaan** onder de schakelaar brengt je erheen. Er wordt geen beeld bewaard of verstuurd. Standaard uit.
 
@@ -419,7 +417,7 @@ Laat zien hoe snel je internet nu is. Klik op **Test snelheid** in Instellingen 
 
 Open de instellingen vanuit het menu met **Instellingen…** of ⌘, of open pikapik gewoon opnieuw vanuit de Finder, Launchpad of Spotlight. Zolang het venster open is, staat de app in het Dock en in ⌘Tab.
 
-- **Algemeen**: open bij inloggen, weergave (Systeem, Licht of Donker), taal, updates en reservekopie: exporteer en importeer instellingen als bestand, of synchroniseer ze via iCloud Drive.
+- **Algemeen**: open bij inloggen, op de achtergrond blijven na Stop, weergave (Systeem, Licht of Donker), taal en reservekopie: exporteer en importeer instellingen als bestand, of synchroniseer ze via iCloud Drive.
 - **Batterij**: oplaadniveau, tijd tot vol of resterende tijd, conditie, maximumcapaciteit, aantal cycli, lichtnetadapter en vermogen in watt, plus tips om je batterij langer mee te laten gaan. De pagina toont alleen informatie: de oplaadlimiet blijft in **Systeeminstellingen › Batterij**. Alleen te zien op een Mac met een batterij.
 - **Wakker houden**: duur, opties voor het scherm en de klep.
 - **Helderheid**: een schuifregelaar voor elke monitor die macOS niet zelf kan regelen, de helderheidstoetsen en de optie om in plaats daarvan het beeld te dimmen.
@@ -433,13 +431,14 @@ Open de instellingen vanuit het menu met **Instellingen…** of ⌘, of open pik
 - **Vensters**: vergroten met de groene knop (met een lijst met uitzonderingen), bescherming van ⌘Q en ⌘W, en stoppen bij het laatste venster (met een lijst met uitzonderingen).
 - **Dock**: minimaliseren of verbergen met een klik in het Dock en het Dock op één scherm houden.
 - **Finder**: nieuw bestand, kleinere kopie, omzetten en archieven, openen met Return, knippen met ⌘X, verwijderen met ⌫, bureaubladsymbolen verbergen en verborgen bestanden tonen.
+- **Animaties**: animatiesnelheid van vensters, Snel bekijken en de Finder, tot direct aan toe, wanneer en hoe snel het verborgen Dock tevoorschijn komt, minimaliseereffect en stuiterende symbolen in het Dock.
 - **Speler**: een video in een eigen venster openen, de indelingen die worden afgespeeld, een menu om voor elk formaat de app te kiezen en de licenties van FFmpeg, dav1d, libass, FreeType, HarfBuzz en FriBidi.
 - **Apps verwijderen**: verwijder een app met al zijn bestanden, zet later alles terug en ruim op wat verwijderde apps hebben achtergelaten.
 - **Achtergrondtaken**: alles wat op de achtergrond draait, welke app het heeft toegevoegd en een knop om ze uit en weer aan te zetten zonder Systeeminstellingen te openen.
 - **Games**: je lijst met games en de opties van de Gamemodus.
 - **Huisdiertje**: zet het aan of uit, laat het kletsen, op jouw ritme leven en met de bal spelen, kleed het aan en bekijk je onderscheidingen.
-- **Toestemmingen**: alle toestemmingen die pikapik gebruikt, elk met zijn status en één knop om ze toe te staan of uit te zetten. Een functie waarvoor een toestemming ontbreekt, ziet er half grijs uit; een klik erop opent deze pagina bij de juiste regel.
-- **Over**: versie, links naar het wijzigingslogboek en om een probleem te melden.
+- **Toestemmingen**: alle toestemmingen die pikapik gebruikt, elk met zijn status en één knop om ze toe te staan of uit te zetten; de twee belangrijkste noemen ook de pagina’s met tools die ze nodig hebben. Een functie waarvoor een toestemming ontbreekt, ziet er half grijs uit; een klik erop opent deze pagina bij de juiste regel.
+- **Over**: versie en updates, links naar het wijzigingslogboek en om een probleem te melden.
 
 Veel instellingen hebben een klein plaatje dat laat zien wat ze doen, zoals een Mac die wakker blijft of een venster dat zich achter het Dock verbergt. Het plaatje verandert mee met de schakelaar en staat stil als ‘Verminder beweging’ aan staat in Systeeminstellingen.
 
@@ -454,11 +453,11 @@ Elke pagina heeft onderaan een knop **Herstel standaardinstellingen…**. Die vr
 <details>
 <summary>Updates</summary>
 
-pikapik zoekt bij het openen en elke 6 uur naar nieuwe versies. Je kunt dat uitzetten bij Instellingen › Algemeen. Is er een nieuwe versie, dan verschijnt in het menu de knop **Werk bij naar …**: één klik en de app downloadt de update, installeert hem en start opnieuw op. Je kunt ook zelf controleren met **Controleer nu** bij Instellingen › Algemeen.
+pikapik zoekt bij het openen en elke 6 uur naar nieuwe versies. Je kunt dat uitzetten bij Instellingen › Over. Is er een nieuwe versie, dan verschijnt in het menu de knop **Werk bij naar …**: één klik en de app downloadt de update, installeert hem en start opnieuw op. Je kunt ook zelf controleren met **Controleer nu** bij Instellingen › Over.
 
 Met Homebrew kun je ook `brew upgrade --cask pikapik` uitvoeren.
 
-Sinds versie 1.3 blijven de toestemmingen na updates behouden.
+De toestemmingen blijven na updates behouden.
 
 </details>
 
@@ -479,7 +478,7 @@ Beide stoppen de app, halen hem uit de inlogonderdelen en verwijderen hem. Het s
 <summary>Veelgestelde vragen</summary>
 
 **Waarom zijn er twee toestemmingen nodig?**
-macOS splitst de toegang tot toetsenbord en muis in tweeën. Met Toegankelijkheid kan de app een toetsaanslag of klik aanpassen, en de meeste functies hebben alleen dat nodig. Met Invoerbewaking kan hij alleen meekijken, en dat is genoeg om van taal te wisselen.
+macOS splitst de toegang tot toetsenbord en muis in tweeën. Met Toegankelijkheid (onder macOS 27: Apparaatbeheer en gegevenstoegang) kan de app een toetsaanslag of klik aanpassen, en de meeste functies hebben alleen dat nodig. Met Invoerbewaking kan hij alleen meekijken, en dat is genoeg om van taal te wisselen.
 
 **macOS zegt dat de app van een onbekende ontwikkelaar komt.**
 pikapik is ondertekend door de ontwikkelaar en doorstaat de controle van Apple op schadelijke software, dus deze melding hoort niet te verschijnen. Verschijnt de melding toch, open dan **Systeeminstellingen › Privacy en beveiliging** en klik op **Toch openen**.

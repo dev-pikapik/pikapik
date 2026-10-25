@@ -11,6 +11,7 @@ protocol Tool: AnyObject {
     var tab: SettingsTab { get }
     var isDefault: Bool { get }
     var needs: [Permission] { get }
+    var uses: [Permission] { get }
     func refresh()
     func reset()
     func load()
@@ -20,6 +21,7 @@ extension Tool {
     var tab: SettingsTab { .keyboard }
     var isDefault: Bool { !isEnabled }
     var needs: [Permission] { [.accessibility] }
+    var uses: [Permission] { needs }
     func reset() { isEnabled = false }
     func load() { isEnabled = UserDefaults.standard.bool(forKey: id) }
 }
@@ -31,7 +33,7 @@ enum ToolStatus {
         switch self {
         case .active: String(localized: "Active")
         case .off: String(localized: "Off")
-        case .needsAccess: String(localized: "Needs Access")
+        case .needsAccess: String(localized: "Permissions needed")
         case .playing: String(localized: "Game Mode")
         }
     }
@@ -126,11 +128,11 @@ final class ToolRegistry {
     var status: ToolStatus {
         if GameModeTool.shared.isPlaying { return .playing }
         guard tools.contains(where: \.isEnabled) else { return .off }
-        return tools.contains(where: \.isActive) ? .active : .needsAccess
+        return !needsPermission && tools.contains(where: \.isActive) ? .active : .needsAccess
     }
 
     var needsPermission: Bool {
-        tools.contains { $0.isEnabled && $0.needs.contains { !$0.isGranted } }
+        tools.contains { $0.isEnabled && $0.uses.contains { !$0.isGranted } }
     }
 
     private init() {

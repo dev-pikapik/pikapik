@@ -11,10 +11,10 @@ final class AnimationsTool: AnimationsEngine, Tool {
     var tab: SettingsTab { .animations }
     var isActive: Bool { isEnabled }
     var needs: [Permission] { [] }
-    var isDefault: Bool { owned.isEmpty }
+    var isDefault: Bool { !changed }
 
     var isEnabled: Bool {
-        get { !owned.isEmpty }
+        get { changed }
         set { if !newValue { reset() } }
     }
 
@@ -26,14 +26,16 @@ final class AnimationsTool: AnimationsEngine, Tool {
         poweringOff: { Background.shared.poweringOff },
         journal: { MainCopy.journal },
         local: .standard,
-        read: { $0.read() },
-        write: { $0.write($1) },
+        read: { $0.apply == .dock ? DockEdges.read($0.key).flatMap($0.value(from:)) : $0.read() },
+        write: { setting, value in
+            if setting.apply == .dock { DockEdges.write(setting.key, value.map(setting.plist)) } else { setting.write(value) }
+        },
         readAutohide: {
             CFPreferencesAppSynchronize(dock)
-            return CFPreferencesCopyAppValue("autohide" as CFString, dock) as? Bool ?? false
+            return CFPreferencesCopyAppValue("autohide" as CFString, dock) as? Bool
         },
         writeAutohide: {
-            CFPreferencesSetAppValue("autohide" as CFString, $0 as CFBoolean, dock)
+            CFPreferencesSetAppValue("autohide" as CFString, $0.map { $0 as CFBoolean }, dock)
             CFPreferencesAppSynchronize(dock)
         },
         later: { DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: $0) },
@@ -178,7 +180,7 @@ struct AnimationsPage: View {
                 SystemSettingsRow(title: String(localized: "Even calmer: Reduce Motion in Accessibility"), url: SettingsGuide.reduceMotionLink, guide: .reduceMotion)
             }
             RestoreDefaultsSection(
-                message: tool.own.isEmpty
+                message: tool.own.isEmpty && !tool.holdsAutohide
                     ? String(localized: "All animations will be as in macOS again.")
                     : String(localized: "Animations will be as they were before pikapik."),
                 isDefault: tool.isDefault
@@ -192,7 +194,7 @@ struct AnimationsPage: View {
         .environment(\.inSettings, true)
         .onAppear {
             tool.reload()
-            offersAutohide = offersAutohide || !tool.autohide
+            offersAutohide = offersAutohide || tool.showsAutohide
         }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in tool.reload() }
     }

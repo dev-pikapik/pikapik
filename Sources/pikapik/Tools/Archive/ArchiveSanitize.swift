@@ -67,7 +67,7 @@ extension Archive {
         defer { closedir(stream) }
         var names: [String] = []
         while let entry = readdir(stream) {
-            let name = withUnsafePointer(to: entry.pointee.d_name) { $0.withMemoryRebound(to: CChar.self, capacity: Int(entry.pointee.d_namlen) + 1) { String(cString: $0) } }
+            let name = withUnsafeMutablePointer(to: &entry.pointee.d_name) { $0.withMemoryRebound(to: CChar.self, capacity: Int(entry.pointee.d_namlen) + 1) { String(cString: $0) } }
             if name != ".", name != ".." { names.append(name) }
         }
         return names

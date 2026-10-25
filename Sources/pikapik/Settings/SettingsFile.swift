@@ -35,15 +35,40 @@ struct SettingsFile {
         ToolID.pet, PreferenceKey.petTalks, PreferenceKey.petRhythm, PreferenceKey.petBall, ToolID.uninstallerTrashWatch,
         ToolID.appVolume, PreferenceKey.appVolumeLevels, PreferenceKey.appVolumeMuted, PreferenceKey.appVolumeNames,
     ] + GameRule.allCases.map(\.key))
+    static let olderKeys: Set<String> = [
+        PreferenceKey.appearance, PreferenceKey.appleLanguages, PreferenceKey.openAtLogin, PreferenceKey.keepRunning, PreferenceKey.checkUpdates,
+        PreferenceKey.commandKeysQuit, PreferenceKey.commandKeysClose, PreferenceKey.commandKeysQuitShortcut, PreferenceKey.commandKeysCloseShortcut,
+        ToolID.inputSwitch, ToolID.keyRepeat, ToolID.homeEnd, PreferenceKey.homeEndExcluded,
+        ToolID.layoutFix, PreferenceKey.layoutFixAuto, PreferenceKey.layoutFixShortcut, PreferenceKey.layoutFixExcluded,
+        ToolID.linearPointer, PreferenceKey.linearPointerSpeed, ToolID.wheelLines, PreferenceKey.wheelLinesCount, PreferenceKey.wheelLinesMode, PreferenceKey.wheelLinesPixels,
+        ToolID.wheelDirection, PreferenceKey.wheelDirectionNatural, PreferenceKey.wheelDirectionTrackpadNatural,
+        ToolID.sideButtons, PreferenceKey.sideButtonsSwap, ToolID.hideApp, PreferenceKey.hideAppButton, ToolID.middleClick, PreferenceKey.middleClickFingers,
+        ToolID.quitOnClose, PreferenceKey.quitOnCloseExcluded, ToolID.dockHide, PreferenceKey.dockHideAction, ToolID.dockDisplay, ToolID.windowZoom, PreferenceKey.windowZoomExcluded, ToolID.newFile, ToolID.compress, ToolID.convert,
+        ToolID.archive, PreferenceKey.archiveFormat, PreferenceKey.archiveSplit,
+        ToolID.finderOpen, ToolID.finderCut, ToolID.finderDelete,
+        ToolID.gameMode, PreferenceKey.gameModeGames, PreferenceKey.gameModeNotGames, PreferenceKey.gameModeSystemShortcuts, PreferenceKey.gameModeFPS, PreferenceKey.gameModeFPSCorner,
+        PreferenceKey.keepAwakeMode, PreferenceKey.keepAwakeDuration,
+        PreferenceKey.keepAwakeDisplay, PreferenceKey.keepAwakeLid, PreferenceKey.keepAwakeBattery,
+        PreferenceKey.fansRPM, ToolID.brightnessKeys,
+        PreferenceKey.animationsSpeed, PreferenceKey.animationsDockDelay, PreferenceKey.animationsDockSpeed, PreferenceKey.animationsMinimize, PreferenceKey.animationsBounce,
+        PreferenceKey.animationsWindowOpen, PreferenceKey.animationsResize, PreferenceKey.animationsQuickLook, PreferenceKey.animationsFinderColumns, PreferenceKey.animationsFinder,
+        ToolID.pet, PreferenceKey.petTalks, PreferenceKey.petRhythm, PreferenceKey.petBall, ToolID.uninstallerTrashWatch,
+        ToolID.appVolume, PreferenceKey.appVolumeLevels, PreferenceKey.appVolumeMuted, PreferenceKey.appVolumeNames,
+        GameRule.commandQ.key, GameRule.commandW.key, GameRule.spotlight.key, GameRule.siri.key, GameRule.appSwitcher.key, GameRule.hide.key, GameRule.launchpad.key,
+        GameRule.missionControl.key, GameRule.appWindows.key, GameRule.showDesktop.key, GameRule.desktops.key, GameRule.desktopNumbers.key, GameRule.swipes.key, GameRule.emoji.key,
+        GameRule.lookUp.key, GameRule.focusKeys.key, GameRule.globe.key, GameRule.controlClick.key, GameRule.shiftWheel.key, GameRule.cursor.key, GameRule.display.key,
+    ]
 
     var settings: [String: Any]
     var modified: Date
     var device: String
+    var known: Set<String>
 
     init(settings: [String: Any], modified: Date, device: String) {
         self.settings = Self.filter(settings)
         self.modified = modified
         self.device = device
+        known = Self.keys
     }
 
     init?(data: Data) {
@@ -55,14 +80,20 @@ struct SettingsFile {
         self.settings = Self.filter(settings)
         modified = Date(timeIntervalSince1970: (root["modified"] as? NSNumber)?.doubleValue ?? 0)
         device = root["device"] as? String ?? ""
+        known = (root["keys"] as? [String]).map { Set($0) } ?? Self.olderKeys
+    }
+
+    var removed: Set<String> {
+        Self.keys.intersection(known).subtracting(settings.keys)
     }
 
     func data() throws -> Data {
         let root: [String: Any] = [
             "app": Self.app,
-            "version": 1,
+            "version": 2,
             "modified": modified.timeIntervalSince1970,
             "device": device,
+            "keys": known.sorted(),
             "settings": settings,
         ]
         return try JSONSerialization.data(withJSONObject: root, options: [.prettyPrinted, .sortedKeys])
@@ -110,6 +141,11 @@ struct SettingsFile {
         if remote.modified == local { return .none }
         if remote.device == device { return .upload }
         return remote.modified > local ? .apply : .upload
+    }
+
+    static func copiedDevice(local: Date, remote: SettingsFile?, device: String) -> Bool {
+        guard let remote, remote.device == device, local != .distantPast else { return false }
+        return remote.modified > local
     }
 
     static func onSave(_ changed: @escaping () -> Void) {

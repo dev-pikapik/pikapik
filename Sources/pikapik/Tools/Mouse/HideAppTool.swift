@@ -201,7 +201,7 @@ private struct HideAppSettings: View {
                     Button("Cancel", action: finish)
                 }
             } label: {
-                RowLabel(monitor == nil ? buttonName : Text("Press a mouse button over this window"))
+                RowLabel(monitor == nil ? buttonName : Text("Press the middle or a side mouse button over this window"))
             }
             .disabled(!tool.isEnabled)
         }

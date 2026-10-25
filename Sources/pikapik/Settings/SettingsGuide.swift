@@ -503,20 +503,19 @@ enum GuideText {
         return value
     }
 
+    static func forget() {
+        tables = [:]
+        cache = [:]
+    }
+
     private static func language(_ table: [String: [String: String]]) -> String {
-        Bundle.preferredLocalizations(from: Array(table.keys), forPreferences: languages).first ?? "en"
+        GuideTables.language(of: Array(table.keys), languages: languages)
     }
 
     private static func tables(_ bundle: String, only name: String? = nil) -> [[String: [String: String]]] {
         let key = bundle + (name ?? "")
         if let known = tables[key] { return known }
-        let folder = URL(fileURLWithPath: "\(root)/\(bundle).appex/Contents/Resources")
-        let files = ((try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? []).filter { $0.pathExtension == "loctable" }
-        let wanted = files.filter { name == nil ? true : $0.deletingPathExtension().lastPathComponent == name }
-        let ordered = wanted.filter { $0.lastPathComponent == "Localizable.loctable" } + wanted.filter { $0.lastPathComponent != "Localizable.loctable" }.sorted { $0.lastPathComponent < $1.lastPathComponent }
-        let loaded = ordered.compactMap { NSDictionary(contentsOf: $0) as? [String: Any] }.map { raw in
-            raw.compactMapValues { ($0 as? [String: Any])?.compactMapValues { $0 as? String } }
-        }
+        let loaded = GuideTables.load(URL(fileURLWithPath: "\(root)/\(bundle).appex/Contents/Resources"), only: name, languages: languages)
         tables[key] = loaded
         return loaded
     }

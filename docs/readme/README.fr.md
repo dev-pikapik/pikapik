@@ -18,7 +18,7 @@ Ouvrez Terminal, collez cette ligne et appuyez sur Retour :
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"
 ```
 
-La commande télécharge la dernière version depuis GitHub et ne l’installe que si elle est signée par son développeur et a réussi la vérification d’Apple contre les logiciels malveillants. pikapik apparaît dans la barre des menus, en haut de l’écran. Tout reste éteint tant que vous ne l’activez pas.
+La commande télécharge la dernière version depuis GitHub et ne l’installe que si elle est signée par son développeur et a réussi la vérification d’Apple contre les logiciels malveillants. pikapik apparaît dans la barre des menus, en haut de l’écran. Seul le compagnon démarre de lui-même ; tous les autres outils restent éteints tant que vous ne les activez pas.
 
 <details>
 <summary>Autres façons : Homebrew ou un dmg</summary>
@@ -31,7 +31,7 @@ brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
 
 Ou téléchargez [pikapik.dmg](https://github.com/dev-pikapik/pikapik/releases/latest/download/pikapik.dmg), ouvrez-le et faites glisser l’app dans le dossier Applications.
 
-La commande ci-dessus et Homebrew placent tous deux l’app dans `/Applications`, la lancent, demandent les autorisations et activent l’ouverture à la connexion. Ensuite, l’app se met à jour toute seule, voir **Mises à jour**. Pour la supprimer, voir **Désinstallation**.
+La commande ci-dessus et Homebrew placent tous deux l’app dans `/Applications`, la lancent et activent l’ouverture à la connexion. Ensuite, l’app se met à jour toute seule, voir **Mises à jour**. Pour la supprimer, voir **Désinstallation**.
 
 </details>
 
@@ -280,12 +280,12 @@ La commande ci-dessus et Homebrew placent tous deux l’app dans `/Applications`
 <details>
 <summary>Premier lancement</summary>
 
-pikapik a besoin de deux autorisations. Au premier lancement, elle ouvre les réglages sur la page Autorisations, qui vous guide pas à pas, et macOS affiche ses propres demandes. Allez dans **Réglages Système › Confidentialité et sécurité** et activez pikapik dans :
+Au premier lancement, pikapik ouvre ses réglages : choisissez une page à gauche et activez ce dont vous avez besoin. Les outils qui modifient les touches, les clics ou les fenêtres ont besoin de deux autorisations ; les autres s’en passent. Un outil auquel il en manque une apparaît à moitié grisé ; cliquez dessus, et la page Autorisations vous montre où activer pikapik dans **Réglages Système › Confidentialité et sécurité** :
 
-- **Accessibilité**, pour que l’app puisse modifier une frappe ou un clic avant qu’il n’atteigne les autres apps.
+- **Accessibilité** (sous macOS 27 : **Contrôle de l’appareil et accès aux données**), pour que l’app puisse modifier une frappe ou un clic avant qu’il n’atteigne les autres apps.
 - **Surveillance de l’entrée**, pour que l’app puisse voir les frappes et les clics sans les modifier. C’est ainsi que fonctionne le changement de langue.
 
-L’app détecte le changement en une ou deux secondes, sans redémarrage.
+Sous chacune des deux, la page Autorisations indique sur quelles pages vous avez activé des outils qui en ont besoin. L’app détecte le changement en une ou deux secondes, sans redémarrage.
 
 Certaines fonctions demandent davantage : **Accès administrateur**, **Extensions du Finder**, **iCloud Drive**, **Accès complet au disque**, **Enregistrement de l’écran** et **Enregistrement de l’audio système**. Tout se trouve sur la page Autorisations des réglages : chaque autorisation a une ligne qui dit à quoi elle sert, une coche verte ou une croix orange, et un seul bouton : **Autoriser** quand elle manque, **Éteindre** quand elle est active. Vous pouvez ainsi reprendre n’importe quelle autorisation sur place.
 
@@ -353,8 +353,8 @@ Certaines apps et certains jeux comptent le défilement en pixels exacts : pour 
 pikapik ouvre aussi ce que macOS ne sait pas ouvrir : les RAR, même répartis en plusieurs parties, les 7Z protégés par mot de passe, les jeux de parties comme .001, .z01, .r00 et .part1.rar, ainsi que les ZIPX, CAB, LZH, ARJ, ZST, LZMA, WIM et bien d’autres. Un double-clic les ouvre dans pikapik. Les noms de fichiers des anciens ZIP, par exemple en cyrillique, en japonais ou en chinois, s’affichent correctement. La ligne **Ouvrir les archives dans pikapik**, dans Réglages › Finder, te laisse choisir dans un menu l’app des ZIP et des 7Z, par exemple pikapik, tandis que les TAR et les GZ restent à l’app d’archives intégrée, qui s’en occupe déjà très bien. pikapik sait ouvrir le RAR, mais pas le créer : la licence du RAR n’autorise que l’extraction.
 
 Une fenêtre demande le mot de passe, **Arrêter** interrompt n’importe quelle tâche, et d’une archive endommagée ou incomplète, pikapik récupère ce qui est encore lisible. Si une archive gonflait jusqu’à une taille énorme, pikapik vous demande confirmation avant de l’extraire, et il s’arrête à temps quand le disque est sur le point d’être plein. Les archives qui tentent d’écrire en dehors de leur propre dossier sont bloquées. Sélectionnez une archive dans le Finder et appuyez sur Espace pour voir ce qu’elle contient.
-**Archives dans la version du Mac App Store.** Elles y fonctionnent aussi, mais avec les outils intégrés à macOS au lieu du 7-Zip fourni, d’où des limites : seul le ZIP peut avoir un mot de passe, pas le 7Z ; une archive ne peut pas être découpée en parties, et les archives en plusieurs parties (.001, .part1.rar, .z01 et similaires) ne peuvent pas être ouvertes ; les fichiers seuls .xz, .lzma et .zst ne peuvent pas être ouverts (les .gz et .bz2 le peuvent) ; les 7Z et RAR protégés par mot de passe ne peuvent pas être ouverts ; et la ligne **Ouvrir les archives dans pikapik** n’existe pas. La première fois, pikapik demande l’accès à votre dossier personnel, comme pour Nouveau fichier et Copie allégée, car cette version ne peut écrire que là où vous l’avez autorisée. Activez l’extension du Finder dans Réglages Système › Général › Ouverture et extensions ; pikapik montre où cliquer.
 
+**Archives dans la version du Mac App Store.** Elles y fonctionnent aussi, mais avec les outils intégrés à macOS au lieu du 7-Zip fourni, d’où des limites : seul le ZIP peut avoir un mot de passe, pas le 7Z ; une archive ne peut pas être découpée en parties, et les archives en plusieurs parties (.001, .part1.rar, .z01 et similaires) ne peuvent pas être ouvertes ; les fichiers seuls .xz, .lzma et .zst ne peuvent pas être ouverts (les .gz et .bz2 le peuvent) ; les 7Z et RAR protégés par mot de passe ne peuvent pas être ouverts ; et la ligne **Ouvrir les archives dans pikapik** n’existe pas. La première fois, pikapik demande l’accès à votre dossier personnel, comme pour Nouveau fichier et Copie allégée, car cette version ne peut écrire que là où vous l’avez autorisée. Activez l’extension du Finder dans Réglages Système › Général › Ouverture et extensions ; pikapik montre où cliquer.
 
 **Masquer les icônes du bureau.** Activez-le avant un appel, un enregistrement de l’écran ou une capture d’écran, et les fichiers et dossiers du bureau disparaissent. Désactivez-le, et ils reviennent à leur place. Rien n’est déplacé : les fichiers restent dans le dossier Bureau du Finder. C’est le réglage **Afficher les éléments › Sur le bureau** de Réglages Système › Bureau et Dock, en plus accessible, donc les deux sont toujours d’accord. Dans la version du Mac App Store, cette ligne recouvre plutôt les icônes avec votre fond d’écran sur chaque écran, ou avec une couleur unie si votre fond d’écran est animé, et les clics atteignent toujours le bureau. Dans Réglages, le bouton **Ouvrir** en dessous ouvre toujours cette page des Réglages Système.
 
@@ -362,13 +362,11 @@ Une fenêtre demande le mot de passe, **Arrêter** interrompt n’importe quelle
 
 **Mode Jeu.** Ajoutez vos jeux, et pendant que vous jouez, votre Mac ne vous fait pas sortir du jeu. Spotlight, Siri, ⌘Tab, Mission Control et les balayages entre bureaux ne s’ouvrent pas par-dessus le jeu, ⌘Q et ⌘W ne le ferment pas par accident, la molette change toujours d’emplacement dans la barre rapide quand vous maintenez Maj, le pointeur ne glisse pas vers le Dock, la barre des menus ou un autre écran, et l’écran reste allumé. Chacun de ces réglages a son propre interrupteur sur la page Jeux, et pikapik vous propose les jeux qu’il trouve sur votre Mac. Dans un jeu, Contrôle-clic reste un simple clic, et Contrôle avec les flèches ne change pas de bureau. Minecraft est reconnu aussi : ajoutez Minecraft Launcher ou CurseForge, et le mode s’active dans Minecraft lui-même. Pour quitter un jeu, appuyez sur ⇧⌘Q ; pour fermer sa fenêtre, sur ⇧⌘W. ⌥⌘Esc fonctionne toujours. Dès que vous quittez le jeu, tout fonctionne comme d’habitude. Désactivé par défaut.
 
-Activez le mode Jeu et jouez. Autres réglages de jeu contient le catalogue publié par votre Mac, avec les touches actuelles et un aperçu animé pour chaque action.
+La section **Autres réglages de jeu** de la page Jeux liste les raccourcis publiés par votre Mac, avec leurs touches actuelles et un aperçu animé de chaque action. Pour chacun, vous choisissez **Suivre les règles du mode Jeu**, **Désactiver en jeu** ou **Autoriser en jeu**. Les raccourcis de langue disposent en plus de l’option **Changer de langue à chaque appui** : un appui bref et volontaire change la source de saisie sans rien ouvrir par-dessus le jeu, et les touches que vous maintenez pour courir ou sauter gardent la priorité, pour que la langue ne change pas par accident.
 
-Automatique suspend les actions qui ouvrent des fenêtres ou déplacent le focus. Un raccourci de langue bref et volontaire change la source sans fenêtre système. Les touches de déplacement maintenues ont priorité pour éviter les changements de langue pendant la course et les sauts.
+Dans **Autres réglages de jeu**, le groupe **Souris et trackpad** liste uniquement ce qui est activé dans macOS sur votre Mac, avec les noms d’Apple et un petit dessin pour chaque élément : raccourcis sur un bouton de la souris, balayage entre bureaux et apps en plein écran, Mission Control et App Exposé, pincement pour les apps et écartement pour le bureau, balayage depuis le bord droit pour le Centre de notifications et chaque coin actif avec son action. Tant qu’un jeu est au premier plan, ils sont suspendus : un balayage involontaire ou un effleurement d’un coin de l’écran ne vous sortira pas du jeu. Les gestes à l’intérieur du jeu continuent de fonctionner. Chaque élément peut être réglé pour fonctionner comme d’habitude. Dans la version du site, **Modifier…** sur un coin actif choisit une autre action sur place, et **Remettre en place** rétablit la première ; chaque changement relance le Dock une fois.
 
-Dans Réglages → Jeux → Autres réglages de jeu, le groupe « Souris et trackpad » liste uniquement ce qui est activé dans macOS sur votre Mac, avec les noms d’Apple et un petit dessin pour chaque élément : raccourcis sur un bouton de la souris, balayage entre bureaux et apps en plein écran, Mission Control et App Exposé, pincement pour les apps et écartement pour le bureau, balayage depuis le bord droit pour le centre de notifications et chaque coin actif avec son action. Tant qu’un jeu est au premier plan, ils sont suspendus : un balayage involontaire ou un effleurement d’un coin de l’écran ne vous sortira pas du jeu. Les gestes à l’intérieur du jeu continuent de fonctionner. Chaque élément peut être réglé pour fonctionner comme d’habitude. Dans la version du site, **Modifier…** sur un coin actif choisit une autre action sur place, et **Remettre en place** rétablit la première ; chaque changement relance le Dock une fois.
-
-Ouvrez Réglages → Jeux → Ajouter un jeu et cliquez sur votre jeu en cours. Les jeux utilisant Java ou d’autres environnements apparaissent aussi, même sans fichier .app. Minecraft s’appelle Minecraft au lieu de java. Trouvez le processus du jeu et glissez sa ligne sur Vos jeux dans Réglages → Jeux.
+Pour ajouter un jeu, allez sur la page Jeux, cliquez sur **Ajouter un jeu…**, puis sur votre jeu parmi les apps ouvertes ou celles de votre Dock. Un jeu qui passe par Java ou un autre environnement d’exécution, sans app à lui, y apparaît aussi, et Minecraft s’appelle Minecraft au lieu de java. Vous pouvez également faire glisser un jeu du Finder vers la liste, ou sa ligne depuis Moniteur d’activité.
 
 **Afficher les FPS.** Les FPS sont les images par seconde : le nombre d’images que le jeu dessine chaque seconde. Activez **Afficher les FPS** sur la page Jeux, et tant que le Mode Jeu est activé, une petite pastille sombre avec ce nombre s’affiche dans un coin de n’importe quel jeu. Cliquez sur un coin de l’image au-dessus de l’interrupteur pour le choisir. Un tiret signifie que les premières images ne sont pas encore arrivées, et un 0 grisé que le jeu ne dessine plus rien. Sous macOS 27, la plupart des jeux sont comptés par macOS lui-même, sans autorisation. Un jeu que macOS ne peut pas compter, le plus souvent un jeu ancien, est compté via l’enregistrement de l’écran : la ligne **Enregistrement de l’écran** apparaît alors sur la page Autorisations, pikapik ne la demande jamais pendant une partie, et le nombre ne peut pas dépasser la fréquence de rafraîchissement de l’écran. Sous macOS 14 à 26 et dans la version du Mac App Store, tous les jeux sont comptés ainsi, c’est pourquoi la ligne apparaît dès que vous activez **Afficher les FPS**, et le bouton **Autoriser** sous l’interrupteur vous y mène. Aucune image n’est conservée ni envoyée. Désactivé par défaut.
 
@@ -419,7 +417,7 @@ Montre la vitesse de ta connexion en ce moment. Clique sur **Tester le débit** 
 
 Ouvrez les réglages depuis le menu avec **Réglages…** ou ⌘, ou relancez simplement pikapik depuis le Finder, Launchpad ou Spotlight. Tant que la fenêtre est ouverte, l’app apparaît dans le Dock et dans ⌘Tab.
 
-- **Général** : ouverture à la connexion, apparence (Système, Clair ou Sombre), langue, mises à jour et sauvegarde : exporter et importer les réglages sous forme de fichier, ou les synchroniser avec iCloud Drive.
+- **Général** : ouverture à la connexion, maintien en arrière-plan après avoir quitté, apparence (Système, Clair ou Sombre), langue et sauvegarde : exporter et importer les réglages sous forme de fichier, ou les synchroniser avec iCloud Drive.
 - **Batterie** : niveau de charge, temps avant la charge complète ou temps restant, état, capacité maximum, nombre de cycles, adaptateur secteur et puissance en watts, et conseils pour faire durer la batterie. La page se contente d’afficher des informations : la limite de recharge reste dans **Réglages Système › Batterie**. Elle n’apparaît que sur un Mac avec batterie.
 - **Rester éveillé** : durée, options d’écran et de capot.
 - **Luminosité** : un curseur pour chaque écran que macOS ne peut pas régler lui-même, les touches de luminosité et l’option pour assombrir plutôt l’image.
@@ -433,13 +431,14 @@ Ouvrez les réglages depuis le menu avec **Réglages…** ou ⌘, ou relancez si
 - **Fenêtres** : agrandir avec le bouton vert (avec une liste d’exceptions), protection de ⌘Q et ⌘W, et quitter à la dernière fenêtre (avec une liste d’exceptions).
 - **Dock** : réduire ou masquer d’un clic dans le Dock et garder le Dock sur un seul écran.
 - **Finder** : nouveau fichier, copie allégée, conversion et archives, ouvrir avec Entrée, couper avec ⌘X, supprimer avec ⌫, masquer les icônes du bureau et afficher les fichiers masqués.
+- **Animations** : vitesse des animations des fenêtres, de Coup d’œil et du Finder, jusqu’à l’instantané, délai et vitesse d’apparition du Dock masqué, effet de réduction et icônes du Dock qui rebondissent.
 - **Lecteur** : ouvrir une vidéo dans sa propre fenêtre, les formats lus, un menu pour choisir l’app de chaque format et les licences de FFmpeg, dav1d, libass, FreeType, HarfBuzz et FriBidi.
 - **Supprimer des apps** : supprimer une app avec ses fichiers, tout remettre en place plus tard et nettoyer ce que les apps supprimées ont laissé derrière elles.
 - **Tâches en arrière-plan** : tout ce qui tourne en arrière-plan, l’app qui l’a ajouté et un bouton pour les éteindre et les rallumer sans ouvrir Réglages Système.
 - **Jeux** : votre liste de jeux et les réglages du Mode Jeu.
 - **Compagnon** : l’activer ou le désactiver, le laisser bavarder, vivre à votre rythme et jouer au ballon, l’habiller et voir vos récompenses.
-- **Autorisations** : toutes les autorisations utilisées par pikapik, chacune avec son état et un bouton pour l’autoriser ou l’éteindre. Un outil auquel il manque une autorisation apparaît à moitié grisé ; un clic dessus ouvre cette page sur la bonne ligne.
-- **À propos** : version, liens vers l’historique des changements et pour signaler un problème.
+- **Autorisations** : toutes les autorisations utilisées par pikapik, chacune avec son état et un bouton pour l’autoriser ou l’éteindre ; les deux principales indiquent aussi quelles pages ont des outils qui en ont besoin. Un outil auquel il manque une autorisation apparaît à moitié grisé ; un clic dessus ouvre cette page sur la bonne ligne.
+- **À propos** : version et mises à jour, liens vers l’historique des changements et pour signaler un problème.
 
 De nombreux réglages s’accompagnent d’une petite image qui montre ce qu’ils font, par exemple un Mac qui reste éveillé ou une fenêtre qui se cache derrière le Dock. L’image change avec l’interrupteur et reste fixe quand « Réduire les animations » est activé dans Réglages Système.
 
@@ -454,11 +453,11 @@ Chaque page comporte en bas un bouton **Rétablir les réglages par défaut…**
 <details>
 <summary>Mises à jour</summary>
 
-pikapik recherche les nouvelles versions au lancement et toutes les 6 heures. Vous pouvez désactiver cela dans Réglages › Général. Quand une nouvelle version sort, un bouton **Mettre à jour vers …** apparaît dans le menu : un clic, et l’app télécharge la mise à jour, l’installe et redémarre. Vous pouvez aussi vérifier vous-même avec **Rechercher** dans Réglages › Général.
+pikapik recherche les nouvelles versions au lancement et toutes les 6 heures. Vous pouvez désactiver cela dans Réglages › À propos. Quand une nouvelle version sort, un bouton **Mettre à jour vers …** apparaît dans le menu : un clic, et l’app télécharge la mise à jour, l’installe et redémarre. Vous pouvez aussi vérifier vous-même avec **Rechercher** dans Réglages › À propos.
 
 Avec Homebrew, vous pouvez aussi lancer `brew upgrade --cask pikapik`.
 
-Depuis la version 1.3, les autorisations sont conservées après les mises à jour.
+Les autorisations sont conservées après les mises à jour.
 
 </details>
 
@@ -479,7 +478,7 @@ Les deux quittent l’app, la retirent des éléments d’ouverture et la suppri
 <summary>Questions fréquentes</summary>
 
 **Pourquoi faut-il deux autorisations ?**
-macOS sépare l’accès au clavier et à la souris en deux. L’accessibilité permet à l’app de modifier une frappe ou un clic, et la plupart des fonctions n’ont besoin que de cela. La surveillance de l’entrée lui permet seulement d’observer, et cela suffit pour changer de langue.
+macOS sépare l’accès au clavier et à la souris en deux. L’accessibilité (Contrôle de l’appareil et accès aux données sous macOS 27) permet à l’app de modifier une frappe ou un clic, et la plupart des fonctions n’ont besoin que de cela. La surveillance de l’entrée lui permet seulement d’observer, et cela suffit pour changer de langue.
 
 **macOS indique que l’app provient d’un développeur non identifié.**
 pikapik est signée par son développeur et réussit la vérification d’Apple contre les logiciels malveillants, ce message ne devrait donc pas apparaître. S’il apparaît quand même, ouvrez **Réglages Système › Confidentialité et sécurité** et cliquez sur **Ouvrir quand même**.

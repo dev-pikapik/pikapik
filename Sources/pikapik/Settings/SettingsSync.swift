@@ -6,15 +6,10 @@ enum SettingsBackup {
         SettingsFile.filter(UserDefaults.standard.persistentDomain(forName: Bundle.main.bundleIdentifier ?? "") ?? [:])
     }
 
-    static func apply(_ settings: [String: Any]) {
+    static func apply(_ file: SettingsFile) {
         let defaults = UserDefaults.standard
-        for key in SettingsFile.keys {
-            if let value = settings[key] {
-                defaults.set(value, forKey: key)
-            } else {
-                defaults.removeObject(forKey: key)
-            }
-        }
+        file.settings.forEach { defaults.set($1, forKey: $0) }
+        file.removed.forEach(defaults.removeObject)
         ToolRegistry.shared.tools.forEach { $0.load() }
         KeepAwake.shared.load()
         #if !APPSTORE
@@ -117,7 +112,7 @@ final class SettingsSync {
         }
     }
 
-    let device: String
+    @ObservationIgnored private(set) var device: String
 
     @ObservationIgnored private var modified: Date {
         get { Date(timeIntervalSince1970: UserDefaults.standard.double(forKey: Self.modifiedKey)) }
@@ -159,7 +154,7 @@ final class SettingsSync {
 
     func confirmImport(_ item: Import) {
         pendingImport = nil
-        apply(item.file.settings)
+        apply(item.file)
         settingsChanged()
     }
 
@@ -203,10 +198,14 @@ final class SettingsSync {
         case .success(let file): remote = file
         case .failure(let error): return state = .failed(error.localizedDescription)
         }
+        if SettingsFile.copiedDevice(local: modified, remote: remote, device: device) {
+            device = UUID().uuidString
+            UserDefaults.standard.set(device, forKey: Self.deviceKey)
+        }
         switch SettingsFile.merge(local: modified, remote: remote, device: device) {
         case .apply:
             guard let remote else { return }
-            apply(remote.settings)
+            apply(remote)
             last = SettingsBackup.snapshot
             modified = remote.modified
             state = .synced(.now)
@@ -218,9 +217,9 @@ final class SettingsSync {
         }
     }
 
-    private func apply(_ settings: [String: Any]) {
+    private func apply(_ file: SettingsFile) {
         applying = true
-        SettingsBackup.apply(settings)
+        SettingsBackup.apply(file)
         applying = false
     }
 

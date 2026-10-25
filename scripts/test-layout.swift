@@ -3,6 +3,63 @@ import Carbon
 
 @main
 enum TestLayout {
+    static let spellingFile = "scripts/test-layout-spell.lzma"
+    static let recording = CommandLine.arguments.dropFirst().first == "record"
+    static var spelling: [String: [String]?] = [:]
+    static var silence: (kind: String, language: String?)?
+
+    static func recorded(_ kind: String, _ language: String?, _ text: String, live: () -> [String]?) -> [String]? {
+        if let quiet = silence, quiet.kind == kind, quiet.language == nil || quiet.language == language {
+            silence = nil
+            return []
+        }
+        let parts = [kind, language ?? "", text]
+        let key = parts.joined(separator: "\t")
+        if let answer = spelling[key] { return answer }
+        precondition(recording, "\(spellingFile) has no answer for \(parts.filter { !$0.isEmpty }.joined(separator: " ")), record the answers again with build/test-layout record")
+        let answer = live()
+        spelling.updateValue(answer, forKey: key)
+        return answer
+    }
+
+    static func silent(_ kind: String, _ language: String? = nil, _ check: () -> Void) {
+        silence = (kind, language)
+        check()
+        precondition(silence == nil, "the engine never asked for \(kind), so silencing it tested nothing")
+    }
+
+    static func precondition(_ condition: Bool, _ message: @autoclosure () -> String = "", line: UInt = #line) {
+        if !condition { saveSpelling() }
+        Swift.precondition(condition, message(), line: line)
+    }
+
+    static func saveSpelling() {
+        guard recording else { return }
+        let text = spelling.map { ([$0.key] + ($0.value ?? ["(nil)"])).joined(separator: "\t") }.sorted().joined(separator: "\n") + "\n"
+        try! (Data(text.utf8) as NSData).compressed(using: .lzma).write(toFile: spellingFile, options: .atomic)
+        print("layout: recorded \(spelling.count) spelling answers in \(spellingFile)")
+    }
+
+    static func replaySpelling() {
+        if let data = FileManager.default.contents(atPath: spellingFile) {
+            for line in String(decoding: try! (data as NSData).decompressed(using: .lzma) as Data, as: UTF8.self).split(separator: "\n") {
+                let fields = line.components(separatedBy: "\t")
+                let answer = Array(fields.dropFirst(3))
+                spelling.updateValue(answer == ["(nil)"] ? nil : answer, forKey: fields.prefix(3).joined(separator: "\t"))
+            }
+        } else {
+            precondition(recording, "\(spellingFile) is missing: record the spell checker's answers with build/test-layout record from the repo root")
+        }
+        for (live, recorded) in [
+            (#selector(getter: NSSpellChecker.availableLanguages), #selector(NSSpellChecker.recordedLanguages)),
+            (#selector(NSSpellChecker.checkSpelling(of:startingAt:language:wrap:inSpellDocumentWithTag:wordCount:)), #selector(NSSpellChecker.recordedCheck(of:startingAt:language:wrap:inSpellDocumentWithTag:wordCount:))),
+            (#selector(NSSpellChecker.guesses(forWordRange:in:language:inSpellDocumentWithTag:)), #selector(NSSpellChecker.recordedGuesses(forWordRange:in:language:inSpellDocumentWithTag:))),
+            (#selector(NSSpellChecker.completions(forPartialWordRange:in:language:inSpellDocumentWithTag:)), #selector(NSSpellChecker.recordedCompletions(forPartialWordRange:in:language:inSpellDocumentWithTag:))),
+        ] {
+            method_exchangeImplementations(class_getInstanceMethod(NSSpellChecker.self, live)!, class_getInstanceMethod(NSSpellChecker.self, recorded)!)
+        }
+    }
+
     static func layout(_ id: String) -> KeyboardLayout? {
         KeyboardLayouts.layout(id: "com.apple.keylayout." + id)
     }
@@ -25,19 +82,22 @@ enum TestLayout {
     }
 
     static func words(_ language: String) -> [String] {
-        let data = (try? Data(contentsOf: URL(fileURLWithPath: "Resources/Localizable.xcstrings"))) ?? Data()
-        let root = (try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["strings"] as? [String: [String: Any]] ?? [:]
-        let values = root.values.compactMap { item -> String? in
-            guard let loc = (item["localizations"] as? [String: Any])?[language] as? [String: Any] else { return nil }
-            if let value = (loc["stringUnit"] as? [String: Any])?["value"] as? String { return value }
-            let plural = (loc["variations"] as? [String: Any])?["plural"] as? [String: Any]
-            return ((plural?["many"] ?? plural?["other"]) as? [String: Any]).flatMap { ($0["stringUnit"] as? [String: Any])?["value"] as? String }
-        }
-        precondition(!values.isEmpty, "no strings for \(language)")
+        let tokens = recorded("words", language, "") {
+            let data = (try? Data(contentsOf: URL(fileURLWithPath: "Resources/Localizable.xcstrings"))) ?? Data()
+            let root = (try? JSONSerialization.jsonObject(with: data) as? [String: Any])?["strings"] as? [String: [String: Any]] ?? [:]
+            let values = root.values.compactMap { item -> String? in
+                guard let loc = (item["localizations"] as? [String: Any])?[language] as? [String: Any] else { return nil }
+                if let value = (loc["stringUnit"] as? [String: Any])?["value"] as? String { return value }
+                let plural = (loc["variations"] as? [String: Any])?["plural"] as? [String: Any]
+                return ((plural?["many"] ?? plural?["other"]) as? [String: Any]).flatMap { ($0["stringUnit"] as? [String: Any])?["value"] as? String }
+            }
+            precondition(!values.isEmpty, "no strings for \(language)")
+            return Set(values.flatMap { $0.split(whereSeparator: \.isWhitespace) }.filter { !$0.contains("%") }.map(String.init)).sorted()
+        }!
         var words = Set<String>()
-        for token in values.flatMap({ value in value.split(whereSeparator: \.isWhitespace) }) where !token.contains("%") {
-            words.insert(String(token))
-            if let core = KeyboardLayouts.core(String(token)) { words.insert(core) }
+        for token in tokens {
+            words.insert(token)
+            if let core = KeyboardLayouts.core(token) { words.insert(core) }
         }
         return words.sorted()
     }
@@ -48,12 +108,7 @@ enum TestLayout {
         for word in words {
             guard let keys = strokes(word, layout) else { continue }
             checked += 1
-            guard let fix = KeyboardLayouts.fix(keys, from: layout) else { continue }
-            if KeyboardLayouts.fix(keys, from: layout)?.text == fix.text {
-                found.append("\(fix.original) → \(fix.text)")
-            } else {
-                print("\(fix.original) → \(fix.text) did not repeat on a second try: macOS spell check gave one wrong answer, not counted")
-            }
+            if let fix = KeyboardLayouts.fix(keys, from: layout) { found.append("\(fix.original) → \(fix.text)") }
         }
         return (checked, found)
     }
@@ -70,8 +125,7 @@ enum TestLayout {
 
     static func main() {
         setbuf(stdout, nil)
-        let suggests = !(NSSpellChecker.shared.completions(forPartialWordRange: NSRange(location: 0, length: 1), in: "я", language: "ru", inSpellDocumentWithTag: 0) ?? []).isEmpty
-        if !suggests { print("layout: macOS gives no word suggestions here, skipping the cases that need them") }
+        replaySpelling()
         precondition(KeyboardLayouts.wanted(["ru-MD", "en-MD", "ru-RU", "zh-Hans-CN"], covered: ["en"]) == ["ru", "zh"])
         precondition(KeyboardLayouts.wanted(["en-US"], covered: ["en"]).isEmpty)
         print("layout: the layouts to offer are the preferred languages nobody covers yet, once each: ok")
@@ -81,10 +135,10 @@ enum TestLayout {
         KeyboardLayouts.all = [us, ru]
         expect(fix("ghbdtn", us)?.text, "привет")
         expect(fix("ghbdtn", us)?.original, "ghbdtn")
-        if suggests { expect(fix("z nt,z k.,k.", us)?.text, "я тебя люблю") }
+        expect(fix("z nt,z k.,k.", us)?.text, "я тебя люблю")
         expect(fix("I said ghbdtn", us)?.original, "ghbdtn")
         expect(fix("I said ghbdtn", us)?.text, "привет")
-        if suggests { expect(fix("z 2 rjnf", us)?.text, "я 2 кота") }
+        expect(fix("z 2 rjnf", us)?.text, "я 2 кота")
         expect(fix("руддщ цщкдв", ru)?.text, "hello world")
         expect(fix("GHBDTN", us)?.text, "ПРИВЕТ")
         expect(fix("ghbdtn", us, ignored: ["ghbdtn"])?.text, nil)
@@ -126,7 +180,7 @@ enum TestLayout {
         expect(fix("ghbdtn", us)?.text, "привет")
 
         KeyboardLayouts.all = [us, el]
-        if suggests { expect(fix(us.translate(strokes("ευχαριστώ", el)!).text, us)?.text, "ευχαριστώ") }
+        expect(fix(us.translate(strokes("ευχαριστώ", el)!).text, us)?.text, "ευχαριστώ")
 
         if let arabic = layout("Arabic") {
             KeyboardLayouts.all = [us, arabic]
@@ -162,6 +216,38 @@ enum TestLayout {
 
         for failure in failures { print(failure) }
         precondition(failures.isEmpty, "\(failures.count) false fixes")
+
+        KeyboardLayouts.extraLanguages = ["en"]
+        KeyboardLayouts.all = [us, ru]
+        silent("guesses") { expect(fix("geat", us)?.text, nil) }
+        if let arabic = layout("Arabic") {
+            KeyboardLayouts.all = [us, arabic]
+            silent("completions", us.dictionary) { expect(fix("kumbi", us)?.text, nil) }
+        }
+        print("layout: an English word stays as typed when the spell checker leaves one question unanswered: ok")
+        saveSpelling()
         print("layout: ok")
+    }
+}
+
+extension NSSpellChecker {
+    @objc dynamic func recordedLanguages() -> [String] {
+        TestLayout.recorded("languages", nil, "") { recordedLanguages() } ?? []
+    }
+
+    @objc dynamic func recordedCheck(of text: String, startingAt start: Int, language: String?, wrap: Bool, inSpellDocumentWithTag tag: Int, wordCount: UnsafeMutablePointer<Int>?) -> NSRange {
+        let found = (TestLayout.recorded("check", language, text) {
+            let range = recordedCheck(of: text, startingAt: start, language: language, wrap: wrap, inSpellDocumentWithTag: tag, wordCount: wordCount)
+            return range.location == NSNotFound ? [] : [String(range.location), String(range.length)]
+        } ?? []).compactMap { Int($0) }
+        return found.count == 2 ? NSRange(location: found[0], length: found[1]) : NSRange(location: NSNotFound, length: 0)
+    }
+
+    @objc dynamic func recordedGuesses(forWordRange range: NSRange, in text: String, language: String?, inSpellDocumentWithTag tag: Int) -> [String]? {
+        TestLayout.recorded("guesses", language, (text as NSString).substring(with: range)) { recordedGuesses(forWordRange: range, in: text, language: language, inSpellDocumentWithTag: tag) }
+    }
+
+    @objc dynamic func recordedCompletions(forPartialWordRange range: NSRange, in text: String, language: String?, inSpellDocumentWithTag tag: Int) -> [String]? {
+        TestLayout.recorded("completions", language, (text as NSString).substring(with: range)) { recordedCompletions(forPartialWordRange: range, in: text, language: language, inSpellDocumentWithTag: tag) }
     }
 }

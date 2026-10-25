@@ -13,12 +13,14 @@ final class AirPlaySession {
     private var server: AirPlayServer?
     private var content: AirPlayContent?
     private var opening = false
+    private var failed = false
     private var waiting: [(AirPlayContent?) -> Void] = []
     private var cache = AirPlayCache(limit: 128 << 20)
     private var pending: [String: [(AirPlayBuilt?) -> Void]] = [:]
     private var closed = false
     private var asked = false
     private(set) var url: URL
+    var onFailure: () -> Void = {}
 
     var hasBeenAsked: Bool { queue.sync { asked } }
     var cachedBytes: Int { queue.sync { cache.bytes } }
@@ -54,6 +56,7 @@ final class AirPlaySession {
 
     private func withContent(_ body: @escaping (AirPlayContent?) -> Void) {
         if let content { return body(content) }
+        guard !failed else { return body(nil) }
         waiting.append(body)
         guard !opening else { return }
         opening = true
@@ -61,7 +64,13 @@ final class AirPlaySession {
             let opened = self.open()
             self.queue.async {
                 self.opening = false
-                if !self.closed { self.content = opened }
+                if !self.closed {
+                    self.content = opened
+                    if opened == nil {
+                        self.failed = true
+                        self.onFailure()
+                    }
+                }
                 let list = self.waiting
                 self.waiting = []
                 for body in list { body(self.closed ? nil : opened) }

@@ -7,12 +7,15 @@ enum TextFocus {
     #if !APPSTORE
     private static let lock = NSLock()
     private static var owners: Set<ObjectIdentifier> = []
-    private static var observer: NSObjectProtocol?
-    private static var woken: Set<pid_t> = []
+    private static var observers: [NSObjectProtocol] = []
+    private static var awake = Awake()
+    private static var plain: Set<pid_t> = []
+    private static var retrying: Set<pid_t> = []
     private static var enabled: [Switched] = [] { didSet { Switched.save(stale + enabled, journalKey) } }
     private static var stale: [Switched] = [] { didSet { Switched.save(stale + enabled, journalKey) } }
     private static let running: (pid_t) -> String? = { NSRunningApplication(processIdentifier: $0)?.bundleIdentifier }
     static let puttingBack = DispatchGroup()
+    static let switching = DispatchGroup()
     static let journalKey = "chromium-accessibility-original"
     static var write: (String, Bool, pid_t) -> AXError = { attribute, on, pid in
         let app = AXUIElementCreateApplication(pid)
@@ -39,6 +42,35 @@ enum TextFocus {
         }
     }
 
+    struct Awake {
+        static let idle: TimeInterval = 60
+        private(set) var on: Set<pid_t> = []
+        private(set) var away: [pid_t: TimeInterval] = [:]
+
+        mutating func key(_ pid: pid_t) -> Bool {
+            away[pid] = nil
+            return on.insert(pid).inserted
+        }
+
+        mutating func activated(_ pid: pid_t, at now: TimeInterval) -> Bool {
+            away[pid] = nil
+            let gone = on.filter { $0 != pid && away[$0] == nil }
+            for other in gone { away[other] = now }
+            return !gone.isEmpty
+        }
+
+        mutating func quit(_ pid: pid_t) {
+            on.remove(pid)
+            away[pid] = nil
+        }
+
+        mutating func due(at now: TimeInterval) -> [pid_t] {
+            let due = away.filter { now - $0.value >= Self.idle }.keys.sorted()
+            for pid in due { quit(pid) }
+            return due
+        }
+    }
+
     static func putBackAfterCrash(bundleID: @escaping (pid_t) -> String? = running) {
         lock.lock()
         stale = Switched.putBack(Switched.load(journalKey), bundleID: bundleID)
@@ -48,6 +80,7 @@ enum TextFocus {
     }
 
     private static func writeBack(_ todo: [Switched], _ bundleID: @escaping (pid_t) -> String?) {
+        guard !todo.isEmpty else { return }
         puttingBack.enter()
         DispatchQueue.global(qos: .utility).async {
             for entry in todo {
@@ -63,73 +96,144 @@ enum TextFocus {
         }
     }
 
-    static func watch(_ owner: AnyObject, front: pid_t? = NSWorkspace.shared.frontmostApplication?.processIdentifier) {
+    private static func take(_ gone: (Switched) -> Bool, _ bundleID: (pid_t) -> String?) -> [Switched] {
+        guard enabled.contains(where: gone) else { return [] }
+        let todo = Switched.putBack(enabled.filter(gone), bundleID: bundleID)
+        stale += todo
+        enabled.removeAll(where: gone)
+        return todo
+    }
+
+    static func watch(_ owner: AnyObject, front _: pid_t? = nil) {
         lock.lock()
         owners.insert(ObjectIdentifier(owner))
-        if observer == nil {
-            observer = NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: nil) { note in
-                if let pid = (note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication)?.processIdentifier { wake(pid) }
-            }
+        if observers.isEmpty {
+            let center = NSWorkspace.shared.notificationCenter
+            observers = [
+                center.addObserver(forName: NSWorkspace.didActivateApplicationNotification, object: nil, queue: nil) { if let pid = Self.pid($0) { activated(pid) } },
+                center.addObserver(forName: NSWorkspace.didTerminateApplicationNotification, object: nil, queue: nil) { if let pid = Self.pid($0) { quit(pid) } },
+            ]
         }
         lock.unlock()
-        if let front { wake(front) }
     }
 
     static func unwatch(_ owner: AnyObject? = nil, bundleID: @escaping (pid_t) -> String? = running) {
         lock.lock()
         if let owner { owners.remove(ObjectIdentifier(owner)) } else { owners.removeAll() }
-        guard owners.isEmpty, let token = observer else { return lock.unlock() }
-        observer = nil
-        woken = []
-        let todo = Switched.putBack(enabled, bundleID: bundleID)
-        stale += todo
-        enabled = []
+        guard owners.isEmpty, !observers.isEmpty else { return lock.unlock() }
+        let tokens = observers
+        observers = []
+        awake = Awake()
+        plain = []
+        let todo = take({ _ in true }, bundleID)
         lock.unlock()
-        NSWorkspace.shared.notificationCenter.removeObserver(token)
+        for token in tokens { NSWorkspace.shared.notificationCenter.removeObserver(token) }
         writeBack(todo, bundleID)
     }
 
-    private static func wake(_ pid: pid_t) {
+    static func activated(_ pid: pid_t, at now: TimeInterval = uptime()) {
         lock.lock()
-        let isNew = observer != nil && woken.insert(pid).inserted
+        let gone = awake.activated(pid, at: now)
         lock.unlock()
-        guard isNew, isChromium(pid), let bundleID = NSRunningApplication(processIdentifier: pid)?.bundleIdentifier else { return }
+        if gone { DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + Awake.idle) { putBackIdle() } }
+    }
+
+    static func putBackIdle(at now: TimeInterval = uptime(), bundleID: @escaping (pid_t) -> String? = running) {
+        lock.lock()
+        let due = awake.due(at: now)
+        let todo = take({ due.contains($0.pid) }, bundleID)
+        lock.unlock()
+        writeBack(todo, bundleID)
+    }
+
+    static func quit(_ pid: pid_t) {
+        lock.lock()
+        awake.quit(pid)
+        plain.remove(pid)
+        if enabled.contains(where: { $0.pid == pid }) { enabled.removeAll { $0.pid == pid } }
+        lock.unlock()
+    }
+
+    private static func uptime() -> TimeInterval {
+        TimeInterval(DispatchTime.now().uptimeNanoseconds) / 1_000_000_000
+    }
+
+    private static func pid(_ note: Notification) -> pid_t? {
+        (note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication)?.processIdentifier
+    }
+
+    static func wake(_ pid: pid_t) -> Bool {
+        lock.lock()
+        let known = awake.on.contains(pid)
+        if known { _ = awake.key(pid) }
+        let skip = known || observers.isEmpty || plain.contains(pid)
+        lock.unlock()
+        guard !skip else { return false }
+        let bundleID = chromium(pid)
+        lock.lock()
+        let watching = !observers.isEmpty
+        if watching && bundleID == nil { plain.insert(pid) }
+        let fresh = watching && bundleID != nil && !retrying.contains(pid) && awake.key(pid)
+        if fresh { retrying.insert(pid) }
+        lock.unlock()
+        guard fresh, let bundleID else { return false }
+        switching.enter()
         DispatchQueue.global(qos: .utility).async {
+            defer {
+                lock.lock()
+                retrying.remove(pid)
+                lock.unlock()
+                switching.leave()
+            }
             for _ in 0..<10 {
-                var error = enable("AXManualAccessibility", pid, bundleID)
-                if error != .success { error = enable("AXEnhancedUserInterface", pid, bundleID) }
+                var error = turnOn("AXManualAccessibility", pid, bundleID)
+                if error != .success { error = turnOn("AXEnhancedUserInterface", pid, bundleID) }
                 if error != .cannotComplete { return }
                 Thread.sleep(forTimeInterval: 1)
             }
             lock.lock()
-            woken.remove(pid)
+            awake.quit(pid)
+            let todo = take({ $0.pid == pid }, running)
             lock.unlock()
+            writeBack(todo, running)
         }
+        return true
     }
 
     static func enable(_ attribute: String, _ pid: pid_t, _ bundleID: String) -> AXError {
+        lock.lock()
+        if !observers.isEmpty && !retrying.contains(pid) { _ = awake.key(pid) }
+        lock.unlock()
+        return turnOn(attribute, pid, bundleID)
+    }
+
+    private static func turnOn(_ attribute: String, _ pid: pid_t, _ bundleID: String) -> AXError {
         puttingBack.wait()
-        if isOn(pid) { return .success }
+        guard let on = isOn(pid) else { return .cannotComplete }
+        if on { return .success }
         let entry = Switched(bundleID: bundleID, pid: pid, attribute: attribute, before: false)
         lock.lock()
-        let watching = observer != nil
-        if watching { enabled.append(entry) }
+        let wanted = awake.on.contains(pid)
+        if wanted && !enabled.contains(entry) { enabled.append(entry) }
         lock.unlock()
-        guard watching else { return .success }
+        guard wanted else { return .success }
         var error = write(attribute, true, pid)
         if error == .notImplemented { error = .success }
+        let landing = error == .success || error == .cannotComplete
         lock.lock()
-        if error != .success { enabled.removeAll { $0 == entry } }
-        let dropped = error == .success && !enabled.contains(entry)
+        if !landing { enabled.removeAll { $0 == entry } }
+        let dropped = landing && !enabled.contains(entry)
         lock.unlock()
         if dropped { _ = write(attribute, false, pid) }
         return error
     }
 
-    static var isOn: (pid_t) -> Bool = { pid in
+    static var isOn: (pid_t) -> Bool? = { pid in
         let app = AXUIElementCreateApplication(pid)
-        if ["AXManualAccessibility", "AXEnhancedUserInterface"].contains(where: { value(app, $0).0 as? Bool == true }) { return true }
-        var element = value(app, kAXFocusedUIElementAttribute).0
+        let reads = ["AXManualAccessibility", "AXEnhancedUserInterface", kAXFocusedUIElementAttribute].map { value(app, $0) }
+        if reads.prefix(2).contains(where: { $0.0 as? Bool == true }) { return true }
+        if reads.contains(where: { $0.1 == .cannotComplete }) { return nil }
+        var element = reads[2].0
         for _ in 0..<64 {
             guard let current = element, CFGetTypeID(current) == AXUIElementGetTypeID(), !CFEqual(current, app) else { return false }
             let axCurrent = unsafeBitCast(current, to: AXUIElement.self)
@@ -141,35 +245,43 @@ enum TextFocus {
         return false
     }
 
-    private static func isChromium(_ pid: pid_t) -> Bool {
-        guard let frameworks = NSRunningApplication(processIdentifier: pid)?.bundleURL?.appendingPathComponent("Contents/Frameworks").path else { return false }
-        return ((try? FileManager.default.contentsOfDirectory(atPath: frameworks)) ?? []).contains { $0.hasSuffix(" Framework.framework") }
+    static var chromium: (pid_t) -> String? = { pid in
+        guard let app = NSRunningApplication(processIdentifier: pid),
+              let frameworks = app.bundleURL?.appendingPathComponent("Contents/Frameworks").path,
+              ((try? FileManager.default.contentsOfDirectory(atPath: frameworks)) ?? []).contains(where: { $0.hasSuffix(" Framework.framework") })
+        else { return nil }
+        return app.bundleIdentifier
     }
     #endif
 
     init(_ pid: pid_t) {
-        #if !APPSTORE
-        Self.wake(pid)
+        #if APPSTORE
+        self = Self.read(pid)
+        #else
+        let deadline = DispatchTime.now() + 0.4
+        let fresh = Self.wake(pid)
+        self = Self.read(pid)
+        guard fresh else { return }
+        for _ in 0..<6 {
+            if case .typing = self { return }
+            guard DispatchTime.now() < deadline else { return }
+            Thread.sleep(forTimeInterval: 0.05)
+            self = Self.read(pid)
+        }
         #endif
-        let (focused, error) = Self.value(AXUIElementCreateApplication(pid), kAXFocusedUIElementAttribute)
-        if error == .noValue {
-            self = .none
-            return
-        }
-        guard error == .success, let focused, CFGetTypeID(focused) == AXUIElementGetTypeID() else {
-            self = .unknown
-            return
-        }
+    }
+
+    private static func read(_ pid: pid_t) -> TextFocus {
+        let (focused, error) = value(AXUIElementCreateApplication(pid), kAXFocusedUIElementAttribute)
+        if error == .noValue { return .none }
+        guard error == .success, let focused, CFGetTypeID(focused) == AXUIElementGetTypeID() else { return .unknown }
         let element = unsafeBitCast(focused, to: AXUIElement.self)
 
-        let (role, roleError) = Self.value(element, kAXRoleAttribute)
-        guard roleError == .success, let role = role as? String else {
-            self = .unknown
-            return
-        }
-        let subrole = Self.value(element, kAXSubroleAttribute).0 as? String
+        let (role, roleError) = value(element, kAXRoleAttribute)
+        guard roleError == .success, let role = role as? String else { return .unknown }
+        let subrole = value(element, kAXSubroleAttribute).0 as? String
         let typing = [kAXTextFieldRole, kAXTextAreaRole, kAXComboBoxRole].contains(role) || subrole == kAXSearchFieldSubrole
-        self = typing ? .typing(element) : .other(element)
+        return typing ? .typing(element) : .other(element)
     }
 
     static func value(_ element: AXUIElement, _ attribute: String) -> (CFTypeRef?, AXError) {

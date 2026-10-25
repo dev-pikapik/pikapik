@@ -92,8 +92,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         defaults.set(path, forKey: "app-path")
         LoginItem.shared.restore(moved: moved)
         if moved { FinderExtension.register() }
-        FinderRestart.shared.check()
-        FinderExtension.refreshFinderRecord()
         NewMarks.shared.begin(version: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "", fresh: firstLaunch)
         defaults.set(true, forKey: "launchedBefore")
         ["double-space", "double-space-interval", "dock-display-anchor", "dock-display-return"].forEach(defaults.removeObject)
@@ -106,6 +104,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         Appearance.saved.apply()
         LayoutFixService.register()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [self] in MainActor.assumeIsolated { maintain() } }
         let permissions = Permissions.shared
         permissions.onChange = { ToolRegistry.shared.refresh() }
         NotificationCenter.default.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
@@ -123,11 +122,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Brightness.shared.start()
         #if !APPSTORE
         FanControl.shared.start()
-        if FileManager.default.fileExists(atPath: PlayerPage.helper.path) { LSRegisterURL(PlayerPage.helper as CFURL, false) }
         signals = [SIGTERM, SIGINT, SIGHUP].map { number in
             signal(number, SIG_IGN)
             let source = DispatchSource.makeSignalSource(signal: number, queue: .main)
-            source.setEventHandler { Background.quit() }
+            source.setEventHandler { [self] in
+                MainActor.assumeIsolated { if MainCopy.canAct { powerOff() } }
+                Background.quit()
+            }
             source.resume()
             return source
         }
@@ -153,7 +154,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         let background = Background.shared
-        background.poweringOff = Background.isLoggingOut
+        if Background.isLoggingOut { powerOff() }
         if background.quitting || Background.isOutsideQuit { return .terminateNow }
         guard Background.isOn, MainCopy.shared.role != .passive, !NSEvent.modifierFlags.contains(.option) else {
             if MainCopy.canAct { KeepAwake.shared.set(.off) }
@@ -174,37 +175,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if #available(macOS 14.2, *) { AppVolumeEngine.shared.shutdown() }
     }
 
+    @MainActor private func powerOff() {
+        Background.shared.poweringOff = true
+        Lifecycle.run(.powerOff)
+    }
+
     @MainActor private func startFeatures() {
-        #if !APPSTORE
-        TextFocus.putBackAfterCrash()
-        DesktopIconsTool.putBack()
-        #endif
-        ToolRegistry.shared.refresh()
-        Permissions.shared.checkSystemAudio()
-        SettingsSync.shared.refresh()
-        Brightness.shared.refresh()
-        KeepAwake.shared.resume()
-        KeepAwake.shared.restoreLidSleepIfNeeded()
-        #if !APPSTORE
-        Updater.shared.resume()
-        #endif
+        Lifecycle.run(.start)
     }
 
     @MainActor private func stopFeatures(quitting: Bool) {
-        ToolRegistry.shared.refresh()
-        SettingsSync.shared.refresh()
-        Brightness.shared.release()
-        if !quitting { KeepAwake.shared.suspend() }
+        Lifecycle.run(quitting ? .quit : .handOver)
+    }
+
+    @MainActor private func maintain() {
+        let defaults = UserDefaults.standard
+        let stamp = Lifecycle.stamp(path: Bundle.main.bundlePath, info: Bundle.main.infoDictionary, system: ProcessInfo.processInfo.operatingSystemVersionString)
+        guard Lifecycle.isDue(stamp, saved: defaults.string(forKey: PreferenceKey.launchMaintenance), bundleID: Bundle.main.bundleIdentifier) else { return }
+        Log.note("launch maintenance")
+        NSUpdateDynamicServices()
         #if !APPSTORE
-        FanControl.shared.handOff()
-        Updater.shared.pause()
-        DesktopIconsTool.putBack()
-        HiddenFilesTool.putBack()
-        HotCorners.putBackAll()
-        TextFocus.unwatch()
-        if quitting { _ = TextFocus.puttingBack.wait(timeout: .now() + 2) }
+        if FileManager.default.fileExists(atPath: PlayerPage.helper.path) { LSRegisterURL(PlayerPage.helper as CFURL, false) }
         #endif
-        GameModeTool.shared.leave()
-        DockEdges.restore()
+        FinderRestart.shared.check()
+        FinderExtension.refreshFinderRecord {
+            guard !FinderRestart.shared.isNeeded else { return Log.note("launch maintenance again next launch: Finder needs a restart") }
+            defaults.set(stamp, forKey: PreferenceKey.launchMaintenance)
+        }
     }
 }

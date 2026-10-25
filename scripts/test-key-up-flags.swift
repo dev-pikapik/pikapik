@@ -59,7 +59,8 @@ struct TestKeyUpFlags {
 
     static func typed(_ event: CGEvent, key: Int) -> String? {
         let written = text(event)
-        return written == text(keyEvent(key, down: event.type == .keyDown)) ? nil : written
+        guard let natural = CGEvent.pikapikKey(key, down: event.type == .keyDown, flags: event.flags) else { preconditionFailure("no key event") }
+        return written == text(natural) ? nil : written
     }
 
     static func record(_ body: () -> Void) -> [Sent] {

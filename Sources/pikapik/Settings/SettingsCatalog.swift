@@ -45,7 +45,7 @@ struct SettingsItem: Identifiable {
             SettingsItem(tab: .general, title: SettingTitle.language, synonyms: "localization, translation"),
             SettingsItem(tab: .general, title: SettingTitle.settingsFile, synonyms: "backup, export, import, restore, JSON"),
             SettingsItem(tab: .general, title: SettingTitle.syncWithICloud, synonyms: "iCloud Drive, another Mac, backup"),
-            SettingsItem(tab: .keepAwake, title: SettingTitle.keepMacAwake, synonyms: "sleep, caffeine, insomnia"),
+            SettingsItem(tab: .keepAwake, title: SettingTitle.keepMacAwake, synonyms: "sleep, caffeine, insomnia, caffeinate, prevent sleep, stay awake"),
             SettingsItem(tab: .keepAwake, title: SettingTitle.duration, synonyms: "time, timer, days, hours, minutes, seconds"),
             SettingsItem(tab: .keepAwake, title: SettingTitle.display, synonyms: "screen, monitor, dim, screen saver"),
             SettingsItem(tab: .keepAwake, title: SettingTitle.turnOffDisplayNow, synonyms: "screen, monitor, dim, screen saver"),
@@ -60,14 +60,14 @@ struct SettingsItem: Identifiable {
             SettingsItem(tab: .battery, title: SettingTitle.batteryHealth, synonyms: "battery, condition, maximum capacity, cycle count, cycles, wear, service, replace"),
             SettingsItem(tab: .battery, title: SettingTitle.powerAdapter, synonyms: "charger, charging, watts, power use, adapter, plug"),
             SettingsItem(tab: .battery, title: SettingTitle.keepItHealthy, synonyms: "charge limit, 80%, optimized battery charging, charging on hold, heat, temperature, storage, tips"),
-            SettingsItem(tab: .fans, title: SettingTitle.fanSpeed, synonyms: "fan, rpm, cooling, cooler, hot, heat, noise, quiet, loud, temperature, thermal"),
+            SettingsItem(tab: .fans, title: SettingTitle.fanSpeed, synonyms: "fan, rpm, cooling, cooler, hot, heat, noise, quiet, loud, temperature, thermal, fan control, manual"),
             SettingsItem(tab: .permissions, title: SettingTitle.administratorAccess, synonyms: "allow, helper, password, administrator, install, remove", directOnly: true),
             SettingsItem(tab: .temperatures, title: SettingTitle.temperature, synonyms: "heat, hot, warm, thermal, sensors, CPU, GPU, processor, graphics, memory, RAM, SSD, storage, battery, Wi-Fi, degrees, Celsius, Fahrenheit, overheating"),
         ] + speedTestItems + [
             SettingsItem(tab: .ports, title: SettingTitle.freeAPort, synonyms: "port, server, localhost, listen, kill, lsof, address in use, EADDRINUSE, process, 3000, 8080, 5000, AirPlay"),
             SettingsItem(tab: .sound, title: SettingTitle.appVolume, synonyms: "mixer, mute app, per-app volume, volume, sound, audio, quiet, loud"),
             SettingsItem(tab: .keyboard, title: SettingTitle.switchLanguage, synonyms: "keyboard layout, input source, option, shift, alt"),
-            SettingsItem(tab: .keyboard, title: SettingTitle.repeatHeldKey, synonyms: "key repeat, hold, accent menu, games, typing", directOnly: true),
+            SettingsItem(tab: .keyboard, title: SettingTitle.repeatHeldKey, synonyms: "key repeat, hold, accent menu, games, typing, press and hold", directOnly: true),
             SettingsItem(tab: .keyboard, title: SettingTitle.homeAndEnd, synonyms: "home, end, line, cursor, beginning, select, text, typing"),
             SettingsItem(tab: .keyboard, title: SettingTitle.homeAndEndExcluded, synonyms: "exceptions, exclude, list, terminal, virtual machine, remote desktop"),
             SettingsItem(tab: .keyboard, title: SettingTitle.retypeWrongLanguage, synonyms: "wrong layout, keyboard layout, language, switch, convert, typo, gibberish, Services"),
@@ -101,7 +101,7 @@ struct SettingsItem: Identifiable {
             SettingsItem(tab: .finder, title: SettingTitle.newFileInFinder, synonyms: "create, text file, txt, right-click, context menu, Desktop"),
             SettingsItem(tab: .finder, title: SettingTitle.smallerCopyInFinder, synonyms: "compress, shrink, smaller, reduce size, optimize, image, photo, picture, video, audio, music, PNG, JPEG, JPG, HEIC, TIFF, PDF, GIF, MP4, MOV, M4A, WAV, AIFF, TinyPNG"),
             SettingsItem(tab: .finder, title: SettingTitle.convertInFinder, synonyms: "convert, format, export, save as, image, photo, picture, video, audio, music, PNG, JPEG, JPG, HEIC, TIFF, PDF, GIF, MP4, MOV, M4A, WAV, AIFF"),
-            SettingsItem(tab: .finder, title: SettingTitle.archivesInFinder, synonyms: "archive, extract, unzip, unpack, zip, rar, 7z, tar, password, split, right-click, context menu"),
+            SettingsItem(tab: .finder, title: SettingTitle.archivesInFinder, synonyms: "archive, extract, unzip, unpack, zip, rar, 7z, tar, password, split, right-click, context menu, compress, create archive"),
             SettingsItem(tab: .finder, title: SettingTitle.openArchivesInPikapik, synonyms: "archive, default app, open with, double-click, unzip, zip, 7z", directOnly: true),
             SettingsItem(tab: .finder, title: SettingTitle.enterOpensFiles, synonyms: "return, enter, open, rename, F2, keyboard", directOnly: true),
             SettingsItem(tab: .finder, title: SettingTitle.cutFilesInFinder, synonyms: "cut, paste, move, files, folders, command X"),
@@ -115,7 +115,7 @@ struct SettingsItem: Identifiable {
             SettingsItem(tab: .player, title: SettingTitle.playerLicenses, synonyms: "open source, legal, FFmpeg, dav1d, libass, FreeType, HarfBuzz, FriBidi"),
             SettingsItem(tab: .uninstaller, title: SettingTitle.removeAnApp, synonyms: "uninstall, remove app, delete app, delete, remove, app, application, cleaner, clean up, leftovers, trash, reset, put back, restore, undo"),
             SettingsItem(tab: .uninstaller, title: SettingTitle.offerCleanupOnTrash, synonyms: "uninstall, remove app, delete app, leftovers, clean up, Trash, bin, watch, automatic, offer, notify"),
-            SettingsItem(tab: .background, title: SettingTitle.whatRunsInBackground, synonyms: "login items, open at login, launch agents, launch daemons, daemons, startup, autostart, helpers, running, services, leftovers, background, turn off"),
+            SettingsItem(tab: .background, title: SettingTitle.whatRunsInBackground, synonyms: "login items, open at login, launch agents, launch daemons, daemons, startup, autostart, helpers, running, services, leftovers, background, turn off, allow in the background, background items"),
             SettingsItem(tab: .animations, title: SettingTitle.animationSpeed, synonyms: "animations, motion, fast, faster, instant, speed up", directOnly: true),
             SettingsItem(tab: .animations, title: SettingTitle.dockAppearDelay, synonyms: "autohide, hide Dock, delay, wait", directOnly: true),
             SettingsItem(tab: .animations, title: SettingTitle.dockSlideSpeed, synonyms: "autohide, hide Dock, speed", directOnly: true),
@@ -185,7 +185,7 @@ struct SettingsItem: Identifiable {
         []
         #else
         [
-            SettingsItem(tab: .speedTest, title: SettingTitle.checkSpeed, synonyms: "internet, Wi-Fi, network, bandwidth, ping, Mbps, speedtest"),
+            SettingsItem(tab: .speedTest, title: SettingTitle.checkSpeed, synonyms: "internet, Wi-Fi, network, bandwidth, ping, Mbps, speedtest, latency, download, upload, speed test"),
             SettingsItem(tab: .speedTest, title: SettingTitle.whatItsGoodFor, synonyms: "4K, video, calls, games, downloads"),
         ]
         #endif

@@ -12,9 +12,6 @@ final class PointerTool: Tool {
 
     static let speedRange = 0.2...3.0
     private static let speedKey = PreferenceKey.linearPointerSpeed
-    private static let savedKey = PreferenceKey.linearPointerSaved
-    private static let oursKey = PreferenceKey.linearPointerOurs
-    private static let linearKey = "HIDUseLinearScalingMouseAcceleration"
     private static let resolutionKey = "HIDPointerResolution"
 
     fileprivate static var systemSpeed: Double {
@@ -46,13 +43,12 @@ final class PointerTool: Tool {
     @ObservationIgnored private var saved: [String: [String: Int]]
     @ObservationIgnored private var ours: [String: [String: [Int]]]
 
-    init() {
+    init(watching: Bool = true) {
         let defaults = UserDefaults.standard
         isEnabled = defaults.bool(forKey: id)
         speed = Self.savedSpeed
-        saved = defaults.dictionary(forKey: Self.savedKey) as? [String: [String: Int]] ?? [:]
-        ours = defaults.dictionary(forKey: Self.oursKey) as? [String: [String: [Int]]] ?? [:]
-        watchDevices()
+        (saved, ours) = PointerPutBack.load(defaults)
+        if watching { watchDevices() }
     }
 
     private static var savedSpeed: Double {
@@ -83,19 +79,12 @@ final class PointerTool: Tool {
     }
 
     func restore() {
-        var left: [String: [String: Int]] = [:]
-        for service in mice() {
-            guard let id = Self.registryID(service), let before = saved[id] else { continue }
-            let mine = ours[id] ?? Self.numbers(written(service)).mapValues { [$0] }
-            let goal = OriginalValue.goal(saved: before, system: system(Set(before.keys).union(mine.keys).union([Self.linearKey])), unset: [Self.linearKey: 0])
-            for (key, value) in OriginalValue.putBack(goal, ours: mine, current: Self.read(service, goal.keys)) {
-                IOHIDServiceClientSetProperty(service, key as CFString, value as CFNumber)
-            }
-            if !OriginalValue.isBack(goal, ours: mine, current: Self.read(service, goal.keys)) { left[id] = before }
-        }
-        saved = left
-        ours = ours.filter { left[$0.key] != nil }
+        (saved, ours) = PointerPutBack.run(mice().compactMap(mouse), saved: saved, ours: ours, system: system)
         save()
+    }
+
+    static func uninstall() {
+        PointerTool(watching: false).restore()
     }
 
     private func apply(_ services: [IOHIDServiceClient]? = nil) {
@@ -103,7 +92,7 @@ final class PointerTool: Tool {
             guard let id = Self.registryID(service) else { continue }
             let values = written(service)
             let new = Self.numbers(values)
-            if saved[id] == nil { saved[id] = Self.read(service, [Self.linearKey, Self.accelerationKey(service), Self.resolutionKey]) }
+            if saved[id] == nil { saved[id] = Self.read(service, [PointerPutBack.linearKey, Self.accelerationKey(service), Self.resolutionKey]) }
             ours[id] = (ours[id] ?? [:]).merging(new.mapValues { [$0] }) { $1 + $0 }
             save()
             for (key, value) in values {
@@ -115,12 +104,11 @@ final class PointerTool: Tool {
     }
 
     private func save() {
-        UserDefaults.standard.set(saved.isEmpty ? nil : saved, forKey: Self.savedKey)
-        UserDefaults.standard.set(ours.isEmpty ? nil : ours, forKey: Self.oursKey)
+        PointerPutBack.save(saved, ours, to: .standard)
     }
 
     private func written(_ service: IOHIDServiceClient) -> [(String, NSNumber)] {
-        [(Self.linearKey, NSNumber(value: 1)), (Self.accelerationKey(service), Self.fixed(speed))]
+        [(PointerPutBack.linearKey, NSNumber(value: 1)), (Self.accelerationKey(service), Self.fixed(speed))]
     }
 
     private func system(_ keys: some Sequence<String>) -> [String: Int] {
@@ -135,6 +123,11 @@ final class PointerTool: Tool {
                 && IOHIDServiceClientConformsTo($0, UInt32(kHIDPage_Digitizer), UInt32(kHIDUsage_Dig_TouchPad)) == 0
                 && Self.property($0, "HIDPointerAccelerationType") as? String != "HIDTrackpadAcceleration"
         }
+    }
+
+    private func mouse(_ service: IOHIDServiceClient) -> PointerMouse? {
+        guard let id = Self.registryID(service) else { return nil }
+        return PointerMouse(id: id, written: Self.numbers(written(service)), read: { Self.read(service, $0) }, write: { IOHIDServiceClientSetProperty(service, $0 as CFString, $1 as CFNumber) })
     }
 
     private func watchDevices() {
@@ -242,9 +235,8 @@ private struct PointerSettings: View {
         ToggleRow(
             icon: tool.icon,
             title: tool.title,
-            subtitle: Text("Same distance as your hand, at any speed"),
-            hint: Text("Moves as far as your hand"),
-            help: Text("The pointer moves as far as your hand, at any speed. Mouse only."),
+            subtitle: Text("The pointer moves as far as your hand, at any speed. Mouse only."),
+            hint: Text("Mouse only: moves as far as your hand"),
             isOn: $tool.isEnabled
         )
         if inSettings {

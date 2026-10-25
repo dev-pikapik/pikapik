@@ -50,7 +50,7 @@ final class KeyRepeatTool: Tool {
         write(false as CFBoolean)
     }
 
-    private static func putBack() {
+    static func putBack() {
         guard let saved = UserDefaults.standard.array(forKey: savedKey) as? [Bool],
               CFPreferencesCopyValue(key, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost) as? Bool == false
         else { return }
@@ -148,9 +148,8 @@ private struct KeyRepeatSettings: View {
         ToggleRow(
             icon: tool.icon,
             title: tool.title,
-            subtitle: Text("Repeats instead of the accent menu"),
-            hint: Text("Instead of the accent menu"),
-            help: Text("Holding a key repeats it instead of opening the accent menu. Restart open apps to apply."),
+            subtitle: Text("Holding a key repeats it instead of opening the accent menu. Restart open apps to apply."),
+            hint: Text("Works in apps after you reopen them"),
             keys: ["A"],
             isOn: $tool.isEnabled
         )

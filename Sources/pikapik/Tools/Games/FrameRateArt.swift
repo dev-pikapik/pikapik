@@ -32,10 +32,18 @@ struct FrameRateSettings: View {
                 isOn: $tool.showsFrameRate
             )
             if Permission.screenRecording.isShown {
-                LabeledContent("Needs a permission. Click to allow it.") {
+                LabeledContent {
                     Button("Allow") { permissions.ask([.screenRecording]) }
+                } label: {
+                    Text("To count frames, allow “\(SettingTitle.screenRecording)”. No picture is kept or sent.")
                 }
                 .foregroundStyle(.secondary)
+            }
+        } footer: {
+            if !tool.isEnabled {
+                Text("Turn on Game Mode to show FPS.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
         }
         .disabled(!tool.isEnabled)

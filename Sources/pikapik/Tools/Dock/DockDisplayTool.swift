@@ -20,6 +20,8 @@ final class DockDisplayTool: Tool {
     }
 
     private static let dock = "com.apple.dock" as CFString, key = "allow-display-switching" as CFString
+    @ObservationIgnored private var displays: NSObjectProtocol?
+    @ObservationIgnored private var settle: DispatchWorkItem?
 
     init() {
         isEnabled = UserDefaults.standard.bool(forKey: id)
@@ -32,12 +34,35 @@ final class DockDisplayTool: Tool {
     func refresh() {
         let on = isEnabled && MainCopy.canAct
         if Self.apply(on) { AnimationsTool.shared.restartDock() }
-        if !on { MainDisplayControl.restore() }
+        let off = !isEnabled && MainCopy.canAct
+        if off { MainDisplayControl.restore() }
+        watchDisplays(off && MainDisplayControl.pending)
+    }
+
+    private func watchDisplays(_ watch: Bool) {
+        guard watch else {
+            if let displays { NotificationCenter.default.removeObserver(displays) }
+            displays = nil
+            settle?.cancel()
+            settle = nil
+            return
+        }
+        guard displays == nil else { return }
+        displays = NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
+            self?.settle?.cancel()
+            let work = DispatchWorkItem { self?.refresh() }
+            self?.settle = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: work)
+        }
     }
 
     static func uninstall() {
         if apply(false) { AnimationsTool.killall("Dock", wait: true) }
         MainDisplayControl.restore()
+    }
+
+    static func powerOff() -> Bool {
+        apply(false)
     }
 
     private static func apply(_ on: Bool) -> Bool {
@@ -136,7 +161,7 @@ enum MainDisplayControl {
         let origin: CGPoint
     }
 
-    private static let key = "dock-display-origins"
+    private static let key = "dock-display-arrangements", oldKey = "dock-display-origins"
 
     static var screens: [Screen] {
         NSScreen.screens.compactMap { screen in
@@ -149,26 +174,34 @@ enum MainDisplayControl {
 
     static func makeMain(_ target: Screen) {
         let now = screens
-        let origins = Dictionary(uniqueKeysWithValues: now.map { ($0.uuid, $0.origin) })
-        guard let moved = MainDisplay.moved(origins, to: target.uuid), apply(moved, to: now) else { return }
-        let saved = MainDisplay.remembered(journal, now: origins)
-        UserDefaults.standard.set(saved.mapValues { [Double($0.x), Double($0.y)] }, forKey: key)
+        guard let origins = MainDisplay.origins(now.map { (uuid: $0.uuid, origin: $0.origin) }), let moved = MainDisplay.moved(origins, to: target.uuid) else { return }
+        let before = journal
+        journal = MainDisplay.remembered(before, now: origins, main: target.uuid)
+        if !apply(moved, to: now) { journal = before }
     }
 
     static func restore() {
         let saved = journal
         guard !saved.isEmpty else { return }
         let now = screens
-        let origins = Dictionary(uniqueKeysWithValues: now.map { ($0.uuid, $0.origin) })
-        guard let target = MainDisplay.restored(saved, now: origins) else {
-            UserDefaults.standard.removeObject(forKey: key)
-            return
-        }
-        if apply(target, to: now) { UserDefaults.standard.removeObject(forKey: key) }
+        guard let origins = MainDisplay.origins(now.map { (uuid: $0.uuid, origin: $0.origin) }) else { return }
+        let result = MainDisplay.restored(saved, now: origins)
+        if let target = result.write, !apply(target, to: now) { return }
+        journal = result.journal
     }
 
-    private static var journal: [String: CGPoint] {
-        (UserDefaults.standard.dictionary(forKey: key) as? [String: [Double]] ?? [:]).compactMapValues { $0.count == 2 ? CGPoint(x: $0[0], y: $0[1]) : nil }
+    static var pending: Bool { !journal.isEmpty }
+
+    private static var journal: [String: MainDisplay.Saved] {
+        get {
+            let defaults = UserDefaults.standard
+            return MainDisplay.journal(defaults.dictionary(forKey: key), old: defaults.dictionary(forKey: oldKey) as? [String: [Double]])
+        }
+        set {
+            let defaults = UserDefaults.standard
+            if newValue.isEmpty { defaults.removeObject(forKey: key) } else { defaults.set(MainDisplay.stored(newValue), forKey: key) }
+            defaults.removeObject(forKey: oldKey)
+        }
     }
 
     private static func apply(_ origins: [String: CGPoint], to screens: [Screen]) -> Bool {

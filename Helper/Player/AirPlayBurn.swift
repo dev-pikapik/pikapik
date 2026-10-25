@@ -16,6 +16,7 @@ final class AirPlayPictures {
     }
 
     static let lookback = 30.0
+    static var pixelBudget = 32_000_000
     let canvas: CGSize
     private let parameters: UnsafeMutablePointer<AVCodecParameters>
     private let packets: [AirPlayRawPacket]
@@ -35,6 +36,7 @@ final class AirPlayPictures {
         defer { av_packet_free(&allocated) }
         guard avcodec_parameters_to_context(context, parameters) >= 0, avcodec_open2(context, codec, nil) >= 0, let packet = allocated else { return [] }
         var events: [Event] = []
+        var budget = Self.pixelBudget
         for raw in packets where raw.time >= lower - Self.lookback && raw.time < upper {
             guard av_new_packet(packet, Int32(raw.data.count)) >= 0 else { break }
             raw.data.withUnsafeBytes { packet.pointee.data.update(from: $0.bindMemory(to: UInt8.self).baseAddress!, count: raw.data.count) }
@@ -50,15 +52,17 @@ final class AirPlayPictures {
                 events.append(last)
             }
             let end = subtitle.end_display_time > 0 && subtitle.end_display_time < 600_000 ? raw.time + Double(subtitle.end_display_time) / 1000 : start + 10
-            let images = (0..<Int(subtitle.num_rects)).compactMap { subtitle.rects[$0].flatMap { Self.image($0.pointee) } }
+            let images = (0..<Int(min(subtitle.num_rects, 16))).compactMap { subtitle.rects[$0].flatMap { Self.image($0.pointee, budget: &budget) } }
             if !images.isEmpty { events.append(Event(start: start, end: end, images: images)) }
         }
         return events.filter { $0.end > lower && $0.start < upper && $0.end > $0.start }
     }
 
-    private static func image(_ rect: AVSubtitleRect) -> Image? {
+    private static func image(_ rect: AVSubtitleRect, budget: inout Int) -> Image? {
         let (width, height) = (Int(rect.w), Int(rect.h))
-        guard rect.type == SUBTITLE_BITMAP, width > 0, height > 0, let indices = rect.data.0, let table = rect.data.1 else { return nil }
+        guard rect.type == SUBTITLE_BITMAP, width > 0, height > 0, width <= 8192, height <= 8192, Int(rect.linesize.0) >= width, width * height <= budget,
+              let indices = rect.data.0, let table = rect.data.1 else { return nil }
+        budget -= width * height
         let palette = UnsafeRawPointer(table).bindMemory(to: UInt32.self, capacity: 256)
         let colors = min(Int(rect.nb_colors), 256)
         var pixels = [UInt8](repeating: 0, count: width * height * 4)

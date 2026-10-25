@@ -313,9 +313,8 @@ private struct WheelSettings: View {
         ToggleRow(
             icon: tool.icon,
             title: tool.title,
-            subtitle: Text("Same distance per click, at any speed"),
-            hint: Text("Same distance at any speed"),
-            help: Text("Each wheel click scrolls the same distance, at any speed. Mouse only."),
+            subtitle: Text("Each wheel click scrolls the same distance, at any speed. Mouse only."),
+            hint: Text("Mouse wheel only: same distance at any speed"),
             isOn: $tool.isEnabled
         )
         if inSettings {

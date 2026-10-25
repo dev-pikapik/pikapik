@@ -121,6 +121,7 @@ final class LayoutFixTool: Tool {
 #if APPSTORE
     // The Services menu works without a permission; the shortcut row asks for Accessibility itself.
     var needs: [Permission] { [] }
+    var uses: [Permission] { [.accessibility] }
     @ObservationIgnored var held: Int64?
     var settingsView: AnyView { AnyView(LayoutFixServiceSettings(tool: self)) }
 

@@ -102,15 +102,12 @@ final class FinderExtension {
 
     #if APPSTORE
     static func register() {}
-    static func refreshFinderRecord() {}
+    static func refreshFinderRecord(then done: @escaping () -> Void) { done() }
     #else
     private func ignoreOtherCopies() {
         guard MainCopy.canAct, Bundle.main.bundleIdentifier == MainCopyChoice.websiteID else { return }
-        for line in Self.pluginkit("-m", "-p", Self.finderSyncExtensionPoint).split(separator: "\n") where line.hasPrefix("+") {
-            let other = String(line.split(whereSeparator: \.isWhitespace).last?.prefix { $0 != "(" } ?? "")
-            if other.hasPrefix(MainCopyChoice.websiteID) || other.hasPrefix("com.pikapik."), other.hasSuffix("." + key), ![id, MainCopyChoice.appStoreID + "." + key].contains(other) {
-                Self.pluginkit("-e", "ignore", "-i", other)
-            }
+        for other in MainCopyChoice.ignored(id, in: Self.pluginkit("-m", "-p", Self.finderSyncExtensionPoint)) {
+            Self.pluginkit("-e", "ignore", "-i", other)
         }
     }
 
@@ -120,8 +117,9 @@ final class FinderExtension {
         }
     }
 
-    static func refreshFinderRecord() {
+    static func refreshFinderRecord(then done: @escaping () -> Void) {
         DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 20) {
+            defer { DispatchQueue.main.async(execute: done) }
             let map = UserDefaults.standard.dictionary(forKey: Self.syncExtensionsDefaultsKey)?["dirMap"] as? [String: [String]] ?? [:]
             guard let id = finderPlugIns.compactMap(\.bundleIdentifier).first(where: { (map[$0]?.isEmpty ?? true) && pluginkit("-m", "-i", $0).hasPrefix("+") }) else { return }
             pluginkit("-e", "use", "-i", id)
@@ -238,10 +236,12 @@ struct FinderRestartBar: View {
             HStack(spacing: 12) {
                 Image(.arrowClockwise)
                     .accessibilityHidden(true)
-                Text("Restart Finder once to bring back the right-click items")
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Restart Finder once to bring back the right-click items")
+                    Text("Finder closes its windows and opens again. Wait until files finish copying.").font(.caption).foregroundStyle(.secondary)
+                }
                 Spacer(minLength: 0)
                 Button("Restart Finder") { restart.restart() }
-                    .help(Text("Finder closes its windows and opens again. Wait until files finish copying."))
             }
             .noticeBar()
         }

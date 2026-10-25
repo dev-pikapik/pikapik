@@ -18,7 +18,7 @@ Terminal’i açın, bu satırı yapıştırın ve Return tuşuna basın:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"
 ```
 
-Komut, en son sürümü GitHub’dan indirir ve yalnızca geliştiricisi tarafından imzalanmışsa ve Apple’ın kötü amaçlı yazılım denetiminden geçmişse kurar. pikapik ekranın üstündeki menü çubuğunda görünür. Siz açana kadar her şey kapalı kalır.
+Komut, en son sürümü GitHub’dan indirir ve yalnızca geliştiricisi tarafından imzalanmışsa ve Apple’ın kötü amaçlı yazılım denetiminden geçmişse kurar. pikapik ekranın üstündeki menü çubuğunda görünür. Yalnızca evcil dost kendiliğinden açılır; diğer tüm araçlar siz açana kadar kapalı kalır.
 
 <details>
 <summary>Diğer yollar: Homebrew veya dmg</summary>
@@ -31,7 +31,7 @@ brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
 
 Ya da [pikapik.dmg](https://github.com/dev-pikapik/pikapik/releases/latest/download/pikapik.dmg) dosyasını indirin, açın ve uygulamayı Uygulamalar klasörüne sürükleyin.
 
-Yukarıdaki komut da Homebrew de uygulamayı `/Applications` klasörüne koyar, açar, izinleri ister ve “Girişte Aç” seçeneğini açar. Bundan sonra uygulama kendini güncel tutar, bkz. **Güncellemeler**. Kaldırmak için bkz. **Kaldırma**.
+Yukarıdaki komut da Homebrew de uygulamayı `/Applications` klasörüne koyar, başlatır ve “Girişte Aç” seçeneğini açar. Bundan sonra uygulama kendini güncel tutar, bkz. **Güncellemeler**. Kaldırmak için bkz. **Kaldırma**.
 
 </details>
 
@@ -280,12 +280,12 @@ Yukarıdaki komut da Homebrew de uygulamayı `/Applications` klasörüne koyar, 
 <details>
 <summary>İlk açılış</summary>
 
-pikapik’in iki izne ihtiyacı vardır. İlk açılışta ayarlar, sizi adım adım yönlendiren İzinler sayfasında açılır ve macOS kendi uyarılarını gösterir. **Sistem Ayarları › Gizlilik ve Güvenlik** bölümüne gidin ve şu listelerde pikapik’i açın:
+İlk açılışta pikapik kendi ayarlarını açar: soldan bir sayfa seçin ve ihtiyacınız olanı açın. Tuşları, tıklamaları veya pencereleri değiştiren araçların iki izne ihtiyacı vardır; geri kalanlar bu izinler olmadan da çalışır. Bu izinlerden biri eksik olan araç yarı soluk gri görünür; üzerine tıkladığınızda İzinler sayfası, pikapik’i **Sistem Ayarları › Gizlilik ve Güvenlik** bölümünde nerede açacağınızı gösterir:
 
-- **Erişilebilirlik**: Uygulama bir tuş basışını veya tıklamayı diğer uygulamalara ulaşmadan önce değiştirebilsin diye.
+- **Erişilebilirlik** (macOS 27’de **Aygıt Denetimi ve Veri Erişimi**): Uygulama bir tuş basışını veya tıklamayı diğer uygulamalara ulaşmadan önce değiştirebilsin diye.
 - **Girdi İzleme**: Uygulama tuş basışlarını ve tıklamaları değiştirmeden görebilsin diye. Dil değiştirme böyle çalışır.
 
-Uygulama değişikliği birkaç saniye içinde fark eder, yeniden başlatmaya gerek yoktur.
+İzinler sayfası, bu iki iznin her birinin altında, açtığınız araçlardan o izne ihtiyaç duyanların bulunduğu sayfaları listeler. Uygulama değişikliği birkaç saniye içinde fark eder, yeniden başlatmaya gerek yoktur.
 
 Bazı özellikler kullandığınızda ek izin ister: **Yönetici erişimi**, **Finder Eklentileri**, **iCloud Drive**, **Tam Disk Erişimi**, **Ekran Kaydı** ve **Sistem Sesi Kaydı**. Hepsi ayarlardaki İzinler sayfasında toplanır: her iznin ne işe yaradığını anlatan bir satırı, yeşil bir onay işareti ya da turuncu bir çarpısı ve tek bir düğmesi vardır: izin eksikse **İzin Ver**, açıksa **Kapat**. Böylece herhangi bir izni hemen oradan geri alabilirsiniz.
 
@@ -353,8 +353,8 @@ Bazı uygulama ve oyunlar kaydırmayı tam piksel olarak sayar: onlar için ayn�
 pikapik, macOS’un açamadıklarını da açar: birkaç parçaya bölünmüş olsa bile RAR, parolayla korunan 7Z, .001, .z01, .r00 ve .part1.rar gibi parça kümeleri, ayrıca ZIPX, CAB, LZH, ARJ, ZST, LZMA, WIM ve daha fazlası. Çift tıklayınca pikapik’te açılırlar. Eski ZIP’lerdeki dosya adları, örneğin Kiril, Japonca veya Çince olanlar, okunur çıkar. Ayarlar › Finder’daki **Arşivleri pikapik’te aç** satırı, ZIP ve 7Z için uygulamayı bir menüden seçmenizi sağlar, örneğin pikapik; TAR ve GZ ise bunları zaten iyi işleyen yerleşik arşiv uygulamasında kalır. pikapik RAR’ı açabilir ama oluşturamaz: RAR lisansı yalnızca arşivden çıkarmaya izin verir.
 
 Bir pencere parolayı sorar, **Durdur** her işi iptal eder ve hasarlı ya da eksik bir arşivden pikapik hâlâ okunabilen her şeyi çıkarır. Devasa bir boyuta şişecek bir arşivi çıkarmadan önce sorar, disk dolacaksa zamanında durur ve kendi klasörünün dışına yazmaya çalışan arşivleri engeller. Finder’da bir arşivi seçip Boşluk tuşuna basarak içindekileri önizleyebilirsiniz.
-**Mac App Store sürümünde Arşivler.** Orada da çalışır, ancak birlikte gelen 7-Zip yerine macOS’in yerleşik araçlarıyla, bu yüzden sınırlamaları vardır: parolayı yalnızca ZIP için ayarlayabilirsiniz, 7Z için değil; bir arşiv parçalara bölünemez ve çok parçalı arşivler (.001, .part1.rar, .z01 ve benzerleri) açılamaz; tek başına .xz, .lzma ve .zst dosyaları açılamaz (.gz ve .bz2 açılır); parolalı 7Z ve RAR açılamaz; ayrıca **Arşivleri pikapik’te aç** satırı yoktur. İlk seferde pikapik ana klasörünüze erişim ister, Yeni Dosya ve Küçük Kopya için olduğu gibi, çünkü bu sürüm yalnızca izin verdiğiniz yere yazabilir. Finder uzantısını Sistem Ayarları › Genel › Giriş Öğeleri ve Uzantılar bölümünden açın; pikapik nereye tıklayacağınızı gösterir.
 
+**Mac App Store sürümünde Arşivler.** Orada da çalışır, ancak birlikte gelen 7-Zip yerine macOS’in yerleşik araçlarıyla, bu yüzden sınırlamaları vardır: parolayı yalnızca ZIP için ayarlayabilirsiniz, 7Z için değil; bir arşiv parçalara bölünemez ve çok parçalı arşivler (.001, .part1.rar, .z01 ve benzerleri) açılamaz; tek başına .xz, .lzma ve .zst dosyaları açılamaz (.gz ve .bz2 açılır); parolalı 7Z ve RAR açılamaz; ayrıca **Arşivleri pikapik’te aç** satırı yoktur. İlk seferde pikapik ana klasörünüze erişim ister, Yeni Dosya ve Küçük Kopya için olduğu gibi, çünkü bu sürüm yalnızca izin verdiğiniz yere yazabilir. Finder uzantısını Sistem Ayarları › Genel › Giriş Öğeleri ve Uzantılar bölümünden açın; pikapik nereye tıklayacağınızı gösterir.
 
 **Masaüstü simgelerini gizle.** Bir görüşmeden, ekran kaydından ya da ekran görüntüsünden önce açın, masaüstündeki dosya ve klasörler kaybolsun. Kapatın, aynı yerlerine geri dönsünler. Hiçbir şey taşınmaz: dosyalar Finder’da Masaüstü klasöründe kalır. Bu, Sistem Ayarları › Masaüstü ve Dock’taki **Öğeleri göster › Masaüstünde** ayarının ta kendisi, sadece daha el altında, bu yüzden ikisi her zaman aynıdır. Mac App Store sürümünde bu satır onun yerine simgeleri her ekranda duvar kağıdınızla kaplar, duvar kağıdınız hareketliyse düz bir renkle; tıklamalar yine masaüstüne ulaşır. Ayarlar’da altındaki **Aç** düğmesi Sistem Ayarları’nın o sayfasını yine açar.
 
@@ -362,13 +362,11 @@ Bir pencere parolayı sorar, **Durdur** her işi iptal eder ve hasarlı ya da ek
 
 **Oyun Modu.** Oyunlarınızı ekleyin; siz oynarken Mac sizi oyundan koparmaz. Spotlight, Siri, ⌘Tab, Mission Control ve masaüstleri arasında kaydırma oyunun üstünde açılmaz, ⌘Q ve ⌘W oyunu yanlışlıkla kapatmaz, imleç Dock’a, menü çubuğuna ya da başka bir ekrana kaymaz ve ekran açık kalır. Shift’e basılı tutarken fare tekerleği hızlı çubuktaki yuvaları değiştirmeye devam eder. Bunların her birinin Oyunlar sayfasında kendi anahtarı vardır; pikapik ayrıca Mac’inizde bulduğu oyunları önerir. Oyunda Control-tıklama normal bir tıklama olarak kalır, Control ile ok tuşları masaüstünü değiştirmez. Minecraft da tanınır: Minecraft Launcher’ı ya da CurseForge’u ekleyin, mod Minecraft’ın içinde açılır. Oyundan çıkmak için ⇧⌘Q’ya, penceresini kapatmak için ⇧⌘W’ye basın. ⌥⌘Esc her zaman çalışır. Oyundan çıktığınız anda her şey her zamanki gibi çalışır. Varsayılan olarak kapalı.
 
-Oyun Modu’nu aç ve oyna. Diğer oyun ayarları, Mac’in yayımladığı kataloğu, güncel tuşları ve her eylem için animasyonlu önizlemeyi içerir.
+Oyunlar sayfasındaki **Diğer oyun ayarları**, Mac’inizin yayımladığı kısayolları güncel tuşlarıyla ve her eylemin animasyonlu önizlemesiyle birlikte listeler. Her kısayol için **Oyun Modu kurallarına uy**, **Oyunlarda devre dışı bırak** ya da **Oyunlarda izin ver** seçeneklerinden birini seçersiniz. Dil kısayolları için bir de **Her basışta dili değiştir** seçeneği vardır: hızlı ve kasıtlı bir basış, oyunun üstünde hiçbir şey açmadan girdi kaynağını değiştirir; koşmak ya da zıplamak için basılı tuttuğunuz tuşlar ise önceliklerini korur, böylece dil yanlışlıkla değişmez.
 
-Otomatik, pencere açan veya odağı değiştiren eylemleri duraklatır. Hızlı ve kasıtlı dil kısayolu sistem penceresi olmadan kaynağı değiştirir. Basılı hareket tuşları önceliklidir; koşmak ve zıplamak yanlışlıkla dili değiştirmez.
+**Diğer oyun ayarları** içindeki **Fare ve izleme dörtgeni** grubu, yalnızca Mac’inizde macOS’ta açık olanları Apple’ın kendi adlarıyla ve her biri için küçük bir çizimle gösterir: fare düğmesindeki kısayollar, masaüstleri ve tam ekran uygulamalar arasında kaydırma, Mission Control ve App Exposé, uygulamalar için kıstırma ve masaüstü için parmakları açma, Bildirim Merkezi için sağ kenardan kaydırma ve her etkin köşe ile yaptığı eylem. Bir oyun öndeyken bunlar duraklatılır; böylece yanlışlıkla yapılan bir kaydırma ya da ekran köşesine değen imleç sizi oyundan çıkaramaz. Oyunun içindeki hareketler çalışmaya devam eder. Her biri her zamanki gibi çalışacak şekilde ayarlanabilir. Web sitesi sürümünde bir etkin köşedeki **Değiştir…** ile köşeye hemen başka bir eylem seçebilir, **Geri koy** ile ilkini geri getirebilirsiniz; her değişiklikte Dock bir kez yeniden başlar.
 
-Ayarlar → Oyunlar → Diğer oyun ayarları altında “Fare ve izleme dörtgeni” adlı bir grup var. Yalnızca Mac’inizde macOS’ta açık olanları, Apple’ın kendi adlarıyla ve her biri için küçük bir çizimle gösterir: fare düğmesindeki kısayollar, masaüstleri ve tam ekran uygulamalar arasında kaydırma, Mission Control ve App Exposé, uygulamalar için kıstırma ve masaüstü için parmakları açma, Bildirim Merkezi için sağ kenardan kaydırma ve her etkin köşe ile yaptığı eylem. Bir oyun öndeyken bunlar duraklatılır; böylece yanlışlıkla yapılan bir kaydırma ya da ekran köşesine değen imleç sizi oyundan çıkaramaz. Oyunun içindeki hareketler çalışmaya devam eder. Her biri her zamanki gibi çalışacak şekilde ayarlanabilir. Web sitesi sürümünde bir etkin köşedeki **Değiştir…** ile köşeye hemen başka bir eylem seçebilir, **Geri koy** ile ilkini geri getirebilirsiniz; her değişiklikte Dock bir kez yeniden başlar.
-
-Ayarlar → Oyunlar → Oyun Ekle bölümünü aç ve çalışan oyununa tıkla. Java ve diğer ortamlarla çalışan oyunlar, .app dosyası olmasa da burada görünür. Minecraft, java yerine Minecraft adıyla görünür. Oyunun işlemini bul ve satırını Ayarlar → Oyunlar içindeki Oyunların alanına sürükle.
+Bir oyun eklemek için Oyunlar sayfasındaki **Oyun Ekle…** düğmesine tıklayın ve açık uygulamalar ya da Dock’takiler arasından oyununuzu seçin. Java ya da başka bir çalışma ortamı üzerinden çalışan ve kendine ait bir uygulaması olmayan bir oyun da orada yer alır; Minecraft da java yerine Minecraft adıyla görünür. Bir oyunu Finder’dan ya da satırını Etkinlik Monitörü’nden listeye sürükleyerek de ekleyebilirsiniz.
 
 **FPS’yi göster.** FPS, saniyedeki kare sayısı demektir: oyunun her saniye kaç resim çizdiği. Oyunlar sayfasında **FPS’yi göster** seçeneğini açın; Oyun Modu açıkken herhangi bir oyunun bir köşesinde bu sayıyı gösteren küçük, koyu bir etiket görünür. Köşeyi, anahtarın üstündeki resimde tıklayarak seçersiniz. Tire, ilk karelerin henüz gelmediği anlamına gelir; soluk bir 0 ise oyunun çizmeyi bıraktığı anlamına gelir. macOS 27’de oyunların çoğunu macOS kendisi sayar, izin gerekmez. macOS’un sayamadığı bir oyun, çoğunlukla eski bir oyun, ekran kaydı üzerinden sayılır: İzinler sayfasında **Ekran Kaydı** satırı belirir, pikapik oyun sırasında asla izin istemez ve sayı ekranın yenileme hızını aşamaz. macOS 14–26’da ve Mac App Store sürümünde tüm oyunlar bu şekilde sayılır; bu yüzden satır, **FPS’yi göster** açılır açılmaz belirir ve anahtarın altındaki **İzin Ver** düğmesi sizi oraya götürür. Hiçbir görüntü saklanmaz veya gönderilmez. Varsayılan olarak kapalıdır.
 
@@ -419,7 +417,7 @@ Keep Awake, ekran ve kapak kapalı modları, Kestirmeler uygulamasıyla Denetim 
 
 Ayarları menüden **Ayarlar…** ile ya da ⌘, ile açın veya pikapik’i Finder, Launchpad ya da Spotlight’tan yeniden başlatın. Pencere açıkken uygulama Dock’ta ve ⌘Tab’de görünür.
 
-- **Genel**: girişte açma, görünüm (Sistem, Açık veya Koyu), dil, güncellemeler ve yedekleme: ayarları dosya olarak dışa ve içe aktarma ya da iCloud Drive ile eşzamanlama.
+- **Genel**: girişte açma, çıktıktan sonra arka planda kalma, görünüm (Sistem, Açık veya Koyu), dil ve yedekleme: ayarları dosya olarak dışa ve içe aktarma ya da iCloud Drive ile eşzamanlama.
 - **Pil**: şarj düzeyi, dolmasına kalan süre veya kalan kullanım süresi, durum, maksimum kapasite, devir sayısı, güç adaptörü ve vat cinsinden güç, bir de pilin ömrünü uzatmak için ipuçları. Yalnızca bilgi gösterir: şarj sınırı **Sistem Ayarları › Pil** içinde kalır. Yalnızca pili olan Mac’lerde görünür.
 - **Uyanık Tut**: süre, ekran ve kapak seçenekleri.
 - **Parlaklık**: macOS’in kendi ayarlayamadığı her monitör için bir sürgü, parlaklık tuşları ve bunun yerine görüntüyü karartma seçeneği.
@@ -433,13 +431,14 @@ Ayarları menüden **Ayarlar…** ile ya da ⌘, ile açın veya pikapik’i Fin
 - **Pencereler**: yeşil düğmeyle pencereyi büyütme (istisna listesiyle), ⌘Q ve ⌘W koruması ve son pencerede çıkma (istisna listesiyle).
 - **Dock**: Dock’ta tıklayarak küçültme veya gizleme ve Dock’u tek ekranda tutma.
 - **Finder**: yeni dosya, küçük kopya, dönüştürme ve arşivler, Return ile açma, ⌘X ile kesme, ⌫ ile silme, masaüstü simgelerini gizleme ve gizli dosyaları gösterme.
+- **Animasyonlar**: pencere, Hızlı Bakış ve Finder animasyonlarının hızı (anında olacak kadar), gizli Dock’un ne zaman ve ne kadar hızlı kayarak çıktığı, küçültme efekti ve zıplayan Dock simgeleri.
 - **Oynatıcı**: bir videoyu kendi penceresinde açma, oynattığı biçimler, her biçim için uygulamayı seçtiren menü ve FFmpeg, dav1d, libass, FreeType, HarfBuzz ile FriBidi lisansları.
 - **Uygulamaları Kaldır**: bir uygulamayı dosyalarıyla kaldırın, sonra hepsini geri koyun ve kaldırılan uygulamaların geride bıraktıklarını temizleyin.
 - **Arka Plan Görevleri**: arka planda çalışan her şey, onu hangi uygulamanın eklediği ve Sistem Ayarları’nı açmadan kapatıp yeniden açmak için bir düğme.
 - **Oyunlar**: oyun listeniz ve Oyun Modu seçenekleri.
 - **Evcil Dost**: açıp kapatma, sohbet, ritminize uyma ve top, gardırop ve ödüller.
-- **İzinler**: pikapik’in kullandığı tüm izinler; her birinin durumu ve izin vermek ya da kapatmak için bir düğmesi. Bir izni eksik olan araç yarı soluk gri görünür; üzerine tıklamak bu sayfayı doğru satırda açar.
-- **Hakkında**: sürüm, değişiklik günlüğü bağlantısı ve sorun bildirme bağlantısı.
+- **İzinler**: pikapik’in kullandığı tüm izinler; her birinin durumu ve izin vermek ya da kapatmak için bir düğmesi. İki ana izin, onlara ihtiyaç duyan araçların sayfalarını da gösterir. Bir izni eksik olan araç yarı soluk gri görünür; üzerine tıklamak bu sayfayı doğru satırda açar.
+- **Hakkında**: sürüm ve güncellemeler, değişiklik günlüğü bağlantısı ve sorun bildirme bağlantısı.
 
 Birçok ayarın, ne yaptığını gösteren küçük bir resmi vardır; örneğin uyumayan bir Mac ya da Dock’un arkasına saklanan bir pencere. Resim, anahtarla birlikte değişir ve Sistem Ayarları’nda “Hareketi Azalt” açıksa hareketsiz kalır.
 
@@ -454,11 +453,11 @@ Her sayfanın altında bir **Saptanmışlara Dön…** düğmesi vardır. Önce 
 <details>
 <summary>Güncellemeler</summary>
 
-pikapik açılışta ve her 6 saatte bir yeni sürüm olup olmadığını denetler. Bunu Ayarlar › Genel bölümünden kapatabilirsiniz. Yeni bir sürüm çıktığında menüde **… sürümüne güncelle** düğmesi görünür: tek tıklamayla uygulama güncellemeyi indirir, yükler ve yeniden başlar. Ayarlar › Genel bölümündeki **Şimdi Denetle** ile elle de denetleyebilirsiniz.
+pikapik açılışta ve her 6 saatte bir yeni sürüm olup olmadığını denetler. Bunu Ayarlar › Hakkında bölümünden kapatabilirsiniz. Yeni bir sürüm çıktığında menüde **… sürümüne güncelle** düğmesi görünür: tek tıklamayla uygulama güncellemeyi indirir, yükler ve yeniden başlar. Ayarlar › Hakkında bölümündeki **Şimdi Denetle** ile elle de denetleyebilirsiniz.
 
 Homebrew kullanıyorsanız `brew upgrade --cask pikapik` komutunu da çalıştırabilirsiniz.
 
-1.3 sürümünden itibaren izinler güncellemelerden sonra yerinde kalır.
+İzinler güncellemelerden sonra yerinde kalır.
 
 </details>
 
@@ -479,7 +478,7 @@ Homebrew ile kurduysanız: `brew uninstall --cask --zap pikapik`.
 <summary>Sık sorulan sorular</summary>
 
 **Neden iki izin gerekiyor?**
-macOS klavye ve fare erişimini ikiye ayırır. Erişilebilirlik uygulamanın bir tuş basışını veya tıklamayı değiştirmesini sağlar ve çoğu özellik için yalnızca bu gerekir. Girdi İzleme ise yalnızca izlemesini sağlar ve dil değiştirmek için bu yeterlidir.
+macOS klavye ve fare erişimini ikiye ayırır. Erişilebilirlik (macOS 27’de Aygıt Denetimi ve Veri Erişimi) uygulamanın bir tuş basışını veya tıklamayı değiştirmesini sağlar ve çoğu özellik için yalnızca bu gerekir. Girdi İzleme ise yalnızca izlemesini sağlar ve dil değiştirmek için bu yeterlidir.
 
 **macOS uygulamanın tanımlanmamış bir geliştiriciden geldiğini söylüyor.**
 pikapik, geliştiricisi tarafından imzalanmıştır ve Apple’ın kötü amaçlı yazılım denetiminden geçer, bu yüzden bu uyarının görünmemesi gerekir. Yine de görünürse **Sistem Ayarları › Gizlilik ve Güvenlik** bölümünü açıp **Yine de Aç** düğmesine tıklayın.

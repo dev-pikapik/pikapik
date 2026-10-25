@@ -23,7 +23,7 @@ final class Stubs {
 }
 
 final class World {
-    private static let session = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("pika-app-remover-\(UUID().uuidString)")
+    static let session = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("pika-app-remover-\(UUID().uuidString)")
 
     let base: URL
     let top: URL
@@ -297,6 +297,7 @@ enum AppRemoverTests {
         messages()
         let left = Rig.real.filter(World.present)
         precondition(left.isEmpty, "left in the Trash: \(left)")
+        try? FileManager.default.removeItem(at: World.session)
         print("app remover: ok")
     }
 

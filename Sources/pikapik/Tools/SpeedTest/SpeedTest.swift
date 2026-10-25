@@ -181,7 +181,7 @@ struct SpeedTestSettings: View {
                 .frame(maxWidth: .infinity)
                 .settingAnchor(SettingTitle.checkSpeed)
             } footer: {
-                Text("Takes about half a minute. The check runs on Apple’s servers.")
+                Text("Takes about half a minute and runs on Apple’s servers. It can use a lot of data.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -217,7 +217,7 @@ struct SpeedTestSettings: View {
             } header: {
                 Text("Buttons in Control Center and widgets")
             } footer: {
-                Text("Add the Open URLs action in Shortcuts, with a link.")
+                Text("Copy a link, then in Shortcuts make a shortcut with the Open URLs action and paste the link into it. Then add the shortcut to Control Center or as a widget.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)

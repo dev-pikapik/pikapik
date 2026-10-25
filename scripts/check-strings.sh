@@ -1,6 +1,6 @@
 #!/bin/bash
 # Usage: scripts/check-strings.sh [dir with .stringsdata from swiftc -emit-localized-strings]
-# Without an argument it compiles the sources into a temporary dir first.
+# Without an argument it first extracts the strings of the direct and the App Store version into a temporary dir.
 # It also checks every Resources/*.xcstrings catalog: all 23 languages for every key, complete plural forms, nothing left to review or empty.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -17,28 +17,36 @@ if [ -z "$DIR" ]; then
         while IFS= read -r -d '' f; do SOURCES+=("$f"); done < <(find Private/Sources -name '*.swift' -print0)
         FLAGS+=(-D PIKA_PRIVATE)
     fi
-    echo "Extracting strings"
-    swiftc -wmo -c -module-name Pikapik -target arm64-apple-macos14.0 \
-        ${FLAGS[@]+"${FLAGS[@]}"} \
-        -Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend "$DIR" \
-        "${SOURCES[@]}" -o "$DIR/app.o"
-    for EXT in NewFile Compress Convert Archive Preview; do
-        SHARED=(Extensions/Shared/*.swift Sources/pikapik/Core/MainCopyChoice.swift)
-        [ "$EXT" != Archive ] || SHARED+=(Sources/pikapik/Tools/Archive/Archive.swift)
-        [ "$EXT" != Preview ] || SHARED=(-import-objc-header Extensions/Preview/libarchive.h)
-        swiftc -wmo -c -module-name "$EXT" -target arm64-apple-macos14.0 -application-extension \
-            -Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend "$DIR" \
-            Extensions/"$EXT"/*.swift ${SHARED[@]+"${SHARED[@]}"} -o "$DIR/$EXT.o"
+    extract() {
+        swiftc -wmo -emit-module -swift-version 5 -module-name "$1" -target arm64-apple-macos14.0 \
+            ${FLAGS[@]+"${FLAGS[@]}"} \
+            -Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend "$DIR/$VARIANT/$1" \
+            "${@:2}" -emit-module-path "$DIR/$VARIANT/$1/$1.swiftmodule"
+    }
+    for VARIANT in direct appstore; do
+        echo "Extracting the strings of the $VARIANT version"
+        if [ "$VARIANT" = appstore ]; then
+            FLAGS=(-D APPSTORE)
+            SOURCES=()
+            while IFS= read -r f; do SOURCES+=("$f"); done < <(./scripts/appstore-sources.sh)
+        fi
+        extract Pikapik "${SOURCES[@]}"
+        for EXT in NewFile Compress Convert Archive Preview; do
+            SHARED=(Extensions/Shared/*.swift Sources/pikapik/Core/MainCopyChoice.swift)
+            [ "$EXT" != Archive ] || SHARED+=(Sources/pikapik/Tools/Archive/Archive.swift)
+            [ "$EXT" != Preview ] || SHARED=(-import-objc-header Extensions/Preview/libarchive.h)
+            extract "$EXT" -application-extension Extensions/"$EXT"/*.swift "${SHARED[@]}"
+        done
+        [ "$VARIANT" = appstore ] || [ ! -d Vendor/ffmpeg/include ] || extract Player \
+            -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include \
+            Helper/Player/*.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,ImageLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift Sources/pikapik/Core/Symbol.swift Sources/pikapik/UI/SymbolImage.swift
     done
-    [ ! -d Vendor/ffmpeg/include ] || swiftc -wmo -c -module-name Player -target arm64-apple-macos14.0 \
-        -import-objc-header Helper/Player/Player.h -I Vendor/ffmpeg/include \
-        -Xfrontend -emit-localized-strings -Xfrontend -emit-localized-strings-path -Xfrontend "$DIR" \
-        Helper/Player/*.swift Extensions/MediaReader/{Demuxer,Formats,Codecs,AudioDecoder}.swift Sources/pikapik/Tools/Player/{PlayerLogic,ImageLogic,PlayerMarks,PlayerOutput,SubtitleParser}.swift Sources/pikapik/Core/Symbol.swift Sources/pikapik/UI/SymbolImage.swift -o "$DIR/Player.o"
 fi
 
-python3 - "$DIR" <<'PY'
+PYTHONPATH=scripts python3 -B - "$DIR" <<'PY'
 import glob, json, os, re, subprocess, sys
 from collections import Counter
+import xcstrings
 
 problems = []
 
@@ -69,14 +77,6 @@ XCSTRINGSTOOL = (subprocess.run(['xcrun', '--find', 'xcstringstool'], capture_ou
 if not os.path.exists(XCSTRINGSTOOL) and os.environ.get('CI'):
     fail('xcstringstool is missing, so the catalogs were not compiled')
 
-def unique_keys(path):
-    def hook(pairs):
-        for key, n in Counter(k for k, _ in pairs).items():
-            if n > 1:
-                fail(f'{path}: "{key[:60]}" is written {n} times')
-        return dict(pairs)
-    return hook
-
 def check_state(path, where, key, unit):
     if unit.get('state') != 'translated':
         fail(f'{path} ({where}): "{key[:60]}" has state "{unit.get("state", "")}", it must be "translated"')
@@ -90,7 +90,7 @@ def load_catalog(path):
         fail(f'{path}: missing')
         return {}, []
     try:
-        data = json.load(open(path, encoding='utf-8'), object_pairs_hook=unique_keys(path))
+        strings, all_langs = xcstrings.load(path, lambda key, n: fail(f'{path}: "{key[:60]}" is written {n} times'))
     except Exception as e:
         fail(f'{path}: {e}')
         return {}, []
@@ -98,8 +98,6 @@ def load_catalog(path):
         r = subprocess.run([XCSTRINGSTOOL, 'compile', path, '--output-directory', sys.argv[1] + '/xc', '--dry-run'], capture_output=True, text=True)
         if r.returncode:
             fail(f'{path}: {r.stderr.strip().replace(os.path.abspath(path) + ": ", "")}')
-    strings = data.get('strings', {})
-    all_langs = sorted({lang for item in strings.values() for lang in item.get('localizations', {})})
     tables = {lang: {} for lang in all_langs}
     for key, item in strings.items():
         locs = item.get('localizations', {})
@@ -110,11 +108,8 @@ def load_catalog(path):
         if any('plural' in loc.get('variations', {}) for loc in locs.values()) and (not first or re.sub(r'(?<=%)\d+\$', '', first.group()) != '%lld'):
             fail(f'{path}: "{key[:60]}" changes with a number, so its first placeholder must be that number, %lld')
         for lang, loc in locs.items():
-            if 'stringUnit' in loc:
-                check_state(path, lang, key, loc['stringUnit'])
-                tables[lang][key] = loc['stringUnit'].get('value', '')
-            elif 'variations' in loc and 'plural' in loc['variations']:
-                plural = loc['variations']['plural']
+            unit, plural = xcstrings.forms(loc)
+            if plural is not None:
                 if lang not in WHOLE_NUMBER_FORMS:
                     fail(f'{path} ({lang}): add the plural forms of {lang} to WHOLE_NUMBER_FORMS in scripts/check-strings.sh')
                 needed_forms = WHOLE_NUMBER_FORMS.get(lang, '').split() + ['other']
@@ -122,7 +117,6 @@ def load_catalog(path):
                     if rule not in plural:
                         fail(f'{path} ({lang}): "{key[:60]}" is missing plural "{rule}"')
                 for rule, unit in plural.items():
-                    unit = unit.get('stringUnit', {})
                     value = unit.get('value', '')
                     one_number = rule in ('zero', 'two') or rule == 'one' and lang not in ONE_IS_SEVERAL_NUMBERS
                     if rule not in needed_forms + FRACTION_FORMS.get(lang, '').split() + ['zero']:
@@ -132,7 +126,10 @@ def load_catalog(path):
                         fail(f'{path} ({lang}.{rule}): "{key[:60]}" is empty')
                     elif rule != 'other' and specs(value) != specs(key) and not (one_number and leaves_out_count(key, value)):
                         fail(f'{path} ({lang}.{rule}): "{key[:60]}" has different placeholders: {dict(specs(value))}')
-                tables[lang][key] = plural.get('other', {}).get('stringUnit', {}).get('value', '')
+                tables[lang][key] = plural.get('other', {}).get('value', '')
+            elif unit is not None:
+                check_state(path, lang, key, unit)
+                tables[lang][key] = unit.get('value', '')
             else:
                 fail(f'{path} ({lang}): "{key[:60]}" varies by {", ".join(loc.get("variations", loc))}, the build reads only plain texts and plurals')
     return tables, all_langs

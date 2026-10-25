@@ -1,91 +1,6 @@
 import AppKit
 import SwiftUI
 
-#if APPSTORE
-enum DockEdges {
-    static var journal: [String: Any] { [:] }
-    static func calm(corners: Set<Int>, hidesDock: Bool) {}
-    static func restoreSoon() {}
-    static func restore() {}
-}
-#else
-enum DockEdges {
-    private static let key = PreferenceKey.gameModeDock, dock = "com.apple.dock" as CFString
-    private static let killallURL = URL(fileURLWithPath: SystemPath.killall)
-    private static let corners = ["wvous-tl-corner", "wvous-tr-corner", "wvous-bl-corner", "wvous-br-corner"], delay = "autohide-delay"
-    private static var pending: DispatchWorkItem?
-
-    static var journal: [String: Any] { UserDefaults.standard.dictionary(forKey: key) ?? [:] }
-
-    static func calm(corners wanted: Set<Int>, hidesDock: Bool) {
-        pending?.cancel()
-        pending = nil
-        CFPreferencesAppSynchronize(dock)
-        let saved = journal
-        func current(_ name: String) -> Int { ((saved[name] ?? CFPreferencesCopyAppValue(name as CFString, dock) as Any?) as? NSNumber)?.intValue ?? 0 }
-        let active = wanted.sorted().map { corners[$0] }.filter { current($0) > 1 }
-        let hides = hidesDock && CFPreferencesGetAppBooleanValue("autohide" as CFString, dock, nil)
-        let targets = active + (hides ? [delay] : [])
-        var restart = false
-        if !saved.isEmpty {
-            guard Set(saved.keys) != Set(targets) else { return }
-            restart = reset()
-        }
-        if !targets.isEmpty {
-            var original: [String: Any] = [:]
-            for name in targets { original[name] = CFPreferencesCopyAppValue(name as CFString, dock) ?? "" }
-            UserDefaults.standard.set(original, forKey: key)
-            for name in active { CFPreferencesSetAppValue(name as CFString, 1 as CFNumber, dock) }
-            if hides { CFPreferencesSetAppValue(delay as CFString, 1000.0 as CFNumber, dock) }
-            CFPreferencesAppSynchronize(dock)
-            restart = !DockCorners.set(Dictionary(uniqueKeysWithValues: active.map { ($0, 1) })) || hides || restart
-        }
-        if restart { relaunch() }
-    }
-
-    static func restoreSoon() {
-        guard UserDefaults.standard.dictionary(forKey: key) != nil, pending == nil else { return }
-        let work = DispatchWorkItem { restore() }
-        pending = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: work)
-    }
-
-    static func restore() {
-        pending?.cancel()
-        pending = nil
-        guard !journal.isEmpty, reset() else { return }
-        relaunch()
-    }
-
-    static func restorable(_ saved: [String: Any], current: (String) -> Any?) -> [String: Any] {
-        saved.filter { name, _ in
-            let value = (current(name) as? NSNumber)?.doubleValue
-            return name == delay ? value == 1000 : value == 0 || value == 1
-        }
-    }
-
-    private static func reset() -> Bool {
-        CFPreferencesAppSynchronize(dock)
-        let saved = journal
-        UserDefaults.standard.removeObject(forKey: key)
-        let ours = restorable(saved) { CFPreferencesCopyAppValue($0 as CFString, dock) }
-        var live: [String: Int] = [:]
-        for (name, original) in ours {
-            let value = original as? String == "" ? nil : original as CFPropertyList
-            CFPreferencesSetAppValue(name as CFString, value, dock)
-            if name != delay { live[name] = (original as? NSNumber)?.intValue ?? 1 }
-        }
-        CFPreferencesAppSynchronize(dock)
-        return ours[delay] != nil || !DockCorners.set(live)
-    }
-
-    private static func relaunch() {
-        CFPreferencesAppSynchronize(dock)
-        _ = try? Process.run(killallURL, arguments: ["Dock"])
-    }
-}
-#endif
-
 #if !APPSTORE
 enum CursorLock {
     private typealias Lock = @convention(c) (Int32, UnsafeRawPointer?) -> Int32
@@ -110,16 +25,14 @@ final class CursorFence {
     let frame: CGRect?
     let blocksAll: Bool
     let except: Set<Int64>
-    let corners: Set<Int>
     fileprivate var holding: Bool?
     fileprivate private(set) var tap: CFMachPort?
     private var loop: CFRunLoop?
 
-    init(frame: CGRect?, blocksAll: Bool, except: Set<Int64>, corners: Set<Int>) {
+    init(frame: CGRect?, blocksAll: Bool, except: Set<Int64>) {
         self.frame = frame
         self.blocksAll = blocksAll
         self.except = except
-        self.corners = corners
         let mask = CGEventMask(blocksAll || !except.isEmpty ? 1 << 30 : 0)
         guard mask != 0, AXIsProcessTrusted() else { return }
         let ready = DispatchSemaphore(value: 0)
@@ -158,8 +71,10 @@ enum GameHint {
 
     static func show() {
         guard let screen = NSScreen.screens.first(where: { NSMouseInRect(NSEvent.mouseLocation, $0.frame, false) }) ?? NSScreen.main else { return }
-        let view = NSHostingView(rootView: Text("To leave the game, press \(CommandKeysTool.quit.text)")
-            .font(.title3.weight(.medium))
+        let view = NSHostingView(rootView: VStack(spacing: 2) {
+            Text("pikapik paused this shortcut while you play").font(.callout).foregroundStyle(.secondary)
+            Text("To leave the game, press \(CommandKeysTool.quit.text)").font(.title3.weight(.medium))
+        }
             .padding(.horizontal, 22)
             .padding(.vertical, 12)
             .glassCard(cornerRadius: 22)
@@ -180,7 +95,7 @@ enum GameHint {
         panel.alphaValue = fade == 0 ? 1 : 0
         panel.orderFrontRegardless()
         NSAnimationContext.runAnimationGroup { $0.duration = fade; panel.animator().alphaValue = 1 }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             NSAnimationContext.runAnimationGroup { $0.duration = fade; panel.animator().alphaValue = 0 } completionHandler: { panel.orderOut(nil) }
         }
     }

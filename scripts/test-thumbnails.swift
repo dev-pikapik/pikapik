@@ -26,6 +26,17 @@ enum TestThumbnails {
         return url
     }
 
+    static func videoDescription(_ url: URL) -> CMFormatDescription? {
+        let fd = open(url.path, O_RDONLY)
+        guard fd >= 0 else { return nil }
+        defer { close(fd) }
+        let demuxer = try? Demuxer(name: url.lastPathComponent, size: lseek(fd, 0, SEEK_END), memoryLimit: 32 << 20) { buffer, count, offset in
+            let read = pread(fd, buffer, Int(count), offset)
+            return read < 0 ? -EIO : read == 0 ? PikaErrorEOF : Int32(read)
+        }
+        return demuxer?.streams.first { $0.format.mediaType == kCMMediaType_Video }?.format.description
+    }
+
     static func wait(_ seconds: Double, until done: () -> Bool) {
         let end = Date(timeIntervalSinceNow: seconds)
         while !done(), Date() < end { RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02)) }
@@ -82,7 +93,7 @@ enum TestThumbnails {
         NSApplication.shared.setActivationPolicy(.prohibited)
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent("pikapik-thumbnails-\(getpid())")
         try! FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: folder) }
+        func finish(_ code: Int32) -> Never { try? FileManager.default.removeItem(at: folder); exit(code) }
         let picture = ["-f", "lavfi", "-i", "testsrc2=size=320x180:rate=25:duration=10"]
         let clips: [(String, URL)] = [
             ("H.264 in MP4 (decoded by VideoToolbox)", make(ffmpeg, "h264.mp4", in: folder, picture + ["-c:v", "libx264", "-g", "25", "-pix_fmt", "yuv420p"])),
@@ -134,6 +145,23 @@ enum TestThumbnails {
             check(false, "MPEG-4 in AVI at 23.976 fps opens")
         }
 
+        let fullColour = make(ffmpeg, "full-colour.mp4", in: folder, ["-f", "lavfi", "-i", "testsrc2=size=320x180:rate=25:duration=4", "-f", "lavfi", "-i", "sine=frequency=440:duration=4",
+                                                                      "-c:v", "libx264", "-pix_fmt", "yuv444p", "-c:a", "aac"])
+        if let description = videoDescription(fullColour) {
+            if videoToolboxDecodes(description) {
+                let engine = try? Engine(fullColour)
+                engine?.muted = true
+                engine?.seek(to: .zero, rate: 1)
+                wait(5) { (engine?.synchronizer.currentTime().seconds ?? 0) > 1.5 }
+                check(engine?.hasVideo == true && engine?.layer.sampleBufferRenderer.status != .failed, "H.264 in 4:4:4, which this Mac decodes, plays with its picture")
+                engine?.stop()
+            } else {
+                check((try? Engine(fullColour)) == nil, "H.264 in 4:4:4, which this Mac can't decode, is refused when it opens instead of playing its sound over a black picture")
+            }
+        } else {
+            check(false, "H.264 in 4:4:4 has a video track")
+        }
+
         let tall = make(ffmpeg, "tall.mp4", in: folder, ["-f", "lavfi", "-i", "testsrc2=size=180x320:rate=25:duration=4", "-c:v", "libx264", "-pix_fmt", "yuv420p"])
         let shape = thumbnail(tall, size: CGSize(width: 180, height: 320), duration: 4, at: 0.5)
         check(shape.map { $0.width == 100 && $0.height == 180 } ?? false, "a tall video keeps its shape: \(shape.map { "\($0.width) × \($0.height)" } ?? "none")")
@@ -158,6 +186,6 @@ enum TestThumbnails {
             check(thumbnail(url, size: CGSize(width: 320, height: 180), duration: 4, at: 0.5) == nil, "\(name): no picture, nothing breaks")
         }
         print(failures == 0 ? "all thumbnail checks passed" : "\(failures) thumbnail checks FAILED")
-        exit(failures == 0 ? 0 : 1)
+        finish(failures == 0 ? 0 : 1)
     }
 }

@@ -13,12 +13,23 @@ struct TestMainCopy {
     }
 
     static let crashKey = "test-main-copy-crash", systemKey = "test-main-copy-system"
+    static let run = UUID().uuidString
+
+    static func domain(_ name: String) -> String {
+        FileManager.default.temporaryDirectory.appendingPathComponent("test-main-copy-\(name)-\(run)").path
+    }
 
     static func main() {
         if CommandLine.arguments.dropFirst().first == "crash" {
-            OriginalValue.save(OriginalValue.change(nil, current: false, to: true), crashKey)
-            UserDefaults.standard.set(true, forKey: systemKey)
+            let defaults = UserDefaults(suiteName: CommandLine.arguments[2])!
+            OriginalValue.save(OriginalValue.change(nil, current: false, to: true), crashKey, journal: defaults)
+            defaults.set(true, forKey: systemKey)
             _exit(0)
+        }
+        let suite = domain("original"), defaults = UserDefaults(suiteName: suite)!
+        defer {
+            UserDefaults.standard.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(atPath: suite + ".plist")
         }
 
         let website = MainCopyChoice.websiteID, store = MainCopyChoice.appStoreID
@@ -58,38 +69,36 @@ struct TestMainCopy {
         print("the original goes back only while the switch still holds our value: ok")
 
         let key = "test-main-copy-original"
-        defer { UserDefaults.standard.removeObject(forKey: key) }
-        OriginalValue.save(first, key)
-        precondition(OriginalValue.load(key) == first)
-        OriginalValue.save(nil, key)
-        precondition(OriginalValue.load(key) == nil)
+        OriginalValue.save(first, key, journal: defaults)
+        precondition(OriginalValue.load(key, journal: defaults) == first)
+        OriginalValue.save(nil, key, journal: defaults)
+        precondition(OriginalValue.load(key, journal: defaults) == nil)
         print("the remembered original survives a restart and can be cleared: ok")
 
         var system = false
-        var entry = OriginalValue.set(key, current: system, to: true) { value in
-            precondition(OriginalValue.load(key) == first)
+        var entry = OriginalValue.set(key, journal: defaults, current: system, to: true) { value in
+            precondition(OriginalValue.load(key, journal: defaults) == first)
             system = value
         }
-        precondition(system && entry == first && OriginalValue.load(key) == first)
-        entry = OriginalValue.set(key, current: system, to: false) { value in
-            precondition(OriginalValue.load(key) == first)
+        precondition(system && entry == first && OriginalValue.load(key, journal: defaults) == first)
+        entry = OriginalValue.set(key, journal: defaults, current: system, to: false) { value in
+            precondition(OriginalValue.load(key, journal: defaults) == first)
             system = value
         }
-        precondition(!system && entry == nil && OriginalValue.load(key) == nil)
+        precondition(!system && entry == nil && OriginalValue.load(key, journal: defaults) == nil)
         print("the original is saved before the switch is written and forgotten only after it is back: ok")
 
         let wanted = "test-main-copy-wanted"
-        defer { UserDefaults.standard.removeObject(forKey: wanted) }
-        OriginalValue.set(key, intent: wanted, current: system, to: true) { value in
-            precondition(OriginalValue.load(wanted) == first && OriginalValue.load(key) == first)
+        OriginalValue.set(key, intent: wanted, journal: defaults, local: defaults, current: system, to: true) { value in
+            precondition(OriginalValue.load(wanted, journal: defaults) == first && OriginalValue.load(key, journal: defaults) == first)
             system = value
         }
-        precondition(system && OriginalValue.load(wanted) == first && OriginalValue.load(key) == first)
-        OriginalValue.set(key, intent: wanted, current: system, to: false) { value in
-            precondition(OriginalValue.load(wanted) == nil && OriginalValue.load(key) == first)
+        precondition(system && OriginalValue.load(wanted, journal: defaults) == first && OriginalValue.load(key, journal: defaults) == first)
+        OriginalValue.set(key, intent: wanted, journal: defaults, local: defaults, current: system, to: false) { value in
+            precondition(OriginalValue.load(wanted, journal: defaults) == nil && OriginalValue.load(key, journal: defaults) == first)
             system = value
         }
-        precondition(!system && OriginalValue.load(wanted) == nil && OriginalValue.load(key) == nil)
+        precondition(!system && OriginalValue.load(wanted, journal: defaults) == nil && OriginalValue.load(key, journal: defaults) == nil)
         print("the wish to keep the switch on is written before the switch and forgotten before it is turned off: ok")
 
         let on = OriginalValue.Entry(before: false, ours: true)
@@ -145,22 +154,20 @@ struct TestMainCopy {
         precondition(OriginalValue.putBack(linear, ours: fast, current: ["linear": 1, "acceleration": 131072]) == ["acceleration": 57344])
         print("with acceleration off in System Settings only the speed goes back: ok")
 
-        let defaults = UserDefaults.standard
-        defer { defaults.removeObject(forKey: crashKey); defaults.removeObject(forKey: systemKey) }
         let crashed = Process()
         crashed.executableURL = Bundle.main.executableURL
-        crashed.arguments = ["crash"]
+        crashed.arguments = ["crash", suite]
         try! crashed.run()
         crashed.waitUntilExit()
-        CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication)
-        let current = defaults.bool(forKey: systemKey), saved = OriginalValue.load(crashKey)
+        CFPreferencesAppSynchronize(suite as CFString)
+        let current = defaults.bool(forKey: systemKey), saved = OriginalValue.load(crashKey, journal: defaults)
         precondition(current && saved == first)
         precondition(OriginalValue.change(saved, current: current, to: true) == first)
         let real = OriginalValue.putBack(saved, current: current)
         precondition(real == false)
         defaults.set(real, forKey: systemKey)
-        OriginalValue.save(nil, crashKey)
-        precondition(!defaults.bool(forKey: systemKey) && OriginalValue.load(crashKey) == nil)
+        OriginalValue.save(nil, crashKey, journal: defaults)
+        precondition(!defaults.bool(forKey: systemKey) && OriginalValue.load(crashKey, journal: defaults) == nil)
         print("after a crash the next launch keeps the real original and puts it back: ok")
 
         processStart()
@@ -168,6 +175,11 @@ struct TestMainCopy {
         handover()
         deferredActions()
         quittingStaysPassive()
+
+        let leaked = MemoryDefaults.all.values.map(\.path).filter { FileManager.default.fileExists(atPath: $0 + ".plist") }
+        leaked.forEach { try? FileManager.default.removeItem(atPath: $0 + ".plist") }
+        precondition(leaked.isEmpty, "the journal and the copies' settings never reach the disk: \(leaked)")
+        print("the journal and the copies' settings stay in memory: ok")
     }
 
     static func processStart() {
@@ -277,7 +289,6 @@ struct TestMainCopy {
 
     static func handover() {
         let website = MainCopyChoice.websiteID, store = MainCopyChoice.appStoreID
-        defer { ["journal", "local.A", "local.B", "local.C"].forEach { UserDefaults.standard.removePersistentDomain(forName: "test-main-copy.\($0)") } }
         precondition(!MainCopyChoice.takesOver([], poweringOff: false))
         precondition(!MainCopyChoice.takesOver([copy(1, store, at: 5)], poweringOff: false))
         precondition(MainCopyChoice.takesOver([copy(1, website, at: 5)], poweringOff: false))
@@ -476,6 +487,169 @@ struct TestMainCopy {
         AnimationsEngine.uninstall(k.host)
         precondition(!alone.autohide && alone.journalEmpty && alone.kills == [.putBack("A")], "uninstall where only autohide comes back: \(alone.kills)")
         print("when only autohide comes back, on quit and on uninstall, the Dock restarts once: ok")
+        for missing in [true, false] {
+            let mac = Mac(system: original)
+            mac.dockAutohide = missing ? nil : false
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            a.engine.setAutohide(true)
+            precondition(mac.dockAutohide == true && (mac.journal.object(forKey: "animations-autohide-missing") != nil) == missing, "missing \(missing): the marker is there only when the key was missing")
+            mac.elapse()
+            mac.kills = []
+            mac.quit(a)
+            precondition(mac.dockAutohide == (missing ? nil : false) && mac.journalEmpty && mac.kills == [.putBack("A")], "missing \(missing): \(mac.kills)")
+            let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
+            precondition(again.engine.holdsAutohide, "missing \(missing): the wish survives the quit")
+            mac.become(again)
+            mac.elapse()
+            precondition(mac.autohide, "missing \(missing): the next launch hides the Dock again")
+            again.engine.setAutohide(false)
+            precondition(mac.dockAutohide == (missing ? nil : false) && mac.journal.object(forKey: "animations-autohide-missing") == nil, "missing \(missing): turning autohide off leaves the key as it was")
+        }
+        print("a missing autohide key stays missing on quit and when autohide is turned off, and the wish comes back at the next launch: ok")
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            a.engine.setAutohide(true)
+            mac.elapse()
+            mac.kills = []
+            mac.dockAutohide = false
+            mac.quit(a)
+            precondition(mac.kills.isEmpty && mac.dockAutohide == false && mac.journalEmpty, "the user turned autohide off by hand: \(mac.kills)")
+            let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
+            precondition(!again.engine.holdsAutohide, "the wish is forgotten")
+        }
+        print("autohide the user turned off by hand stays off on quit and the wish is forgotten: ok")
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            precondition(a.engine.showsAutohide && !a.engine.changed, "a Dock that shows offers the switch, and nothing is changed yet")
+            a.engine.setAutohide(true)
+            mac.elapse()
+            mac.quit(a)
+            let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
+            mac.become(again)
+            mac.elapse()
+            precondition(mac.autohide && again.engine.autohide && again.engine.showsAutohide && again.engine.changed, "after a relaunch that hides the Dock again, the switch is there and on, and Restore Defaults is available")
+            let user = Mac(system: original)
+            user.dockAutohide = true
+            let b = user.party("B", "\(tools).b", 20, [:])
+            user.become(b)
+            precondition(!b.engine.showsAutohide && !b.engine.changed, "a Dock the user hides without pikapik offers no switch and nothing to restore")
+        }
+        print("while pikapik keeps the Dock hidden, the switch stays on the page after a relaunch and Restore Defaults is available: ok")
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            a.engine.setAutohide(true)
+            mac.elapse()
+            mac.kills = []
+            mac.dockAutohide = false
+            a.engine.refresh()
+            mac.elapse()
+            precondition(!mac.autohide && mac.journalEmpty && mac.kills.isEmpty && !a.engine.autohide && !a.engine.changed && a.engine.showsAutohide, "autohide turned off in System Settings stays off, and the wish is forgotten at once: \(mac.kills)")
+            mac.quit(a)
+            let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
+            mac.become(again)
+            mac.elapse()
+            precondition(!mac.autohide && mac.kills.isEmpty && !again.engine.changed && again.engine.showsAutohide, "autohide stays off after a relaunch: \(mac.kills)")
+        }
+        print("autohide turned off in System Settings while pikapik runs stays off, right away and after a relaunch, and the switch shows it off: ok")
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            a.engine.setAutohide(true)
+            precondition(a.engine.holdsAutohide, "autohide alone counts as a change")
+            mac.elapse()
+            mac.kills = []
+            a.engine.reset()
+            mac.elapse()
+            precondition(mac.kills == [.restart("A")] && mac.journalEmpty && !mac.autohide && !a.engine.holdsAutohide, "Restore Defaults puts autohide back: \(mac.kills)")
+        }
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, wantsA), b = mac.party("B", "\(tools).b", 20, wantsB)
+            mac.become(a)
+            a.engine.setAutohide(true)
+            mac.elapse()
+            mac.kills = []
+            b.engine.reset()
+            precondition(mac.system == original.merging(wantsA) { $1 } && mac.autohide && mac.kills.isEmpty && mac.queue.isEmpty, "a passive copy's Restore Defaults leaves the main copy's values: \(mac.kills)")
+        }
+        print("Restore Defaults puts autohide back with one Dock restart, and in a passive copy it leaves the main copy alone: ok")
+        for first in ["A", "B"] {
+            for (waiting, missing) in [(false, false), (true, false), (false, true), (true, true)] {
+                let mac = Mac(system: original)
+                mac.dockAutohide = missing ? nil : false
+                let a = mac.party("A", "\(tools).a", 10, wantsA), b = mac.party("B", "\(tools).b", 20, wantsB)
+                mac.become(a)
+                a.engine.setAutohide(true)
+                if !waiting { mac.elapse() }
+                mac.kills = []
+                mac.poweringOff = true
+                let (one, two) = first == "A" ? (a, b) : (b, a)
+                func off(_ party: Party) -> Bool {
+                    let seen = mac.lookups
+                    let dock = party.engine.powerOff()
+                    precondition(mac.lookups == seen, "\(party.name) asks nobody about other copies before everything is back")
+                    return dock
+                }
+                precondition(off(one) && mac.system == original && mac.dockAutohide == (missing ? nil : false) && mac.journalEmpty && mac.kills.isEmpty, "first \(first), waiting \(waiting), missing \(missing): the first copy puts everything back at once")
+                mac.quit(one)
+                precondition(!off(two), "first \(first), waiting \(waiting): the second copy has nothing left")
+                mac.quit(two)
+                precondition(mac.kills.isEmpty && mac.system == original && mac.journalEmpty && mac.queue.allSatisfy(\.isCancelled), "first \(first), waiting \(waiting): \(mac.kills)")
+                mac.poweringOff = false
+                let again = mac.party("A", "\(tools).a", 11, [:], keep: true)
+                mac.become(again)
+                mac.elapse()
+                precondition(mac.system == original.merging(wantsA) { $1 } && mac.autohide && (mac.journal.object(forKey: "animations-autohide-missing") != nil) == missing, "first \(first), waiting \(waiting), missing \(missing): after the restart the main copy brings its values back")
+            }
+        }
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, [:])
+            mac.become(a)
+            precondition(!a.engine.powerOff(), "nothing to put back and no Dock restart waiting")
+            a.engine.restartDock()
+            precondition(a.engine.powerOff() && !mac.flag && mac.queue.allSatisfy(\.isCancelled), "a Dock restart that waits is done at power off instead")
+        }
+        print("when the Mac shuts down, the first copy to hear it puts everything back before it asks about other copies, the Dock restart is left to the caller, the other copy has nothing left, and after the restart the main copy brings its values back: ok")
+        for first in ["A", "B"] {
+            for waiting in [false, true] {
+                let mac = Mac(system: original)
+                let a = mac.party("A", "\(tools).a", 10, wantsA), b = mac.party("B", "\(tools).b", 20, wantsB)
+                mac.become(a)
+                a.engine.setAutohide(true)
+                if !waiting { mac.elapse() }
+                mac.kills = []
+                mac.poweringOff = true
+                let (one, two) = first == "A" ? (a, b) : (b, a)
+                var second = false
+                mac.afterExclusive = { second = two.engine.powerOff() }
+                let dock = one.engine.powerOff()
+                mac.elapse()
+                let restarts = [dock, second].filter { $0 }.count + mac.kills.count
+                precondition(restarts == 1 && mac.system == original && mac.journalEmpty, "first \(first), waiting \(waiting): the other copy hears the power off right after the first one has put everything back, and the Dock restarts once: \(restarts)")
+            }
+        }
+        do {
+            let mac = Mac(system: original)
+            let a = mac.party("A", "\(tools).a", 10, wantsA), b = mac.party("B", "\(tools).b", 20, wantsB)
+            mac.become(a)
+            a.engine.setAutohide(true)
+            mac.kills = []
+            mac.poweringOff = true
+            let dock = b.engine.powerOff()
+            mac.elapse()
+            let restarts = [dock, a.engine.powerOff()].filter { $0 }.count + mac.kills.count
+            precondition(restarts == 1 && mac.system == original && mac.journalEmpty, "the main copy's waiting Dock restart is not done again after the other copy powered off first: \(mac.kills)")
+        }
+        print("two copies hear the power off together, or the main copy's waiting Dock restart comes due after the other copy has powered off: the Dock restarts once: ok")
         for uninstall in [false, true] {
             let mac = Mac(system: original)
             let a = mac.party("A", "\(tools).a", 10, wantsB)
@@ -812,19 +986,53 @@ struct TestMainCopy {
         var running: RunningCopy { TestMainCopy.copy(pid, bundleID, at: Double(pid)) }
     }
 
+    final class MemoryDefaults: UserDefaults {
+        static var all: [String: MemoryDefaults] = [:]
+        let path: String
+        private let lock = NSLock()
+        private var values: [String: Any] = [:]
+
+        static func named(_ name: String) -> MemoryDefaults {
+            if let defaults = all[name] { return defaults }
+            let defaults = MemoryDefaults(TestMainCopy.domain("memory-\(name)"))
+            all[name] = defaults
+            return defaults
+        }
+
+        private init(_ path: String) {
+            self.path = path
+            super.init(suiteName: path)!
+        }
+
+        override func object(forKey key: String) -> Any? { lock.withLock { values[key] } }
+        override func set(_ value: Any?, forKey key: String) { lock.withLock { values[key] = value } }
+        override func set(_ value: Bool, forKey key: String) { set(value as Any?, forKey: key) }
+        override func set(_ value: Double, forKey key: String) { set(value as Any?, forKey: key) }
+        override func removeObject(forKey key: String) { set(nil as Any?, forKey: key) }
+        override func bool(forKey key: String) -> Bool { object(forKey: key) as? Bool ?? false }
+        override func array(forKey key: String) -> [Any]? { object(forKey: key) as? [Any] }
+        override func dictionary(forKey key: String) -> [String: Any]? { object(forKey: key) as? [String: Any] }
+        override func dictionaryRepresentation() -> [String: Any] { lock.withLock { values } }
+        override func persistentDomain(forName domainName: String) -> [String: Any]? { dictionaryRepresentation() }
+        override func setPersistentDomain(_ domain: [String: Any], forName domainName: String) { lock.withLock { values = domain } }
+        override func removePersistentDomain(forName domainName: String) { setPersistentDomain([:], forName: domainName) }
+        override func synchronize() -> Bool { true }
+    }
+
     final class Mac {
-        static let journalName = "test-main-copy.journal"
+        static let journalName = "journal"
         static let autohideKey = "animations-autohide-original"
 
-        let journal = UserDefaults(suiteName: Mac.journalName)!
+        let journal = MemoryDefaults.named(Mac.journalName)
         var system: [AnimationSetting: Double]
-        var autohide = false, poweringOff = false, withoutJournal = false
+        var dockAutohide: Bool? = false, poweringOff = false, withoutJournal = false
+        var lookups = 0
         var queue: [DispatchWorkItem] = []
         var kills: [Kill] = []
         var running: [Party] = []
         var strangers: [RunningCopy] = []
         var leader: Party?
-        var whileWaiting: (() -> Void)?, whileWriting: (() -> Void)?
+        var whileWaiting: (() -> Void)?, whileWriting: (() -> Void)?, afterExclusive: (() -> Void)?
         var contended: DispatchSemaphore?
         let lock = NSLock()
 
@@ -834,27 +1042,31 @@ struct TestMainCopy {
             journal.set([String: Double](), forKey: "animations-ours")
         }
 
+        var autohide: Bool { dockAutohide ?? false }
         var flag: Bool { journal.bool(forKey: DockRestart.key) }
         var own: [String: Double] { journal.dictionary(forKey: "animations-own") as? [String: Double] ?? [:] }
         var ours: [String: Double] { journal.dictionary(forKey: "animations-ours") as? [String: Double] ?? [:] }
-        var journalEmpty: Bool { own.isEmpty && ours.isEmpty && OriginalValue.load(Self.autohideKey, journal: journal) == nil && !flag }
+        var journalEmpty: Bool { own.isEmpty && ours.isEmpty && OriginalValue.load(Self.autohideKey, journal: journal) == nil && journal.object(forKey: "animations-autohide-missing") == nil && !flag }
         var leaving: [String] { journal.dictionaryRepresentation().keys.filter { $0.hasPrefix("animations-leaving-") }.sorted() }
 
-        func party(_ name: String, _ bundleID: String, _ pid: Int32, _ wants: [AnimationSetting: Double]) -> Party {
-            let suite = "test-main-copy.local.\(name)"
-            let local = UserDefaults(suiteName: suite)!
-            local.removePersistentDomain(forName: suite)
+        func party(_ name: String, _ bundleID: String, _ pid: Int32, _ wants: [AnimationSetting: Double], keep: Bool = false) -> Party {
+            let suite = "local-\(name)"
+            let local = MemoryDefaults.named(suite)
+            if !keep { local.removePersistentDomain(forName: suite) }
             let party = Party(name, bundleID, pid, wants)
             party.host = AnimationsHost(
                 me: party.running,
                 canAct: { self.leader === party },
-                peers: { MainCopyChoice.peers(of: party.running, in: self.running.map(\.running) + self.strangers) },
+                peers: {
+                    self.lookups += 1
+                    return MainCopyChoice.peers(of: party.running, in: self.running.map(\.running) + self.strangers)
+                },
                 poweringOff: { self.poweringOff },
                 journal: { self.journal },
                 local: local,
                 read: { self.system[$0] },
                 write: { self.write($0, $1, by: party) },
-                readAutohide: { self.autohide },
+                readAutohide: { self.dockAutohide },
                 writeAutohide: { self.writeAutohide($0, by: party) },
                 later: { self.queue.append($0) },
                 kill: {
@@ -874,6 +1086,10 @@ struct TestMainCopy {
                     body()
                     Thread.current.threadDictionary["exclusive"] = nil
                     self.lock.unlock()
+                    if let after = self.afterExclusive {
+                        self.afterExclusive = nil
+                        after()
+                    }
                 }
             )
             party.engine = AnimationsEngine(party.host)
@@ -931,10 +1147,10 @@ struct TestMainCopy {
             system[setting] = value
         }
 
-        private func writeAutohide(_ on: Bool, by party: Party) {
+        private func writeAutohide(_ on: Bool?, by party: Party) {
             precondition(OriginalValue.load(Self.autohideKey, journal: journal) != nil, "\(party.name): the journal holds the original autohide before it is written")
             precondition(flag, "\(party.name): the Dock restart is pending before autohide is written")
-            autohide = on
+            dockAutohide = on
         }
     }
 }

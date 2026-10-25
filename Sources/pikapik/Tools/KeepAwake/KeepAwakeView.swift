@@ -69,7 +69,7 @@ struct KeepAwakeSettings: View {
                 .disabled(keepAwake.mode == .indefinitely)
                 .settingAnchor(SettingTitle.duration)
                 VStack(alignment: .leading, spacing: 10) {
-                    RowLabel(Text(SettingTitle.display), keepAwake.keepsDisplayOn ? Text("No dimming, screen saver or lock screen") : Text("Turns off on its own timer, your Mac keeps working"))
+                    RowLabel(Text(SettingTitle.display), keepAwake.keepsDisplayOn ? Text("No dimming, screen saver or lock screen") : Text("Turns off after the time set in Lock Screen settings. Your Mac keeps working."))
                     Picker(SettingTitle.display, selection: $keepAwake.keepsDisplayOn) {
                         Text("Always on").tag(true)
                         Text("Turns off as usual").tag(false)
@@ -91,9 +91,8 @@ struct KeepAwakeSettings: View {
             if keepAwake.hasLid {
                 Section {
                     Toggle(isOn: $keepAwake.worksWithLidClosed) {
-                        RowLabel(Text(SettingTitle.workWithLidClosed), Text("Mac stays awake with the lid closed"))
+                        RowLabel(Text(SettingTitle.workWithLidClosed), Text("While Keep Awake is on, your Mac stays awake with the lid closed. Don’t put it in a bag."))
                     }
-                    .help(Text("Mac won’t sleep when you close the lid. Keep it ventilated."))
                     .settingAnchor(SettingTitle.workWithLidClosed)
                     Toggle(isOn: $keepAwake.stopsOnLowBattery) {
                         RowLabel(Text(SettingTitle.stopOnLowBattery), Text("Lets the Mac sleep before the battery runs out"))
@@ -105,7 +104,7 @@ struct KeepAwakeSettings: View {
                             .foregroundStyle(.orange)
                     }
                 } footer: {
-                    Text("macOS will ask for your administrator password.")
+                    Text("macOS asks for your administrator password each time Keep Awake turns on with this option.")
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -133,7 +132,7 @@ struct KeepAwakeSettings: View {
             } header: {
                 Text(SettingTitle.controlCenterButtons)
             } footer: {
-                Text("Add the Open URLs action in Shortcuts, with a link.")
+                Text("Copy a link, then in Shortcuts make a shortcut with the Open URLs action and paste the link into it. Then add the shortcut to Control Center or as a widget.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
