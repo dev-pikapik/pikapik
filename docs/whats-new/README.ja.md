@@ -634,7 +634,7 @@ pikapik は、あなたが入力する内容を見ることはありません。
 
 <sub>1.39.2 · 2026年10月13日</sub>
 
-iCloud で設定を同期している場合、設定は iCloud Drive の pikapik ではなく pikapik フォルダに保存されるようになり、pikapik が自動で移動します。
+iCloud で設定を同期している場合、設定は iCloud Drive の pikapik フォルダに保存されるようになり、pikapik が自動で移動します。
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Finder の右クリックメニューに、すべての人の「新規ファイ�
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-pikapik から pikapik に移行したあと、Finder が古いアプリを探し続け、「新規ファイル」「変換」などの右クリック項目が動かないことがありました。pikapik は最初の起動でこれに気づき、Finder のウインドウが開いておらずコピー中でもなければ、Finder を自動で再起動します。そうでないときは、Finder のページに短い案内と「Finderを再起動」ボタンが出ます。
+名前が変わったあと、Finder が古いアプリを探し続け、「新規ファイル」「変換」などの右クリック項目が動かないことがありました。pikapik は最初の起動でこれに気づき、Finder のウインドウが開いておらずコピー中でもなければ、Finder を自動で再起動します。そうでないときは、Finder のページに短い案内と「Finderを再起動」ボタンが出ます。
 
 システム設定の、ログイン時に開くアプリの一覧に、新しい名前 pikapik で表示され、オンのままです。
 
@@ -1435,7 +1435,7 @@ pikapik から pikapik に移行したあと、Finder が古いアプリを探�
 
 ときどき座って、ひとことおしゃべりします。新しいバージョンが本当に出たときは一度だけ教えてくれて、クリックするとアップデートが待っている設定が開きます。
 
-pikapik は pikapik という名前になりました。許可も設定も、ショートカットのリンクもそのまま使えます。Homebrew でインストールした場合は、一度だけ `brew update && brew upgrade --cask pikapik` を実行してください。
+名前が変わっても、許可も設定も、ショートカットのリンクもそのまま使えます。Homebrew でインストールした場合は、一度だけ `brew update && brew upgrade --cask pikapik` を実行してください。
 
 **試してみる：** 設定 › ペット
 

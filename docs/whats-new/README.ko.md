@@ -634,7 +634,7 @@ pikapik은 무엇을 입력하는지 절대 보지 않아요. 마지막으로 �
 
 <sub>1.39.2 · 2026년 10월 13일</sub>
 
-iCloud로 설정을 동기화하고 있다면, 이제 설정은 iCloud Drive의 pikapik 대신 pikapik 폴더에 저장되고, pikapik이 알아서 옮겨요.
+iCloud로 설정을 동기화하고 있다면, 이제 설정은 iCloud Drive의 pikapik 폴더에 저장되고, pikapik이 알아서 옮겨요.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Finder에서 앱을 목록 위로 바로 끌어다 놓을 수도 있어요. 목�
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-pikapik에서 pikapik으로 옮긴 뒤 Finder가 예전 앱을 계속 찾아서 ‘새 파일’, ‘변환’ 같은 오른쪽 클릭 항목이 작동하지 않을 수 있었습니다. 이제 pikapik이 처음 실행할 때 이를 알아차리고, 열린 Finder 창이 없고 복사 중인 것도 없으면 Finder를 알아서 재시작합니다. 그렇지 않으면 Finder 페이지에 짧은 안내와 ‘Finder 재시작’ 버튼이 나타납니다.
+이름이 바뀐 뒤 Finder가 예전 앱을 계속 찾아서 ‘새 파일’, ‘변환’ 같은 오른쪽 클릭 항목이 작동하지 않을 수 있었습니다. 이제 pikapik이 처음 실행할 때 이를 알아차리고, 열린 Finder 창이 없고 복사 중인 것도 없으면 Finder를 알아서 재시작합니다. 그렇지 않으면 Finder 페이지에 짧은 안내와 ‘Finder 재시작’ 버튼이 나타납니다.
 
 시스템 설정의 로그인 시 열리는 앱 목록에 이제 새 이름 pikapik으로 표시되고, 켜진 상태로 유지됩니다.
 
@@ -1435,7 +1435,7 @@ pikapik에서 pikapik으로 옮긴 뒤 Finder가 예전 앱을 계속 찾아서 
 
 가끔 앉아서 짧게 한마디 해요. 새 버전이 정말 나오면 한 번만 알려 주고, 펫을 클릭하면 업데이트가 기다리는 설정이 열려요.
 
-pikapik는 이제 pikapik이에요. 권한, 설정, 단축어 링크는 모두 그대로예요. Homebrew로 설치했다면 `brew update && brew upgrade --cask pikapik`을 한 번 실행하세요.
+이름이 바뀌어도 권한, 설정, 단축어 링크는 모두 그대로예요. Homebrew로 설치했다면 `brew update && brew upgrade --cask pikapik`을 한 번 실행하세요.
 
 **사용해 보기:** 설정 › 펫
 

@@ -634,7 +634,7 @@ pikapik 從不查看你輸入的內容，只留意距離上次按鍵或移動滑
 
 <sub>1.39.2 · 2026年10月13日</sub>
 
-如果你透過 iCloud 同步設定，設定現在會存放在 iCloud 雲碟的 pikapik 資料夾，而不是 pikapik，pikapik 會自動把它們搬過去。
+如果你透過 iCloud 同步設定，設定現在會存放在 iCloud 雲碟的 pikapik 資料夾，pikapik 會自動把它們搬過去。
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ App 全螢幕時，寵物和球現在會躲起來，有瀏海的 Mac 上也一�
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-從 pikapik 搬到 pikapik 後，Finder 可能還在尋找舊的 App，「新增檔案」、「轉換為」等右鍵選單項目沒有反應。現在 pikapik 會在第一次啟動時發現這件事，如果 Finder 沒有打開的視窗、也沒有正在拷貝的東西，就自動重新啟動 Finder。否則 Finder 頁面會出現一行簡短提示和「重新啟動 Finder」按鈕。
+改名之後，Finder 可能還在尋找舊的 App，「新增檔案」、「轉換為」等右鍵選單項目沒有反應。現在 pikapik 會在第一次啟動時發現這件事，如果 Finder 沒有打開的視窗、也沒有正在拷貝的東西，就自動重新啟動 Finder。否則 Finder 頁面會出現一行簡短提示和「重新啟動 Finder」按鈕。
 
 在系統設定中登入時打開的 App 列表裡，現在顯示新名稱 pikapik，並保持開啟。
 
@@ -1435,7 +1435,7 @@ App 全螢幕時，寵物和球現在會躲起來，有瀏海的 Mac 上也一�
 
 它偶爾會坐下來說句話。新版本真的推出時，它會告訴你一次，點一下它就會打開設定，更新就在那裡等著。
 
-pikapik 現在叫 pikapik。你的權限、設定和捷徑裡的連結都維持不變。如果你是用 Homebrew 安裝的，請執行一次 `brew update && brew upgrade --cask pikapik`。
+改名後，你的權限、設定和捷徑裡的連結都維持不變。如果你是用 Homebrew 安裝的，請執行一次 `brew update && brew upgrade --cask pikapik`。
 
 **試試看：** 設定 › 寵物
 

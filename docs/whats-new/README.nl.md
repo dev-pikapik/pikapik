@@ -634,7 +634,7 @@ pikapik kijkt nooit mee met wat je typt, maar let alleen op hoe lang geleden je 
 
 <sub>1.39.2 · 13 oktober 2026</sub>
 
-Synchroniseer je je instellingen met iCloud, dan staan ze nu in iCloud Drive in een map met de naam pikapik in plaats van pikapik, en pikapik zet ze daar zelf naartoe.
+Synchroniseer je je instellingen met iCloud, dan staan ze nu in iCloud Drive in een map met de naam pikapik, en pikapik zet ze daar zelf naartoe.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ De kleine bewegende plaatjes in Instellingen tekenden eerder de hele pagina vele
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Na de verhuizing van pikapik naar pikapik kon Finder blijven zoeken naar de oude app, en ‘Nieuw bestand’, ‘Zet om naar’ en de andere rechtsklik-onderdelen deden niets. pikapik merkt dit nu bij de eerste start en herstart Finder zelf als er geen Finder-vensters open zijn en er niets wordt gekopieerd. Anders biedt een korte regel op de Finder-pagina de knop ‘Herstart Finder’ aan.
+Na de naamswijziging kon Finder blijven zoeken naar de oude app, en ‘Nieuw bestand’, ‘Zet om naar’ en de andere rechtsklik-onderdelen deden niets. pikapik merkt dit nu bij de eerste start en herstart Finder zelf als er geen Finder-vensters open zijn en er niets wordt gekopieerd. Anders biedt een korte regel op de Finder-pagina de knop ‘Herstart Finder’ aan.
 
 In Systeeminstellingen, bij de apps die openen bij het inloggen, staat de app nu onder zijn nieuwe naam, pikapik, en blijft hij aan.
 
@@ -1435,7 +1435,7 @@ Zet het aan in Instellingen › Huisdiertje. Het wandelt achter je vensters en h
 
 Af en toe gaat het zitten en zegt het iets korts. Als er echt een nieuwe versie uit is, vertelt het je dat één keer, en een klik erop opent Instellingen, waar de update klaarstaat.
 
-pikapik heet nu pikapik. Je toestemmingen, instellingen en links in Opdrachten blijven zoals ze waren. Heb je de app met Homebrew geïnstalleerd, voer dan één keer `brew update && brew upgrade --cask pikapik` uit.
+Met de nieuwe naam blijven je toestemmingen, instellingen en links in Opdrachten zoals ze waren. Heb je de app met Homebrew geïnstalleerd, voer dan één keer `brew update && brew upgrade --cask pikapik` uit.
 
 **Probeer het:** Instellingen › Huisdiertje
 

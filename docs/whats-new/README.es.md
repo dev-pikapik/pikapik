@@ -634,7 +634,7 @@ pikapik nunca mira lo que escribes. Solo comprueba cuánto tiempo ha pasado desd
 
 <sub>1.39.2 · 13 de octubre de 2026</sub>
 
-Si sincronizas tus ajustes con iCloud, ahora están en iCloud Drive, en una carpeta llamada pikapik en lugar de pikapik, y pikapik los mueve allí por sí solo.
+Si sincronizas tus ajustes con iCloud, ahora están en iCloud Drive, en una carpeta llamada pikapik, y pikapik los mueve allí por sí solo.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Las pequeñas imágenes animadas de Ajustes redibujaban toda la página muchas v
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Tras el cambio de pikapik a pikapik, el Finder podía seguir buscando la app antigua, y «Archivo nuevo», «Convertir a» y las demás opciones del clic derecho no hacían nada. Ahora pikapik lo nota en el primer arranque y reinicia el Finder por sí solo cuando no hay ventanas del Finder abiertas y no se está copiando nada. Si no, una línea breve en la página Finder ofrece el botón «Reiniciar Finder».
+Tras el cambio de nombre, el Finder podía seguir buscando la app antigua, y «Archivo nuevo», «Convertir a» y las demás opciones del clic derecho no hacían nada. Ahora pikapik lo nota en el primer arranque y reinicia el Finder por sí solo cuando no hay ventanas del Finder abiertas y no se está copiando nada. Si no, una línea breve en la página Finder ofrece el botón «Reiniciar Finder».
 
 En Ajustes del Sistema, entre las apps que se abren al iniciar sesión, la app ahora aparece con su nuevo nombre, pikapik, y sigue activada.
 
@@ -1435,7 +1435,7 @@ Actívala en Ajustes › Mascota. Pasea detrás de tus ventanas y del Dock, salt
 
 De vez en cuando se sienta y dice algo cortito. Cuando de verdad sale una versión nueva, te lo cuenta una vez, y al hacer clic en ella se abren los Ajustes, donde te espera la actualización.
 
-pikapik ahora se llama pikapik. Tus permisos, ajustes y enlaces de Atajos siguen igual. Si la instalaste con Homebrew, ejecuta una vez `brew update && brew upgrade --cask pikapik`.
+Con el nuevo nombre, tus permisos, ajustes y enlaces de Atajos siguen igual. Si la instalaste con Homebrew, ejecuta una vez `brew update && brew upgrade --cask pikapik`.
 
 **Pruébalo:** Ajustes › Mascota
 

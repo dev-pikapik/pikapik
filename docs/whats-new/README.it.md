@@ -634,7 +634,7 @@ pikapik non guarda mai cosa scrivi. Controlla soltanto quanto tempo è passato d
 
 <sub>1.39.2 · 13 ottobre 2026</sub>
 
-Se sincronizzi le impostazioni con iCloud, ora si trovano in iCloud Drive, in una cartella chiamata pikapik invece di pikapik, e pikapik ce le sposta da solo.
+Se sincronizzi le impostazioni con iCloud, ora si trovano in iCloud Drive, in una cartella chiamata pikapik, e pikapik ce le sposta da solo.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Le piccole immagini animate nelle Impostazioni ridisegnavano l’intera pagina m
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Dopo il passaggio da pikapik a pikapik, il Finder poteva continuare a cercare la vecchia app, e «Nuovo file», «Converti in» e gli altri comandi del clic destro non facevano nulla. Ora pikapik se ne accorge al primo avvio e riavvia il Finder da solo quando non ci sono finestre del Finder aperte e nessuna copia in corso. Altrimenti una breve riga nella pagina Finder offre il pulsante «Riavvia il Finder».
+Dopo il cambio di nome, il Finder poteva continuare a cercare la vecchia app, e «Nuovo file», «Converti in» e gli altri comandi del clic destro non facevano nulla. Ora pikapik se ne accorge al primo avvio e riavvia il Finder da solo quando non ci sono finestre del Finder aperte e nessuna copia in corso. Altrimenti una breve riga nella pagina Finder offre il pulsante «Riavvia il Finder».
 
 In Impostazioni di Sistema, tra le app che si aprono all’accesso, l’app ora ha il suo nuovo nome, pikapik, e resta attiva.
 
@@ -1435,7 +1435,7 @@ Attivalo in Impostazioni › Animaletto. Passeggia dietro le finestre e il Dock,
 
 Ogni tanto si siede e dice qualcosa di breve. Quando esce davvero una nuova versione, te lo dice una volta, e un clic su di lui apre le Impostazioni, dove ti aspetta l’aggiornamento.
 
-pikapik ora si chiama pikapik. Permessi, impostazioni e link in Comandi Rapidi restano come prima. Se l’hai installata con Homebrew, esegui una volta `brew update && brew upgrade --cask pikapik`.
+Con il nuovo nome, permessi, impostazioni e link in Comandi Rapidi restano come prima. Se l’hai installata con Homebrew, esegui una volta `brew update && brew upgrade --cask pikapik`.
 
 **Provalo:** Impostazioni › Animaletto
 

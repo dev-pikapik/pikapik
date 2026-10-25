@@ -10,7 +10,7 @@ You need Xcode 26 or newer, the Command Line Tools alone are not enough. There i
 git clone https://github.com/dev-pikapik/pikapik.git
 cd pikapik
 ./scripts/build.sh      # build/pikapik.app
-./scripts/package.sh    # build/pikapik.dmg and build/pikapik.zip, plus build/pikapik.zip for older versions
+./scripts/package.sh    # build/pikapik.dmg and build/pikapik.zip
 ```
 
 `install.sh` can also build from source: add `-- --source` after the install command from the README.
@@ -195,7 +195,7 @@ App Volume (macOS 14.2 and later) changes one app’s volume without a driver. F
 swiftc -parse-as-library Sources/pikapik/Tools/AppVolume/AppVolumeMath.swift scripts/test-app-volume.swift -o build/test-app-volume && build/test-app-volume
 ```
 
-The app used to be called pikapik. A copy named `pikapik.app` that wasn't installed with Homebrew renames itself to `pikapik.app` on launch and opens again; the updater does the same when it installs a new version. Homebrew copies stay where they are until `brew upgrade` moves them. If a `pikapik.app` that isn't this app already sits next to it (the App Store version, whose bundle id is `com.pikapik.app`, or anything without a readable `Info.plist`), the copy keeps its old name and updates in place. Every release also carries `pikapik.zip` with the app under its old name, because older versions download that file. The path logic lives in `Updater`:
+The path checks run without the app: a Homebrew copy, an app moved to another folder, Finder extensions registered from the right place, and a free name for a new file:
 
 ```bash
 swiftc -parse-as-library $(./scripts/test-core.sh $(find Sources -name '*.swift' ! -name main.swift ! -name App.swift) Extensions/Shared/*.swift Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift) scripts/test-rename.swift -o build/test-rename && build/test-rename

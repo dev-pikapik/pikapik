@@ -634,7 +634,7 @@ pikapik nu se uită niciodată la ce tastezi. Verifică doar cât timp a trecut 
 
 <sub>1.39.2 · 13 octombrie 2026</sub>
 
-Dacă sincronizezi configurările cu iCloud, acum ele stau în iCloud Drive, într-un dosar numit pikapik în loc de pikapik, iar pikapik le mută acolo singur.
+Dacă sincronizezi configurările cu iCloud, acum ele stau în iCloud Drive, într-un dosar numit pikapik, iar pikapik le mută acolo singur.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Micile imagini animate din Configurări redesenau toată pagina de multe ori pe 
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-După mutarea de la pikapik la pikapik, Finder putea căuta în continuare aplicația veche, iar „Fișier nou”, „Convertește în” și celelalte comenzi de clic dreapta nu făceau nimic. Acum pikapik observă asta la prima pornire și repornește singur Finder când nu e deschisă nicio fereastră Finder și nu se copiază nimic. Altfel, un rând scurt pe pagina Finder îți oferă butonul „Repornește Finder”.
+După schimbarea numelui, Finder putea căuta în continuare aplicația veche, iar „Fișier nou”, „Convertește în” și celelalte comenzi de clic dreapta nu făceau nimic. Acum pikapik observă asta la prima pornire și repornește singur Finder când nu e deschisă nicio fereastră Finder și nu se copiază nimic. Altfel, un rând scurt pe pagina Finder îți oferă butonul „Repornește Finder”.
 
 În Configurări sistem, printre aplicațiile care se deschid la autentificare, aplicația apare acum cu noul nume, pikapik, și rămâne activată.
 
@@ -1435,7 +1435,7 @@ Pornește-l din Configurări › Animăluț. Se plimbă în spatele ferestrelor 
 
 Din când în când se așază și spune ceva scurt. Când apare cu adevărat o versiune nouă, îți spune o dată, iar un clic pe el deschide Configurările, unde te așteaptă actualizarea.
 
-pikapik se numește acum pikapik. Permisiunile, configurările și linkurile din Scurtături rămân cum erau. Dacă ai instalat-o cu Homebrew, rulează o dată `brew update && brew upgrade --cask pikapik`.
+Cu noul nume, permisiunile, configurările și linkurile din Scurtături rămân cum erau. Dacă ai instalat-o cu Homebrew, rulează o dată `brew update && brew upgrade --cask pikapik`.
 
 **Încearcă:** Configurări › Animăluț
 

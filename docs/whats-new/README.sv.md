@@ -634,7 +634,7 @@ pikapik tittar aldrig på vad du skriver, utan kollar bara hur lång tid som har
 
 <sub>1.39.2 · 13 oktober 2026</sub>
 
-Om du synkar inställningarna med iCloud ligger de nu i iCloud Drive i en mapp som heter pikapik i stället för pikapik, och pikapik flyttar dem dit själv.
+Om du synkar inställningarna med iCloud ligger de nu i iCloud Drive i en mapp som heter pikapik, och pikapik flyttar dem dit själv.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ De små rörliga bilderna i Inställningar ritade förut om hela sidan många g�
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Efter flytten från pikapik till pikapik kunde Finder fortsätta leta efter den gamla appen, och ”Ny fil”, ”Konvertera till” och de andra högerklicksalternativen gjorde ingenting. Nu märker pikapik det vid första starten och startar om Finder av sig själv när inga Finder-fönster är öppna och inget kopieras. Annars erbjuder en kort rad på Finder-sidan knappen ”Starta om Finder”.
+Efter namnbytet kunde Finder fortsätta leta efter den gamla appen, och ”Ny fil”, ”Konvertera till” och de andra högerklicksalternativen gjorde ingenting. Nu märker pikapik det vid första starten och startar om Finder av sig själv när inga Finder-fönster är öppna och inget kopieras. Annars erbjuder en kort rad på Finder-sidan knappen ”Starta om Finder”.
 
 I Systeminställningar, bland apparna som öppnas vid inloggning, syns appen nu med sitt nya namn, pikapik, och förblir påslagen.
 
@@ -1435,7 +1435,7 @@ Slå på det i Inställningar › Husdjur. Det promenerar bakom dina fönster oc
 
 Då och då sätter det sig och säger något kort. När en ny version verkligen kommer berättar det det en gång, och ett klick på det öppnar Inställningar, där uppdateringen väntar.
 
-pikapik heter nu pikapik. Dina behörigheter, inställningar och länkar i Genvägar är kvar som förut. Om du installerade appen med Homebrew kör du `brew update && brew upgrade --cask pikapik` en gång.
+Med det nya namnet är dina behörigheter, inställningar och länkar i Genvägar kvar som förut. Om du installerade appen med Homebrew kör du `brew update && brew upgrade --cask pikapik` en gång.
 
 **Prova:** Inställningar › Husdjur
 

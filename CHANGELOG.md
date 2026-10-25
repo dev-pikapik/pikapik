@@ -361,7 +361,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 ## [1.39.2] - 2026-10-13
 
 ### Changed
-- Settings sync: settings synced with iCloud now live in a folder called pikapik in iCloud Drive instead of pikapik. pikapik moves them there by itself and keeps the newer copy if both folders exist. The old folder is removed only when nothing else is in it. A Mac with an older version keeps using the old folder until you update pikapik there.
+- Settings sync: settings synced with iCloud now live in a folder called pikapik in iCloud Drive. pikapik moves them there by itself and keeps the newer copy if both folders exist. The old folder is removed only when nothing else is in it. A Mac with an older version keeps using the old folder until you update pikapik there.
 
 ### Fixed
 - Uninstall: removing pikapik completely with `brew uninstall --zap` now also deletes the list of recently removed apps.
@@ -687,7 +687,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 
 ### Fixed
 - Settings no longer keep your Mac busy. The little moving pictures used to redraw the whole page many times a second. Now each picture redraws only itself and only while it moves, no more than 30 times a second, and rests when it’s scrolled out of sight or the window is hidden. They look the same as before.
-- New File, Compress and Convert To work in Finder right after the move to pikapik. Finder could keep looking for the old pikapik app; now the app notices this and restarts Finder by itself when no Finder windows are open and nothing is copying. Otherwise the Finder page and the menu offer a Restart Finder button.
+- New File, Compress and Convert To work in Finder right after the move to pikapik. Finder could keep looking for the app under its old name; now the app notices this and restarts Finder by itself when no Finder windows are open and nothing is copying. Otherwise the Finder page and the menu offer a Restart Finder button.
 - The login item in System Settings now shows the new name, pikapik, and stays on.
 
 ## [1.27.0] - 2026-10-09
@@ -696,7 +696,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - A pet on the desktop. A little friend walks along the bottom of the screen, behind your windows and the Dock. Press Space and it jumps; put the pointer in its way and it hops over it. You can pick it up, carry it and throw it, and catch it again in the middle of a jump. Every now and then it sits down and says something short, and when a new version of the app really comes out, it tells you once. It has its own page in Settings, where you turn it on or off. To make it jump on Space, the app needs Input Monitoring.
 
 ### Changed
-- The app is now called pikapik. Everything you set up stays: permissions, settings, the login item, and the Shortcuts links, both the new `pikapik://` and the old `pikapik://`. The app moves itself to its new name on the first launch.
+- The app is now called pikapik. Everything you set up stays: permissions, settings, the login item, and the Shortcuts links, with both the new and the old link scheme. The app moves itself to its new name on the first launch.
 - If you installed it with Homebrew, run `brew update && brew upgrade --cask pikapik` once. Homebrew knows the new name and moves the app for you.
 
 ### Fixed

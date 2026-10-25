@@ -634,7 +634,7 @@ pikapik se nikdy nedívá, co píšete. Zjišťuje jen, kolik času uplynulo od 
 
 <sub>1.39.2 · 13. října 2026</sub>
 
-Pokud synchronizujete nastavení přes iCloud, jsou teď na iCloud Drive ve složce pikapik místo pikapik a pikapik je tam přesune sám.
+Pokud synchronizujete nastavení přes iCloud, jsou teď na iCloud Drive ve složce pikapik a pikapik je tam přesune sám.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Malé pohyblivé obrázky v Nastavení dřív překreslovaly celou stránku mnoh
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Po přechodu z pikapik na pikapik mohl Finder dál hledat starou aplikaci a „Nový soubor“, „Převést na“ a další položky pravého kliknutí nic nedělaly. Teď si toho pikapik všimne při prvním spuštění a Finder sám restartuje, když nejsou otevřená žádná okna Finderu a nic se nekopíruje. Jinak se na stránce Finder objeví krátký řádek s tlačítkem „Restartovat Finder“.
+Po změně názvu mohl Finder dál hledat starou aplikaci a „Nový soubor“, „Převést na“ a další položky pravého kliknutí nic nedělaly. Teď si toho pikapik všimne při prvním spuštění a Finder sám restartuje, když nejsou otevřená žádná okna Finderu a nic se nekopíruje. Jinak se na stránce Finder objeví krátký řádek s tlačítkem „Restartovat Finder“.
 
 V Nastavení systému, mezi aplikacemi otevíranými při přihlášení, má teď aplikace nový název pikapik a zůstává zapnutá.
 
@@ -1435,7 +1435,7 @@ Zapněte ho v Nastavení › Mazlíček. Prochází se za vašimi okny a Dockem,
 
 Občas si sedne a řekne něco krátkého. Když opravdu vyjde nová verze, řekne vám to jednou a kliknutí na něj otevře Nastavení, kde na vás čeká aktualizace.
 
-pikapik se teď jmenuje pikapik. Oprávnění, nastavení i odkazy ve Zkratkách zůstávají, jak byly. Pokud jste ji instalovali přes Homebrew, jednou spusťte `brew update && brew upgrade --cask pikapik`.
+Po změně názvu zůstávají oprávnění, nastavení i odkazy ve Zkratkách, jak byly. Pokud jste ji instalovali přes Homebrew, jednou spusťte `brew update && brew upgrade --cask pikapik`.
 
 **Vyzkoušejte:** Nastavení › Mazlíček
 

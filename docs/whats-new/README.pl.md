@@ -634,7 +634,7 @@ pikapik nigdy nie podgląda, co piszesz. Sprawdza tylko, ile czasu minęło od o
 
 <sub>1.39.2 · 13 października 2026</sub>
 
-Jeśli synchronizujesz ustawienia przez iCloud, są one teraz w iCloud Drive, w folderze pikapik zamiast pikapik, a pikapik sam je tam przenosi.
+Jeśli synchronizujesz ustawienia przez iCloud, są one teraz w iCloud Drive, w folderze pikapik, a pikapik sam je tam przenosi.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Małe ruchome obrazki w Ustawieniach rysowały wcześniej całą stronę od nowa
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Po przeprowadzce z pikapik do pikapik Finder mógł dalej szukać starej aplikacji, a „Nowy plik”, „Konwertuj na” i inne polecenia z prawego kliknięcia nic nie robiły. Teraz pikapik zauważa to przy pierwszym uruchomieniu i sam uruchamia Findera ponownie, gdy nie ma otwartych okien Findera i nic się nie kopiuje. W przeciwnym razie na stronie Finder pojawi się krótka linijka z przyciskiem „Uruchom ponownie Findera”.
+Po zmianie nazwy Finder mógł dalej szukać starej aplikacji, a „Nowy plik”, „Konwertuj na” i inne polecenia z prawego kliknięcia nic nie robiły. Teraz pikapik zauważa to przy pierwszym uruchomieniu i sam uruchamia Findera ponownie, gdy nie ma otwartych okien Findera i nic się nie kopiuje. W przeciwnym razie na stronie Finder pojawi się krótka linijka z przyciskiem „Uruchom ponownie Findera”.
 
 W Ustawieniach systemowych, wśród aplikacji otwieranych przy logowaniu, aplikacja ma teraz nową nazwę, pikapik, i zostaje włączona.
 
@@ -1435,7 +1435,7 @@ Włącz go w Ustawienia › Zwierzak. Spaceruje za oknami i Dockiem, przeskakuje
 
 Czasem siada i mówi coś krótkiego. Gdy naprawdę wyjdzie nowa wersja, powie ci o tym raz, a kliknięcie w niego otworzy Ustawienia, gdzie czeka uaktualnienie.
 
-pikapik nazywa się teraz pikapik. Uprawnienia, ustawienia i linki w Skrótach zostają bez zmian. Jeśli instalujesz przez Homebrew, uruchom raz `brew update && brew upgrade --cask pikapik`.
+Po zmianie nazwy uprawnienia, ustawienia i linki w Skrótach zostają bez zmian. Jeśli instalujesz przez Homebrew, uruchom raz `brew update && brew upgrade --cask pikapik`.
 
 **Wypróbuj:** Ustawienia › Zwierzak
 
