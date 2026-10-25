@@ -224,10 +224,11 @@ struct TestSystemShortcuts {
         let picked = SystemShortcutCatalog.selected(everything, rules: all, values: ["100001:pause", "100011:pause"], appSwitcher: true)
         precondition(picked.contains(32) && picked.contains(500) && picked.contains(60) && picked.allSatisfy { !PointerShortcuts.isSynthetic($0) })
         precondition(!SystemShortcutCatalog.selected(everything, rules: all, values: ["500:system"], appSwitcher: true).contains(500))
-        let suite = UserDefaults(suiteName: "pikapik-test-pointer")!
+        let suite = FileManager.default.temporaryDirectory.appendingPathComponent("test-system-shortcuts-\(UUID().uuidString)").path
         var switched: [Int32] = []
-        HotKeyTrace(defaults: suite, isEnabled: { _ in true }, setEnabled: { id, on in if !on { switched.append(id) } }).disable(picked)
-        suite.removePersistentDomain(forName: "pikapik-test-pointer")
+        HotKeyTrace(defaults: UserDefaults(suiteName: suite)!, isEnabled: { _ in true }, setEnabled: { id, on in if !on { switched.append(id) } }).disable(picked)
+        UserDefaults(suiteName: suite)!.removePersistentDomain(forName: suite)
+        try? FileManager.default.removeItem(atPath: suite + ".plist")
         precondition(switched.contains(32) && switched.allSatisfy { !PointerShortcuts.isSynthetic($0) })
         precondition(everything.allSatisfy { SettingsItem.shortcut($0).matches($0.name) })
         print("mouse buttons, gestures and hot corners: ok")
