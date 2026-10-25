@@ -19,6 +19,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - Hide desktop icons: turning Stage Manager on or off while the icons are hidden no longer leaves them hidden after you quit pikapik, and Stage Manager keeps its own choice to show or hide desktop items.
 - Hide desktop icons, website version: if you never changed whether desktop icons show, pikapik leaves that setting unset when it puts them back, instead of setting it to show.
 - Keep the Dock on one display, website version: the display you pick in Main display now stays the main one when you quit pikapik, log out, restart or update, and only turning the switch off puts the displays back. pikapik also remembers how the displays were for each set of displays, so the way back is no longer lost when you unplug a display or connect another one: the old arrangement comes back once those displays are connected again. Before, quitting put the displays back every time, and turning the switch off or quitting with other displays connected forgot the original arrangement for good. With two identical displays that report the same ID, picking a main display could make pikapik quit; now it leaves them as they are.
+- AirPlay, website version: a film whose picture subtitles are broken or made to cause trouble no longer makes the player take gigabytes of memory and quit while it sends the film. Picture subtitles sent over AirPlay now have the same size limits as in the player window.
 
 ## [1.56.1] - 2026-10-24
 
