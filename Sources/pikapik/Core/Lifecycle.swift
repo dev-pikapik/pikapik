@@ -92,7 +92,7 @@ enum Lifecycle {
         #endif
         rows += [
             Row(owner: "GameMode", changes: "system shortcuts turned off for a game", cells: [
-                .start: .none("leave() at the next app switch clears leftovers"),
+                .start: .byTools,
                 .handOver: .run { GameModeTool.shared.leave() },
                 .quit: .run { GameModeTool.shared.leave() },
                 .powerOff: .none("quit runs leave() right after"),
