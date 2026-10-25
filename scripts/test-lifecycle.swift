@@ -159,6 +159,35 @@ enum TestLifecycle {
         }
         print("lifecycle scan: ok")
 
+        for moment in Lifecycle.Moment.allCases {
+            let finder = rows.filter { $0.restartsFinder.contains(moment) }
+            precondition(finder.count <= 1, "\(finder.map(\.owner)) can each restart Finder at \(moment.rawValue), so Finder could restart twice: ask the runner for one restart instead")
+            for row in finder {
+                precondition(runs(row.cells[moment]) || !called(moment, [row]).isEmpty, "\(row.owner) says it restarts Finder at \(moment.rawValue), where it has no step")
+            }
+        }
+        let finderOwners = ["Sources/pikapik/Tools/Finder/DesktopTools.swift": "HiddenFiles"]
+        let finderAllowed = [
+            "Sources/pikapik/Tools/Animations/AnimationSetting.swift": "restartFinder() runs only from FinderRestart: the check after launch and the Restart Finder buttons",
+            "Sources/pikapik/Tools/Windows/QuitOnCloseTool.swift": "it never quits Finder, com.apple.finder is always excluded",
+        ]
+        let finderKills = Set(files.filter { file in
+            let text = try! String(contentsOfFile: file, encoding: .utf8)
+            let named = text.range(of: #"kill(all)?\("Finder"|killall Finder|"Finder"\]"#, options: .regularExpression) != nil
+            let mentions = text.contains("finderBundleID") || text.contains(#""com.apple.finder""#)
+            return named || mentions && text.range(of: #"(?<![.\w])kill\(|\.(force)?[tT]erminate\(\)"#, options: .regularExpression) != nil
+        })
+        for file in finderKills.sorted() {
+            precondition(finderOwners[file] != nil || finderAllowed[file] != nil, "\(file) can kill Finder but no table row says when: declare restartsFinder on its row in Lifecycle.swift and add the file here")
+        }
+        for file in Array(finderOwners.keys) + Array(finderAllowed.keys) {
+            precondition(finderKills.contains(file), "\(file) no longer kills Finder, drop it from the map")
+        }
+        for owner in Set(finderOwners.values).sorted() {
+            precondition(rows.contains { $0.owner == owner && !$0.restartsFinder.isEmpty }, "\(owner) kills Finder but its row does not say at which moments")
+        }
+        print("lifecycle finder: ok")
+
         let info: [String: Any] = ["CFBundleShortVersionString": "1.53.1", "CFBundleVersion": "1531"]
         let system = "Version 27.0 (Build 27A1)"
         let stamp = Lifecycle.stamp(path: "/Applications/pikapik.app", info: info, system: system)

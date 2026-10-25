@@ -20,6 +20,7 @@ enum Lifecycle {
         let owner: String
         let changes: String?
         let cells: [Moment: Cell]
+        var restartsFinder: Set<Moment> = []
     }
 
     @MainActor static let rows: [Row] = {
@@ -186,7 +187,7 @@ enum Lifecycle {
                 .quit: .run { HiddenFilesTool.putBack() },
                 .powerOff: .run { HiddenFilesTool.putBack() },
                 .uninstall: .called("HiddenFilesTool.putBack()"),
-            ]),
+            ], restartsFinder: [.handOver, .quit, .powerOff, .uninstall]),
             Row(owner: "TextFocus wait", changes: nil, cells: [
                 .quit: .run { _ = TextFocus.puttingBack.wait(timeout: .now() + 2) },
             ]),
