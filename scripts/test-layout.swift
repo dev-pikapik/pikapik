@@ -16,7 +16,7 @@ enum TestLayout {
         let parts = [kind, language ?? "", text]
         let key = parts.joined(separator: "\t")
         if let answer = spelling[key] { return answer }
-        precondition(recording, "\(spellingFile) has no answer for \(parts.filter { !$0.isEmpty }.joined(separator: " ")), record the answers again with build/test-layout record")
+        precondition(recording, "\(spellingFile) has no answer for \(parts.filter { !$0.isEmpty }.joined(separator: " ")), so record the answers again with Record layout answers on GitHub, as CONTRIBUTING.md describes")
         let answer = live()
         spelling.updateValue(answer, forKey: key)
         return answer
@@ -48,7 +48,7 @@ enum TestLayout {
                 spelling.updateValue(answer == ["(nil)"] ? nil : answer, forKey: fields.prefix(3).joined(separator: "\t"))
             }
         } else {
-            precondition(recording, "\(spellingFile) is missing: record the spell checker's answers with build/test-layout record from the repo root")
+            precondition(recording, "\(spellingFile) is missing: run build/test-layout from the repo root")
         }
         for (live, recorded) in [
             (#selector(getter: NSSpellChecker.availableLanguages), #selector(NSSpellChecker.recordedLanguages)),
