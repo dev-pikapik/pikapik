@@ -3,7 +3,7 @@ import os
 import ScreenCaptureKit
 import SwiftUI
 
-private let metalPerfTracePath = SystemPath.metalPerfTrace
+private let metalPerfTracePath = SystemPath.metalperftrace
 private let shellExecutableURL = URL(fileURLWithPath: SystemPath.sh)
 
 @Observable

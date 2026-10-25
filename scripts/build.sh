@@ -96,7 +96,7 @@ compile() {
         "${PLAYER_SOURCES[@]}" \
         -o "build/$ARCH/pikapik Player"
     for EXT in $EXTENSIONS; do
-        SHARED=(Extensions/Shared/*.swift Sources/pikapik/Core/MainCopyChoice.swift)
+        SHARED=(Extensions/Shared/*.swift Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/MainCopyChoice.swift)
         [ "$EXT" != Archive ] || SHARED+=(Sources/pikapik/Tools/Archive/Archive.swift)
         LINK=()
         [ "$EXT" != Preview ] || { SHARED=(); LINK=(-import-objc-header Extensions/Preview/libarchive.h -larchive); }

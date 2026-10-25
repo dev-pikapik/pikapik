@@ -15,8 +15,8 @@ final class Updater {
 
     let current = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
     private(set) var state = State.idle
-    var checksAutomatically = UserDefaults.standard.object(forKey: "check-updates") as? Bool ?? true {
-        didSet { UserDefaults.standard.set(checksAutomatically, forKey: "check-updates") }
+    var checksAutomatically = UserDefaults.standard.object(forKey: PreferenceKey.checkUpdates) as? Bool ?? true {
+        didSet { UserDefaults.standard.set(checksAutomatically, forKey: PreferenceKey.checkUpdates) }
     }
 
     @ObservationIgnored private var assetURL: URL?
@@ -80,13 +80,13 @@ final class Updater {
             try Self.ensureSuccess(response)
             let dir = FileManager.default.temporaryDirectory.appendingPathComponent("pikapik-update-\(UUID().uuidString)")
             try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-            try run("/usr/bin/ditto", ["-x", "-k", zip.path, dir.path])
+            try run(SystemPath.ditto, ["-x", "-k", zip.path, dir.path])
             let newApp = dir.appendingPathComponent(Self.appName)
             guard Bundle(url: newApp)?.bundleIdentifier == Bundle.main.bundleIdentifier else {
                 throw CocoaError(.fileReadCorruptFile)
             }
             // Only a copy signed by our own Developer ID team gets installed.
-            try run("/usr/bin/codesign", ["--verify", "--deep", "--strict", "-R", "=anchor apple generic and certificate leaf[subject.OU] = \"5N3968Z6Y9\"", newApp.path])
+            try run(SystemPath.codesign, ["--verify", "--deep", "--strict", "-R", "=anchor apple generic and certificate leaf[subject.OU] = \"5N3968Z6Y9\"", newApp.path])
 
             let script = """
             while kill -0 "$1" 2>/dev/null; do sleep 0.2; done
@@ -102,7 +102,7 @@ final class Updater {
             open "${target:-$3}"
             """
             let helper = Process()
-            helper.executableURL = URL(fileURLWithPath: "/bin/bash")
+            helper.executableURL = URL(fileURLWithPath: SystemPath.bash)
             helper.arguments = ["-c", script, "pika-update",
                                 String(ProcessInfo.processInfo.processIdentifier),
                                 newApp.path, target.path, appURL.path]
@@ -125,7 +125,7 @@ final class Updater {
         listing.split(separator: "\n").contains { $0.hasSuffix("\t" + path) }
     }
 
-    nonisolated static func isBrewManaged(prefixes: [String] = ["/opt/homebrew", "/usr/local"]) -> Bool {
+    nonisolated static func isBrewManaged(prefixes: [String] = SystemPath.homebrewPrefixes) -> Bool {
         prefixes.contains { prefix in
             FileManager.default.fileExists(atPath: "\(prefix)/Caskroom/pikapik")
         }

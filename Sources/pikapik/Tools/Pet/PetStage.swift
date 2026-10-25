@@ -426,7 +426,7 @@ final class PetStage: NSObject {
 
     #if !APPSTORE
     private static func tiles() -> CGRect? {
-        guard let app = NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.dock").first else { return nil }
+        guard let app = NSRunningApplication.runningApplications(withBundleIdentifier: AppConstants.dockBundleID).first else { return nil }
         let dock = AXUIElementCreateApplication(app.processIdentifier)
         AXUIElementSetMessagingTimeout(dock, 0.25)
         var children: CFTypeRef?

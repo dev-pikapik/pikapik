@@ -1,10 +1,10 @@
 import Foundation
 
 final class AppRemover {
-    private static let launchctlPath = "/bin/launchctl"
+    private static let launchctlPath = SystemPath.launchctl
     private static let statPath = "/usr/bin/stat"
     private static let mvPath = "/bin/mv"
-    private static let pkgutilPath = "/usr/sbin/pkgutil"
+    private static let pkgutilPath = SystemPath.pkgutil
 
     enum Outcome: Equatable {
         case done(String?)

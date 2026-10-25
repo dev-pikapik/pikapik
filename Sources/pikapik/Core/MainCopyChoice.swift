@@ -23,11 +23,9 @@ extension RunningCopy {
 }
 
 enum MainCopyChoice {
-    static let websiteID = "com.pikapik.app.direct"
-    static let appStoreID = "com.pikapik.app"
 
     static func family(_ bundleID: String) -> String {
-        if [websiteID, appStoreID].contains(bundleID) { return "pikapik" }
+        if [AppConstants.directBundleID, AppConstants.appStoreBundleID].contains(bundleID) { return "pikapik" }
         guard bundleID.hasPrefix("com.pikapik.e2e.") else { return bundleID }
         return bundleID.split(separator: ".").dropLast().joined(separator: ".")
     }
@@ -45,11 +43,11 @@ enum MainCopyChoice {
     }
 
     static func takesOver(_ peers: [RunningCopy], poweringOff: Bool) -> Bool {
-        !poweringOff && peers.max { ($0.launched, $0.pid) < ($1.launched, $1.pid) }.map { $0.bundleID != appStoreID } ?? false
+        !poweringOff && peers.max { ($0.launched, $0.pid) < ($1.launched, $1.pid) }.map { $0.bundleID != AppConstants.appStoreBundleID } ?? false
     }
 
     static func journal(_ bundleID: String) -> String {
-        family(bundleID) == "pikapik" ? websiteID : family(bundleID)
+        family(bundleID) == "pikapik" ? AppConstants.directBundleID : family(bundleID)
     }
 
     static func showsMenu(_ own: String, among extensions: [String], hosts: [RunningCopy]) -> Bool {
@@ -68,12 +66,12 @@ enum MainCopyChoice {
 
     static func sameMenu(_ own: String, in ids: [String]) -> [String] {
         let key = "." + (own.split(separator: ".").last ?? "")
-        return ids.filter { $0.hasSuffix(key) && ($0.hasPrefix(websiteID) || $0.hasPrefix("com.pikapik.")) }
+        return ids.filter { $0.hasSuffix(key) && ($0.hasPrefix(AppConstants.directBundleID) || $0.hasPrefix("com.pikapik.")) }
     }
 
     static func ignored(_ own: String, in pluginkit: String) -> [String] {
         let on = pluginkit.split(separator: "\n").filter { $0.hasPrefix("+") }.map { String($0.split(whereSeparator: \.isWhitespace).last?.prefix { $0 != "(" } ?? "") }
-        let store = appStoreID + "." + (own.split(separator: ".").last ?? "")
+        let store = AppConstants.appStoreBundleID + "." + (own.split(separator: ".").last ?? "")
         return sameMenu(own, in: on).filter { $0 != own && $0 != store }
     }
 

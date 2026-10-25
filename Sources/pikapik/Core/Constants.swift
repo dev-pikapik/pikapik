@@ -6,22 +6,16 @@ enum AppConstants {
     static let directBundleID = "com.pikapik.app.direct"
     static let appStoreBundleID = "com.pikapik.app"
     static let devBundleID = "com.pikapik.app.dev"
-    static let fanHelperLabel = "com.pikapik.app.direct.fans"
-    static let playerAppName = "pikapik Player.app"
 
     static let finderBundleID = "com.apple.finder"
     static let dockBundleID = "com.apple.dock"
     static let systemSettingsBundleID = "com.apple.systempreferences"
     static let symbolicHotKeysDomain = "com.apple.symbolichotkeys"
-    static let hiToolboxDomain = "com.apple.HIToolbox"
     static let trackpadDomain = "com.apple.AppleMultitouchTrackpad"
     static let bluetoothTrackpadDomain = "com.apple.driver.AppleBluetoothMultitouch.trackpad"
 
     static let githubRepoURL = "https://github.com/dev-pikapik/pikapik"
-    static let releasesAPIURL = "https://api.github.com/repos/dev-pikapik/pikapik/releases/latest"
-    static let releasesPageURL = "https://github.com/dev-pikapik/pikapik/releases/latest"
     static let githubReleasesURL = URL(string: "https://github.com/dev-pikapik/pikapik/releases/latest")!
-    static let bugReportURL = "https://github.com/dev-pikapik/pikapik/issues/new?template=bug.yml"
     static let buyMeACoffeeURL = "https://buymeacoffee.com/pikapik"
     static let appleMacRepairURL = URL(string: "https://support.apple.com/mac/repair")!
 }
@@ -31,11 +25,9 @@ enum ToolID {
     static let displayOff = "display-off"
     static let brightness = "brightness"
     static let brightnessKeys = "brightness-keys"
-    static let battery = "battery"
     static let fans = "fans"
     static let temperatures = "temperatures"
     static let speedTest = "speed-test"
-    static let ports = "ports"
     static let appVolume = "app-volume"
     static let inputSwitch = "input-switch"
     static let keyRepeat = "key-repeat"
@@ -64,7 +56,6 @@ enum ToolID {
     static let animations = "animations"
     static let gameMode = "game-mode"
     static let pet = "pet"
-    static let uninstallerTrashWatch = "uninstaller-trash-watch"
     static let trashWatch = "uninstaller-trash-watch"
     static let appsCanAsk = "apps-can-ask"
 }
@@ -90,7 +81,7 @@ enum PreferenceKey {
     static let layoutFixIgnored = "layout-fix-ignored"
 
     static let keyRepeatSaved = "key-repeat-saved"
-    static let chromiumAXJournal = "chromium-ax-journal"
+    static let chromiumAXJournal = "chromium-accessibility-original"
 
     static let linearPointerSpeed = "linear-pointer-speed"
     static let linearPointerSaved = "linear-pointer-saved"
@@ -99,9 +90,7 @@ enum PreferenceKey {
     static let wheelLinesMode = "wheel-lines-mode"
     static let wheelLinesPixels = "wheel-lines-pixels"
     static let wheelDirectionNatural = "wheel-direction-natural"
-    static let wheelDirectionMouse = "wheel-direction-natural"
     static let wheelDirectionTrackpadNatural = "wheel-direction-trackpad-natural"
-    static let wheelDirectionTrackpad = "wheel-direction-trackpad-natural"
     static let sideButtonsSwap = "side-buttons-swap"
     static let hideAppButton = "hide-app-button"
     static let middleClickFingers = "middle-click-fingers"
@@ -116,15 +105,11 @@ enum PreferenceKey {
     static let gameModeGames = "game-mode-games"
     static let gameModeNotGames = "game-mode-not-games"
     static let gameModeSystemShortcuts = "game-mode-system-shortcuts"
-    static let gameModeFPS = "game-mode-fps"
     static let gameModeFrameRate = "game-mode-fps"
-    static let gameModeFPSCorner = "game-mode-fps-corner"
     static let gameModeFrameRateCorner = "game-mode-fps-corner"
-    static let gameModeFPSRecording = "game-mode-fps-recording"
     static let gameModeFrameRateRecording = "game-mode-fps-recording"
     static let gameModeHotKeysOff = "game-mode-hotkeys-off"
     static let gameModeDock = "game-mode-dock"
-    static let hotCornerPrefix = "hot-corner-"
 
     static let keepAwakeMode = "keep-awake-mode"
     static let keepAwakeDuration = "keep-awake-duration"
@@ -141,8 +126,6 @@ enum PreferenceKey {
 
     static let systemAudioGranted = "system-audio-granted"
     static let systemAudioAsked = "system-audio-asked"
-
-    static let uninstallRemoved = "uninstaller-removed"
 
     static let animationsSpeed = "animations-speed"
     static let animationsDockDelay = "animations-dock-delay"
@@ -177,7 +160,6 @@ enum PreferenceKey {
 enum SystemPath {
     static let tar = "/usr/bin/tar"
     static let ditto = "/usr/bin/ditto"
-    static let xattr = "/usr/bin/xattr"
     static let pluginkit = "/usr/bin/pluginkit"
     static let killall = "/usr/bin/killall"
     static let caffeinate = "/usr/bin/caffeinate"
@@ -186,16 +168,11 @@ enum SystemPath {
     static let printf = "/usr/bin/printf"
     static let tccutil = "/usr/bin/tccutil"
     static let metalperftrace = "/usr/bin/metalperftrace"
-    static let metalPerfTrace = "/usr/bin/metalperftrace"
     static let networkQuality = "/usr/bin/networkQuality"
-    static let osascript = "/usr/bin/osascript"
-    static let open = "/usr/bin/open"
-    static let sqlite3 = "/usr/bin/sqlite3"
 
     static let systemProfiler = "/usr/sbin/system_profiler"
     static let chown = "/usr/sbin/chown"
     static let pkgutil = "/usr/sbin/pkgutil"
-    static let ioreg = "/usr/sbin/ioreg"
 
     static let launchctl = "/bin/launchctl"
     static let mkdir = "/bin/mkdir"
@@ -207,7 +184,6 @@ enum SystemPath {
     static let sleep = "/bin/sleep"
     static let standardBinPath = "/usr/bin:/bin"
 
-    static let socketfilterfw = "/usr/libexec/ApplicationFirewall/socketfilterfw"
     static let lsregister = "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
 
     static let displayServicesFramework = "/System/Library/PrivateFrameworks/DisplayServices.framework/DisplayServices"
@@ -215,9 +191,7 @@ enum SystemPath {
     static let ioKitFramework = "/System/Library/Frameworks/IOKit.framework/IOKit"
     static let applicationServicesFramework = "/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices"
 
-    static let keyboardSettingsAppex = "/System/Library/ExtensionKit/Extensions/KeyboardSettings.appex"
     static let keyboardSettingsExtension = "/System/Library/ExtensionKit/Extensions/KeyboardSettings.appex"
-    static let accessibilitySettingsAppex = "/System/Library/ExtensionKit/Extensions/AccessibilitySettingsExtension.appex"
     static let accessibilitySettingsExtension = "/System/Library/ExtensionKit/Extensions/AccessibilitySettingsExtension.appex"
     static let desktopSettingsExtension = "/System/Library/ExtensionKit/Extensions/DesktopSettings.appex"
     static let trackpadExtension = "/System/Library/ExtensionKit/Extensions/TrackpadExtension.appex"
@@ -228,37 +202,17 @@ enum SystemPath {
     static let activityMonitorApp = "/System/Applications/Utilities/Activity Monitor.app"
     static let finderApp = "/System/Library/CoreServices/Finder.app"
 
-    static let applicationsDir = "/Applications"
     static let applications = "/Applications"
-    static let systemApplicationsDir = "/System/Applications"
     static let systemApplications = "/System/Applications"
     static let privilegedHelperToolsDir = "/Library/PrivilegedHelperTools"
-    static let libraryLaunchDaemonsDir = "/Library/LaunchDaemons"
-    static let libraryLaunchAgentsDir = "/Library/LaunchAgents"
-    static let systemLaunchDaemonsDir = "/System/Library/LaunchDaemons"
     static let systemTCCDatabase = "/Library/Application Support/com.apple.TCC/TCC.db"
 
-    static let homebrewBinPaths = ["/opt/homebrew/bin/brew", "/usr/local/bin/brew"]
     static let homebrewPrefixes = ["/opt/homebrew", "/usr/local"]
     static let homebrewCaskrooms = ["/opt/homebrew/Caskroom", "/usr/local/Caskroom"]
 }
 
 enum SystemPane {
-    static let accessibility = "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"
-    static let inputMonitoring = "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent"
-    static let screenRecording = "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
-    static let systemAudioRecording = "x-apple.systempreferences:com.apple.preference.security?Privacy_AudioCapture"
-    static let fullDiskAccess = "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles"
-    static let automation = "x-apple.systempreferences:com.apple.preference.security?Privacy_Automation"
-    static let loginItems = "x-apple.systempreferences:com.apple.LoginItems-Settings.extension"
-    static let finderExtensions = "x-apple.systempreferences:com.apple.ExtensionsPreferences?extensionPointIdentifier=com.apple.FinderSync"
     static let sharing = "x-apple.systempreferences:com.apple.Sharing-Settings.extension"
-    static let keyboardShortcuts = "x-apple.systempreferences:com.apple.Keyboard-Settings.extension?Shortcuts"
-    static let keyboardInputSources = "x-apple.systempreferences:com.apple.Keyboard-Settings.extension?InputSources"
-    static let trackpad = "x-apple.systempreferences:com.apple.Trackpad-Settings.extension"
     static let mouse = "x-apple.systempreferences:com.apple.Mouse-Settings.extension"
-    static let displays = "x-apple.systempreferences:com.apple.Displays-Settings.extension"
     static let battery = URL(string: "x-apple.systempreferences:com.apple.Battery-Settings.extension")!
-    static let reduceMotion = "x-apple.systempreferences:com.apple.Accessibility-Settings.extension?Motion"
-    static let iCloud = "x-apple.systempreferences:com.apple.systempreferences.AppleIDSettings"
 }

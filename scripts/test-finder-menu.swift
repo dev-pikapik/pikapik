@@ -3,7 +3,7 @@ import Foundation
 @main
 struct TestFinderMenu {
     static func main() {
-        let website = "com.pikapik.app.direct", store = "com.pikapik.app", dev = "com.pikapik.app.dev"
+        let website = "com.pikapik.app.direct", store = AppConstants.appStoreBundleID, dev = "com.pikapik.app.dev"
         let rehearsal = "com.pikapik.app.rehearsal", e2e = "com.pikapik.e2e.menu.a"
 
         func host(_ id: String, _ minute: Double, pid: Int32 = 100) -> RunningCopy {

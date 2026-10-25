@@ -64,7 +64,7 @@ extension AppRemover.Hooks {
 
     private static func launchctl(_ arguments: [String]) -> Int32 {
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/bin/launchctl")
+        process.executableURL = URL(fileURLWithPath: SystemPath.launchctl)
         process.arguments = arguments
         process.standardOutput = FileHandle.nullDevice
         process.standardError = FileHandle.nullDevice

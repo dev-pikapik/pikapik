@@ -105,7 +105,7 @@ final class FinderExtension {
     static func refreshFinderRecord(then done: @escaping () -> Void) { done() }
     #else
     private func ignoreOtherCopies() {
-        guard MainCopy.canAct, Bundle.main.bundleIdentifier == MainCopyChoice.websiteID else { return }
+        guard MainCopy.canAct, Bundle.main.bundleIdentifier == AppConstants.directBundleID else { return }
         for other in MainCopyChoice.ignored(id, in: Self.pluginkit("-m", "-p", Self.finderSyncExtensionPoint)) {
             Self.pluginkit("-e", "ignore", "-i", other)
         }

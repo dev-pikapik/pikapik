@@ -20,7 +20,7 @@ enum PrivacyAsks {
         "Privacy_Bluetooth": ["NSBluetoothAlwaysUsageDescription", "NSBluetoothPeripheralUsageDescription"],
     ]
 
-    static let folders = [URL(fileURLWithPath: "/Applications")]
+    static let folders = [URL(fileURLWithPath: SystemPath.applications)]
 
     static func scan(_ folders: [URL] = folders) -> [AskingApp] {
         let files = FileManager.default

@@ -18,7 +18,7 @@ final class AnimationsTool: AnimationsEngine, Tool {
         set { if !newValue { reset() } }
     }
 
-    private static let dock = "com.apple.dock" as CFString
+    private static let dock = AppConstants.dockBundleID as CFString
     private static let host = AnimationsHost(
         me: MainCopy.shared.me,
         canAct: { MainCopy.canAct },
