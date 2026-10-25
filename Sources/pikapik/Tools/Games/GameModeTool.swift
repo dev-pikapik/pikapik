@@ -233,7 +233,10 @@ final class GameModeTool: Tool {
             let upgraded = GameRules.upgraded(games, id: app.bundleIdentifier, name: app.localizedName, path: app.executableURL?.path ?? "")
             if upgraded != games { return games = upgraded }
         }
-        guard isEnabled, MainCopy.canAct, let app, isGame(app), !Self.screenLocked else { return leave() }
+        guard isEnabled, MainCopy.canAct, let app, isGame(app), !Self.screenLocked else {
+            if game != nil { leave() }
+            return
+        }
         guard app.processIdentifier != game?.processIdentifier else { return }
         leave()
         enter(app)
