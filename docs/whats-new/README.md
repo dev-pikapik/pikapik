@@ -634,7 +634,7 @@ pikapik never looks at what you type. It only checks how long ago a key was pres
 
 <sub>1.39.2 · October 13, 2026</sub>
 
-If you sync settings with iCloud, they now live in a folder called pikapik in iCloud Drive instead of pikapik, and pikapik moves them there by itself.
+If you sync settings with iCloud, they now live in a folder called pikapik in iCloud Drive, and pikapik moves them there by itself.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ The little moving pictures in Settings used to redraw the whole page many times 
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-After the move from pikapik to pikapik, Finder could keep looking for the old app, so New File, Convert To and the other right-click items did nothing. pikapik now notices this on the first launch and restarts Finder by itself when no Finder windows are open and nothing is copying. Otherwise a short line on the Finder page offers a Restart Finder button.
+After the app got its new name, Finder could keep looking for the old app, so New File, Convert To and the other right-click items did nothing. pikapik now notices this on the first launch and restarts Finder by itself when no Finder windows are open and nothing is copying. Otherwise a short line on the Finder page offers a Restart Finder button.
 
 In System Settings, among the apps that open at login, the app now shows its new name, pikapik, and stays turned on.
 
@@ -1435,7 +1435,7 @@ Turn it on in Settings › Pet. It strolls behind your windows and the Dock, hop
 
 Every now and then it sits down and says something short. When a new version really comes out, it tells you once, and a click on it opens Settings, where the update is waiting.
 
-pikapik is now called pikapik. Your permissions, settings and Shortcuts links all stay as they were. If you installed it with Homebrew, run `brew update && brew upgrade --cask pikapik` once.
+With the new name, your permissions, settings and Shortcuts links all stay as they were. If you installed it with Homebrew, run `brew update && brew upgrade --cask pikapik` once.
 
 **Try it:** Settings › Pet
 

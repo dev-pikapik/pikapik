@@ -634,7 +634,7 @@ pikapik không bao giờ xem bạn gõ gì, mà chỉ kiểm tra đã bao lâu k
 
 <sub>1.39.2 · 13 tháng 10 năm 2026</sub>
 
-Nếu bạn đồng bộ hóa cài đặt với iCloud, giờ đây cài đặt nằm trong iCloud Drive, ở thư mục tên pikapik thay vì pikapik, và pikapik tự chuyển chúng sang đó.
+Nếu bạn đồng bộ hóa cài đặt với iCloud, giờ đây cài đặt nằm trong iCloud Drive, ở thư mục tên pikapik, và pikapik tự chuyển chúng sang đó.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Những hình động nhỏ trong Cài đặt trước đây vẽ lại cả tra
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Sau khi chuyển từ pikapik sang pikapik, Finder có thể vẫn tìm ứng dụng cũ, nên “Tệp mới”, “Chuyển sang” và các mục chuột phải khác không làm gì cả. Giờ pikapik nhận ra điều này ở lần mở đầu tiên và tự khởi động lại Finder khi không có cửa sổ Finder nào đang mở và không có gì đang được sao chép. Nếu không, một dòng ngắn trên trang Finder sẽ có nút “Khởi động lại Finder”.
+Sau khi đổi tên, Finder có thể vẫn tìm ứng dụng cũ, nên “Tệp mới”, “Chuyển sang” và các mục chuột phải khác không làm gì cả. Giờ pikapik nhận ra điều này ở lần mở đầu tiên và tự khởi động lại Finder khi không có cửa sổ Finder nào đang mở và không có gì đang được sao chép. Nếu không, một dòng ngắn trên trang Finder sẽ có nút “Khởi động lại Finder”.
 
 Trong Cài đặt hệ thống, giữa các ứng dụng mở khi đăng nhập, ứng dụng giờ hiện tên mới là pikapik và vẫn được bật.
 
@@ -1435,7 +1435,7 @@ Bật nó trong Cài đặt › Thú cưng. Nó dạo bước sau các cửa s�
 
 Thỉnh thoảng nó ngồi xuống và nói một câu ngắn. Khi thật sự có phiên bản mới, nó báo cho bạn một lần, và bấm vào nó sẽ mở Cài đặt, nơi bản cập nhật đang chờ.
 
-pikapik giờ có tên là pikapik. Quyền, cài đặt và các liên kết trong Phím tắt vẫn giữ nguyên. Nếu bạn cài bằng Homebrew, hãy chạy một lần `brew update && brew upgrade --cask pikapik`.
+Sau khi đổi tên, quyền, cài đặt và các liên kết trong Phím tắt vẫn giữ nguyên. Nếu bạn cài bằng Homebrew, hãy chạy một lần `brew update && brew upgrade --cask pikapik`.
 
 **Thử ngay:** Cài đặt › Thú cưng
 

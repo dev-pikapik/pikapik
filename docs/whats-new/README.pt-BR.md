@@ -634,7 +634,7 @@ O pikapik nunca olha o que você digita. Ele só verifica quanto tempo passou de
 
 <sub>1.39.2 · 13 de outubro de 2026</sub>
 
-Se você sincroniza os ajustes com o iCloud, eles agora ficam no iCloud Drive, numa pasta chamada pikapik em vez de pikapik, e o pikapik os move para lá sozinho.
+Se você sincroniza os ajustes com o iCloud, eles agora ficam no iCloud Drive, numa pasta chamada pikapik, e o pikapik os move para lá sozinho.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ As pequenas imagens animadas dos Ajustes redesenhavam a página inteira muitas v
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Depois da mudança de pikapik para pikapik, o Finder podia continuar procurando o app antigo, e “Novo arquivo”, “Converter para” e os outros itens do clique direito não faziam nada. Agora o pikapik percebe isso na primeira abertura e reinicia o Finder sozinho quando não há janelas do Finder abertas e nada está sendo copiado. Se não, uma linha curta na página Finder oferece o botão “Reiniciar o Finder”.
+Depois da mudança de nome, o Finder podia continuar procurando o app antigo, e “Novo arquivo”, “Converter para” e os outros itens do clique direito não faziam nada. Agora o pikapik percebe isso na primeira abertura e reinicia o Finder sozinho quando não há janelas do Finder abertas e nada está sendo copiado. Se não, uma linha curta na página Finder oferece o botão “Reiniciar o Finder”.
 
 Nos Ajustes do Sistema, entre os apps que abrem no início da sessão, o app agora aparece com o novo nome, pikapik, e continua ativado.
 
@@ -1435,7 +1435,7 @@ Ligue em Ajustes › Bichinho. Ele passeia atrás das suas janelas e do Dock, pu
 
 De vez em quando ele senta e fala alguma coisa curtinha. Quando sai mesmo uma versão nova, ele avisa uma vez, e um clique nele abre os Ajustes, onde a atualização está esperando.
 
-pikapik agora se chama pikapik. Suas permissões, ajustes e links do Atalhos continuam como estavam. Se você instalou pelo Homebrew, rode uma vez `brew update && brew upgrade --cask pikapik`.
+Com o novo nome, suas permissões, ajustes e links do Atalhos continuam como estavam. Se você instalou pelo Homebrew, rode uma vez `brew update && brew upgrade --cask pikapik`.
 
 **Experimente:** Ajustes › Bichinho
 

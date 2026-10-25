@@ -634,7 +634,7 @@ pikapik tidak pernah melihat apa yang Anda ketik. Ia hanya memeriksa sudah berap
 
 <sub>1.39.2 · 13 Oktober 2026</sub>
 
-Jika Anda menyelaraskan pengaturan dengan iCloud, pengaturan kini disimpan di iCloud Drive dalam folder bernama pikapik, bukan pikapik, dan pikapik memindahkannya ke sana sendiri.
+Jika Anda menyelaraskan pengaturan dengan iCloud, pengaturan kini disimpan di iCloud Drive dalam folder bernama pikapik, dan pikapik memindahkannya ke sana sendiri.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Gambar bergerak kecil di Pengaturan dulu menggambar ulang seluruh halaman berkal
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Setelah pindah dari pikapik ke pikapik, Finder bisa terus mencari app lama, sehingga “File Baru”, “Konversi ke”, dan item klik kanan lainnya tidak berbuat apa-apa. Sekarang pikapik menyadarinya saat pertama dibuka dan memulai ulang Finder sendiri jika tidak ada jendela Finder yang terbuka dan tidak ada yang sedang disalin. Jika tidak, satu baris singkat di halaman Finder menawarkan tombol “Mulai Ulang Finder”.
+Setelah nama app berganti, Finder bisa terus mencari app lama, sehingga “File Baru”, “Konversi ke”, dan item klik kanan lainnya tidak berbuat apa-apa. Sekarang pikapik menyadarinya saat pertama dibuka dan memulai ulang Finder sendiri jika tidak ada jendela Finder yang terbuka dan tidak ada yang sedang disalin. Jika tidak, satu baris singkat di halaman Finder menawarkan tombol “Mulai Ulang Finder”.
 
 Di Pengaturan Sistem, di antara app yang terbuka saat masuk, app kini tampil dengan nama barunya, pikapik, dan tetap menyala.
 
@@ -1435,7 +1435,7 @@ Nyalakan di Pengaturan › Peliharaan. Ia berjalan-jalan di belakang jendela dan
 
 Sesekali ia duduk dan mengucapkan sesuatu yang singkat. Kalau versi baru benar-benar keluar, ia memberi tahu sekali, dan mengekliknya membuka Pengaturan, tempat pembaruan menunggu.
 
-pikapik sekarang bernama pikapik. Izin, pengaturan, dan tautan di Pintasan tetap seperti semula. Kalau Anda memasangnya lewat Homebrew, jalankan sekali `brew update && brew upgrade --cask pikapik`.
+Dengan nama baru, izin, pengaturan, dan tautan di Pintasan tetap seperti semula. Kalau Anda memasangnya lewat Homebrew, jalankan sekali `brew update && brew upgrade --cask pikapik`.
 
 **Coba:** Pengaturan › Peliharaan
 

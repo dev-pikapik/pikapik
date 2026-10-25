@@ -634,7 +634,7 @@ pikapik ne yazdığınıza asla bakmaz. Yalnızca bir tuşa en son basıldığı
 
 <sub>1.39.2 · 13 Ekim 2026</sub>
 
-Ayarlarınızı iCloud ile eşzamanlıyorsanız, artık iCloud Drive’da pikapik yerine pikapik adlı klasörde duruyorlar ve pikapik onları oraya kendisi taşıyor.
+Ayarlarınızı iCloud ile eşzamanlıyorsanız, artık iCloud Drive’da pikapik adlı klasörde duruyorlar ve pikapik onları oraya kendisi taşıyor.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Ayarlar’daki küçük hareketli resimler eskiden tüm sayfayı saniyede defala
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-pikapik’tan pikapik’e geçtikten sonra Finder eski uygulamayı aramaya devam edebiliyordu ve “Yeni Dosya”, “Dönüştür” ile diğer sağ tık öğeleri hiçbir şey yapmıyordu. Artık pikapik bunu ilk açılışta fark ediyor ve açık Finder penceresi yoksa ve hiçbir şey kopyalanmıyorsa Finder’ı kendisi yeniden başlatıyor. Aksi hâlde Finder sayfasındaki kısa bir satır “Finder’ı yeniden başlat” düğmesini sunuyor.
+Ad değiştikten sonra Finder eski uygulamayı aramaya devam edebiliyordu ve “Yeni Dosya”, “Dönüştür” ile diğer sağ tık öğeleri hiçbir şey yapmıyordu. Artık pikapik bunu ilk açılışta fark ediyor ve açık Finder penceresi yoksa ve hiçbir şey kopyalanmıyorsa Finder’ı kendisi yeniden başlatıyor. Aksi hâlde Finder sayfasındaki kısa bir satır “Finder’ı yeniden başlat” düğmesini sunuyor.
 
 Sistem Ayarları’nda, oturum açılınca açılan uygulamalar arasında uygulama artık yeni adıyla, pikapik olarak görünüyor ve açık kalıyor.
 
@@ -1435,7 +1435,7 @@ Ayarlar › Evcil Dost bölümünden açın. Pencerelerinizin ve Dock’un arkas
 
 Arada bir oturup kısa bir şey söylüyor. Gerçekten yeni bir sürüm çıktığında bunu bir kez söylüyor; üstüne tıklayınca güncellemenin beklediği Ayarlar açılıyor.
 
-pikapik artık pikapik adını taşıyor. İzinleriniz, ayarlarınız ve Kestirmeler bağlantılarınız olduğu gibi kalıyor. Homebrew ile kurduysanız bir kez `brew update && brew upgrade --cask pikapik` komutunu çalıştırın.
+Ad değişse de izinleriniz, ayarlarınız ve Kestirmeler bağlantılarınız olduğu gibi kalıyor. Homebrew ile kurduysanız bir kez `brew update && brew upgrade --cask pikapik` komutunu çalıştırın.
 
 **Deneyin:** Ayarlar › Evcil Dost
 

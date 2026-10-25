@@ -634,7 +634,7 @@ pikapik 从不查看你输入的内容，只留意距离上次按键或移动鼠
 
 <sub>1.39.2 · 2026年10月13日</sub>
 
-如果你通过 iCloud 同步设置，设置现在保存在 iCloud 云盘的 pikapik 文件夹中，而不是 pikapik，pikapik 会自动把它们移过去。
+如果你通过 iCloud 同步设置，设置现在保存在 iCloud 云盘的 pikapik 文件夹中，pikapik 会自动把它们移过去。
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ pikapik的语言切换手势和使用游戏修饰键的退出快捷键也不会�
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-从 pikapik 迁移到 pikapik 后，访达可能仍在寻找旧的 App，“新建文件”“转换为”等右键菜单项没有反应。现在 pikapik 会在首次启动时发现这一点，如果访达没有打开的窗口、也没有正在拷贝的内容，就自动重新启动访达。否则，访达页面会出现一行简短提示和“重新启动访达”按钮。
+改名之后，访达可能仍在寻找旧的 App，“新建文件”“转换为”等右键菜单项没有反应。现在 pikapik 会在首次启动时发现这一点，如果访达没有打开的窗口、也没有正在拷贝的内容，就自动重新启动访达。否则，访达页面会出现一行简短提示和“重新启动访达”按钮。
 
 在系统设置中登录时打开的 App 列表里，现在显示新名称 pikapik，并保持开启。
 
@@ -1435,7 +1435,7 @@ pikapik的语言切换手势和使用游戏修饰键的退出快捷键也不会�
 
 它偶尔会坐下来说句话。新版本真的发布时，它会告诉你一次，点一下它就会打开设置，更新就在那里等着。
 
-pikapik 现在叫 pikapik。你的权限、设置和快捷指令里的链接都保持不变。如果你是用 Homebrew 安装的，请运行一次 `brew update && brew upgrade --cask pikapik`。
+改名后，你的权限、设置和快捷指令里的链接都保持不变。如果你是用 Homebrew 安装的，请运行一次 `brew update && brew upgrade --cask pikapik`。
 
 **试试看：** 设置 › 宠物
 

@@ -634,7 +634,7 @@ pikapik ne regarde jamais ce que vous tapez : il vérifie seulement combien de t
 
 <sub>1.39.2 · 13 octobre 2026</sub>
 
-Si vous synchronisez vos réglages avec iCloud, ils se trouvent désormais dans iCloud Drive, dans un dossier pikapik au lieu de pikapik, et pikapik les y déplace tout seul.
+Si vous synchronisez vos réglages avec iCloud, ils se trouvent désormais dans iCloud Drive, dans un dossier pikapik, et pikapik les y déplace tout seul.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Les petites images animées des Réglages redessinaient toute la page plusieurs 
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Après le passage de pikapik à pikapik, le Finder pouvait continuer à chercher l’ancienne app, et « Nouveau fichier », « Convertir en » et les autres commandes du clic droit ne faisaient rien. pikapik le remarque maintenant au premier lancement et redémarre le Finder tout seul quand aucune fenêtre du Finder n’est ouverte et que rien n’est en cours de copie. Sinon, une courte ligne sur la page Finder propose le bouton « Redémarrer le Finder ».
+Après le changement de nom, le Finder pouvait continuer à chercher l’ancienne app, et « Nouveau fichier », « Convertir en » et les autres commandes du clic droit ne faisaient rien. pikapik le remarque maintenant au premier lancement et redémarre le Finder tout seul quand aucune fenêtre du Finder n’est ouverte et que rien n’est en cours de copie. Sinon, une courte ligne sur la page Finder propose le bouton « Redémarrer le Finder ».
 
 Dans Réglages Système, parmi les apps ouvertes à la connexion, l’app porte maintenant son nouveau nom, pikapik, et reste activée.
 
@@ -1435,7 +1435,7 @@ Activez-le dans Réglages › Compagnon. Il se promène derrière vos fenêtres 
 
 De temps en temps, il s’assoit et dit un petit mot. Quand une nouvelle version sort vraiment, il vous le dit une fois, et un clic sur lui ouvre les Réglages, où la mise à jour vous attend.
 
-pikapik s’appelle maintenant pikapik. Vos autorisations, vos réglages et vos liens dans Raccourcis restent tels quels. Si vous l’avez installée avec Homebrew, lancez une fois `brew update && brew upgrade --cask pikapik`.
+Avec le nouveau nom, vos autorisations, vos réglages et vos liens dans Raccourcis restent tels quels. Si vous l’avez installée avec Homebrew, lancez une fois `brew update && brew upgrade --cask pikapik`.
 
 **Pour essayer :** Réglages › Compagnon
 

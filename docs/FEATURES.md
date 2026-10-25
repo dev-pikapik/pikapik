@@ -2097,7 +2097,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Lets pikapik look for new versions and install them itself.
 
-**How it works:** In-app `Updater` (`Sources/pikapik/Core/Updater.swift`, key `check-updates`, `SettingsBackup.apply(_:)` in `SettingsSync.swift`); no Sparkle. Downloads the release, checks it, replaces the app and relaunches. A copy named pikapik.app renames itself to pikapik.app on launch and when updating; Homebrew copies stay until `brew upgrade`.
+**How it works:** In-app `Updater` (`Sources/pikapik/Core/Updater.swift`, key `check-updates`, `SettingsBackup.apply(_:)` in `SettingsSync.swift`); no Sparkle. Downloads the release, checks it, replaces the app and relaunches.
 
 **Options:**
 - Check Now — checks right away (`AboutView.swift`).
@@ -2311,7 +2311,7 @@ This is the catalog of everything pikapik does, grouped like the Settings sideba
 
 **Does:** Installs the Website edition with one command.
 
-**How it works:** `install.sh` (`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"`). Needs macOS 14 or later. Downloads `pikapik.zip` from the latest release and installs it only if `codesign --verify --deep --strict` passes against pikapik’s Developer ID requirement and `spctl --assess` passes (signature and Apple’s notarization check). Quits a running copy, replaces `/Applications/pikapik.app` (and an old `pikapik.app`), launches it, and opens help for Accessibility and Input Monitoring. `-- --source` builds from source instead.
+**How it works:** `install.sh` (`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"`). Needs macOS 14 or later. Downloads `pikapik.zip` from the latest release and installs it only if `codesign --verify --deep --strict` passes against pikapik’s Developer ID requirement and `spctl --assess` passes (signature and Apple’s notarization check). Quits a running copy, replaces `/Applications/pikapik.app`, launches it, and opens help for Accessibility and Input Monitoring. `-- --source` builds from source instead.
 
 **Nuances:** It refuses to run when the App Store version is in `/Applications`. Test with a copy of the script, stub apps and a fake release URL, never on the real app of someone running the App Store copy.
 

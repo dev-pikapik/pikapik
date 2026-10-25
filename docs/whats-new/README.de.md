@@ -634,7 +634,7 @@ pikapik schaut sich nie an, was du tippst, sondern achtet nur darauf, wie lange 
 
 <sub>1.39.2 · 13. Oktober 2026</sub>
 
-Wenn du deine Einstellungen mit iCloud synchronisierst, liegen sie jetzt in iCloud Drive im Ordner pikapik statt pikapik, und pikapik verschiebt sie von selbst dorthin.
+Wenn du deine Einstellungen mit iCloud synchronisierst, liegen sie jetzt in iCloud Drive im Ordner pikapik, und pikapik verschiebt sie von selbst dorthin.
 
 <img src="../media/icon.png" width="128" height="128" alt="">
 
@@ -1415,7 +1415,7 @@ Die kleinen bewegten Bilder in den Einstellungen haben früher die ganze Seite v
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="../media/new-file-dark.png"><img src="../media/new-file-light.png" width="340" alt=""></picture>
 
-Nach dem Umzug von pikapik zu pikapik konnte der Finder weiter nach der alten App suchen, und „Neue Datei“, „Umwandeln in“ und die anderen Rechtsklick-Befehle taten nichts. pikapik bemerkt das jetzt beim ersten Start und startet den Finder selbst neu, wenn keine Finder-Fenster offen sind und nichts kopiert wird. Sonst bietet eine kurze Zeile auf der Finder-Seite die Taste „Finder neu starten“ an.
+Nach der Umbenennung konnte der Finder weiter nach der alten App suchen, und „Neue Datei“, „Umwandeln in“ und die anderen Rechtsklick-Befehle taten nichts. pikapik bemerkt das jetzt beim ersten Start und startet den Finder selbst neu, wenn keine Finder-Fenster offen sind und nichts kopiert wird. Sonst bietet eine kurze Zeile auf der Finder-Seite die Taste „Finder neu starten“ an.
 
 In den Systemeinstellungen, bei den Apps, die beim Anmelden öffnen, steht jetzt der neue Name pikapik, und die App bleibt eingeschaltet.
 
@@ -1435,7 +1435,7 @@ Schalte es unter Einstellungen › Haustier ein. Es spaziert hinter deinen Fenst
 
 Ab und zu setzt es sich hin und sagt etwas Kurzes. Wenn wirklich eine neue Version erscheint, sagt es dir das einmal, und ein Klick darauf öffnet die Einstellungen, wo das Update wartet.
 
-pikapik heißt jetzt pikapik. Deine Berechtigungen, Einstellungen und Links in Kurzbefehle bleiben, wie sie waren. Wenn du die App mit Homebrew installiert hast, führe einmal `brew update && brew upgrade --cask pikapik` aus.
+Mit dem neuen Namen bleiben deine Berechtigungen, Einstellungen und Links in Kurzbefehle, wie sie waren. Wenn du die App mit Homebrew installiert hast, führe einmal `brew update && brew upgrade --cask pikapik` aus.
 
 **Ausprobieren:** Einstellungen › Haustier
 
