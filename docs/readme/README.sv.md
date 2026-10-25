@@ -18,7 +18,7 @@
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"
 ```
 
-Kommandot hämtar den senaste versionen från GitHub och installerar den bara om den är signerad av utvecklaren och har klarat Apples kontroll av skadlig programvara. pikapik syns i menyraden högst upp på skärmen. Allt är avstängt tills du själv slår på det.
+Kommandot hämtar den senaste versionen från GitHub och installerar den bara om den är signerad av utvecklaren och har klarat Apples kontroll av skadlig programvara. pikapik syns i menyraden högst upp på skärmen. Bara husdjuret är på från början; alla andra verktyg är avstängda tills du själv slår på dem.
 
 <details>
 <summary>Andra sätt: Homebrew eller en dmg-fil</summary>
@@ -31,7 +31,7 @@ brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
 
 Eller hämta [pikapik.dmg](https://github.com/dev-pikapik/pikapik/releases/latest/download/pikapik.dmg), öppna filen och dra appen till mappen Program.
 
-Både kommandot ovan och Homebrew lägger appen i `/Applications`, öppnar den, ber om behörigheterna och slår på ”Öppna vid inloggning”. Därefter uppdaterar appen sig själv, se **Uppdateringar**. Hur du tar bort den står under **Avinstallera**.
+Både kommandot ovan och Homebrew lägger appen i `/Applications`, öppnar den och slår på ”Öppna vid inloggning”. Därefter uppdaterar appen sig själv, se **Uppdateringar**. Hur du tar bort den står under **Avinstallera**.
 
 </details>
 
@@ -280,12 +280,12 @@ Både kommandot ovan och Homebrew lägger appen i `/Applications`, öppnar den, 
 <details>
 <summary>Första start</summary>
 
-pikapik behöver två behörigheter. Första gången öppnas inställningarna på sidan Behörigheter, som guidar dig steg för steg, och macOS visar sina egna frågor. Gå till **Systeminställningar › Integritet och säkerhet** och slå på pikapik under:
+Vid första starten öppnar pikapik sina inställningar: välj en sida till vänster och slå på det du behöver. Verktyg som ändrar tangenter, klick eller fönster behöver två behörigheter, och resten fungerar utan dem. Ett verktyg som saknar någon av dem ser halvgrått ut; klicka på det, så visar sidan Behörigheter var du slår på pikapik i **Systeminställningar › Integritet och säkerhet**:
 
-- **Hjälpmedel**, så att appen kan ändra en tangenttryckning eller ett klick innan det når andra appar.
+- **Hjälpmedel** (på macOS 27: **Enhetskontroll och dataåtkomst**), så att appen kan ändra en tangenttryckning eller ett klick innan det når andra appar.
 - **Indataövervakning**, så att appen kan se tangenttryckningar och klick utan att ändra dem. Så fungerar språkbytet.
 
-Appen märker ändringen inom ett par sekunder, ingen omstart behövs.
+Under var och en av de två anger sidan Behörigheter de sidor där du har slagit på verktyg som behöver den. Appen märker ändringen inom ett par sekunder, ingen omstart behövs.
 
 Vissa funktioner ber om mer när du använder dem: **Administratörsåtkomst**, **Finder-tillägg**, **iCloud Drive**, **Full skivåtkomst**, **Skärminspelning** och **Inspelning av systemljud**. Allt finns på sidan Behörigheter i inställningarna: varje behörighet har en rad om vad den är till för, en grön bock eller ett orange kryss och en enda knapp: **Tillåt** när den saknas, **Stäng av** när den är på. Så du kan ta tillbaka vilken behörighet som helst direkt där.
 
@@ -353,8 +353,8 @@ Vissa appar och spel räknar rullning i exakta pixlar: för dem byter du samma i
 pikapik öppnar också sådant som macOS inte kan: RAR, även uppdelat i delar, 7Z med lösenord, delade uppsättningar som .001, .z01, .r00 och .part1.rar, samt ZIPX, CAB, LZH, ARJ, ZST, LZMA, WIM och fler. Dubbelklicka så öppnas de i pikapik. Filnamn i gamla ZIP-filer, till exempel på kyrilliska, japanska eller kinesiska, blir läsbara. Med raden **Öppna arkiv i pikapik** i Inställningar › Finder väljer du i en meny appen för ZIP och 7Z, till exempel pikapik, medan TAR och GZ stannar hos den inbyggda arkivappen, som redan hanterar dem bra. pikapik kan packa upp RAR men inte skapa det: RAR-licensen tillåter bara uppackning.
 
 Ett fönster frågar efter lösenordet, **Stoppa** avbryter vilket jobb som helst, och ur ett skadat eller ofullständigt arkiv plockar pikapik ut det som fortfarande går att läsa. Det frågar innan ett arkiv packas upp som skulle svälla till en enorm storlek, stoppar i tid om disken skulle bli full och blockerar arkiv som försöker skriva utanför sin egen mapp. Markera ett arkiv i Finder och tryck på mellanslag för att se vad som finns i det.
-**Arkiv i versionen från Mac App Store.** De fungerar även där, men med verktygen som är inbyggda i macOS i stället för det medföljande 7-Zip, så det finns begränsningar: bara ZIP kan ha lösenord, inte 7Z; ett arkiv kan inte delas upp i delar, och arkiv i flera delar (.001, .part1.rar, .z01 och liknande) kan inte öppnas; enstaka .xz-, .lzma- och .zst-filer kan inte öppnas (.gz och .bz2 kan); 7Z och RAR med lösenord kan inte öppnas; och raden **Öppna arkiv i pikapik** finns inte. Första gången ber pikapik om åtkomst till din hemmapp, som för Ny fil och Mindre kopia, eftersom den här versionen bara får skriva där du har tillåtit det. Slå på Finder-tillägget i Systeminställningar › Allmänt › Startobjekt och tillägg; pikapik visar var du ska klicka.
 
+**Arkiv i versionen från Mac App Store.** De fungerar även där, men med verktygen som är inbyggda i macOS i stället för det medföljande 7-Zip, så det finns begränsningar: bara ZIP kan ha lösenord, inte 7Z; ett arkiv kan inte delas upp i delar, och arkiv i flera delar (.001, .part1.rar, .z01 och liknande) kan inte öppnas; enstaka .xz-, .lzma- och .zst-filer kan inte öppnas (.gz och .bz2 kan); 7Z och RAR med lösenord kan inte öppnas; och raden **Öppna arkiv i pikapik** finns inte. Första gången ber pikapik om åtkomst till din hemmapp, som för Ny fil och Mindre kopia, eftersom den här versionen bara får skriva där du har tillåtit det. Slå på Finder-tillägget i Systeminställningar › Allmänt › Startobjekt och tillägg; pikapik visar var du ska klicka.
 
 **Göm skrivbordssymboler.** Slå på det före ett samtal, en skärminspelning eller en skärmbild, så försvinner filerna och mapparna från skrivbordet. Slå av det, så kommer de tillbaka till samma platser. Inget flyttas: filerna ligger kvar i mappen Skrivbord i Finder. Det är inställningen **Visa objekt › På skrivbordet** i Systeminställningar › Skrivbord och Dock, fast närmare till hands, så de två stämmer alltid överens. I versionen från Mac App Store täcker den här raden i stället symbolerna med bakgrundsbilden på varje skärm, eller med en enfärgad yta om bakgrundsbilden rör sig, och klick når fortfarande skrivbordet. I Inställningar öppnar knappen **Öppna** under den fortfarande den sidan i Systeminställningar.
 
@@ -362,13 +362,11 @@ Ett fönster frågar efter lösenordet, **Stoppa** avbryter vilket jobb som hels
 
 **Spelläge.** Lägg till dina spel, så drar din Mac inte ut dig ur spelet medan du spelar. Spotlight, Siri, ⌘Tab, Mission Control och svep mellan skrivbord öppnas inte ovanpå spelet, ⌘Q och ⌘W stänger det inte av misstag, pekaren glider inte till Dock, menyraden eller en annan skärm, och skärmen förblir på. Om du håller Skift intryckt byter mushjulet fortfarande plats i snabbfältet. Var och en av dessa har ett eget reglage på sidan Spel, och pikapik föreslår spel som det hittar på din Mac. I ett spel förblir kontroll-klick ett vanligt klick, och kontroll med pilar byter inte skrivbord. Minecraft känns också igen: lägg till Minecraft Launcher eller CurseForge, så slås läget på i själva Minecraft. Tryck på ⇧⌘Q för att lämna ett spel och på ⇧⌘W för att stänga dess fönster. ⌥⌘Esc fungerar alltid. Så fort du lämnar spelet fungerar allt som vanligt. Av som standard.
 
-Slå på Spelläge och spela. Fler spelinställningar innehåller Macens katalog med aktuella tangenter och en animerad förhandsvisning för varje åtgärd.
+**Fler spelinställningar** på sidan Spel visar kortkommandona som din Mac tillhandahåller, med deras aktuella tangenter och en animerad förhandsvisning av varje åtgärd. För vart och ett väljer du **Följ spellägets regler**, **Inaktivera i spel** eller **Tillåt i spel**. Ett kortkommando för språkbyte kan också ställas in på **Byt språk vid varje tryck**: ett snabbt, avsiktligt tryck byter inmatningskälla utan att något öppnas ovanpå spelet, och tangenter som du håller ned för att springa eller hoppa behåller företräde, så att språket inte byts av misstag.
 
-Automatiskt pausar åtgärder som öppnar fönster eller flyttar fokus. En kort avsiktlig språkgenväg byter källa utan systemfönster. Nedhållna rörelsetangenter går först, så att springa och hoppa inte byter språk av misstag.
+I **Fler spelinställningar** visar gruppen **Mus och styrplatta** bara det som är aktiverat i macOS på din Mac, med Apples egna namn och en liten teckning för varje: kortkommandon på en musknapp, svep mellan skrivbord och appar i helskärm, Mission Control och App Exposé, nyp för appar och sprid fingrarna för skrivbordet, svep från högerkanten för Notiscenter och varje aktivt hörn med sin åtgärd. Medan ett spel är i förgrunden är de pausade, så ett oavsiktligt svep eller en snabb beröring av ett skärmhörn tar dig inte ut ur spelet. Gester inne i spelet fortsätter att fungera. Var och en kan ställas in så att den fungerar som vanligt. I versionen från webbplatsen väljer du med **Ändra…** vid ett hörn en annan åtgärd direkt där, och **Lägg tillbaka** ger tillbaka den första; varje ändring startar om Dock en gång.
 
-Under Inställningar → Spel → Fler spelinställningar finns gruppen ”Mus och styrplatta”. Den visar bara det som är aktiverat i macOS på din Mac, med Apples egna namn och en liten teckning för varje: kortkommandon på en musknapp, svep mellan skrivbord och appar i helskärm, Mission Control och App Exposé, nyp för appar och sprid fingrarna för skrivbordet, svep från högerkanten för Aviseringscenter och varje aktivt hörn med sin åtgärd. Medan ett spel är i förgrunden är de pausade, så ett oavsiktligt svep eller en snabb beröring av ett skärmhörn tar dig inte ut ur spelet. Gester inne i spelet fungerar som vanligt. Var och en kan ställas in så att den fungerar som vanligt. I versionen från webbplatsen väljer du med **Ändra…** vid ett hörn en annan åtgärd direkt där, och **Lägg tillbaka** ger tillbaka den första; varje ändring startar om Dock en gång.
-
-Öppna Inställningar → Spel → Lägg till ett spel och klicka på spelet som körs. Spel via Java och andra miljöer visas också, även utan en .app-fil. Minecraft heter Minecraft i stället för java. Hitta spelets process och dra raden till Dina spel i Inställningar → Spel.
+För att lägga till ett spel klickar du på **Lägg till spel…** på sidan Spel och sedan på ditt spel bland de öppna apparna eller apparna i Dock. Ett spel som körs via Java eller en annan körmiljö och inte har någon egen app visas också där, och Minecraft heter Minecraft i stället för java. Du kan också dra ett spel från Finder till listan, eller spelets rad från Aktivitetskontroll.
 
 **Visa FPS.** FPS betyder bilder per sekund: hur många bilder spelet ritar varje sekund. Slå på **Visa FPS** på sidan Spel, så visas en liten mörk etikett med det talet i ett hörn av alla spel så länge Spelläge är på. Välj hörn genom att klicka på det i bilden ovanför reglaget. Ett streck betyder att de första bilderna inte har kommit ännu, och en blek 0 att spelet har slutat rita. På macOS 27 räknar macOS själv de flesta spel, utan behörighet. Ett spel som macOS inte kan räkna, oftast ett äldre, räknas via skärminspelning: då dyker raden **Skärminspelning** upp på sidan Behörigheter, pikapik ber aldrig om den under ett spel och siffran kan inte bli högre än skärmens uppdateringsfrekvens. På macOS 14–26 och i versionen från Mac App Store räknas alla spel så, så raden dyker upp så fort du slår på **Visa FPS**, och knappen **Tillåt** under reglaget tar dig dit. Ingen bild sparas eller skickas. Av som standard.
 
@@ -419,7 +417,7 @@ Visar hur snabbt ditt internet är just nu. Klicka på **Testa hastigheten** und
 
 Öppna inställningarna från menyn med **Inställningar…** eller ⌘, eller starta pikapik igen från Finder, Launchpad eller Spotlight. Medan fönstret är öppet syns appen i Dock och i ⌘Tab.
 
-- **Allmänt**: öppna vid inloggning, utseende (System, Ljust eller Mörkt), språk, uppdateringar och säkerhetskopia: exportera och importera inställningar som en fil, eller synkronisera dem via iCloud Drive.
+- **Allmänt**: öppna vid inloggning, fortsätta i bakgrunden efter Avsluta, utseende (System, Ljust eller Mörkt), språk och säkerhetskopia: exportera och importera inställningar som en fil, eller synkronisera dem via iCloud Drive.
 - **Batteri**: laddning, tid till fulladdat eller återstående tid, skick, maximal kapacitet, cykelantal, strömadapter och effekt i watt samt tips för att batteriet ska räcka längre. Sidan visar bara information: laddningsbegränsningen finns kvar i **Systeminställningar › Batteri**. Visas bara på en Mac med batteri.
 - **Håll vaken**: tid, alternativ för skärm och lock.
 - **Ljusstyrka**: ett reglage för varje bildskärm som macOS inte kan justera själv, ljusstyrketangenterna och att dämpa bilden i stället.
@@ -433,13 +431,14 @@ Visar hur snabbt ditt internet är just nu. Klicka på **Testa hastigheten** und
 - **Fönster**: förstora med gröna knappen (med en lista över undantag), skydd för ⌘Q och ⌘W, och avsluta vid sista fönstret (med en lista över undantag).
 - **Dock**: minimera eller göm med ett klick i Dock och håll Dock på en skärm.
 - **Finder**: ny fil, mindre kopia, konvertering och arkiv, öppna med Retur, klipp ut med ⌘X, radera med ⌫, göm skrivbordssymboler och visa gömda filer.
+- **Animationer**: hur snabbt fönster, Snabbtitt och Finder animeras (ända till direkt), när och hur snabbt det gömda Dock glider fram, minimeringseffekten och studsande symboler i Dock.
 - **Spelare**: öppna en video i ett eget fönster, formaten den spelar upp, en meny för att välja app för varje format och licenserna för FFmpeg, dav1d, libass, FreeType, HarfBuzz och FriBidi.
 - **Ta bort appar**: ta bort en app med dess filer, lägg tillbaka allt senare och städa upp efter borttagna appar.
 - **Bakgrundsuppgifter**: allt som körs i bakgrunden, vilken app som lade till det och en knapp för att stänga av dem och slå på dem igen utan att öppna Systeminställningar.
 - **Spel**: din lista med spel och alternativen för Spelläge.
 - **Husdjur**: slå på eller av husdjuret, låt det prata, följa din rytm och leka med bollen, klä på det och se dina utmärkelser.
-- **Behörigheter**: alla behörigheter som pikapik använder, var och en med sin status och en knapp för att tillåta eller stänga av den. Ett verktyg som saknar en behörighet ser halvgrått ut, och ett klick på det öppnar den här sidan vid rätt rad.
-- **Om**: version, länkar till ändringsloggen och för att rapportera ett problem.
+- **Behörigheter**: alla behörigheter som pikapik använder, var och en med sin status och en knapp för att tillåta eller stänga av den; de två viktigaste anger också de sidor vars verktyg behöver dem. Ett verktyg som saknar en behörighet ser halvgrått ut, och ett klick på det öppnar den här sidan vid rätt rad.
+- **Om**: version och uppdateringar, länkar till ändringsloggen och för att rapportera ett problem.
 
 Många inställningar har en liten bild som visar vad de gör, till exempel en Mac som förblir vaken eller ett fönster som göms bakom Dock. Bilden ändras tillsammans med reglaget och står stilla när ”Reducera rörelser” är aktiverat i Systeminställningar.
 
@@ -454,11 +453,11 @@ Varje sida har knappen **Återställ förval…** längst ned. Den frågar förs
 <details>
 <summary>Uppdateringar</summary>
 
-pikapik söker efter nya versioner vid start och var 6:e timme. Du kan stänga av det under Inställningar › Allmänt. När en ny version finns visas knappen **Uppdatera till …** i menyn: ett klick så hämtar appen uppdateringen, installerar den och startar om. Du kan också söka själv med **Sök nu** under Inställningar › Allmänt.
+pikapik söker efter nya versioner vid start och var 6:e timme. Du kan stänga av det under Inställningar › Om. När en ny version finns visas knappen **Uppdatera till …** i menyn: ett klick så hämtar appen uppdateringen, installerar den och startar om. Du kan också söka själv med **Sök nu** under Inställningar › Om.
 
 Med Homebrew kan du också köra `brew upgrade --cask pikapik`.
 
-Sedan version 1.3 finns behörigheterna kvar efter uppdateringar.
+Behörigheterna finns kvar efter uppdateringar.
 
 </details>
 
@@ -479,7 +478,7 @@ Båda avslutar appen, tar bort den från inloggningsobjekten och raderar den. Sk
 <summary>Vanliga frågor</summary>
 
 **Varför behövs två behörigheter?**
-macOS delar upp åtkomsten till tangentbord och mus i två delar. Hjälpmedel låter appen ändra en tangenttryckning eller ett klick, och de flesta funktioner behöver bara det. Indataövervakning låter den bara titta, och det räcker för att byta språk.
+macOS delar upp åtkomsten till tangentbord och mus i två delar. Hjälpmedel (Enhetskontroll och dataåtkomst på macOS 27) låter appen ändra en tangenttryckning eller ett klick, och de flesta funktioner behöver bara det. Indataövervakning låter den bara titta, och det räcker för att byta språk.
 
 **macOS säger att appen kommer från en oidentifierad utvecklare.**
 pikapik är signerad av utvecklaren och klarar Apples kontroll av skadlig programvara, så det här meddelandet bör inte visas. Om det ändå visas öppnar du **Systeminställningar › Integritet och säkerhet** och klickar på **Öppna ändå**.

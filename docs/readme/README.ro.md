@@ -18,7 +18,7 @@ Deschide Terminal, lipește această linie și apasă Retur:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"
 ```
 
-Comanda descarcă cea mai recentă versiune de pe GitHub și o instalează doar dacă este semnată de dezvoltator și a trecut de verificarea Apple pentru software rău intenționat. pikapik apare în bara de meniu, sus pe ecran. Totul rămâne oprit până îl pornești tu.
+Comanda descarcă cea mai recentă versiune de pe GitHub și o instalează doar dacă este semnată de dezvoltator și a trecut de verificarea Apple pentru software rău intenționat. pikapik apare în bara de meniu, sus pe ecran. Doar animăluțul pornește singur; toate celelalte instrumente rămân oprite până le pornești tu.
 
 <details>
 <summary>Alte variante: Homebrew sau un dmg</summary>
@@ -31,7 +31,7 @@ brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
 
 Sau descarcă [pikapik.dmg](https://github.com/dev-pikapik/pikapik/releases/latest/download/pikapik.dmg), deschide-l și trage aplicația în dosarul Aplicații.
 
-Atât comanda de mai sus, cât și Homebrew pun aplicația în `/Applications`, o pornesc, cer permisiunile și activează deschiderea la autentificare. După aceea, aplicația se actualizează singură, vezi **Actualizări**. Pentru a o elimina, vezi **Dezinstalare**.
+Atât comanda de mai sus, cât și Homebrew pun aplicația în `/Applications`, o pornesc și activează deschiderea la autentificare. După aceea, aplicația se actualizează singură, vezi **Actualizări**. Pentru a o elimina, vezi **Dezinstalare**.
 
 </details>
 
@@ -280,12 +280,12 @@ Atât comanda de mai sus, cât și Homebrew pun aplicația în `/Applications`, 
 <details>
 <summary>Prima pornire</summary>
 
-pikapik are nevoie de două permisiuni. La prima pornire, deschide configurările pe pagina Permisiuni, care te ghidează pas cu pas, iar macOS afișează propriile solicitări. Mergi la **Configurări sistem › Confidențialitate și securitate** și activează pikapik în:
+La prima pornire, pikapik își deschide configurările: alege o pagină din stânga și activează ce îți trebuie. Instrumentele care modifică apăsările de taste, clicurile sau ferestrele au nevoie de două permisiuni, iar restul funcționează și fără ele. Un instrument căruia îi lipsește una dintre ele apare în gri; dă clic pe el, iar pagina Permisiuni îți arată unde să activezi pikapik în **Configurări sistem › Confidențialitate și securitate**:
 
-- **Accesibilitate**, ca aplicația să poată modifica o apăsare de tastă sau un clic înainte să ajungă la alte aplicații.
+- **Accesibilitate** (pe macOS 27: **Control al dispozitivului și acces la date**), ca aplicația să poată modifica o apăsare de tastă sau un clic înainte să ajungă la alte aplicații.
 - **Monitorizare intrare**, ca aplicația să poată vedea apăsările de taste și clicurile fără să le modifice. Așa funcționează schimbarea limbii.
 
-Aplicația observă schimbarea în câteva secunde, fără repornire.
+Sub fiecare dintre cele două, pagina Permisiuni arată paginile în care ai pornit instrumente care au nevoie de ea. Aplicația observă schimbarea în câteva secunde, fără repornire.
 
 Unele funcții cer mai mult atunci când le folosești: **Acces de administrator**, **Extensii Finder**, **iCloud Drive**, **Acces complet la disc**, **Înregistrare ecran** și **Înregistrarea audio a sistemului**. Toate sunt pe pagina Permisiuni din configurări: fiecare permisiune are un rând care spune la ce servește, o bifă verde sau o cruce portocalie și un singur buton: **Permite** când lipsește, **Stinge** când e activă. Așa poți retrage orice permisiune chiar acolo.
 
@@ -353,8 +353,8 @@ Unele aplicații și jocuri măsoară derularea în pixeli exacți: pentru ele, 
 pikapik deschide și ce nu poate deschide macOS: RAR, chiar împărțit în părți, 7Z cu parolă, seturi de părți ca .001, .z01, .r00 și .part1.rar, plus ZIPX, CAB, LZH, ARJ, ZST, LZMA, WIM și altele. Un dublu clic le deschide în pikapik. Numele fișierelor din ZIP-urile vechi, de exemplu în chirilică, japoneză sau chineză, ies lizibile. Rândul **Deschide arhivele în pikapik**, din Setări › Finder, îți lasă să alegi dintr-un meniu aplicația pentru ZIP și 7Z, de exemplu pikapik, iar TAR și GZ rămân la aplicația de arhive integrată, care le tratează deja bine. pikapik extrage RAR, dar nu creează RAR: licența RAR permite doar extragerea.
 
 O fereastră cere parola, **Oprește** anulează orice lucrare, iar dintr-o arhivă deteriorată sau neterminată pikapik scoate ce se mai poate citi. Te întreabă înainte să extragă o arhivă care ar ajunge la o dimensiune uriașă, se oprește la timp dacă discul s-ar umple și blochează arhivele care încearcă să scrie în afara propriului folder. Apasă Spațiu pe o arhivă în Finder ca să vezi ce conține.
-**Arhive în versiunea din Mac App Store.** Funcționează și acolo, dar cu uneltele încorporate în macOS în loc de 7-Zip-ul inclus, așa că are limite: doar ZIP poate avea parolă, nu și 7Z; o arhivă nu poate fi împărțită în părți, iar arhivele în mai multe părți (.001, .part1.rar, .z01 și altele asemănătoare) nu pot fi deschise; fișierele singure .xz, .lzma și .zst nu pot fi deschise (.gz și .bz2 pot); 7Z și RAR cu parolă nu pot fi deschise; și nu există rândul **Deschide arhivele în pikapik**. Prima dată, pikapik cere acces la folderul tău principal, ca la Fișier nou și Copie mai mică, pentru că această versiune poate scrie doar unde ai permis. Pornește extensia Finder din Configurări sistem › General › Articole de autentificare și extensii; pikapik arată unde să dai clic.
 
+**Arhive în versiunea din Mac App Store.** Funcționează și acolo, dar cu uneltele încorporate în macOS în loc de 7-Zip-ul inclus, așa că are limite: doar ZIP poate avea parolă, nu și 7Z; o arhivă nu poate fi împărțită în părți, iar arhivele în mai multe părți (.001, .part1.rar, .z01 și altele asemănătoare) nu pot fi deschise; fișierele singure .xz, .lzma și .zst nu pot fi deschise (.gz și .bz2 pot); 7Z și RAR cu parolă nu pot fi deschise; și nu există rândul **Deschide arhivele în pikapik**. Prima dată, pikapik cere acces la folderul tău principal, ca la Fișier nou și Copie mai mică, pentru că această versiune poate scrie doar unde ai permis. Pornește extensia Finder din Configurări sistem › General › Articole de autentificare și extensii; pikapik arată unde să dai clic.
 
 **Ascunde pictogramele de pe desktop.** Pornește-l înainte de un apel, o înregistrare a ecranului sau o captură de ecran, iar fișierele și folderele de pe desktop dispar. Oprește-l, iar ele revin la aceleași locuri. Nu se mută nimic: fișierele rămân în folderul Desktop din Finder. E configurarea **Afișare articole › Pe desktop** din Configurări sistem › Desktop și Dock, doar mai la îndemână, așa că cele două se potrivesc mereu. În versiunea din Mac App Store, acest rând acoperă în schimb pictogramele cu imaginea ta de fundal pe fiecare ecran, sau cu o culoare simplă dacă imaginea de fundal este animată, iar clicurile ajung în continuare pe desktop. În Setări, butonul **Deschide** de dedesubt deschide în continuare acea pagină din Configurări sistem.
 
@@ -362,13 +362,11 @@ O fereastră cere parola, **Oprește** anulează orice lucrare, iar dintr-o arhi
 
 **Modul Joc.** Adaugă-ți jocurile și, cât timp joci, Mac-ul nu te scoate din joc. Spotlight, Siri, ⌘Tab, Mission Control și glisările între birouri nu se deschid peste joc, ⌘Q și ⌘W nu îl închid din greșeală, cursorul nu alunecă spre Dock, bara de meniu sau alt ecran, iar ecranul rămâne aprins. Ține apăsat Shift în joc, iar rotița mausului tot schimbă sloturile din bara rapidă. Fiecare dintre acestea are propriul comutator pe pagina Jocuri, iar pikapik îți sugerează jocurile pe care le găsește pe Mac. În joc, Control-clic rămâne un clic obișnuit, iar Control cu săgețile nu schimbă desktopul. Recunoaște și Minecraft: adaugă Minecraft Launcher sau CurseForge, iar modul pornește chiar în Minecraft. Ca să ieși dintr-un joc, apasă ⇧⌘Q, iar ca să-i închizi fereastra, ⇧⌘W. ⌥⌘Esc merge mereu. Imediat ce ieși din joc, totul merge ca de obicei. Implicit dezactivat.
 
-Activează modul Joc și joacă. Configurările suplimentare au catalogul publicat de Mac, tastele actuale și o previzualizare animată pentru fiecare acțiune.
+Secțiunea **Mai multe configurări de joc** de pe pagina Jocuri arată scurtăturile de sistem ale Mac-ului tău, cu tastele lor actuale și o previzualizare animată pentru fiecare acțiune. Pentru fiecare dintre ele poți alege **Urmează regulile modului de joc**, **Dezactivează în jocuri** sau **Permite în jocuri**. O scurtătură de limbă are în plus opțiunea **Schimbă limba la fiecare apăsare**: o apăsare rapidă și intenționată schimbă sursa de intrare fără să deschidă nimic peste joc, iar tastele pe care le ții apăsate ca să alergi sau să sari își păstrează prioritatea, așa că limba nu se schimbă din greșeală.
 
-Automat oprește acțiunile care deschid ferestre sau mută focalizarea. O scurtătură de limbă rapidă și intenționată schimbă sursa fără fereastra sistemului. Tastele de mișcare ținute au prioritate, astfel că alergarea și salturile nu schimbă limba accidental.
+În secțiunea **Mai multe configurări de joc**, grupul **Mouse și trackpad** arată doar ce este activat în macOS pe Mac-ul tău, cu numele date de Apple și un desen mic pentru fiecare: scurtături pe un buton al mouse-ului, glisarea între desktopuri și aplicații pe tot ecranul, Mission Control și App Exposé, ciupirea pentru aplicații și îndepărtarea degetelor pentru desktop, glisarea de la marginea dreaptă pentru Centrul de notificări și fiecare colț activ cu acțiunea lui. Cât timp un joc este în prim-plan, acestea sunt suspendate, așa că o glisare accidentală sau o atingere a unui colț al ecranului nu te scoate din joc. Gesturile din interiorul jocului continuă să funcționeze. Fiecare element poate fi setat să funcționeze ca de obicei. În versiunea de pe site, **Modificați…** la un colț activ îi alege chiar acolo altă acțiune, iar **Puneți la loc** o readuce pe prima; fiecare modificare repornește Dock-ul o dată.
 
-În Configurări → Jocuri → Mai multe configurări de joc există grupul „Mouse și trackpad”. Arată doar ce este activat în macOS pe Mac-ul tău, cu numele date de Apple și un desen mic pentru fiecare: scurtături pe un buton al mouse-ului, glisarea între desktopuri și aplicații pe tot ecranul, Mission Control și App Exposé, ciupirea pentru aplicații și îndepărtarea degetelor pentru desktop, glisarea de la marginea dreaptă pentru Centrul de notificări și fiecare colț activ cu acțiunea lui. Cât timp un joc este în prim-plan, acestea sunt oprite, așa că o glisare accidentală sau o atingere a unui colț al ecranului nu te scoate din joc. Gesturile din interiorul jocului continuă să funcționeze. Fiecare poate fi setat să funcționeze ca de obicei. În versiunea de pe site, **Modifică…** la un colț activ alege chiar acolo altă acțiune, iar **Pune la loc** o readuce pe prima; fiecare modificare repornește Dock-ul o dată.
-
-Deschide Configurări → Jocuri → Adaugă un joc și apasă pe jocul pornit. Apar și jocurile care folosesc Java sau alte medii, chiar fără un fișier .app. Minecraft apare ca Minecraft, nu java. Găsește procesul jocului și trage rândul pe Jocurile tale în Configurări → Jocuri.
+Ca să adaugi un joc, apasă butonul **Adăugați un joc…** de pe pagina Jocuri, apoi dă clic pe jocul tău printre aplicațiile deschise sau cele din Dock. Acolo găsești și un joc care rulează prin Java sau alt mediu și nu are o aplicație proprie, iar Minecraft apare ca Minecraft, nu java. Poți și să tragi pe listă un joc din Finder sau rândul lui din Monitor activitate.
 
 **Afișează FPS.** FPS înseamnă cadre pe secundă: câte imagini desenează jocul în fiecare secundă. Activează **Afișează FPS** pe pagina Jocuri și, cât timp Modul Joc este pornit, o mică etichetă închisă la culoare, cu acest număr, apare într-un colț al oricărui joc. Apasă pe un colț în imaginea de deasupra comutatorului ca să-l alegi. O liniuță înseamnă că primele cadre nu au ajuns încă, iar un 0 estompat înseamnă că jocul a încetat să deseneze. Pe macOS 27, cele mai multe jocuri sunt numărate chiar de macOS, fără nicio permisiune. Un joc pe care macOS nu-l poate număra, de obicei unul mai vechi, este numărat prin înregistrarea ecranului: atunci apare pe pagina Permisiuni rândul **Înregistrare ecran**, pikapik nu cere niciodată permisiunea în timpul unui joc, iar numărul nu poate depăși rata de reîmprospătare a ecranului. Pe macOS 14–26 și în versiunea din Mac App Store toate jocurile sunt numărate astfel, de aceea rândul apare imediat ce pornești **Afișează FPS**, iar butonul **Permite** de sub comutator te duce la el. Nicio imagine nu este păstrată sau trimisă. Oprit implicit.
 
@@ -419,7 +417,7 @@ Arată cât de rapid e internetul tău acum. Apasă **Verifică viteza** în Set
 
 Deschide configurările din meniu cu **Configurări…** sau ⌘, ori pornește din nou pikapik din Finder, Launchpad sau Spotlight. Cât timp fereastra este deschisă, aplicația apare în Dock și în ⌘Tab.
 
-- **General**: deschidere la autentificare, aspect (Sistem, Luminos sau Întunecat), limbă, actualizări și copie de siguranță: exportă și importă configurările ca fișier sau sincronizează-le prin iCloud Drive.
+- **General**: deschidere la autentificare, rămânere în fundal după „Ieșiți”, aspect (Sistem, Luminos sau Întunecat), limbă și copie de siguranță: exportă și importă configurările ca fișier sau sincronizează-le prin iCloud Drive.
 - **Baterie**: nivel de încărcare, timp până la încărcarea completă sau timp rămas, stare, capacitate maximă, număr de cicluri, adaptor alimentare și putere în wați, plus sfaturi ca bateria să țină mai mult. Pagina doar arată informații: limita de încărcare rămâne în **Configurări sistem › Baterie**. Apare doar pe un Mac cu baterie.
 - **Menține activ**: durată, opțiuni pentru ecran și capac.
 - **Luminozitate**: un glisor pentru fiecare monitor pe care macOS nu îl poate regla singur, tastele de luminozitate și opțiunea de a întuneca imaginea în schimb.
@@ -433,13 +431,14 @@ Deschide configurările din meniu cu **Configurări…** sau ⌘, ori pornește 
 - **Ferestre**: mărire cu butonul verde (cu o listă de excepții), protecție pentru ⌘Q și ⌘W, și ieșire la ultima fereastră (cu o listă de excepții).
 - **Dock**: minimizare sau ascundere cu un clic în Dock și ținerea Dock-ului pe un singur ecran.
 - **Finder**: fișier nou, copie mai mică, conversie și arhive, deschidere cu Return, decupare cu ⌘X, ștergere cu ⌫, ascunderea pictogramelor de pe desktop și afișarea fișierelor ascunse.
+- **Animații**: viteza animațiilor pentru ferestre, Privirea rapidă și Finder (până la instantaneu), când și cât de repede apare Dock-ul ascuns, efectul de minimizare și pictogramele din Dock care sar.
 - **Player**: deschiderea unui video într-o fereastră proprie, formatele pe care le redă, un meniu pentru a alege aplicația fiecărui format și licențele FFmpeg, dav1d, libass, FreeType, HarfBuzz și FriBidi.
 - **Eliminare aplicații**: elimină o aplicație împreună cu fișierele ei, pune totul la loc mai târziu și curăță ce au lăsat în urmă aplicațiile eliminate.
 - **Sarcini în fundal**: tot ce rulează în fundal, ce aplicație l-a adăugat și un buton ca să le oprești și să le pornești din nou fără să deschizi Configurări sistem.
 - **Jocuri**: lista jocurilor tale și opțiunile Modulului Joc.
 - **Animăluț**: pornit sau oprit, vorbit, viață în ritmul tău și minge, garderoba și premiile.
-- **Permisiuni**: toate permisiunile pe care le folosește pikapik, fiecare cu starea ei și cu un buton pentru a o permite sau a o stinge. Un instrument căruia îi lipsește o permisiune apare în gri, iar un clic pe el deschide această pagină la rândul potrivit.
-- **Despre**: versiune, linkuri către lista de modificări și pentru raportarea unei probleme.
+- **Permisiuni**: toate permisiunile pe care le folosește pikapik, fiecare cu starea ei și cu un buton pentru a o permite sau a o stinge; la cele două principale apar și paginile ale căror instrumente au nevoie de ele. Un instrument căruia îi lipsește o permisiune apare în gri, iar un clic pe el deschide această pagină la rândul potrivit.
+- **Despre**: versiune și actualizări, linkuri către lista de modificări și pentru raportarea unei probleme.
 
 Multe setări au o imagine mică ce arată ce fac, de exemplu un Mac care rămâne treaz sau o fereastră care se ascunde în spatele Dock-ului. Imaginea se schimbă odată cu comutatorul și stă pe loc când „Reducere mișcare” este activată în Configurări sistem.
 
@@ -454,11 +453,11 @@ Fiecare pagină are jos un buton **Restaurează valorile implicite…**. Întrea
 <details>
 <summary>Actualizări</summary>
 
-pikapik caută versiuni noi la pornire și la fiecare 6 ore. Poți dezactiva asta în Configurări › General. Când apare o versiune nouă, în meniu apare butonul **Actualizează la …**: un clic, iar aplicația descarcă actualizarea, o instalează și repornește. Poți verifica și manual cu **Verifică acum** în Configurări › General.
+pikapik caută versiuni noi la pornire și la fiecare 6 ore. Poți dezactiva asta în Configurări › Despre. Când apare o versiune nouă, în meniu apare butonul **Actualizează la …**: un clic, iar aplicația descarcă actualizarea, o instalează și repornește. Poți verifica și manual cu **Verificați acum** în Configurări › Despre.
 
 Cu Homebrew poți rula și `brew upgrade --cask pikapik`.
 
-Începând cu versiunea 1.3, permisiunile rămân valabile după actualizări.
+Permisiunile rămân valabile după actualizări.
 
 </details>
 
@@ -479,7 +478,7 @@ Ambele închid aplicația, o scot din articolele de autentificare și o șterg. 
 <summary>Întrebări frecvente</summary>
 
 **De ce are nevoie de două permisiuni?**
-macOS împarte accesul la tastatură și mouse în două. Accesibilitatea îi permite aplicației să modifice o apăsare de tastă sau un clic, iar majorității funcțiilor doar asta le trebuie. Monitorizarea intrării îi permite doar să urmărească, iar pentru schimbarea limbii e de ajuns.
+macOS împarte accesul la tastatură și mouse în două. Accesibilitatea („Control al dispozitivului și acces la date” pe macOS 27) îi permite aplicației să modifice o apăsare de tastă sau un clic, iar majorității funcțiilor doar asta le trebuie. Monitorizarea intrării îi permite doar să urmărească, iar pentru schimbarea limbii e de ajuns.
 
 **macOS spune că aplicația provine de la un dezvoltator neidentificat.**
 pikapik este semnată de dezvoltator și trece de verificarea Apple pentru software rău intenționat, așa că acest mesaj nu ar trebui să apară. Dacă apare totuși, deschide **Configurări sistem › Confidențialitate și securitate** și dă clic pe **Deschide oricum**.

@@ -18,7 +18,7 @@ Otevřete Terminál, vložte tento řádek a stiskněte Return:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"
 ```
 
-Příkaz stáhne nejnovější verzi z GitHubu a nainstaluje ji, jen pokud je podepsaná vývojářem a prošla kontrolou společnosti Apple na škodlivý software. pikapik najdete v řádku nabídek nahoře na obrazovce. Vše je vypnuté, dokud to sami nezapnete.
+Příkaz stáhne nejnovější verzi z GitHubu a nainstaluje ji, jen pokud je podepsaná vývojářem a prošla kontrolou společnosti Apple na škodlivý software. pikapik najdete v řádku nabídek nahoře na obrazovce. Jen mazlíček se zapne sám; všechny ostatní nástroje zůstanou vypnuté, dokud je nezapnete.
 
 <details>
 <summary>Jiné způsoby: Homebrew nebo dmg</summary>
@@ -31,7 +31,7 @@ brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
 
 Nebo si stáhněte [pikapik.dmg](https://github.com/dev-pikapik/pikapik/releases/latest/download/pikapik.dmg), otevřete ho a přetáhněte aplikaci do složky Aplikace.
 
-Výše uvedený příkaz i Homebrew uloží aplikaci do `/Applications`, spustí ji, požádají o oprávnění a zapnou otevírání po přihlášení. Potom se aplikace aktualizuje sama, viz **Aktualizace**. Jak ji odstranit, najdete v části **Odinstalace**.
+Výše uvedený příkaz i Homebrew uloží aplikaci do `/Applications`, spustí ji a zapnou otevírání po přihlášení. Potom se aplikace aktualizuje sama, viz **Aktualizace**. Jak ji odstranit, najdete v části **Odinstalace**.
 
 </details>
 
@@ -280,12 +280,12 @@ Výše uvedený příkaz i Homebrew uloží aplikaci do `/Applications`, spustí
 <details>
 <summary>První spuštění</summary>
 
-pikapik potřebuje dvě oprávnění. Při prvním spuštění otevře nastavení na stránce Oprávnění, která vás provede krok za krokem, a macOS zobrazí vlastní dotazy. Přejděte do **Nastavení systému › Soukromí a zabezpečení** a zapněte pikapik v seznamech:
+Při prvním spuštění pikapik otevře své nastavení: vlevo vyberte stránku a zapněte, co potřebujete. Nástroje, které mění chování kláves, kliknutí nebo oken, potřebují dvě oprávnění a ostatní fungují i bez nich. Nástroj, kterému jedno z nich chybí, vypadá napůl šedě; klikněte na něj a stránka Oprávnění ukáže, kde pikapik zapnout v **Nastavení systému › Soukromí a zabezpečení**:
 
-- **Zpřístupnění**, aby aplikace mohla změnit stisk klávesy nebo kliknutí dřív, než se dostane k jiným aplikacím.
+- **Zpřístupnění** (v macOS 27: **Ovládání zařízení a přístup k datům**), aby aplikace mohla změnit stisk klávesy nebo kliknutí dřív, než se dostane k jiným aplikacím.
 - **Sledování vstupu**, aby aplikace viděla stisky kláves a kliknutí, aniž by je měnila. Tak funguje přepínání jazyka.
 
-Aplikace změnu zaznamená během pár sekund, restart není potřeba.
+Pod každým z obou oprávnění stránka Oprávnění uvádí, na kterých stránkách máte zapnuté nástroje, které ho potřebují. Aplikace změnu zaznamená během pár sekund, restart není potřeba.
 
 Některé funkce žádají při použití o něco víc: **Přístup správce**, **Rozšíření Finderu**, **iCloud Drive**, **Úplný přístup k disku**, **Záznam obrazovky** a **Nahrávání zvuku systému**. Všechno je na stránce Oprávnění v nastavení: každé oprávnění má řádek o tom, k čemu slouží, zelenou fajfku nebo oranžový křížek a jedno tlačítko: **Povolit**, když chybí, **Vypnout**, když je zapnuté. Libovolné oprávnění tak můžete vzít zpět rovnou tam.
 
@@ -353,8 +353,8 @@ Některé aplikace a hry počítají posouvání v přesných pixelech: pro ně 
 pikapik otevře i to, co macOS neotevře: RAR, třeba rozdělený na části, 7Z chráněný heslem, sady částí jako .001, .z01, .r00 a .part1.rar a také ZIPX, CAB, LZH, ARJ, ZST, LZMA, WIM a další. Po dvojkliku je otevře pikapik. Názvy souborů ve starých archivech ZIP, například v azbuce, japonštině nebo čínštině, se zobrazí čitelně. Řádek **Otevírat archivy v pikapik** v Nastavení › Finder umožňuje vybrat z nabídky aplikaci pro ZIP a 7Z, například pikapik, zatímco TAR a GZ zůstanou u vestavěné aplikace pro archivy, která si s nimi už dobře poradí. pikapik umí RAR rozbalit, ale nevytvoří ho: licence RAR povoluje jen rozbalování.
 
 Okno se zeptá na heslo, **Zastavit** zruší jakoukoli úlohu a z poškozeného nebo neúplného archivu pikapik vytáhne, co se ještě dá přečíst. Před rozbalením archivu, který by nabobtnal do obrovské velikosti, se zeptá, včas se zastaví, kdyby se měl zaplnit disk, a archivy, které se pokoušejí zapisovat mimo vlastní složku, zablokuje. Vyberte archiv ve Finderu a stiskněte mezerník, abyste viděli, co obsahuje.
-**Archivy ve verzi z Mac App Store.** Fungují i tam, ale s nástroji zabudovanými v macOS místo přibaleného 7-Zipu, proto mají omezení: heslo lze nastavit jen u ZIP, ne u 7Z; archiv nelze rozdělit na části a sady částí (.001, .part1.rar, .z01 a podobně) nejdou otevřít; samostatné soubory .xz, .lzma a .zst nejdou otevřít (.gz a .bz2 ano); 7Z a RAR chráněné heslem nejdou otevřít; a chybí řádek **Otevírat archivy v pikapik**. Poprvé pikapik požádá o přístup k vaší domovské složce, stejně jako u Nového souboru a Menší kopie, protože tato verze smí zapisovat jen tam, kam jste jí to dovolili. Rozšíření pro Finder zapněte v Nastavení systému › Obecné › Položky po přihlášení a rozšíření; pikapik ukáže, kam kliknout.
 
+**Archivy ve verzi z Mac App Store.** Fungují i tam, ale s nástroji zabudovanými v macOS místo přibaleného 7-Zipu, proto mají omezení: heslo lze nastavit jen u ZIP, ne u 7Z; archiv nelze rozdělit na části a sady částí (.001, .part1.rar, .z01 a podobně) nejdou otevřít; samostatné soubory .xz, .lzma a .zst nejdou otevřít (.gz a .bz2 ano); 7Z a RAR chráněné heslem nejdou otevřít; a chybí řádek **Otevírat archivy v pikapik**. Poprvé pikapik požádá o přístup k vaší domovské složce, stejně jako u Nového souboru a Menší kopie, protože tato verze smí zapisovat jen tam, kam jste jí to dovolili. Rozšíření pro Finder zapněte v Nastavení systému › Obecné › Položky po přihlášení a rozšíření; pikapik ukáže, kam kliknout.
 
 **Skrýt ikony na ploše.** Zapněte to před hovorem, nahráváním obrazovky nebo snímkem obrazovky a soubory a složky z plochy zmizí. Vypněte to a vrátí se na stejná místa. Nic se nepřesouvá: soubory zůstávají ve složce Plocha ve Finderu. Je to volba **Zobrazit položky › Na ploše** z Nastavení systému › Plocha a Dock, jen víc po ruce, takže obě vždy souhlasí. Ve verzi z Mac App Store tento řádek místo toho zakryje ikony tapetou na každém displeji, nebo jednolitou barvou, pokud je tapeta pohyblivá, a kliknutí dál procházejí na plochu. Tlačítko **Otevřít** pod ním v Nastavení stále otevře tuto stránku Nastavení systému.
 
@@ -362,13 +362,11 @@ Okno se zeptá na heslo, **Zastavit** zruší jakoukoli úlohu a z poškozeného
 
 **Herní režim.** Přidejte své hry a během hraní vás Mac ze hry nevytrhne. Spotlight, Siri, ⌘Tab, Mission Control a přejetí mezi plochami se neotevřou přes hru, ⌘Q a ⌘W ji omylem nezavřou, ukazatel nesklouzne do Docku, na řádek nabídek ani na jiný displej a obrazovka zůstane zapnutá. I když držíte Shift, kolečko myši dál přepíná sloty lišty. Každá z těchto voleb má vlastní přepínač na stránce Hry a pikapik vám nabídne hry, které na vašem Macu najde. Ve hře zůstane Control-kliknutí obyčejným kliknutím a Control se šipkami nepřepne plochu. Pozná i Minecraft: přidejte Minecraft Launcher nebo CurseForge a režim se zapne přímo v Minecraftu. Hru ukončíte stiskem ⇧⌘Q, její okno zavřete stiskem ⇧⌘W. ⌥⌘Esc funguje vždy. Jakmile hru opustíte, vše funguje jako obvykle. Ve výchozím stavu vypnuto.
 
-Zapněte herní režim a hrajte. Další nastavení hry obsahuje katalog Macu s aktuálními klávesami a animovaným náhledem každé akce.
+Sekce **Další nastavení hry** na stránce Hry ukazuje systémové zkratky vašeho Macu s jejich aktuálními klávesami a animovaným náhledem každé akce. U každé z nich si vyberete **Podle pravidel herního režimu**, **Vypnout ve hrách** nebo **Povolit ve hrách**. Zkratka pro změnu jazyka má navíc volbu **Změnit jazyk při každém stisku**: krátký úmyslný stisk přepne zdroj vstupu, aniž by se přes hru cokoli otevřelo, a klávesy, které držíte při běhu nebo skákání, mají dál přednost, takže se jazyk náhodou nezmění.
 
-Automaticky pozastaví akce otevírající okna nebo měnící fokus. Krátká úmyslná jazyková zkratka změní zdroj bez systémového okna. Držené klávesy pohybu mají přednost, takže běh a skákání nezmění jazyk náhodou.
+V sekci **Další nastavení hry** ukazuje skupina **Myš a trackpad** jen to, co je v macOS na vašem Macu zapnuté, s názvy od Applu a malým obrázkem u každé položky: zkratky na tlačítku myši, přejetí mezi plochami a aplikacemi na celou obrazovku, Mission Control a App Exposé, sevření prstů pro aplikace a rozevření pro plochu, přejetí od pravého okraje pro Oznamovací centrum a každý aktivní roh s jeho akcí. Dokud je hra v popředí, jsou pozastavené, takže nechtěné přejetí nebo dotek rohu obrazovky vás ze hry nevytrhne. Gesta uvnitř hry fungují dál. Každou položku lze nastavit tak, aby fungovala jako obvykle. Ve verzi ze stránek tlačítkem **Změnit…** u aktivního rohu vyberete jinou akci přímo tady a tlačítkem **Vrátit zpět** vrátíte původní; každá změna jednou restartuje Dock.
 
-V Nastavení → Hry → Další nastavení hry je skupina „Myš a trackpad“. Zobrazuje jen to, co je v macOS na vašem Macu zapnuté, s názvy od Applu a malým obrázkem u každé položky: zkratky na tlačítku myši, přejetí mezi plochami a aplikacemi na celou obrazovku, Mission Control a App Exposé, sevření prstů pro aplikace a rozevření pro plochu, přejetí od pravého okraje pro Oznamovací centrum a každý aktivní roh s jeho akcí. Dokud je hra v popředí, jsou pozastavené, takže nechtěné přejetí nebo dotek rohu obrazovky vás z hry nevyvede. Gesta uvnitř hry fungují dál. Každou položku lze nastavit tak, aby fungovala jako obvykle. Ve verzi ze stránek u horkého rohu **Změnit…** vybere jinou akci hned tam a **Vrátit zpět** vrátí původní; každá změna restartuje Dock jednou.
-
-Otevřete Nastavení → Hry → Přidat hru a klikněte na spuštěnou hru. Objeví se i hry přes Javu a jiná prostředí, i bez souboru .app. Minecraft se jmenuje Minecraft místo java. Najděte proces hry a přetáhněte řádek na Vaše hry v Nastavení → Hry.
+Chcete-li přidat hru, klikněte na stránce Hry na **Přidat hru…** a pak na svou hru mezi otevřenými aplikacemi nebo těmi v Docku. Objeví se tam i hra, která běží přes Javu nebo jiné prostředí a nemá vlastní aplikaci, a Minecraft se zobrazí jako Minecraft místo java. Hru můžete do seznamu přetáhnout také z Finderu nebo její řádek z Monitoru aktivity.
 
 **Zobrazit FPS.** FPS znamená snímky za sekundu: kolik obrázků hra nakreslí za jednu sekundu. Zapněte **Zobrazit FPS** na stránce Hry a dokud je zapnutý Herní režim, objeví se v rohu každé hry malý tmavý štítek s tímto číslem. Roh vyberete kliknutím na obrázek nad přepínačem. Pomlčka znamená, že první snímky ještě nedorazily, a pobledlá 0 znamená, že hra přestala kreslit. V macOS 27 většinu her počítá sám macOS, bez jakéhokoli oprávnění. Hru, kterou macOS spočítat neumí, většinou starší, pikapik počítá přes záznam obrazovky: na stránce Oprávnění se pak objeví řádek **Záznam obrazovky**, pikapik o oprávnění nikdy nežádá během hry a číslo nemůže být vyšší než obnovovací frekvence obrazovky. V macOS 14–26 a ve verzi z Mac App Store se tak počítají všechny hry, proto se řádek objeví hned po zapnutí **Zobrazit FPS** a tlačítko **Povolit** pod přepínačem vás k němu zavede. Žádný obraz se neukládá ani neodesílá. Ve výchozím stavu vypnuto.
 
@@ -419,7 +417,7 @@ Ukáže, jak rychlý je váš internet právě teď. Klikněte na **Změřit ryc
 
 Nastavení otevřete z nabídky položkou **Nastavení…** nebo zkratkou ⌘, případně pikapik znovu spusťte z Finderu, Launchpadu nebo Spotlightu. Dokud je okno otevřené, aplikace se zobrazuje v Docku a v ⌘Tab.
 
-- **Obecné**: otevírání po přihlášení, vzhled (Systém, Světlý nebo Tmavý), jazyk, aktualizace a zálohování: export a import nastavení jako souboru nebo synchronizace přes iCloud Drive.
+- **Obecné**: otevírání po přihlášení, běh na pozadí po ukončení, vzhled (Systém, Světlý nebo Tmavý), jazyk a zálohování: export a import nastavení jako souboru nebo synchronizace přes iCloud Drive.
 - **Baterie**: nabití, doba do plného nabití nebo zbývající doba, stav, maximální kapacita, počet cyklů, napájecí adaptér a výkon ve wattech a tipy, jak prodloužit výdrž baterie. Stránka jen zobrazuje informace: nabíjecí limit zůstává v **Nastavení systému › Baterie**. Zobrazí se jen na Macu s baterií.
 - **Bez spánku**: délka, volby pro displej a víko.
 - **Jas**: posuvník pro každý monitor, který macOS sám neumí nastavit, klávesy jasu a ztmavení obrazu místo monitoru.
@@ -433,13 +431,14 @@ Nastavení otevřete z nabídky položkou **Nastavení…** nebo zkratkou ⌘, p
 - **Okna**: zvětšení okna zeleným tlačítkem (se seznamem výjimek), ochrana ⌘Q a ⌘W a ukončení po posledním okně (se seznamem výjimek).
 - **Dock**: minimalizace nebo skrytí kliknutím v Docku a držení Docku na jednom displeji.
 - **Finder**: nový soubor, menší kopie, převod a archivy, otevírání klávesou Enter, vyjmutí pomocí ⌘X, mazání klávesou ⌫, skrytí ikon na ploše a zobrazení skrytých souborů.
+- **Animace**: rychlost animací oken, Rychlého náhledu a Finderu (až po okamžité), kdy a jak rychle se vysouvá skrytý Dock, efekt minimalizace a poskakující ikony v Docku.
 - **Přehrávač**: otevření videa ve vlastním okně, formáty, které umí přehrát, nabídka pro výběr aplikace pro každý formát, a licence FFmpeg, dav1d, libass, FreeType, HarfBuzz a FriBidi.
 - **Odinstalace aplikací**: odebrání aplikace i s jejími soubory, pozdější návrat všeho zpět a úklid zbytků po odebraných aplikacích.
 - **Úlohy na pozadí**: vše, co běží na pozadí, která aplikace to přidala, a tlačítko, kterým je vypnete a znovu zapnete, aniž byste otevírali Nastavení systému.
 - **Hry**: seznam vašich her a volby Herního režimu.
 - **Mazlíček**: zapnutí a vypnutí, povídání, život ve vašem rytmu a míč, šatník a ocenění.
-- **Oprávnění**: všechna oprávnění, která pikapik používá, každé se svým stavem a tlačítkem pro povolení nebo vypnutí. Nástroj, kterému chybí oprávnění, vypadá napůl šedě a kliknutí na něj otevře tuto stránku u správného řádku.
-- **O aplikaci**: verze, odkazy na seznam změn a na nahlášení problému.
+- **Oprávnění**: všechna oprávnění, která pikapik používá, každé se svým stavem a tlačítkem pro povolení nebo vypnutí; u dvou hlavních jsou navíc uvedené stránky, jejichž nástroje je potřebují. Nástroj, kterému chybí oprávnění, vypadá napůl šedě a kliknutí na něj otevře tuto stránku u správného řádku.
+- **O aplikaci**: verze a aktualizace, odkazy na seznam změn a na nahlášení problému.
 
 Mnoho nastavení má malý obrázek, který ukazuje, co dělají, třeba Mac, který neusíná, nebo okno schované za Dockem. Obrázek se mění spolu s přepínačem a stojí, když je v Nastavení systému zapnuté „Omezit pohyb“.
 
@@ -454,11 +453,11 @@ Na každé stránce je dole tlačítko **Obnovit výchozí…**. Nejdřív se ze
 <details>
 <summary>Aktualizace</summary>
 
-pikapik hledá nové verze při spuštění a každých 6 hodin. Můžete to vypnout v Nastavení › Obecné. Když vyjde nová verze, v nabídce se objeví tlačítko **Aktualizovat na …**: jedno kliknutí a aplikace stáhne aktualizaci, nainstaluje ji a restartuje se. Ručně můžete zkontrolovat tlačítkem **Zkontrolovat** v Nastavení › Obecné.
+pikapik hledá nové verze při spuštění a každých 6 hodin. Můžete to vypnout v Nastavení › O aplikaci. Když vyjde nová verze, v nabídce se objeví tlačítko **Aktualizovat na …**: jedno kliknutí a aplikace stáhne aktualizaci, nainstaluje ji a restartuje se. Aktualizace můžete zkontrolovat i ručně tlačítkem **Zkontrolovat nyní** v Nastavení › O aplikaci.
 
 S Homebrew můžete také spustit `brew upgrade --cask pikapik`.
 
-Od verze 1.3 zůstávají oprávnění po aktualizacích zachována.
+Oprávnění po aktualizacích zůstávají zachována.
 
 </details>
 
@@ -479,7 +478,7 @@ Oba způsoby aplikaci ukončí, odeberou ji z položek po přihlášení a smaž
 <summary>Časté dotazy</summary>
 
 **Proč potřebuje dvě oprávnění?**
-macOS dělí přístup ke klávesnici a myši na dvě části. Zpřístupnění aplikaci dovolí změnit stisk klávesy nebo kliknutí a většině funkcí stačí jen to. Sledování vstupu jí dovolí se jen dívat, a to na přepínání jazyka stačí.
+macOS dělí přístup ke klávesnici a myši na dvě části. Zpřístupnění („Ovládání zařízení a přístup k datům“ v macOS 27) aplikaci dovolí změnit stisk klávesy nebo kliknutí a většině funkcí stačí jen to. Sledování vstupu jí dovolí se jen dívat, a to na přepínání jazyka stačí.
 
 **macOS hlásí, že aplikace je od neidentifikovaného vývojáře.**
 pikapik je podepsaná vývojářem a prošla kontrolou společnosti Apple na škodlivý software, takže by se tato zpráva neměla zobrazovat. Pokud se přesto zobrazí, otevřete **Nastavení systému › Soukromí a zabezpečení** a klikněte na **Přesto otevřít**.

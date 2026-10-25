@@ -18,7 +18,7 @@ Buka Terminal, tempel baris ini, lalu tekan Return:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"
 ```
 
-Perintah ini mengunduh versi terbaru dari GitHub dan hanya memasangnya jika versi itu ditandatangani oleh pengembangnya dan lolos pemeriksaan Apple terhadap perangkat lunak berbahaya. pikapik muncul di bar menu di bagian atas layar. Semuanya tetap mati sampai Anda menyalakannya.
+Perintah ini mengunduh versi terbaru dari GitHub dan hanya memasangnya jika versi itu ditandatangani oleh pengembangnya dan lolos pemeriksaan Apple terhadap perangkat lunak berbahaya. pikapik muncul di bar menu di bagian atas layar. Hanya peliharaan yang menyala dengan sendirinya; semua alat lain tetap mati sampai Anda menyalakannya.
 
 <details>
 <summary>Cara lain: Homebrew atau dmg</summary>
@@ -31,7 +31,7 @@ brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
 
 Atau unduh [pikapik.dmg](https://github.com/dev-pikapik/pikapik/releases/latest/download/pikapik.dmg), buka, lalu seret app ke folder Aplikasi.
 
-Perintah di atas maupun Homebrew sama-sama menaruh app di `/Applications`, membukanya, meminta izin, dan menyalakan “Buka saat Masuk”. Setelah itu, app memperbarui dirinya sendiri, lihat **Pembaruan**. Untuk menghapusnya, lihat **Hapus instalasi**.
+Perintah di atas maupun Homebrew sama-sama menaruh app di `/Applications`, membukanya, dan menyalakan “Buka saat Login”. Setelah itu, app memperbarui dirinya sendiri, lihat **Pembaruan**. Untuk menghapusnya, lihat **Hapus instalasi**.
 
 </details>
 
@@ -280,12 +280,12 @@ Perintah di atas maupun Homebrew sama-sama menaruh app di `/Applications`, membu
 <details>
 <summary>Pembukaan pertama</summary>
 
-pikapik memerlukan dua izin. Saat pertama kali dibuka, app menampilkan pengaturan di halaman Izin yang memandu Anda langkah demi langkah, dan macOS menampilkan permintaannya sendiri. Buka **Pengaturan Sistem › Privasi & Keamanan** dan nyalakan pikapik di:
+Saat pertama kali dijalankan, pikapik membuka pengaturannya: pilih halaman di sebelah kiri dan nyalakan yang Anda perlukan. Alat yang mengubah tombol papan ketik, klik, atau jendela memerlukan dua izin, sedangkan alat lainnya bekerja tanpa izin tersebut. Alat yang kekurangan salah satu izin itu tampak setengah abu-abu; klik alat tersebut, dan halaman Izin akan menunjukkan tempat menyalakan pikapik di **Pengaturan Sistem › Privasi & Keamanan**:
 
-- **Aksesibilitas**, agar app bisa mengubah tekanan tombol atau klik sebelum sampai ke app lain.
+- **Aksesibilitas** (di macOS 27: **Kontrol Perangkat dan Akses Data**), agar app bisa mengubah tekanan tombol atau klik sebelum sampai ke app lain.
 - **Pemantauan Input**, agar app bisa melihat tekanan tombol dan klik tanpa mengubahnya. Begitulah cara kerja penggantian bahasa.
 
-App mendeteksi perubahan dalam satu atau dua detik, tanpa perlu memulai ulang.
+Di bawah masing-masing dari kedua izin itu, halaman Izin menyebutkan halaman tempat Anda menyalakan alat yang memerlukannya. App mendeteksi perubahan dalam satu atau dua detik, tanpa perlu memulai ulang.
 
 Beberapa fitur meminta lebih saat Anda menggunakannya: **Akses administrator**, **Ekstensi Finder**, **iCloud Drive**, **Akses Disk Penuh**, **Perekaman Layar**, dan **Perekaman Audio Sistem**. Semuanya ada di halaman Izin dalam pengaturan: setiap izin punya satu baris tentang kegunaannya, tanda centang hijau atau tanda silang oranye, dan satu tombol: **Izinkan** saat belum ada, **Matikan** saat sudah aktif. Jadi Anda bisa mencabut izin apa pun langsung di sana.
 
@@ -353,8 +353,8 @@ Beberapa app dan game menghitung guliran dalam piksel yang tepat: untuk itu, uba
 pikapik juga membuka apa yang tidak bisa dibuka macOS: RAR, bahkan yang terpecah menjadi beberapa bagian, 7Z yang dikunci dengan kata sandi, rangkaian bagian seperti .001, .z01, .r00, dan .part1.rar, serta ZIPX, CAB, LZH, ARJ, ZST, LZMA, WIM, dan lainnya. Klik dua kali akan membukanya di pikapik. Nama file di ZIP lama, misalnya yang memakai aksara Sirilik, Jepang, atau Tionghoa, tampil terbaca. Baris **Buka arsip di pikapik** di Pengaturan › Finder memungkinkan Anda memilih app untuk ZIP dan 7Z dari sebuah menu, misalnya pikapik, sementara TAR dan GZ tetap ditangani app arsip bawaan, yang memang sudah menanganinya dengan baik. pikapik bisa mengekstrak RAR tetapi tidak bisa membuatnya: lisensi RAR hanya mengizinkan ekstraksi.
 
 Sebuah jendela menanyakan kata sandi, **Berhenti** membatalkan pekerjaan apa pun, dan dari arsip yang rusak atau tidak lengkap pikapik mengambil apa yang masih bisa dibaca. pikapik bertanya dulu sebelum mengekstrak arsip yang akan membengkak menjadi ukuran sangat besar, berhenti tepat waktu jika disk akan penuh, dan memblokir arsip yang mencoba menulis di luar foldernya sendiri. Pilih sebuah arsip di Finder lalu tekan Spasi untuk melihat isinya.
-**Arsip di versi Mac App Store.** Fitur ini juga jalan di sana, tetapi dengan alat bawaan macOS, bukan 7-Zip yang disertakan, sehingga ada batasan: kata sandi hanya bisa untuk ZIP, tidak untuk 7Z; arsip tidak bisa dipecah menjadi beberapa bagian, dan arsip multi-bagian (.001, .part1.rar, .z01 dan sejenisnya) tidak bisa dibuka; file tunggal .xz, .lzma, dan .zst tidak bisa dibuka (.gz dan .bz2 bisa); 7Z dan RAR yang dilindungi kata sandi tidak bisa dibuka; dan tidak ada baris **Buka arsip di pikapik**. Pertama kali, pikapik meminta akses ke folder utama Anda, sama seperti untuk File Baru dan Salinan Lebih Kecil, karena versi ini hanya bisa menulis di tempat yang Anda izinkan. Nyalakan ekstensi Finder di Pengaturan Sistem › Umum › Item Login & Ekstensi; pikapik menunjukkan di mana harus mengklik.
 
+**Arsip di versi Mac App Store.** Fitur ini juga jalan di sana, tetapi dengan alat bawaan macOS, bukan 7-Zip yang disertakan, sehingga ada batasan: kata sandi hanya bisa untuk ZIP, tidak untuk 7Z; arsip tidak bisa dipecah menjadi beberapa bagian, dan arsip multi-bagian (.001, .part1.rar, .z01 dan sejenisnya) tidak bisa dibuka; file tunggal .xz, .lzma, dan .zst tidak bisa dibuka (.gz dan .bz2 bisa); 7Z dan RAR yang dilindungi kata sandi tidak bisa dibuka; dan tidak ada baris **Buka arsip di pikapik**. Pertama kali, pikapik meminta akses ke folder utama Anda, sama seperti untuk File Baru dan Salinan Lebih Kecil, karena versi ini hanya bisa menulis di tempat yang Anda izinkan. Nyalakan ekstensi Finder di Pengaturan Sistem › Umum › Item Login & Ekstensi; pikapik menunjukkan di mana harus mengklik.
 
 **Sembunyikan ikon desktop.** Nyalakan sebelum panggilan, rekaman layar, atau jepretan layar, dan file serta folder di desktop menghilang. Matikan, dan semuanya kembali ke tempat yang sama. Tidak ada yang dipindahkan: file tetap ada di folder Desktop di Finder. Ini adalah pengaturan **Tampilkan item › Di Desktop** di Pengaturan Sistem › Desktop & Dock, hanya lebih dekat di tangan, jadi keduanya selalu sama. Di versi Mac App Store, baris ini justru menutupi ikon dengan wallpaper di setiap layar, atau dengan warna polos jika wallpaper bergerak, dan klik tetap sampai ke desktop. Di Pengaturan, tombol **Buka** di bawahnya tetap membuka halaman tersebut di Pengaturan Sistem.
 
@@ -362,13 +362,11 @@ Sebuah jendela menanyakan kata sandi, **Berhenti** membatalkan pekerjaan apa pun
 
 **Mode Game.** Tambahkan game Anda, dan selama Anda bermain, Mac tidak menarik Anda keluar dari game. Spotlight, Siri, ⌘Tab, Mission Control, dan gesekan antar-desktop tidak terbuka di atas game, ⌘Q dan ⌘W tidak menutupnya tanpa sengaja, penunjuk tidak meluncur ke Dock, bar menu, atau layar lain, dan layar tetap menyala. Sambil menahan Shift, roda mouse tetap mengganti slot hotbar. Masing-masing punya saklarnya sendiri di halaman Game, dan pikapik menyarankan game yang ditemukannya di Mac Anda. Di dalam game, Control-klik tetap klik biasa, dan Control dengan panah tidak mengganti desktop. Minecraft juga dikenali: tambahkan Minecraft Launcher atau CurseForge, dan mode ini menyala di dalam Minecraft itu sendiri. Untuk keluar dari game, tekan ⇧⌘Q; untuk menutup jendelanya, ⇧⌘W. ⌥⌘Esc selalu berfungsi. Begitu Anda keluar dari game, semuanya berfungsi seperti biasa. Mati secara bawaan.
 
-Nyalakan Mode Game dan bermain. Pengaturan game lainnya memuat katalog Mac, tombol saat ini dan pratinjau animasi untuk setiap tindakan.
+**Pengaturan game lainnya** di halaman Game menampilkan pintasan yang disediakan Mac Anda, beserta tombol yang dipakainya saat ini dan pratinjau animasi untuk setiap tindakan. Untuk setiap pintasan, Anda bisa memilih **Ikuti aturan Mode Game**, **Nonaktifkan dalam game**, atau **Izinkan dalam game**. Pintasan bahasa juga bisa diatur ke **Ganti bahasa setiap tekanan**: tekanan singkat yang disengaja mengganti sumber input tanpa membuka apa pun di atas game, dan tombol yang Anda tahan untuk berlari atau melompat tetap diutamakan, jadi bahasa tidak berganti tanpa sengaja.
 
-Otomatis menjeda tindakan yang membuka jendela atau memindahkan fokus. Pintasan bahasa singkat yang disengaja mengganti sumber tanpa jendela sistem. Tombol gerak yang ditahan punya prioritas, jadi berlari dan melompat tidak mengganti bahasa tanpa sengaja.
+Di **Pengaturan game lainnya**, grup **Mouse dan trackpad** hanya menampilkan apa yang aktif di macOS pada Mac Anda, dengan nama dari Apple dan gambar kecil untuk setiap item: pintasan pada tombol mouse, geser antar desktop dan app layar penuh, Mission Control dan App Exposé, cubit untuk app dan rentangkan untuk Desktop, geser dari tepi kanan untuk Pusat Pemberitahuan, dan setiap sudut aktif beserta aksinya. Selama game berada di depan, semuanya dijeda, jadi geseran tak sengaja atau sentuhan di sudut layar tidak akan mengeluarkan Anda dari game. Gestur di dalam game tetap berfungsi. Setiap item bisa diatur agar bekerja seperti biasa. Di versi situs web, **Ubah…** pada sudut aktif memilih tindakan lain langsung di sana, dan **Kembalikan** mengembalikan yang pertama; setiap perubahan memulai ulang Dock satu kali.
 
-Di Pengaturan → Game → Pengaturan game lainnya ada grup “Mouse dan trackpad”. Grup ini hanya menampilkan apa yang aktif di macOS pada Mac Anda, dengan nama dari Apple dan gambar kecil untuk setiap item: pintasan pada tombol mouse, geser antar desktop dan app layar penuh, Mission Control dan App Exposé, cubit untuk app dan rentangkan untuk Desktop, geser dari tepi kanan untuk Pusat Pemberitahuan, dan setiap sudut aktif beserta aksinya. Selama game berada di depan, semuanya dijeda, jadi geseran tak sengaja atau sentuhan di sudut layar tidak akan mengeluarkan Anda dari game. Gestur di dalam game tetap berfungsi. Setiap item bisa diatur agar bekerja seperti biasa. Di versi situs web, **Ubah…** pada sudut aktif memilih tindakan lain langsung di sana, dan **Kembalikan** mengembalikan yang pertama; setiap perubahan memulai ulang Dock satu kali.
-
-Buka Pengaturan → Game → Tambahkan Game dan klik game yang berjalan. Game melalui Java dan lingkungan lain juga tampil, meski tanpa file .app. Minecraft tampil sebagai Minecraft, bukan java. Cari proses game lalu seret barisnya ke Game Anda di Pengaturan → Game.
+Untuk menambahkan game, klik **Tambah Game…** di halaman Game, lalu klik game Anda di antara app yang sedang terbuka atau yang ada di Dock. Game yang berjalan lewat Java atau runtime lain dan tidak punya app sendiri juga muncul di sana, dan Minecraft tampil sebagai Minecraft, bukan java. Anda juga bisa menyeret game dari Finder ke daftar, atau menyeret barisnya dari Monitor Aktivitas.
 
 **Tampilkan FPS.** FPS artinya frame per detik: berapa banyak gambar yang digambar game setiap detik. Nyalakan **Tampilkan FPS** di halaman Game, dan selama Mode Game aktif, label kecil gelap berisi angka itu muncul di sudut game mana pun. Klik sudut pada gambar di atas sakelar untuk memilihnya. Tanda hubung berarti frame pertama belum datang, dan angka 0 yang pudar berarti game berhenti menggambar. Di macOS 27, sebagian besar game dihitung oleh macOS sendiri, tanpa izin. Game yang tidak bisa dihitung macOS, biasanya game lama, dihitung lewat perekaman layar: baris **Perekaman Layar** lalu muncul di halaman Izin, pikapik tidak pernah memintanya saat Anda bermain, dan angkanya tidak bisa melebihi kecepatan refresh layar. Di macOS 14–26 dan di versi Mac App Store, semua game dihitung dengan cara ini, jadi baris itu muncul begitu **Tampilkan FPS** dinyalakan, dan tombol **Izinkan** di bawah sakelar membawa Anda ke sana. Tidak ada gambar yang disimpan atau dikirim. Mati secara default.
 
@@ -419,7 +417,7 @@ Menunjukkan seberapa cepat internet Anda saat ini. Klik **Cek Kecepatan** di Pen
 
 Buka pengaturan dari menu dengan **Pengaturan…** atau ⌘, atau buka lagi pikapik dari Finder, Launchpad, atau Spotlight. Selama jendelanya terbuka, app muncul di Dock dan di ⌘Tab.
 
-- **Umum**: buka saat masuk, tampilan (Sistem, Terang, atau Gelap), bahasa, pembaruan, dan pencadangan: ekspor dan impor pengaturan sebagai file, atau selaraskan lewat iCloud Drive.
+- **Umum**: buka saat login, tetap berjalan di latar setelah Keluar, tampilan (Sistem, Terang, atau Gelap), bahasa, dan pencadangan: ekspor dan impor pengaturan sebagai file, atau selaraskan lewat iCloud Drive.
 - **Baterai**: tingkat daya, waktu hingga penuh atau sisa waktu, kondisi, kapasitas maksimum, jumlah siklus, adaptor daya dan daya dalam watt, serta tips agar baterai lebih awet. Halaman ini hanya menampilkan informasi: batas pengisian daya tetap ada di **Pengaturan Sistem › Baterai**. Hanya muncul di Mac yang punya baterai.
 - **Tetap Terjaga**: durasi, opsi layar dan penutup.
 - **Kecerahan**: slider untuk setiap monitor yang tidak bisa diatur macOS sendiri, tombol kecerahan, dan opsi untuk meredupkan gambar sebagai gantinya.
@@ -433,13 +431,14 @@ Buka pengaturan dari menu dengan **Pengaturan…** atau ⌘, atau buka lagi pika
 - **Jendela**: memperbesar jendela dengan tombol hijau (dengan daftar pengecualian), perlindungan ⌘Q dan ⌘W, serta keluar saat jendela terakhir ditutup (dengan daftar pengecualian).
 - **Dock**: meminimalkan atau menyembunyikan dengan klik di Dock dan mempertahankan Dock di satu layar.
 - **Finder**: file baru, salinan lebih kecil, konversi, dan arsip, buka dengan Return, potong dengan ⌘X, hapus dengan ⌫, sembunyikan ikon desktop, dan tampilkan file tersembunyi.
+- **Animasi**: kecepatan animasi jendela, Lihat Cepat, dan Finder (bahkan sampai instan), kapan dan seberapa cepat Dock yang tersembunyi muncul, efek minimalkan, dan ikon Dock yang memantul.
 - **Pemutar**: buka video di jendelanya sendiri, format yang bisa diputar, menu untuk memilih app tiap format, dan lisensi FFmpeg, dav1d, libass, FreeType, HarfBuzz, dan FriBidi.
 - **Hapus App**: hapus app beserta filenya, kembalikan semuanya nanti, dan bersihkan sisa dari app yang sudah dihapus.
 - **Tugas Latar Belakang**: semua yang berjalan di latar belakang, app mana yang menambahkannya, dan tombol untuk mematikan lalu menyalakannya lagi tanpa membuka Pengaturan Sistem.
 - **Game**: daftar game Anda dan opsi Mode Game.
 - **Peliharaan**: nyalakan atau matikan peliharaan, biarkan ia mengobrol, mengikuti ritme Anda, dan bermain bola, dandani, dan lihat penghargaan Anda.
-- **Izin**: semua izin yang dipakai pikapik, masing-masing dengan statusnya dan satu tombol untuk mengizinkan atau mematikannya. Alat yang kekurangan izin tampak setengah abu-abu, dan jika diklik, halaman ini terbuka di baris yang tepat.
-- **Tentang**: versi, tautan ke catatan perubahan dan untuk melaporkan masalah.
+- **Izin**: semua izin yang dipakai pikapik, masing-masing dengan statusnya dan satu tombol untuk mengizinkan atau mematikannya; dua izin utama juga menyebutkan halaman yang alatnya memerlukan izin tersebut. Alat yang kekurangan izin tampak setengah abu-abu, dan jika diklik, halaman ini terbuka di baris yang tepat.
+- **Tentang**: versi dan pembaruan, tautan ke catatan perubahan dan untuk melaporkan masalah.
 
 Banyak pengaturan dilengkapi gambar kecil yang menunjukkan fungsinya, misalnya Mac yang tetap terjaga atau jendela yang bersembunyi di balik Dock. Gambar berubah bersama sakelar dan diam saja saat “Kurangi Gerakan” aktif di Pengaturan Sistem.
 
@@ -454,11 +453,11 @@ Setiap halaman memiliki tombol **Pulihkan Default…** di bagian bawah. Tombol i
 <details>
 <summary>Pembaruan</summary>
 
-pikapik memeriksa versi baru saat dibuka dan setiap 6 jam. Anda bisa mematikannya di Pengaturan › Umum. Saat versi baru tersedia, tombol **Perbarui ke …** muncul di menu: satu klik, dan app mengunduh pembaruan, memasangnya, lalu memulai ulang. Anda juga bisa memeriksa sendiri dengan **Periksa Sekarang** di Pengaturan › Umum.
+pikapik memeriksa versi baru saat dibuka dan setiap 6 jam. Anda bisa mematikannya di Pengaturan › Tentang. Saat versi baru tersedia, tombol **Perbarui ke …** muncul di menu: satu klik, dan app mengunduh pembaruan, memasangnya, lalu memulai ulang. Anda juga bisa memeriksa sendiri dengan **Periksa Sekarang** di Pengaturan › Tentang.
 
 Dengan Homebrew, Anda juga bisa menjalankan `brew upgrade --cask pikapik`.
 
-Mulai versi 1.3, izin tetap ada setelah pembaruan.
+Izin tetap ada setelah pembaruan.
 
 </details>
 
@@ -479,7 +478,7 @@ Keduanya keluar dari app, menghapusnya dari item masuk, dan menghapus app. Skrip
 <summary>Pertanyaan umum</summary>
 
 **Mengapa perlu dua izin?**
-macOS membagi akses ke papan ketik dan mouse menjadi dua. Aksesibilitas membuat app bisa mengubah tekanan tombol atau klik, dan sebagian besar fitur hanya membutuhkan itu. Pemantauan Input hanya membuatnya bisa melihat, dan itu cukup untuk mengganti bahasa.
+macOS membagi akses ke papan ketik dan mouse menjadi dua. Aksesibilitas (Kontrol Perangkat dan Akses Data di macOS 27) membuat app bisa mengubah tekanan tombol atau klik, dan sebagian besar fitur hanya membutuhkan itu. Pemantauan Input hanya membuatnya bisa melihat, dan itu cukup untuk mengganti bahasa.
 
 **macOS mengatakan app berasal dari pengembang yang tidak dikenal.**
 pikapik ditandatangani oleh pengembangnya dan lolos pemeriksaan Apple terhadap perangkat lunak berbahaya, jadi pesan ini seharusnya tidak muncul. Jika tetap muncul, buka **Pengaturan Sistem › Privasi & Keamanan** dan klik **Tetap Buka**.

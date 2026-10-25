@@ -18,7 +18,7 @@ Mở Terminal, dán dòng này rồi nhấn Return:
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/dev-pikapik/pikapik/main/install.sh)"
 ```
 
-Lệnh này tải về phiên bản mới nhất từ GitHub và chỉ cài đặt nếu phiên bản đó được nhà phát triển ký và đã vượt qua bước kiểm tra phần mềm độc hại của Apple. pikapik sẽ nằm trên thanh menu ở phía trên màn hình. Mọi thứ đều tắt cho đến khi bạn bật lên.
+Lệnh này tải về phiên bản mới nhất từ GitHub và chỉ cài đặt nếu phiên bản đó được nhà phát triển ký và đã vượt qua bước kiểm tra phần mềm độc hại của Apple. pikapik sẽ nằm trên thanh menu ở phía trên màn hình. Chỉ có thú cưng tự bật lên; mọi công cụ khác đều tắt cho đến khi bạn bật chúng.
 
 <details>
 <summary>Các cách khác: Homebrew hoặc tệp dmg</summary>
@@ -31,7 +31,7 @@ brew install --cask dev-pikapik/pikapik/pikapik && open -a pikapik
 
 Hoặc tải về [pikapik.dmg](https://github.com/dev-pikapik/pikapik/releases/latest/download/pikapik.dmg), mở tệp và kéo ứng dụng vào thư mục Ứng dụng.
 
-Cả lệnh ở trên và Homebrew đều đặt ứng dụng vào `/Applications`, mở ứng dụng, xin quyền và bật “Mở khi đăng nhập”. Sau đó ứng dụng tự cập nhật, xem **Cập nhật**. Để gỡ bỏ, xem **Gỡ cài đặt**.
+Cả lệnh ở trên và Homebrew đều đặt ứng dụng vào `/Applications`, mở ứng dụng và bật “Mở khi đăng nhập”. Sau đó ứng dụng tự cập nhật, xem **Cập nhật**. Để gỡ bỏ, xem **Gỡ cài đặt**.
 
 </details>
 
@@ -280,12 +280,12 @@ Cả lệnh ở trên và Homebrew đều đặt ứng dụng vào `/Application
 <details>
 <summary>Lần mở đầu tiên</summary>
 
-pikapik cần hai quyền. Lần đầu mở, ứng dụng hiện phần cài đặt ở trang Quyền để hướng dẫn bạn từng bước, và macOS hiện các yêu cầu của riêng nó. Vào **Cài đặt hệ thống › Quyền riêng tư & Bảo mật** và bật pikapik trong:
+Lần đầu mở, pikapik hiện phần cài đặt của mình: hãy chọn một trang ở bên trái và bật những gì bạn cần. Các công cụ thay đổi phím, lần bấm hoặc cửa sổ cần hai quyền, còn các công cụ khác hoạt động mà không cần chúng. Công cụ thiếu một trong hai quyền sẽ hiện mờ màu xám; hãy bấm vào đó, và trang Quyền sẽ chỉ cho bạn nơi bật pikapik trong **Cài đặt hệ thống › Quyền riêng tư & Bảo mật**:
 
-- **Trợ năng**, để ứng dụng có thể thay đổi một lần nhấn phím hoặc lần bấm trước khi nó đến các ứng dụng khác.
+- **Trợ năng** (trên macOS 27: **Điều khiển thiết bị và truy cập dữ liệu**), để ứng dụng có thể thay đổi một lần nhấn phím hoặc lần bấm trước khi nó đến các ứng dụng khác.
 - **Theo dõi đầu vào**, để ứng dụng có thể thấy các lần nhấn phím và lần bấm mà không thay đổi chúng. Tính năng chuyển ngôn ngữ hoạt động theo cách này.
 
-Ứng dụng nhận ra thay đổi trong vài giây, không cần khởi động lại.
+Dưới mỗi quyền trong hai quyền này, trang Quyền nêu tên các trang mà bạn đã bật công cụ cần đến quyền đó. Ứng dụng nhận ra thay đổi trong vài giây, không cần khởi động lại.
 
 Một số tính năng cần thêm quyền khi bạn dùng chúng: **Quyền quản trị**, **Tiện ích mở rộng của Finder**, **iCloud Drive**, **Truy cập toàn bộ ổ đĩa**, **Ghi màn hình** và **Ghi âm thanh hệ thống**. Tất cả nằm ở trang Quyền trong cài đặt: mỗi quyền có một dòng nói quyền đó để làm gì, dấu tích xanh hoặc dấu gạch chéo cam, và một nút: **Cho phép** khi còn thiếu, **Tắt** khi đang bật. Nhờ vậy bạn có thể thu hồi bất kỳ quyền nào ngay tại đó.
 
@@ -353,8 +353,8 @@ Một số ứng dụng và trò chơi đếm thao tác cuộn bằng pixel chí
 pikapik cũng mở được những gì macOS không mở được: RAR, kể cả khi chia thành nhiều phần, 7Z khóa bằng mật khẩu, các bộ nhiều phần như .001, .z01, .r00 và .part1.rar, cùng ZIPX, CAB, LZH, ARJ, ZST, LZMA, WIM và nhiều loại khác. Bấm đúp là mở trong pikapik. Tên tệp trong các ZIP cũ, chẳng hạn bằng chữ Kirin, tiếng Nhật hay tiếng Trung, hiện ra đọc được. Dòng **Mở tệp lưu trữ bằng pikapik** trong Cài đặt › Finder cho phép chọn từ một menu ứng dụng mở ZIP và 7Z, chẳng hạn pikapik, còn TAR và GZ vẫn thuộc về ứng dụng lưu trữ có sẵn, vốn đã xử lý chúng tốt. pikapik giải nén được RAR nhưng không tạo được RAR: giấy phép RAR chỉ cho phép giải nén.
 
 Một cửa sổ sẽ hỏi mật khẩu, **Dừng** hủy bất kỳ tác vụ nào, và từ tệp lưu trữ bị hỏng hoặc chưa đầy đủ, pikapik lấy ra những gì vẫn còn đọc được. pikapik hỏi trước khi giải nén một tệp lưu trữ sẽ phình ra kích thước khổng lồ, dừng đúng lúc nếu ổ đĩa sắp đầy, và chặn những tệp lưu trữ cố ghi ra ngoài thư mục của chính chúng. Chọn một tệp lưu trữ trong Finder rồi nhấn phím cách để xem bên trong có gì.
-**Tệp lưu trữ trong phiên bản Mac App Store.** Tính năng này cũng chạy ở đó, nhưng dùng các công cụ có sẵn trong macOS thay cho 7-Zip đi kèm, nên có một số giới hạn: chỉ ZIP mới đặt được mật khẩu, 7Z thì không; không thể chia tệp lưu trữ thành nhiều phần, và không mở được các tệp lưu trữ nhiều phần (.001, .part1.rar, .z01 và tương tự); không mở được các tệp .xz, .lzma và .zst đứng riêng (.gz và .bz2 thì được); không mở được 7Z và RAR có mật khẩu; và không có dòng **Mở tệp lưu trữ bằng pikapik**. Lần đầu, pikapik xin quyền truy cập thư mục chính của bạn, giống như Tệp mới và Bản sao nhỏ hơn, vì phiên bản này chỉ ghi được vào nơi bạn đã cho phép. Hãy bật tiện ích mở rộng Finder trong Cài đặt hệ thống › Cài đặt chung › Mục đăng nhập & Tiện ích mở rộng; pikapik sẽ chỉ chỗ cần nhấp.
 
+**Tệp lưu trữ trong phiên bản Mac App Store.** Tính năng này cũng chạy ở đó, nhưng dùng các công cụ có sẵn trong macOS thay cho 7-Zip đi kèm, nên có một số giới hạn: chỉ ZIP mới đặt được mật khẩu, 7Z thì không; không thể chia tệp lưu trữ thành nhiều phần, và không mở được các tệp lưu trữ nhiều phần (.001, .part1.rar, .z01 và tương tự); không mở được các tệp .xz, .lzma và .zst đứng riêng (.gz và .bz2 thì được); không mở được 7Z và RAR có mật khẩu; và không có dòng **Mở tệp lưu trữ bằng pikapik**. Lần đầu, pikapik xin quyền truy cập thư mục chính của bạn, giống như Tệp mới và Bản sao nhỏ hơn, vì phiên bản này chỉ ghi được vào nơi bạn đã cho phép. Hãy bật tiện ích mở rộng Finder trong Cài đặt hệ thống › Cài đặt chung › Mục đăng nhập & Tiện ích mở rộng; pikapik sẽ chỉ chỗ cần nhấp.
 
 **Ẩn biểu tượng trên màn hình nền.** Bật trước cuộc gọi, khi quay màn hình hoặc chụp màn hình, các tệp và thư mục trên màn hình nền sẽ biến mất. Tắt đi, chúng trở lại đúng chỗ cũ. Không có gì bị di chuyển: tệp vẫn nằm trong thư mục Màn hình nền trong Finder. Đây chính là cài đặt **Hiển thị các mục › Trên màn hình nền** trong Cài đặt hệ thống › Màn hình nền & Dock, chỉ là đặt gần tay hơn, nên hai bên luôn khớp nhau. Trong phiên bản Mac App Store, hàng này thay vào đó che các biểu tượng bằng hình nền trên mọi màn hình, hoặc bằng một màu trơn nếu hình nền chuyển động, và các lần nhấp vẫn đến được màn hình nền. Trong Cài đặt, nút **Mở** bên dưới vẫn mở trang đó của Cài đặt hệ thống.
 
@@ -362,13 +362,11 @@ Một cửa sổ sẽ hỏi mật khẩu, **Dừng** hủy bất kỳ tác vụ 
 
 **Chế độ trò chơi.** Thêm trò chơi của bạn, và trong lúc bạn chơi, máy Mac không kéo bạn ra khỏi trò chơi. Spotlight, Siri, ⌘Tab, Mission Control và thao tác vuốt giữa các màn hình nền không mở đè lên trò chơi, ⌘Q và ⌘W không vô tình đóng trò chơi, con trỏ không trượt sang Dock, thanh menu hay màn hình khác, và màn hình luôn sáng. Khi giữ Shift, con lăn chuột vẫn đổi ô trên thanh nhanh. Mỗi mục có công tắc riêng trên trang Trò chơi, và pikapik gợi ý những trò chơi tìm thấy trên máy Mac của bạn. Trong trò chơi, Control-bấm vẫn là một cú bấm bình thường, còn Control với phím mũi tên không đổi màn hình nền. Minecraft cũng được nhận ra: thêm Minecraft Launcher hoặc CurseForge, và chế độ sẽ bật ngay trong Minecraft. Để thoát trò chơi, hãy nhấn ⇧⌘Q; để đóng cửa sổ của nó, nhấn ⇧⌘W. ⌥⌘Esc luôn hoạt động. Ngay khi bạn rời trò chơi, mọi thứ hoạt động như bình thường. Mặc định tắt.
 
-Bật Chế độ trò chơi và chơi. Thêm cài đặt trò chơi chứa danh mục Mac, các phím hiện tại và xem trước động cho mỗi tác vụ.
+**Thêm cài đặt trò chơi** trên trang Trò chơi liệt kê các phím tắt mà máy Mac của bạn cung cấp, kèm phím hiện tại và bản xem trước động của từng tác vụ. Với mỗi phím tắt, bạn có thể chọn **Theo quy tắc Chế độ trò chơi**, **Tắt trong trò chơi** hoặc **Cho phép trong trò chơi**. Phím tắt ngôn ngữ còn có thể đặt thành **Đổi ngôn ngữ mỗi lần nhấn**: một lần nhấn nhanh, có chủ ý sẽ đổi nguồn đầu vào mà không mở thứ gì đè lên trò chơi, còn các phím bạn giữ để chạy hoặc nhảy vẫn được ưu tiên, nên ngôn ngữ không bị đổi nhầm.
 
-Tự động tạm dừng tác vụ mở cửa sổ hoặc chuyển tiêu điểm. Phím tắt ngôn ngữ nhanh có chủ ý đổi nguồn mà không mở cửa sổ hệ thống. Phím di chuyển được giữ có ưu tiên, nên chạy và nhảy không vô tình đổi ngôn ngữ.
+Trong **Thêm cài đặt trò chơi**, nhóm **Chuột và bàn di chuột** chỉ liệt kê những gì đang bật trong macOS trên Mac của bạn, với tên gọi của Apple và một hình vẽ nhỏ cho từng mục: phím tắt trên nút chuột, vuốt giữa các màn hình nền và ứng dụng toàn màn hình, Mission Control và App Exposé, chụm ngón tay cho ứng dụng và xòe ngón tay cho màn hình nền, vuốt từ cạnh phải cho Trung tâm thông báo và mỗi góc nóng cùng thao tác của nó. Khi trò chơi ở phía trước, tất cả được tạm dừng, nên một cú vuốt nhầm hay chạm vào góc màn hình sẽ không đưa bạn ra khỏi trò chơi. Các cử chỉ bên trong trò chơi vẫn hoạt động bình thường. Mỗi mục có thể đặt để hoạt động như bình thường. Ở phiên bản từ trang web, **Thay đổi…** ở góc nóng chọn ngay một hành động khác cho góc đó, còn **Đặt lại chỗ cũ** trả về hành động đầu tiên; mỗi thay đổi khởi động lại Dock một lần.
 
-Trong Cài đặt → Trò chơi → Thêm cài đặt trò chơi có nhóm “Chuột và bàn di chuột”. Nhóm này chỉ liệt kê những gì đang bật trong macOS trên Mac của bạn, với tên gọi của Apple và một hình vẽ nhỏ cho từng mục: phím tắt trên nút chuột, vuốt giữa các màn hình nền và ứng dụng toàn màn hình, Mission Control và App Exposé, chụm ngón tay cho ứng dụng và xòe ngón tay cho màn hình nền, vuốt từ cạnh phải cho Trung tâm thông báo và mỗi góc nóng cùng thao tác của nó. Khi trò chơi ở phía trước, tất cả được tạm dừng, nên một cú vuốt nhầm hay chạm vào góc màn hình sẽ không đưa bạn ra khỏi trò chơi. Các cử chỉ bên trong trò chơi vẫn hoạt động bình thường. Mỗi mục có thể đặt để hoạt động như bình thường. Ở phiên bản từ trang web, **Thay đổi…** ở góc nóng chọn ngay một hành động khác cho góc đó, còn **Đặt lại chỗ cũ** trả về hành động đầu tiên; mỗi thay đổi khởi động lại Dock một lần.
-
-Mở Cài đặt → Trò chơi → Thêm trò chơi rồi nhấp vào trò chơi đang chạy. Trò chơi qua Java và các môi trường khác cũng xuất hiện, ngay cả khi không có tệp .app. Minecraft hiển thị là Minecraft thay vì java. Tìm tiến trình trò chơi rồi kéo hàng vào Trò chơi của bạn trong Cài đặt → Trò chơi.
+Để thêm trò chơi, hãy bấm **Thêm trò chơi…** trên trang Trò chơi rồi bấm vào trò chơi của bạn trong số các ứng dụng đang mở hoặc có trong Dock. Trò chơi chạy qua Java hay một môi trường thực thi khác và không có ứng dụng riêng cũng hiện ở đó, còn Minecraft mang tên Minecraft thay vì java. Bạn cũng có thể kéo một trò chơi từ Finder vào danh sách, hoặc kéo hàng của nó từ Giám sát hoạt động.
 
 **Hiện FPS.** FPS là số khung hình mỗi giây: số hình mà trò chơi vẽ ra trong mỗi giây. Bật **Hiện FPS** trên trang Trò chơi, và khi Chế độ trò chơi đang bật, một nhãn nhỏ màu tối ghi con số đó sẽ hiện ở một góc của bất kỳ trò chơi nào. Nhấp vào một góc trên hình phía trên công tắc để chọn góc đó. Dấu gạch nghĩa là những khung hình đầu tiên chưa đến, còn số 0 mờ nghĩa là trò chơi đã ngừng vẽ. Trên macOS 27, phần lớn trò chơi do chính macOS đếm, không cần quyền nào. Trò chơi mà macOS không đếm được, thường là trò cũ, sẽ được đếm qua tính năng ghi màn hình: khi đó dòng **Ghi màn hình** xuất hiện trên trang Quyền, pikapik không bao giờ xin quyền trong lúc chơi, và con số không thể cao hơn tần số làm tươi của màn hình. Trên macOS 14–26 và trong phiên bản Mac App Store, mọi trò chơi đều được đếm theo cách này, nên dòng đó xuất hiện ngay khi bạn bật **Hiện FPS**, và nút **Cho phép** bên dưới công tắc sẽ đưa bạn đến đó. Không có hình ảnh nào được lưu hay gửi đi. Mặc định tắt.
 
@@ -419,7 +417,7 @@ Cho biết internet của bạn đang nhanh đến đâu. Bấm **Kiểm tra t�
 
 Mở cài đặt từ menu bằng **Cài đặt…** hoặc ⌘, hoặc mở lại pikapik từ Finder, Launchpad hay Spotlight. Khi cửa sổ đang mở, ứng dụng hiện trong Dock và trong ⌘Tab.
 
-- **Cài đặt chung**: mở khi đăng nhập, giao diện (Hệ thống, Sáng hoặc Tối), ngôn ngữ, cập nhật và sao lưu: xuất và nhập cài đặt thành tệp, hoặc đồng bộ qua iCloud Drive.
+- **Cài đặt chung**: mở khi đăng nhập, tiếp tục chạy nền sau khi Thoát, giao diện (Hệ thống, Sáng hoặc Tối), ngôn ngữ và sao lưu: xuất và nhập cài đặt thành tệp, hoặc đồng bộ qua iCloud Drive.
 - **Pin**: mức pin, thời gian đến khi đầy hoặc thời gian còn lại, tình trạng, dung lượng tối đa, số lượng chu kỳ, bộ tiếp hợp nguồn và công suất tính bằng watt, cùng mẹo giúp pin dùng được lâu hơn. Trang chỉ hiển thị thông tin: giới hạn sạc vẫn nằm trong **Cài đặt hệ thống › Pin**. Chỉ xuất hiện trên Mac có pin.
 - **Giữ máy thức**: thời lượng, tùy chọn màn hình và nắp.
 - **Độ sáng**: thanh trượt cho từng màn hình mà macOS không tự chỉnh được, các phím độ sáng và tùy chọn làm tối hình ảnh thay vào đó.
@@ -433,13 +431,14 @@ Mở cài đặt từ menu bằng **Cài đặt…** hoặc ⌘, hoặc mở l�
 - **Cửa sổ**: phóng to cửa sổ bằng nút xanh lá (có danh sách ngoại lệ), bảo vệ ⌘Q và ⌘W, và thoát khi đóng cửa sổ cuối cùng (có danh sách ngoại lệ).
 - **Dock**: thu nhỏ hoặc ẩn bằng một lần bấm trong Dock và giữ Dock trên một màn hình.
 - **Finder**: tạo tệp mới, bản sao nhỏ hơn, chuyển định dạng và tệp lưu trữ, mở bằng Return, cắt bằng ⌘X, xóa bằng ⌫, ẩn biểu tượng trên màn hình nền và hiện tệp ẩn.
+- **Hoạt ảnh**: tốc độ hoạt ảnh của cửa sổ, Xem nhanh và Finder (có thể nhanh đến mức tức thì), thời điểm và tốc độ Dock đang ẩn trượt ra, hiệu ứng thu nhỏ và biểu tượng nảy trong Dock.
 - **Trình phát**: mở video trong cửa sổ riêng, các định dạng phát được, menu chọn ứng dụng cho từng định dạng và giấy phép của FFmpeg, dav1d, libass, FreeType, HarfBuzz và FriBidi.
 - **Gỡ ứng dụng**: gỡ một ứng dụng cùng các tệp của nó, đặt lại tất cả sau này và dọn những gì ứng dụng đã gỡ để lại.
 - **Tác vụ nền**: mọi thứ chạy nền, ứng dụng nào đã thêm chúng, và một nút để tắt rồi bật lại mà không cần mở Cài đặt hệ thống.
 - **Trò chơi**: danh sách trò chơi của bạn và các tùy chọn của Chế độ trò chơi.
 - **Thú cưng**: bật hoặc tắt thú cưng, cho nó trò chuyện, sống theo nhịp của bạn và chơi bóng, chọn quần áo cho nó và xem giải thưởng của bạn.
-- **Quyền**: mọi quyền pikapik dùng, mỗi quyền có trạng thái và một nút để cho phép hoặc tắt. Công cụ thiếu quyền sẽ hiện mờ màu xám, bấm vào đó sẽ mở trang này đúng dòng cần.
-- **Giới thiệu**: phiên bản, liên kết đến nhật ký thay đổi và để báo cáo sự cố.
+- **Quyền**: mọi quyền pikapik dùng, mỗi quyền có trạng thái và một nút để cho phép hoặc tắt; hai quyền chính còn nêu tên các trang có công cụ cần đến chúng. Công cụ thiếu quyền sẽ hiện mờ màu xám, bấm vào đó sẽ mở trang này đúng dòng cần.
+- **Giới thiệu**: phiên bản và cập nhật, liên kết đến nhật ký thay đổi và để báo cáo sự cố.
 
 Nhiều cài đặt có một hình nhỏ cho thấy chúng làm gì, chẳng hạn một chiếc Mac không ngủ hoặc một cửa sổ ẩn sau Dock. Hình thay đổi cùng công tắc và đứng yên khi “Giảm chuyển động” được bật trong Cài đặt hệ thống.
 
@@ -454,11 +453,11 @@ Mỗi trang đều có nút **Khôi phục mặc định…** ở cuối. Nút n
 <details>
 <summary>Cập nhật</summary>
 
-pikapik kiểm tra phiên bản mới khi mở và cứ mỗi 6 giờ. Bạn có thể tắt việc này trong Cài đặt › Cài đặt chung. Khi có phiên bản mới, nút **Cập nhật lên …** xuất hiện trong menu: chỉ một lần bấm, ứng dụng sẽ tải bản cập nhật, cài đặt và khởi động lại. Bạn cũng có thể tự kiểm tra bằng **Kiểm tra ngay** trong Cài đặt › Cài đặt chung.
+pikapik kiểm tra phiên bản mới khi mở và cứ mỗi 6 giờ. Bạn có thể tắt việc này trong Cài đặt › Giới thiệu. Khi có phiên bản mới, nút **Cập nhật lên …** xuất hiện trong menu: chỉ một lần bấm, ứng dụng sẽ tải bản cập nhật, cài đặt và khởi động lại. Bạn cũng có thể tự kiểm tra bằng **Kiểm tra ngay** trong Cài đặt › Giới thiệu.
 
 Với Homebrew, bạn cũng có thể chạy `brew upgrade --cask pikapik`.
 
-Từ phiên bản 1.3, các quyền vẫn được giữ sau khi cập nhật.
+Các quyền vẫn được giữ sau khi cập nhật.
 
 </details>
 
@@ -479,7 +478,7 @@ Cả hai cách đều thoát ứng dụng, gỡ nó khỏi các mục đăng nh�
 <summary>Câu hỏi thường gặp</summary>
 
 **Vì sao cần hai quyền?**
-macOS chia quyền truy cập bàn phím và chuột làm hai. Trợ năng cho phép ứng dụng thay đổi một lần nhấn phím hoặc lần bấm, và hầu hết tính năng chỉ cần quyền này. Theo dõi đầu vào chỉ cho phép quan sát, và như vậy là đủ để chuyển ngôn ngữ.
+macOS chia quyền truy cập bàn phím và chuột làm hai. Trợ năng (Điều khiển thiết bị và truy cập dữ liệu trên macOS 27) cho phép ứng dụng thay đổi một lần nhấn phím hoặc lần bấm, và hầu hết tính năng chỉ cần quyền này. Theo dõi đầu vào chỉ cho phép quan sát, và như vậy là đủ để chuyển ngôn ngữ.
 
 **macOS báo ứng dụng đến từ nhà phát triển không xác định.**
 pikapik được nhà phát triển ký và vượt qua bước kiểm tra phần mềm độc hại của Apple, nên thông báo này bình thường sẽ không xuất hiện. Nếu nó vẫn xuất hiện, hãy mở **Cài đặt hệ thống › Quyền riêng tư & Bảo mật** và bấm **Vẫn mở**.
