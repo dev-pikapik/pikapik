@@ -492,7 +492,7 @@ Pictures open in the same app: `Helper/Player/ImageDecoder.swift` reads them wit
 swiftc -swift-version 5 -parse-as-library Sources/pikapik/Tools/Player/PlayerLogic.swift Sources/pikapik/Tools/Player/ImageLogic.swift Helper/Player/ImageDecoder.swift scripts/test-images.swift -o build/test-images && build/test-images
 ```
 
-Remembered folders are cleaned by `FolderAccess.prune` (`Helper/Player/FolderAccess.swift`): at launch and on every new save it drops entries whose folder is deleted, in the Trash or no longer opens, and keeps those of an unplugged disk. The test saves bookmarks to temporary folders, deletes and trashes some, and checks that only the live entry is left (it writes only its own preferences domain and removes the trashed folder from the Trash again):
+Remembered folders are cleaned by `FolderAccess.prune` (`Helper/Player/FolderAccess.swift`): at launch and on every new save it drops entries whose folder is deleted, in the Trash or no longer opens, and keeps those of an unplugged disk. The test saves bookmarks to temporary folders, deletes and trashes some, and checks that only the live entry is left (it keeps its settings in its temporary folder and removes the trashed folder from the Trash again):
 
 ```bash
 swiftc -swift-version 5 -parse-as-library Helper/Player/FolderAccess.swift Sources/pikapik/Tools/Player/PlayerLogic.swift scripts/test-folder-access.swift -o build/test-folder-access && build/test-folder-access

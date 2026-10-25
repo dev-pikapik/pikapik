@@ -9,6 +9,16 @@ struct TestDockDisplay {
     }
 
     static func main() {
+        let suite = FileManager.default.temporaryDirectory.appendingPathComponent("test-dock-display-\(UUID().uuidString)").path
+        let defaults = UserDefaults(suiteName: suite)!
+        let standard: @convention(block) (AnyObject) -> UserDefaults = { _ in defaults }
+        method_setImplementation(class_getClassMethod(UserDefaults.self, #selector(getter: UserDefaults.standard))!, imp_implementationWithBlock(standard))
+        defer {
+            defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(atPath: suite + ".plist")
+        }
+        precondition(UserDefaults.standard === defaults, "the test keeps its settings in a temporary folder")
+
         precondition(plan(true, nil) == (false, nil, true))
         precondition(plan(true, true) == (false, true, true))
         precondition(plan(true, false) == (false, false, false))
@@ -39,8 +49,6 @@ struct TestDockDisplay {
         precondition(off.value == true && off.restart)
         print("after a crash the next launch keeps the real value as the original and puts it back: ok")
 
-        let defaults = UserDefaults.standard
-        [DockDisplaySwitch.ownedKey, DockDisplaySwitch.beforeKey].forEach(defaults.removeObject)
         var written: Bool??
         precondition(DockDisplaySwitch.apply(true, current: true) { value in
             precondition(defaults.bool(forKey: DockDisplaySwitch.ownedKey) && defaults.object(forKey: DockDisplaySwitch.beforeKey) as? Bool == true)

@@ -14,7 +14,7 @@ final class Tally {
 
 @main
 enum TestAwards {
-    static let name = "pikapik-test-awards"
+    static let name = FileManager.default.temporaryDirectory.appendingPathComponent("test-awards-\(UUID().uuidString)").path
     static let keys = ["pet-counts", "pet-awards", "pet-seen", "pet-fresh", "pet-outfit"]
     static let calendar = Calendar.current
 
@@ -299,7 +299,6 @@ enum TestAwards {
         print("repeats do not write, changes can be observed: ok")
 
         defaults.removePersistentDomain(forName: name)
-        let library = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask)[0]
-        try? FileManager.default.removeItem(at: library.appending(path: "Preferences/\(name).plist"))
+        try? FileManager.default.removeItem(atPath: name + ".plist")
     }
 }

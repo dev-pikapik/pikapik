@@ -240,8 +240,8 @@ enum TestPlayer {
         let suite = folder.appending(path: "defaults").path
         let defaults = UserDefaults(suiteName: suite)!
         defer {
-            try? FileManager.default.removeItem(at: folder)
             defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(at: folder)
         }
         func app(_ name: String, id: String? = nil, in directory: URL? = nil) -> URL {
             let url = (directory ?? folder).appending(path: "\(name).app")

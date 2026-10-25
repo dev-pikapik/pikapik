@@ -5,10 +5,11 @@ enum TestFolderAccess {
     static func main() throws {
         let fm = FileManager.default
         let root = fm.temporaryDirectory.appendingPathComponent("pika-folder-access-\(getpid())")
-        defer {
-            try? fm.removeItem(at: root)
-            UserDefaults.standard.removeObject(forKey: "folderBookmarks")
-        }
+        defer { try? fm.removeItem(at: root) }
+        let defaults = UserDefaults(suiteName: root.appendingPathComponent("defaults").path)!
+        let standard: @convention(block) (AnyObject) -> UserDefaults = { _ in defaults }
+        method_setImplementation(class_getClassMethod(UserDefaults.self, #selector(getter: UserDefaults.standard))!, imp_implementationWithBlock(standard))
+        precondition(UserDefaults.standard === defaults, "the test keeps its settings in a temporary folder")
         func folder(_ name: String) throws -> URL {
             let url = root.appendingPathComponent(name)
             try fm.createDirectory(at: url, withIntermediateDirectories: true)

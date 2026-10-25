@@ -20,10 +20,10 @@ struct TestKeepAwakeLid {
         let dir = files.temporaryDirectory.appendingPathComponent("pikapik-test-lid-\(UUID().uuidString)")
         try! files.createDirectory(at: dir, withIntermediateDirectories: true)
         defer { try? files.removeItem(at: dir) }
-        let defaults = UserDefaults.standard
-        let domain = Bundle.main.bundleIdentifier ?? ProcessInfo.processInfo.processName
-        defaults.removePersistentDomain(forName: domain)
-        defer { defaults.removePersistentDomain(forName: domain) }
+        let defaults = UserDefaults(suiteName: dir.appendingPathComponent("defaults").path)!
+        let standard: @convention(block) (AnyObject) -> UserDefaults = { _ in defaults }
+        method_setImplementation(class_getClassMethod(UserDefaults.self, #selector(getter: UserDefaults.standard))!, imp_implementationWithBlock(standard))
+        precondition(UserDefaults.standard === defaults, "the test keeps its settings in a temporary folder")
         let marker = "keep-awake-lid-sleep-disabled"
         let flag = dir.appendingPathComponent("flag")
 

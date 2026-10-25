@@ -206,7 +206,7 @@ enum BackgroundTests {
     }
 
     static func switches() {
-        let suite = "pikapik.test.background"
+        let suite = at("defaults").path
         let defaults = UserDefaults(suiteName: suite)!
         defaults.removePersistentDomain(forName: suite)
         defer { defaults.removePersistentDomain(forName: suite) }

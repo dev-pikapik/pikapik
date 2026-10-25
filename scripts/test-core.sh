@@ -4,6 +4,8 @@
 # use them as if it were built together with them. The module is built again only when one of its files, a flag, this script or swiftc changes.
 set -uo pipefail
 cd "$(dirname "$0")/.."
+export TMPDIR="$(mktemp -d)"
+trap 'rm -rf "$TMPDIR"' EXIT
 hash=$({ cat scripts/test-core.sh; swiftc --version; swiftc -print-target-info; printf '%s\n' "$@"; for arg in "$@"; do [ ! -f "$arg" ] || cat "$arg"; done; } 2>&1 | shasum | cut -c1-12)
 dir=build/test-core/$hash
 if [ ! -f "$dir/built" ]; then
