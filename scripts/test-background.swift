@@ -143,7 +143,7 @@ enum BackgroundTests {
         plist("home/Library/LaunchAgents/broken.plist", ["Label": "broken"])
         plist("root/Library/LaunchDaemons/com.vendor.daemon.plist", ["Label": "com.vendor.daemon", "Program": vendord, "KeepAlive": ["SuccessfulExit": false]])
         plist("root/Library/LaunchDaemons/com.weird.plist", ["Label": "com weird", "Program": vendord])
-        plist("root/Library/LaunchDaemons/com.pikapik.app.helper.plist", ["Label": "com.pikapik.app.helper", "Program": vendord])
+        plist("root/Library/LaunchDaemons/com.pikapik.tools.helper.plist", ["Label": "com.pikapik.tools.helper", "Program": vendord])
         plist("root/Library/LaunchAgents/com.vendor.shared.plist", ["Label": "com.vendor.shared", "Program": vendord, "Disabled": true])
 
         let roots = AppRoots(home: at("home"), root: at("root"), userCache: nil, userTemp: nil, caskrooms: [], pkgutil: { _ in nil }, isKnownApp: { _ in false })
@@ -170,7 +170,7 @@ enum BackgroundTests {
         let found = named(tasks)
         let expected: Set = ["com.foo.agent", "com.foo.daemon", "com.foo.launcher", "com.foo.sync", "com.gone.updater", "com.needs.approval",
                              "com.pikapik.app.direct.test", "com.vendor.daemon", "com.vendor.shared", "com.foo.app", "com.pikapik.app.direct", "Old.app", "Gone.app",
-                             "com weird", "com.pikapik.app.helper", "com.openssh.sshd"]
+                             "com weird", "com.pikapik.tools.helper", "com.openssh.sshd"]
         precondition(Set(found.keys) == expected && tasks.count == expected.count, "\(tasks.map(\.label).sorted())")
         let titles = tasks.map(\.title)
         precondition(titles == titles.sorted { $0.localizedStandardCompare($1) != .orderedDescending }, "\(titles)")
@@ -188,7 +188,7 @@ enum BackgroundTests {
         check("com.pikapik.app.direct.test") { $0.isOwn && $0.title == "pikapik" && $0.domain.isEmpty && $0.icon == own }
         check("com.vendor.daemon") { $0.scope == .wholeMac && $0.running && $0.timing == .keepsRunning && $0.domain == "system" && $0.state == .on && $0.canToggle && !$0.opensLoginItems }
         check("com weird") { $0.domain.isEmpty && !$0.canToggle && $0.opensLoginItems }
-        check("com.pikapik.app.helper") { $0.isOwn && $0.domain.isEmpty && !$0.canToggle }
+        check("com.pikapik.tools.helper") { $0.isOwn && $0.domain.isEmpty && !$0.canToggle }
         check("com.openssh.sshd") { $0.title == "Remote Login" && $0.state == .off && $0.domain == "system" && $0.canToggle && $0.scope == .wholeMac && $0.developer == "Apple"
             && $0.file.path == "/System/Library/LaunchDaemons/ssh.plist" && !$0.opensLoginItems && !$0.running }
         check("com.vendor.shared") { $0.scope == .allUsers && $0.state == .off && $0.domain == gui && $0.canToggle && !$0.opensLoginItems }

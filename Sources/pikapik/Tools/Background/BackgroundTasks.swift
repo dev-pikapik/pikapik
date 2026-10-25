@@ -99,7 +99,7 @@ enum BackgroundTasks {
 
     static func isOwn(_ id: String) -> Bool {
         let id = id.lowercased()
-        return id.hasPrefix("com.pikapik.app.direct") || id.hasPrefix("com.pikapik.app")
+        return id.hasPrefix("com.pikapik.app") || id.hasPrefix("com.pikapik.tools")
     }
 
     static func program(_ info: [String: Any], in app: URL? = nil) -> String? {
