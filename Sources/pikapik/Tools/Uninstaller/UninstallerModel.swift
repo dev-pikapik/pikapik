@@ -19,10 +19,15 @@ actor UninstallerEngine {
     }
 
     private var parts: Parts?
+    private let makeFootprint: () -> AppFootprint
+
+    init(footprint: @escaping () -> AppFootprint = { AppFootprint() }) {
+        makeFootprint = footprint
+    }
 
     private func ready() -> Parts {
         if let parts { return parts }
-        let footprint = AppFootprint()
+        let footprint = makeFootprint()
         let remover = AppRemover.live(
             footprint: footprint,
             confirmQuit: { _ in await UninstallerModel.shared.ask(force: false) },
@@ -35,7 +40,12 @@ actor UninstallerEngine {
 
     func reload() -> [Listing] {
         parts = nil
-        return ready().footprint.installed.map { Listing(app: $0, stamp: Self.stamp($0.url), lastUsed: Self.lastUsed($0.url)) }
+        var listing: [Listing] = []
+        for app in ready().footprint.installed {
+            if Task.isCancelled { return [] }
+            listing.append(Listing(app: app, stamp: Self.stamp(app.url), lastUsed: Self.lastUsed(app.url)))
+        }
+        return listing
     }
 
     func identify(_ url: URL) -> Dropped? {
@@ -68,8 +78,11 @@ actor UninstallerEngine {
         ready().footprint.orphans()
     }
 
-    func offer(_ url: URL, dismissed: Set<String>) -> AppIdentity? {
+    func refresh() {
         parts = nil
+    }
+
+    func offer(_ url: URL, dismissed: Set<String>) -> AppIdentity? {
         let parts = ready()
         guard !parts.remover.records().contains(where: { $0.moves.contains { $0.trash == url.path } }),
               let app = parts.footprint.trashed().first(where: { $0.url.path == url.path }),
@@ -85,7 +98,7 @@ actor UninstallerEngine {
             if Task.isCancelled { return nil }
             total += AppFootprint.allocatedSize(of: item.url)
         }
-        return total
+        return Task.isCancelled ? nil : total
     }
 
     private static func stamp(_ url: URL) -> Date {
@@ -223,7 +236,7 @@ final class UninstallerModel {
     }
     private(set) var loaded = false
 
-    @ObservationIgnored private let engine = UninstallerEngine()
+    @ObservationIgnored private let engine: UninstallerEngine
     @ObservationIgnored private var entries: [AppEntry] = []
     @ObservationIgnored private var known: [String: AppEntry] = [:]
     @ObservationIgnored private var icons: [String: NSImage] = [:]
@@ -234,9 +247,12 @@ final class UninstallerModel {
     @ObservationIgnored private var hushing: Task<Void, Never>?
     @ObservationIgnored private var candidates: [URL] = []
     @ObservationIgnored private var dismissed: Set<String> = []
-    @ObservationIgnored private var draining = false
+    @ObservationIgnored private(set) var draining = false
+    @ObservationIgnored private var stale = false
 
-    private init() {}
+    init(engine: UninstallerEngine = UninstallerEngine()) {
+        self.engine = engine
+    }
 
     func appear() {
         refreshRunning()
@@ -253,6 +269,7 @@ final class UninstallerModel {
         previous?.cancel()
         fill = Task {
             await previous?.value
+            guard !Task.isCancelled else { return }
             let listing = await engine.reload()
             guard !Task.isCancelled else { return }
             merge(listing)
@@ -361,6 +378,7 @@ final class UninstallerModel {
 
     func offer(_ urls: [URL]) {
         candidates += urls.filter { !candidates.contains($0) }
+        stale = true
         drain()
     }
 
@@ -398,6 +416,10 @@ final class UninstallerModel {
         Task {
             defer { draining = false }
             while session == nil, !candidates.isEmpty {
+                if stale {
+                    stale = false
+                    await engine.refresh()
+                }
                 let url = candidates.removeFirst()
                 guard let app = await engine.offer(url, dismissed: dismissed) else { continue }
                 guard session == nil else {
@@ -436,6 +458,7 @@ final class UninstallerModel {
         updateRemoved(await engine.records())
         var apps: [Remnant] = []
         for app in await engine.trashed() {
+            guard !Task.isCancelled else { return }
             let items = await engine.scan(app).filter { $0.kind != .app }
             if !items.isEmpty { apps.append(Remnant(app: app, items: items)) }
         }
@@ -510,7 +533,9 @@ final class UninstallerModel {
             var flushed = Date()
             for url in urls {
                 if Task.isCancelled { return }
-                batch[url.path] = AppFootprint.allocatedSize(of: url)
+                let size = AppFootprint.allocatedSize(of: url)
+                if Task.isCancelled { return }
+                batch[url.path] = size
                 if Date().timeIntervalSince(flushed) > 0.25 {
                     await opened.apply(batch)
                     batch = [:]
@@ -522,7 +547,7 @@ final class UninstallerModel {
         await withTaskCancellationHandler { await job.value } onCancel: { job.cancel() }
     }
 
-    private func pause() async {
+    func pause() async {
         let task = fill
         task?.cancel()
         await task?.value

@@ -413,6 +413,12 @@ The Uninstaller page keeps its choices in `UninstallerLogic`: how the app list i
 swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Uninstaller/UninstallerLogic.swift Sources/pikapik/Core/Symbol.swift scripts/test-uninstaller-ui.swift -o build/test-uninstaller-ui && build/test-uninstaller-ui
 ```
 
+`UninstallerModel` does the Uninstaller page's slow work in the background: it lists the apps, measures how much space each one takes and checks every app that goes to the Trash. Closing the sheet or starting a removal stops a long measurement within moments, and many apps moved to the Trash at once, or many reloads in a row, build the list of apps once instead of once each. The test gives it a made-up Mac in a temporary directory with one app full of empty folders, so nothing real is read or touched, and takes a few seconds:
+
+```bash
+swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Settings/SettingsSearch.swift Sources/pikapik/Tools/Uninstaller/{AppIdentity,AppOwnerIndex,AppFootprint}.swift Sources/pikapik/Tools/Uninstaller/{AppRemover,UninstallerLogic,UninstallerModel}.swift Sources/pikapik/Core/Symbol.swift scripts/test-uninstaller-model.swift -o build/test-uninstaller-model && build/test-uninstaller-model
+```
+
 The **Background Tasks** page shows everything that starts by itself: apps that open at login, launch agents and daemons, helpers inside apps, and tasks left behind by deleted apps. `BackgroundTasks` reads what `launchctl print` reports and uses `AppFootprint` to find the app that added each task, whether it runs now, how it starts and whether its program is gone. Daemons for the whole Mac can be switched only by an administrator; a standard account sees “Needs administrator rights, so turn it off in System Settings” and a button that opens Login Items. Login items and the user’s own agents that pikapik turned off are remembered, and `pikapik --uninstall` puts them back before the app is removed. The test gives it made-up `launchctl` output and a made-up Mac in a temporary directory, so nothing real is read, turned off or touched:
 
 ```bash

@@ -264,6 +264,8 @@ final class AppFootprint {
         AppInventory.trashed(roots).filter { !isInstalledElsewhere($0) }
     }
 
+    static var onEntry: (() -> Void)?
+
     static func allocatedSize(of url: URL) -> Int64 {
         guard let path = strdup(url.path) else { return 0 }
         defer { free(path) }
@@ -272,7 +274,11 @@ final class AppFootprint {
         defer { fts_close(stream) }
         var total: Int64 = 0
         var linked = Set<UInt64>()
+        var visited = 0
         while let entry = fts_read(stream) {
+            onEntry?()
+            visited += 1
+            if visited % 1000 == 0, Task.isCancelled { break }
             let kind = Int32(entry.pointee.fts_info)
             guard [FTS_D, FTS_F, FTS_SL, FTS_SLNONE, FTS_DEFAULT, FTS_DNR].contains(kind), let info = entry.pointee.fts_statp?.pointee else { continue }
             if kind != FTS_D, kind != FTS_DNR, info.st_nlink > 1, !linked.insert(info.st_ino).inserted { continue }
@@ -340,11 +346,17 @@ extension AppFootprint {
     func scan(_ app: AppIdentity) -> [Leftover] {
         let run = makeRun(app)
         merge(makeLeftover(app.url, kind: .app, reason: .bundle, preselected: true), into: run)
+        guard !Task.isCancelled else { return [] }
         scanPlaces(run)
+        guard !Task.isCancelled else { return [] }
         scanJobs(run)
+        guard !Task.isCancelled else { return [] }
         scanLinks(run)
+        guard !Task.isCancelled else { return [] }
         let installer = installerPackages(app)
+        guard !Task.isCancelled else { return [] }
         scanCasks(run, packages: installer.found)
+        guard !Task.isCancelled else { return [] }
         scanReceipts(run, installer)
         return run.found.values.sorted { ($0.kind, $0.url.path.lowercased()) < ($1.kind, $1.url.path.lowercased()) }
     }
@@ -685,6 +697,7 @@ extension AppFootprint {
                 guard kind != FTS_DP, let info = entry.pointee.fts_statp?.pointee else { continue }
                 newest = max(newest, Double(info.st_mtimespec.tv_sec) + Double(info.st_mtimespec.tv_nsec) / 1e9)
                 visited += 1
+                if visited % 1000 == 0, Task.isCancelled { return nil }
                 if visited >= Self.orphanWalkLimit { break }
             }
         }
@@ -729,6 +742,7 @@ extension AppFootprint {
         let alive = aliveJobs()
         var result: [OrphanGroup] = []
         for (key, family) in merged {
+            if Task.isCancelled { return [] }
             guard !AppNames.isApple(family.members.flatMap { AppNames.idForms($0.raw) } + [key]) else { continue }
             guard index.claims(key, mode: .id).isEmpty, !index.idPrefixes.contains(key), !index.vendorPrefixes.contains(AppNames.twoParts(key)), !index.knowsVendor(key) else { continue }
             guard !AppNames.dottedPrefixes(key).contains(where: alive.ids.contains), !alive.ids.contains(where: { $0.hasPrefix(key + ".") }) else { continue }
