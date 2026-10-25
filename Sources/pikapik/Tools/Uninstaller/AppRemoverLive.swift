@@ -23,7 +23,7 @@ extension AppRemover.Hooks {
             running: running,
             confirmQuit: confirmQuit,
             confirmForceQuit: confirmForceQuit,
-            launchctl: launchctl,
+            launchctl: { AppRoots.run(SystemPath.launchctl, $0, seconds: 3) == nil ? -1 : 0 },
             admin: { script, prompt in
                 await onBackground {
                     outcome(KeepAwake.runScript("do shell script \(KeepAwake.scriptQuoted(script)) with prompt \(KeepAwake.scriptQuoted(prompt)) with administrator privileges").error)
@@ -60,17 +60,6 @@ extension AppRemover.Hooks {
                 terminate: { _ = other.terminate() },
                 forceTerminate: { _ = other.forceTerminate() })
         }
-    }
-
-    private static func launchctl(_ arguments: [String]) -> Int32 {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: SystemPath.launchctl)
-        process.arguments = arguments
-        process.standardOutput = FileHandle.nullDevice
-        process.standardError = FileHandle.nullDevice
-        guard (try? process.run()) != nil else { return -1 }
-        process.waitUntilExit()
-        return process.terminationStatus
     }
 
     private static func outcome(_ error: Int, path: String? = nil) -> AppRemover.Outcome {

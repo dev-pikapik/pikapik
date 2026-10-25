@@ -335,7 +335,7 @@ private struct RemovedView: View {
                                 .foregroundStyle(.secondary)
                                 .frame(width: 64, height: 64)
                         }
-                        Text(report.removed > 0 ? String(localized: "Moved \(report.removed) items (\(UninstallerText.size(report.bytes))) to the Trash") : String(localized: "Nothing was moved"))
+                        Text(report.removed > 0 ? String(localized: "Moved \(report.removed) items (\(report.uncounted.isEmpty ? UninstallerText.size(report.bytes) : "…")) to the Trash") : String(localized: "Nothing was moved"))
                             .font(.title2.bold())
                             .multilineTextAlignment(.center)
                         Text(session.app.displayName)

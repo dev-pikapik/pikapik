@@ -134,8 +134,10 @@ final class FakePackages {
 final class FakeLaunchctl {
     var calls: [[String]] = []
     var loaded: Set<String> = []
+    var before: ([String]) -> Void = { _ in }
 
     func run(_ arguments: [String]) -> Int32 {
+        before(arguments)
         calls.append(arguments)
         switch arguments.first {
         case "print": return loaded.contains(arguments[1]) ? 0 : 113
@@ -225,6 +227,16 @@ final class FakeApp {
     }
 }
 
+final class Calls {
+    private let lock = NSLock()
+    private var list: [String] = []
+
+    var all: [String] { lock.withLock { list } }
+
+    @discardableResult
+    func add(_ call: String) -> Int { lock.withLock { list.append(call); return list.count } }
+}
+
 final class Rig {
     static var real: Set<String> = []
 
@@ -239,9 +251,10 @@ final class Rig {
     var quitAsked: [[String]] = []
     var forceAsked: [[String]] = []
     var forgotten: [String] = []
+    var forgetting: (String) -> Void = { _ in }
     var remover: AppRemover!
 
-    init(quitSeconds: Double = 5) {
+    init(quitSeconds: Double = 5, forgetSeconds: Double = 10, serviceSeconds: Double = 10) {
         admin = FakeAdmin(stubs: w.stubs)
         finder = FakeFinder(trash: w.at("trash"))
         packages.stubs = w.stubs
@@ -258,9 +271,13 @@ final class Rig {
             launchctl: launchctl.run,
             admin: admin.run,
             finder: finder.run,
-            forget: { self.forgotten.append($0) })
+            forget: { id in
+                self.forgetting(id)
+                self.forgotten.append(id)
+            })
         let footprint = AppFootprint(roots: w.roots(pkgutil: packages.run), installed: [])
-        remover = AppRemover(footprint: footprint, hooks: hooks, store: w.at("store"), trash: w.at("trash"), quitSeconds: quitSeconds)
+        remover = AppRemover(footprint: footprint, hooks: hooks, store: w.at("store"), trash: w.at("trash"), quitSeconds: quitSeconds,
+                             forgetSeconds: forgetSeconds, serviceSeconds: serviceSeconds)
     }
 
     var stubs: Stubs { w.stubs }
@@ -293,6 +310,10 @@ enum AppRemoverTests {
         await jobs()
         await forgetting()
         await keeping()
+        await uncounted()
+        await recordFirst()
+        await forgetBudget()
+        await serviceBudget()
         await racing()
         messages()
         let left = Rig.real.filter(World.present)
@@ -318,13 +339,13 @@ enum AppRemoverTests {
         w.file(old)
         rig.launchctl.loaded = [rig.gui(label)]
         let moved = [
-            w.item("root/Applications/\(name).app", kind: .app, reason: .bundle),
-            w.item(data),
-            w.item(prefs, kind: .preferences),
-            w.item(agent, kind: .background, label: label),
+            w.item("root/Applications/\(name).app", kind: .app, reason: .bundle, size: 1),
+            w.item(data, size: 20),
+            w.item(prefs, kind: .preferences, size: 300),
+            w.item(agent, kind: .background, label: label, size: 4_000),
         ]
         let items = moved + [w.item(data + "/note.txt"), w.item(ghost), w.item(old)]
-        let bytes = moved.map { AppFootprint.allocatedSize(of: $0.url) }.reduce(0, +)
+        let bytes = moved.compactMap(\.size).reduce(0, +)
         let report = await rig.remove(app, items)
         precondition(report.removed == 4 && report.bytes == bytes && bytes > 0, "\(report)")
         precondition(report.survivors.isEmpty && !report.cancelled && report.stillOpen.isEmpty, "\(report)")
@@ -473,8 +494,8 @@ enum AppRemoverTests {
         let package = "com.example.pika-test.pkg-1"
         rig.packages.installed = [package]
         let receipt = w.item("root/var/db/receipts/\(package).plist", kind: .install, reason: .receipt(package), admin: true, package: package)
-        let moved = [w.item(odd, admin: true)] + twins.map { w.item($0, admin: true) } + [w.item(daemon, kind: .background, admin: true, label: label, daemon: true)]
-        let bytes = moved.map { AppFootprint.allocatedSize(of: $0.url) }.reduce(0, +)
+        let moved = [w.item(odd, admin: true, size: 1)] + twins.map { w.item($0, admin: true, size: 20) } + [w.item(daemon, kind: .background, admin: true, label: label, daemon: true, size: 300)]
+        let bytes = moved.compactMap(\.size).reduce(0, +)
         let report = await rig.remove(app, moved + [receipt])
 
         let trash = w.at("trash").path
@@ -884,6 +905,116 @@ enum AppRemoverTests {
             precondition(kept == Array(ids.suffix(10).reversed()), "\(kept)")
         }
         precondition(w.stored().map(\.id) == Array(ids.suffix(10).reversed()))
+    }
+
+    static func watchdog(_ name: String) -> DispatchWorkItem {
+        let bark = DispatchWorkItem {
+            print("app remover: \(name) still runs after 5 s")
+            exit(1)
+        }
+        DispatchQueue.global().asyncAfter(deadline: .now() + 5, execute: bark)
+        return bark
+    }
+
+    static func uncounted() async {
+        let dog = watchdog("uncounted")
+        defer { dog.cancel() }
+        let rig = Rig()
+        let w = rig.w
+        let name = w.unique("app")
+        let app = w.app(name, id: "com.example.uncounted")
+        let data = "root/Library/Application Support/\(w.unique("data"))"
+        let cache = "root/Library/Caches/\(w.unique("cache"))"
+        w.file(data + "/a")
+        w.file(data + "/b")
+        w.file(cache + "/c")
+        let walked = Calls()
+        AppFootprint.onEntry = {
+            walked.add("entry")
+            usleep(200_000)
+        }
+        let started = Date()
+        let report = await rig.remove(app, [w.item("root/Applications/\(name).app", kind: .app, reason: .bundle, admin: true), w.item(data, admin: true),
+                                            w.item(cache, admin: true, size: 4_321)])
+        let took = Date().timeIntervalSince(started)
+        AppFootprint.onEntry = nil
+        precondition(walked.all.isEmpty && took < 2, "the removal counted sizes itself: \(walked.all.count) entries in \(String(format: "%.1f", took)) s, expected none and under 2 s")
+        precondition(report.removed == 3 && report.survivors.isEmpty && report.bytes == 4_321 && report.record?.bytes == 4_321, "\(report)")
+        precondition(report.uncounted.count == 2 && report.uncounted == report.record?.moves.filter { !$0.original.hasSuffix(cache) }.map(\.trash),
+                     "the sizes left to count in the Trash: \(report.uncounted)")
+    }
+
+    static func recordFirst() async {
+        let rig = Rig()
+        let w = rig.w
+        let name = w.unique("app")
+        let app = w.app(name, id: "com.example.first")
+        let label = w.unique("agent")
+        let agent = "home/Library/LaunchAgents/\(label).plist"
+        w.file(agent)
+        rig.launchctl.loaded = [rig.gui(label)]
+        rig.admin.answer = .failed
+        func saved() -> Int {
+            ((try? Data(contentsOf: w.at("store/records.json"))).flatMap { try? JSONDecoder().decode([AppRemover.Record].self, from: $0) } ?? []).count
+        }
+        var tail: [String] = []
+        rig.launchctl.before = { arguments in
+            if arguments.first == "bootstrap" { tail.append("bootstrap, \(saved()) saved") }
+        }
+        rig.forgetting = { tail.append("forget \($0), \(saved()) saved") }
+        let report = await rig.remove(app, [w.item("root/Applications/\(name).app", kind: .app, reason: .bundle, admin: true), w.item(agent, kind: .background, admin: true, label: label)])
+        precondition(report.removed == 1 && report.record?.moves.count == 1 && report.record?.jobs == [], "\(report)")
+        precondition(tail == ["bootstrap, 1 saved"] + app.ids.map { "forget \($0), 1 saved" }, "the Put Back record must be saved before services restart and permissions are forgotten: \(tail)")
+    }
+
+    static func forgetBudget() async {
+        let dog = watchdog("forgetBudget")
+        defer { dog.cancel() }
+        let rig = Rig(forgetSeconds: 0.3)
+        let w = rig.w
+        let name = w.unique("app")
+        var app = w.app(name, id: "com.example.hang")
+        app.nestedIDs = ["com.example.hang.helper", "com.example.hang.agent"]
+        let calls = Calls()
+        let release = DispatchSemaphore(value: 0)
+        rig.forgetting = { id in
+            if calls.add(id) == 1 { _ = release.wait(timeout: .now() + 3) }
+        }
+        let started = Date()
+        let report = await rig.remove(app, [w.item("root/Applications/\(name).app", kind: .app, reason: .bundle, admin: true)])
+        let took = Date().timeIntervalSince(started)
+        release.signal()
+        precondition(app.ids.count == 3 && took < 1.5 && calls.all == [app.ids[0]],
+                     "a hung forget kept the removal \(String(format: "%.1f", took)) s (budget 0.3 s, at most 1.5 s) and forgot \(calls.all), expected only \(app.ids[0])")
+        precondition(report.removed == 1 && report.record != nil && w.stored() == [report.record!], "\(report)")
+    }
+
+    static func serviceBudget() async {
+        let dog = watchdog("serviceBudget")
+        defer { dog.cancel() }
+        let rig = Rig(serviceSeconds: 0.3)
+        let w = rig.w
+        let app = w.app(w.unique("app"), id: "com.example.services")
+        let agentLabel = w.unique("agent")
+        let daemonLabel = w.unique("daemon")
+        let agent = "home/Library/LaunchAgents/\(agentLabel).plist"
+        let daemon = "root/Library/LaunchDaemons/\(daemonLabel).plist"
+        w.file(agent)
+        w.file(daemon)
+        rig.launchctl.loaded = [rig.gui(agentLabel), "system/\(daemonLabel)"]
+        let calls = Calls()
+        let release = DispatchSemaphore(value: 0)
+        rig.launchctl.before = { arguments in
+            if calls.add(arguments.joined(separator: " ")) == 1 { _ = release.wait(timeout: .now() + 3) }
+        }
+        let started = Date()
+        let report = await rig.remove(app, [w.item(agent, kind: .background, admin: true, label: agentLabel),
+                                            w.item(daemon, kind: .background, admin: true, label: daemonLabel, daemon: true)])
+        let took = Date().timeIntervalSince(started)
+        release.signal()
+        precondition(took < 1.5 && calls.all == ["print \(rig.gui(agentLabel))"],
+                     "a hung launchctl kept the removal \(String(format: "%.1f", took)) s (budget 0.3 s, at most 1.5 s) and ran \(calls.all), expected only the first print")
+        precondition(report.removed == 2 && report.record?.jobs == [] && rig.admin.scripts.count == 1 && !rig.admin.scripts[0].contains("bootout"), "\(report) \(rig.admin.scripts)")
     }
 
     static func messages() {

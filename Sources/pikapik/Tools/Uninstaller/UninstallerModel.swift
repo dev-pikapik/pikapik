@@ -19,10 +19,15 @@ actor UninstallerEngine {
     }
 
     private var parts: Parts?
+    private let makeFootprint: () -> AppFootprint
+
+    init(footprint: @escaping () -> AppFootprint = { AppFootprint() }) {
+        makeFootprint = footprint
+    }
 
     private func ready() -> Parts {
         if let parts { return parts }
-        let footprint = AppFootprint()
+        let footprint = makeFootprint()
         let remover = AppRemover.live(
             footprint: footprint,
             confirmQuit: { _ in await UninstallerModel.shared.ask(force: false) },
@@ -35,7 +40,12 @@ actor UninstallerEngine {
 
     func reload() -> [Listing] {
         parts = nil
-        return ready().footprint.installed.map { Listing(app: $0, stamp: Self.stamp($0.url), lastUsed: Self.lastUsed($0.url)) }
+        var listing: [Listing] = []
+        for app in ready().footprint.installed {
+            if Task.isCancelled { return [] }
+            listing.append(Listing(app: app, stamp: Self.stamp(app.url), lastUsed: Self.lastUsed(app.url)))
+        }
+        return listing
     }
 
     func identify(_ url: URL) -> Dropped? {
@@ -60,6 +70,10 @@ actor UninstallerEngine {
         ready().remover.records()
     }
 
+    func update(_ id: String, bytes: Int64) {
+        ready().remover.update(id, bytes: bytes)
+    }
+
     func trashed() -> [AppIdentity] {
         ready().footprint.trashed()
     }
@@ -68,8 +82,11 @@ actor UninstallerEngine {
         ready().footprint.orphans()
     }
 
-    func offer(_ url: URL, dismissed: Set<String>) -> AppIdentity? {
+    func refresh() {
         parts = nil
+    }
+
+    func offer(_ url: URL, dismissed: Set<String>) -> AppIdentity? {
         let parts = ready()
         guard !parts.remover.records().contains(where: { $0.moves.contains { $0.trash == url.path } }),
               let app = parts.footprint.trashed().first(where: { $0.url.path == url.path }),
@@ -85,7 +102,7 @@ actor UninstallerEngine {
             if Task.isCancelled { return nil }
             total += AppFootprint.allocatedSize(of: item.url)
         }
-        return total
+        return Task.isCancelled ? nil : total
     }
 
     private static func stamp(_ url: URL) -> Date {
@@ -218,15 +235,21 @@ final class UninstallerModel {
     var removed: [Removal] = []
     var session: UninstallSession? {
         didSet {
-            if session == nil, let ended = oldValue { settle(ended) }
+            if session == nil, let ended = oldValue {
+                if !ended.isBusy { ended.work?.cancel() }
+                settle(ended)
+            }
         }
     }
     private(set) var loaded = false
 
-    @ObservationIgnored private let engine = UninstallerEngine()
+    @ObservationIgnored private let engine: UninstallerEngine
     @ObservationIgnored private var entries: [AppEntry] = []
     @ObservationIgnored private var known: [String: AppEntry] = [:]
-    @ObservationIgnored private var icons: [String: NSImage] = [:]
+    private var icons: [String: NSImage] = [:]
+    @ObservationIgnored private var wantedIcons: [(path: String, app: Bool)] = []
+    @ObservationIgnored private var askedIcons: Set<String> = []
+    @ObservationIgnored private let drawIcon: @Sendable (String, Bool) -> NSImage?
     @ObservationIgnored private var urgent: [AppEntry] = []
     @ObservationIgnored private var pending: [AppEntry] = []
     @ObservationIgnored private var fill: Task<Void, Never>?
@@ -234,9 +257,14 @@ final class UninstallerModel {
     @ObservationIgnored private var hushing: Task<Void, Never>?
     @ObservationIgnored private var candidates: [URL] = []
     @ObservationIgnored private var dismissed: Set<String> = []
-    @ObservationIgnored private var draining = false
+    @ObservationIgnored private(set) var draining = false
+    @ObservationIgnored private(set) var trashCounts: [String: Task<Void, Never>] = [:]
+    @ObservationIgnored private var stale = false
 
-    private init() {}
+    init(engine: UninstallerEngine = UninstallerEngine(), drawIcon: @escaping @Sendable (String, Bool) -> NSImage? = { UninstallerModel.picture(at: $0, app: $1) }) {
+        self.engine = engine
+        self.drawIcon = drawIcon
+    }
 
     func appear() {
         refreshRunning()
@@ -253,6 +281,7 @@ final class UninstallerModel {
         previous?.cancel()
         fill = Task {
             await previous?.value
+            guard !Task.isCancelled else { return }
             let listing = await engine.reload()
             guard !Task.isCancelled else { return }
             merge(listing)
@@ -278,14 +307,45 @@ final class UninstallerModel {
     }
 
     func icon(at url: URL) -> NSImage {
-        if let icon = icons[url.path] { return icon }
-        let icon = NSWorkspace.shared.icon(forFile: url.path)
-        icons[url.path] = icon
-        return icon
+        icon(url.path, app: false)
     }
 
     func icon(of app: AppIdentity) -> NSImage {
-        icons[app.url.path] ?? (FileManager.default.fileExists(atPath: app.url.path) ? icon(at: app.url) : NSWorkspace.shared.icon(for: .applicationBundle))
+        icon(app.url.path, app: true)
+    }
+
+    private static let appIcon = NSWorkspace.shared.icon(for: .applicationBundle)
+    private static let noIcon = NSImage()
+
+    private func icon(_ path: String, app: Bool) -> NSImage {
+        if let icon = icons[path] { return icon }
+        if askedIcons.insert(path).inserted {
+            wantedIcons.append((path, app))
+            if wantedIcons.count == 1 { Task { await drawIcons() } }
+        }
+        return app ? Self.appIcon : Self.noIcon
+    }
+
+    private func drawIcons() async {
+        let wanted = wantedIcons
+        wantedIcons = []
+        let draw = drawIcon
+        let drawn = await Task.detached(priority: .userInitiated) { wanted.map { ($0.path, draw($0.path, $0.app)) } }.value
+        for (path, icon) in drawn where icon == nil { askedIcons.remove(path) }
+        let found = drawn.compactMap { path, icon in icon.map { (path, $0) } }
+        // Even an empty merge redraws every row, which would look for a missing app again and again.
+        if !found.isEmpty { icons.merge(found) { $1 } }
+    }
+
+    // macOS reads the picture inside an icon from the file only when the icon is drawn, so it is drawn here,
+    // off the main thread, and an app on a slow disk or network volume can't freeze the window.
+    // An app that isn't there keeps the placeholder and is looked for again the next time it's shown.
+    nonisolated static func picture(at path: String, app: Bool) -> NSImage? {
+        guard !app || FileManager.default.fileExists(atPath: path) else { return nil }
+        let icon = NSWorkspace.shared.icon(forFile: path)
+        var frame = NSRect(x: 0, y: 0, width: 128, height: 128)
+        guard let picture = icon.cgImage(forProposedRect: &frame, context: nil, hints: nil) else { return icon }
+        return NSImage(cgImage: picture, size: NSSize(width: 64, height: 64))
     }
 
     func open(_ app: AppIdentity, notice: String? = nil) {
@@ -339,6 +399,7 @@ final class UninstallerModel {
 
     func putBack() {
         guard let current = session, case .removed(let report) = current.phase, let record = report.record else { return }
+        trashCounts[record.id]?.cancel()
         current.phase = .restoring
         current.work = Task {
             await pause()
@@ -350,6 +411,7 @@ final class UninstallerModel {
 
     func putBack(_ record: AppRemover.Record) {
         guard let index = removed.firstIndex(where: { $0.id == record.id }), case .idle = removed[index].state else { return }
+        trashCounts[record.id]?.cancel()
         removed[index].state = .working
         Task {
             await pause()
@@ -361,6 +423,7 @@ final class UninstallerModel {
 
     func offer(_ urls: [URL]) {
         candidates += urls.filter { !candidates.contains($0) }
+        stale = true
         drain()
     }
 
@@ -398,6 +461,10 @@ final class UninstallerModel {
         Task {
             defer { draining = false }
             while session == nil, !candidates.isEmpty {
+                if stale {
+                    stale = false
+                    await engine.refresh()
+                }
                 let url = candidates.removeFirst()
                 guard let app = await engine.offer(url, dismissed: dismissed) else { continue }
                 guard session == nil else {
@@ -436,6 +503,7 @@ final class UninstallerModel {
         updateRemoved(await engine.records())
         var apps: [Remnant] = []
         for app in await engine.trashed() {
+            guard !Task.isCancelled else { return }
             let items = await engine.scan(app).filter { $0.kind != .app }
             if !items.isEmpty { apps.append(Remnant(app: app, items: items)) }
         }
@@ -510,7 +578,9 @@ final class UninstallerModel {
             var flushed = Date()
             for url in urls {
                 if Task.isCancelled { return }
-                batch[url.path] = AppFootprint.allocatedSize(of: url)
+                let size = AppFootprint.allocatedSize(of: url)
+                if Task.isCancelled { return }
+                batch[url.path] = size
                 if Date().timeIntervalSince(flushed) > 0.25 {
                     await opened.apply(batch)
                     batch = [:]
@@ -522,7 +592,7 @@ final class UninstallerModel {
         await withTaskCancellationHandler { await job.value } onCancel: { job.cancel() }
     }
 
-    private func pause() async {
+    func pause() async {
         let task = fill
         task?.cancel()
         await task?.value
@@ -536,8 +606,30 @@ final class UninstallerModel {
             current.phase = .choosing
         } else {
             current.phase = .removed(report)
+            if !report.uncounted.isEmpty, let id = report.record?.id { trashCounts[id] = Task { await count(current, report); trashCounts[id] = nil } }
         }
         reload()
+    }
+
+    private func count(_ current: UninstallSession, _ report: AppRemover.Report) async {
+        let paths = report.uncounted
+        let job = Task.detached(priority: .userInitiated) { () -> Int64? in
+            var extra: Int64 = 0
+            for path in paths {
+                if Task.isCancelled { return nil }
+                extra += AppFootprint.allocatedSize(of: URL(fileURLWithPath: path))
+            }
+            return Task.isCancelled ? nil : extra
+        }
+        guard let extra = await withTaskCancellationHandler(operation: { await job.value }, onCancel: { job.cancel() }), !Task.isCancelled else { return }
+        var report = report
+        report.bytes += extra
+        report.uncounted = []
+        report.record?.bytes = report.bytes
+        if case .removed(let shown) = current.phase, shown.record?.id == report.record?.id { current.phase = .removed(report) }
+        guard let record = report.record else { return }
+        await engine.update(record.id, bytes: record.bytes)
+        updateRemoved(await engine.records())
     }
 
     private func say(_ text: String) {
