@@ -147,6 +147,12 @@ In the website build, Hide desktop icons shows as on whenever the desktop is hid
 swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/MainCopyChoice.swift Sources/pikapik/Tools/Finder/DesktopIcons.swift scripts/test-desktop-icons.swift -o build/test-desktop-icons && build/test-desktop-icons
 ```
 
+In the App Store build the curtain over the desktop icons shows the wallpaper frame for the macOS look, read from `AppleInterfaceStyle` when pikapik's own Appearance is Light or Dark. A wallpaper with light and dark versions names their frames in `apple_desktop:apr`, and one that follows the sun or the time of day names them in the `ap` entry of `apple_desktop:solar` or `apple_desktop:h24`; any other picture, unreadable metadata or a frame that isn't there gives the first frame. The choice lives in `WallpaperFrame`, outside the App Store flag, so the test checks it on two-frame pictures made in memory.
+
+```bash
+swiftc -parse-as-library Sources/pikapik/Tools/Finder/DesktopCurtain.swift scripts/test-desktop-curtain.swift -o build/test-desktop-curtain && build/test-desktop-curtain
+```
+
 A `Toggle` inside a `Menu` needs `.toggleStyle(.automatic)`: the switch style that Settings pages apply makes each item draw three rows that do nothing when chosen. The test reads every Swift file in `Sources` and fails on a `Toggle` in a `Menu` without it.
 
 ```bash
