@@ -219,7 +219,7 @@ private struct DesktopIconsSettings: View {
             SystemSettingsRow(
                 title: String(localized: "Or hide them in System Settings"),
                 subtitle: Text("Turn off “On Desktop”"),
-                url: URL(string: "x-apple.systempreferences:com.apple.Desktop-Settings.extension")!,
+                url: DesktopCurtain.settingsLink,
                 guide: SettingsGuide(pane: .desktop, steps: [.checkbox("Show items", option: "On Desktop", on: false)])
             )
         }

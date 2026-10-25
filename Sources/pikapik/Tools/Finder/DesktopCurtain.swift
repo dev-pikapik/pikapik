@@ -4,6 +4,19 @@ import AppKit
 /// The sandbox can't change the Show items setting, so the App Store build hides the desktop icons with a curtain:
 /// one window per screen just above the icons, showing the wallpaper. Clicks go through it to the desktop.
 final class DesktopCurtain {
+    struct Screen {
+        let frame: CGRect
+        let scale: CGFloat
+        let url: URL?
+        let options: [NSWorkspace.DesktopImageOptionKey: Any]
+    }
+
+    static let settingsLink = URL(string: "x-apple.systempreferences:com.apple.Desktop-Settings.extension")!
+    static var screens: () -> [Screen] = {
+        NSScreen.screens.map { Screen(frame: $0.frame, scale: $0.backingScaleFactor, url: NSWorkspace.shared.desktopImageURL(for: $0), options: NSWorkspace.shared.desktopImageOptions(for: $0) ?? [:]) }
+    }
+    static var show: (NSWindow) -> Void = { $0.orderBack(nil) } // below the pet, which lives at the same level
+
     var isOn = false {
         didSet {
             if isOn != oldValue { watch() }
@@ -35,7 +48,7 @@ final class DesktopCurtain {
     }
 
     private func update() {
-        let screens = isOn ? NSScreen.screens : []
+        let screens = isOn ? Self.screens() : []
         let wallpapers = screens.map(Self.wallpaper)
         guard wallpapers != drawn else { return }
         let old = windows
@@ -48,14 +61,11 @@ final class DesktopCurtain {
         WallpaperFrame.dark(own: NSApp.appearance, effective: NSApp.effectiveAppearance, system: UserDefaults.standard.string(forKey: "AppleInterfaceStyle"))
     }
 
-    private static func wallpaper(_ screen: NSScreen) -> String {
-        let workspace = NSWorkspace.shared
-        return "\(screen.frame) \(screen.backingScaleFactor) \(dark) \(workspace.desktopImageURL(for: screen)?.path ?? "") \(workspace.desktopImageOptions(for: screen) ?? [:])"
+    private static func wallpaper(_ screen: Screen) -> String {
+        "\(screen.frame) \(screen.scale) \(dark) \(screen.url?.path ?? "") \(screen.options)"
     }
 
-    private static func curtain(_ screen: NSScreen) -> NSWindow {
-        let workspace = NSWorkspace.shared
-        let options = workspace.desktopImageOptions(for: screen) ?? [:]
+    private static func curtain(_ screen: Screen) -> NSWindow {
         let window = NSWindow(contentRect: screen.frame, styleMask: .borderless, backing: .buffered, defer: false)
         window.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopIconWindow)) + 1)
         window.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
@@ -65,20 +75,20 @@ final class DesktopCurtain {
         window.animationBehavior = .none
         window.hasShadow = false
         window.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
-        window.backgroundColor = options[.fillColor] as? NSColor ?? .windowBackgroundColor
+        window.backgroundColor = screen.options[.fillColor] as? NSColor ?? .windowBackgroundColor
         // Moving (Aerial) wallpapers all report the default picture, so they get the plain color.
         // The real frame would need Screen Recording.
         _ = FolderAccess.reopen()
-        if let url = workspace.desktopImageURL(for: screen), url.lastPathComponent != "DefaultDesktop.heic",
-           let picture = picture(url, covering: CGSize(width: screen.frame.width * screen.backingScaleFactor, height: screen.frame.height * screen.backingScaleFactor)) {
+        if let url = screen.url, url.lastPathComponent != "DefaultDesktop.heic",
+           let picture = picture(url, covering: CGSize(width: screen.frame.width * screen.scale, height: screen.frame.height * screen.scale)) {
             let view = NSView()
             view.wantsLayer = true
             view.layer?.contents = picture
-            view.layer?.contentsScale = screen.backingScaleFactor
-            view.layer?.contentsGravity = gravity(options)
+            view.layer?.contentsScale = screen.scale
+            view.layer?.contentsGravity = gravity(screen.options)
             window.contentView = view
         }
-        window.orderBack(nil) // below the pet, which lives at the same level
+        show(window)
         return window
     }
 
