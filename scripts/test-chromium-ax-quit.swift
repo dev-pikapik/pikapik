@@ -68,5 +68,20 @@ struct TestChromiumAXQuit {
         TextFocus.puttingBack.wait()
         precondition(writes == [true, false] && remembered().isEmpty, "\(writes)")
         print("quitting switches the app off even while both features are on: ok")
+
+        var slept: TimeInterval = 0
+        let sleep: @convention(block) (AnyObject, TimeInterval) -> Void = { _, seconds in slept += seconds }
+        method_setImplementation(class_getClassMethod(Thread.self, #selector(Thread.sleep(forTimeInterval:)))!, imp_implementationWithBlock(sleep))
+        var tries: [String] = []
+        TextFocus.watch(homeEnd, front: nil)
+        precondition(switchOn())
+        TextFocus.write = { _, on, _ in
+            tries.append("\(slept) \(on) \(remembered())")
+            return .cannotComplete
+        }
+        TextFocus.unwatch(bundleID: chrome)
+        TextFocus.puttingBack.wait()
+        precondition(tries == (0..<10).map { "\(Double($0)) false [\(pid)]" } && remembered().isEmpty, "\(tries)")
+        print("an app that does not answer at quit stays remembered while it is tried again every second, 10 times at most: ok")
     }
 }

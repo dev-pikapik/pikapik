@@ -135,7 +135,7 @@ In the website build, Retype words you typed in the wrong language and Home/End 
 swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/TextFocus.swift scripts/test-chromium-ax-journal.swift -o build/test-chromium-ax-journal && build/test-chromium-ax-journal
 ```
 
-Stopping leaves no Chromium app switched on. A switch-on that lands after pikapik has already put the app back is switched off again, a switch-on tried again after pikapik stopped watching does nothing, and an app stays on while Retype or Home/End still needs it, until the last of them is turned off or pikapik quits. The test keeps the journal in a temporary folder.
+Stopping leaves no Chromium app switched on. A switch-on that lands after pikapik has already put the app back is switched off again, a switch-on tried again after pikapik stopped watching does nothing, and an app stays on while Retype or Home/End still needs it, until the last of them is turned off or pikapik quits. An app that does not answer when pikapik quits stays in the journal while it is tried again every second, at most 10 times. The test keeps the journal in a temporary folder.
 
 ```bash
 swiftc -parse-as-library Sources/pikapik/Core/Constants.swift Sources/pikapik/Core/TextFocus.swift scripts/test-chromium-ax-quit.swift -o build/test-chromium-ax-quit && build/test-chromium-ax-quit
