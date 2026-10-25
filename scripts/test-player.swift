@@ -237,7 +237,7 @@ enum TestPlayer {
 
     static func checkDefaultApps() async {
         let folder = FileManager.default.temporaryDirectory.appending(path: "pika-default-apps-\(UUID().uuidString)")
-        let suite = "pika-default-apps-\(UUID().uuidString)"
+        let suite = folder.appending(path: "defaults").path
         let defaults = UserDefaults(suiteName: suite)!
         defer {
             try? FileManager.default.removeItem(at: folder)
