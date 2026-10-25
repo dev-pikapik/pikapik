@@ -27,6 +27,12 @@ enum TestArchive {
     static let manager = FileManager.default
     static let root = manager.temporaryDirectory.appendingPathComponent("test-archive-\(UUID().uuidString)")
     static let quarantineKey = "com.apple.quarantine"
+    // A sanitizer makes the code several times slower, so under one the speed checks allow ten times as long
+    #if SANITIZED
+    static let slowdown = 10.0
+    #else
+    static let slowdown = 1.0
+    #endif
 
     static func main() {
         setvbuf(stdout, nil, _IOLBF, 0)
@@ -362,7 +368,7 @@ enum TestArchive {
         for name in ["a.zip.00000000001", "a.zip.00000000002", "a.zip.99999999999", "c.rar", "c.r-1"] { put(neighbours, name) }
         let begun = Date()
         let gap = Archive.parts(of: path(neighbours, "a.zip.00000000001"))
-        precondition(gap.missing == "a.zip.00000000003" && gap.urls.count == 2 && Date().timeIntervalSince(begun) < 1, "\(String(describing: gap.missing)) after \(Date().timeIntervalSince(begun)) s")
+        precondition(gap.missing == "a.zip.00000000003" && gap.urls.count == 2 && Date().timeIntervalSince(begun) < slowdown, "\(String(describing: gap.missing)) after \(Date().timeIntervalSince(begun)) s")
         precondition(Archive.parts(of: path(neighbours, "c.rar")).missing == nil)
         print("split ok")
     }
@@ -722,7 +728,7 @@ enum TestArchive {
             }
             _ = read(Data(bytes))
         }
-        precondition(Date().timeIntervalSince(started) < 20, "reading 3000 damaged zips took \(Date().timeIntervalSince(started)) s")
+        precondition(Date().timeIntervalSince(started) < 20 * slowdown, "reading 3000 damaged zips took \(Date().timeIntervalSince(started)) s")
 
         let twice = zip64([
             (name: Array("one.bin".utf8), extra: field(0x0001, le64(.max) + le64(1)), method: 8),
@@ -739,7 +745,7 @@ enum TestArchive {
         let long = (0..<(60_000 / line.count)).flatMap { _ in line }
         let begun = Date()
         let page = ZipNames.detect(Array(repeating: long, count: 300))
-        precondition(page == "CP866" && Date().timeIntervalSince(begun) < 2, "\(page) after \(Date().timeIntervalSince(begun)) s")
+        precondition(page == "CP866" && Date().timeIntervalSince(begun) < 2 * slowdown, "\(page) after \(Date().timeIntervalSince(begun)) s")
         print("zip reader ok")
     }
 

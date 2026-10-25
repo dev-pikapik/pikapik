@@ -1,0 +1,165 @@
+name: Nightly
+
+# The tests run the app's code, so like the Tests job in build.yml they need the owner's approval: every night only while
+# the owner keeps the repository variable NIGHTLY set to true, or when the owner starts this workflow by hand with runtime_approved
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+    inputs:
+      runtime_approved:
+        description: Explicit owner approval for app runtime in this run
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  commit:
+    name: New commit
+    if: github.repository_id == '1429245355' && github.repository_owner_id == '241494448' && ((github.event_name == 'schedule' && vars.NIGHTLY == 'true') || (github.event_name == 'workflow_dispatch' && github.actor == github.repository_owner && github.actor_id == '241494448' && inputs.runtime_approved))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    outputs:
+      run: ${{ steps.last.outputs.run }}
+    steps:
+      # A run without the approval skips every job and ends as skipped, so only a nightly that ran counts here
+      - name: Skip the night when main has not changed since the last good nightly
+        id: last
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run=true
+          if [ "$GITHUB_EVENT_NAME" = schedule ]; then
+            last=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow nightly.yml --branch main --status success --limit 1 --json headSha --jq '.[0].headSha // ""')
+            [ "$last" != "$GITHUB_SHA" ] || run=false
+          fi
+          echo "run=$run" | tee -a "$GITHUB_OUTPUT"
+
+  optimized:
+    name: Optimized
+    needs: commit
+    if: github.repository_id == '1429245355' && github.repository_owner_id == '241494448' && ((github.event_name == 'schedule' && vars.NIGHTLY == 'true') || (github.event_name == 'workflow_dispatch' && github.actor == github.repository_owner && github.actor_id == '241494448' && inputs.runtime_approved)) && needs.commit.outputs.run == 'true'
+    runs-on: macos-26
+    # an optimized build of every test line takes longer than the Tests job
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v5
+
+      # the player tests read videos through the app's own FFmpeg build
+      - name: Restore FFmpeg
+        id: ffmpeg
+        uses: actions/cache@v4
+        with:
+          path: Vendor/ffmpeg
+          key: ffmpeg-${{ hashFiles('scripts/fetch-ffmpeg.sh') }}
+
+      - name: Build FFmpeg
+        if: steps.ffmpeg.outputs.cache-hit != 'true'
+        run: |
+          brew install meson ninja nasm pkg-config
+          ./scripts/fetch-ffmpeg.sh
+
+      # test-thumbnails makes its sample videos with Homebrew's ffmpeg; coreutils gives gtimeout, so one stuck test can't stop the rest
+      - name: Install the ffmpeg and timeout tools
+        if: ${{ !cancelled() }}
+        run: brew install ffmpeg coreutils
+
+      # test-archive opens its samples with the app's own 7-Zip
+      - name: Fetch 7-Zip
+        if: ${{ !cancelled() }}
+        run: ./scripts/fetch-7zip.sh
+
+      # test-fan-helper signs small programs with a certificate, as the app signs its helper; a throwaway one stands in for "pikapik Dev"
+      - name: Make a throwaway signing certificate
+        if: ${{ !cancelled() }}
+        run: |
+          cd "$RUNNER_TEMP"
+          printf '[req]\ndistinguished_name = dn\nx509_extensions = ext\nprompt = no\n[dn]\nCN = pikapik CI\n[ext]\nbasicConstraints = critical, CA:false\nkeyUsage = critical, digitalSignature\nextendedKeyUsage = critical, codeSigning\n' > cert.cnf
+          /usr/bin/openssl req -x509 -newkey rsa:2048 -nodes -days 2 -config cert.cnf -keyout key.pem -out cert.pem
+          /usr/bin/openssl pkcs12 -export -inkey key.pem -in cert.pem -out ci.p12 -passout pass:ci
+          keychain="$RUNNER_TEMP/ci.keychain-db"
+          security create-keychain -p ci "$keychain"
+          security set-keychain-settings "$keychain"
+          security unlock-keychain -p ci "$keychain"
+          security import ci.p12 -k "$keychain" -P ci -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k ci "$keychain" > /dev/null
+          security list-keychains -d user -s "$keychain" login.keychain-db
+          security find-identity -p codesigning "$keychain"
+          echo "SIGN_IDENTITY=pikapik CI" >> "$GITHUB_ENV"
+
+      - name: Run the tests from CONTRIBUTING.md built with -O
+        if: ${{ !cancelled() }}
+        env:
+          TEST_SWIFT_FLAGS: -O -whole-module-optimization
+        run: ./scripts/run-tests.sh
+
+  strict-concurrency:
+    name: Strict concurrency
+    needs: commit
+    if: github.repository_id == '1429245355' && github.repository_owner_id == '241494448' && ((github.event_name == 'schedule' && vars.NIGHTLY == 'true') || (github.event_name == 'workflow_dispatch' && github.actor == github.repository_owner && github.actor_id == '241494448' && inputs.runtime_approved)) && needs.commit.outputs.run == 'true'
+    runs-on: macos-26
+    # each build takes about half an hour here, too long to follow the optimized tests in one job
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v5
+
+      # Type checking alone skips the data race checks that run on SIL, such as sending a value across isolation, so this emits SIL.
+      # DEBUG only adds code, so this also compiles the debug-only lines that the release builds in build.yml leave out
+      - name: Compile both debug builds with strict concurrency checking and count the warnings
+        run: |
+          failed=0
+          MIN_OS=$(sed -n 's/^MIN_OS="\(.*\)"$/\1/p' scripts/build.sh)
+          check() {
+            local name=$1 log=build/concurrency-$2.log
+            shift 2
+            echo "::group::$name"
+            swiftc -emit-sil -wmo -o /dev/null -swift-version 5 -strict-concurrency=complete -module-name Pikapik -target "arm64-apple-macos$MIN_OS" -D DEBUG "$@" 2>&1 | tee "$log" || failed=1
+            echo "::endgroup::"
+            echo "| $name | $(sort -u "$log" | grep -c ': warning: ' || true) |" >> "$GITHUB_STEP_SUMMARY"
+          }
+          mkdir -p build
+          printf '| Build | Strict concurrency warnings |\n| --- | --- |\n' >> "$GITHUB_STEP_SUMMARY"
+          sources=()
+          while IFS= read -r -d '' f; do sources+=("$f"); done < <(find Sources -name '*.swift' -print0)
+          check Website website "${sources[@]}" Extensions/Convert/ConvertFormats.swift Extensions/Preview/ZipNames.swift
+          sources=()
+          while IFS= read -r f; do sources+=("$f"); done < <(./scripts/appstore-sources.sh)
+          check "App Store" appstore -D APPSTORE "${sources[@]}"
+          exit $failed
+
+  sanitizers:
+    name: Sanitizers
+    needs: commit
+    if: github.repository_id == '1429245355' && github.repository_owner_id == '241494448' && ((github.event_name == 'schedule' && vars.NIGHTLY == 'true') || (github.event_name == 'workflow_dispatch' && github.actor == github.repository_owner && github.actor_id == '241494448' && inputs.runtime_approved)) && needs.commit.outputs.run == 'true'
+    runs-on: macos-26
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizer: [thread, address]
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install the timeout tool
+        run: brew install coreutils
+
+      - name: Fetch 7-Zip
+        if: ${{ !cancelled() }}
+        run: ./scripts/fetch-7zip.sh
+
+      - name: Run the player, app volume and archive tests under the ${{ matrix.sanitizer }} sanitizer
+        if: ${{ !cancelled() }}
+        env:
+          TEST_SWIFT_FLAGS: -sanitize=${{ matrix.sanitizer }} -D SANITIZED
+        run: ./scripts/run-tests.sh test-player test-app-volume test-archive
