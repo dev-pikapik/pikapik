@@ -26,6 +26,7 @@ Every update to pikapik, version by version. The same news, told simply with a p
 - Permissions: a dimmed switch or an Allow button outside Settings > Permissions now only opens that page on the right row, instead of also showing a macOS permission prompt. pikapik also stops checking permissions every 1.5 seconds once you leave the page, so it no longer keeps waking up in the background while a permission stays off.
 - Settings sync: two Macs set up from one Mac with Migration Assistant, or restored from one backup, now pass changes to each other. Before, they shared one sync identity, so each took the other's file for its own and overwrote it again and again, and no change ever arrived.
 - Settings sync: a Mac with an older pikapik no longer deletes, on your other Macs, the settings of features that version doesn't have yet. Each settings file now lists the settings its version knows.
+- Green button enlarges the window, website version: a busy app under the green button no longer holds up the mouse and the keyboard. pikapik now waits at most 0.2 seconds for each answer from that app; before, a click there could wait about 6 seconds per question while the app was stuck, and macOS could then switch off pikapik’s other keyboard and mouse features until they restarted.
 
 ## [1.56.1] - 2026-10-24
 
