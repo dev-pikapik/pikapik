@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Videospeler: soepel afspelen van MKV en direct vooruitspoelen
+
+<sub>1.56.2 · 26 oktober 2026</sub>
+
+Video's in MKV-, WebM- en MP4-indeling worden nu vloeiend afgespeeld, zonder haperingen, bevriezingen bij het spoelen of vertragingen bij het scrubben.
+
+**Opgelost**
+
+- MKV- en andere videobestanden haperen niet meer tijdens het afspelen en lopen niet meer vast bij het spoelen.
+
+---
+
 ## <a id="v1.56.1"></a>Spelmodus: het wiel houdt zijn richting in spellen
 
 <sub>1.56.1 · 24 oktober 2026</sub>

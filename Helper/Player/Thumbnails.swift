@@ -40,15 +40,21 @@ private final class ThumbnailReader {
         close(file)
     }
 
+    private var lastSync: (pts: Int64, image: CGImage)?
+
     func image(at seconds: Double) -> CGImage? {
         autoreleasepool {
             guard var packet = (try? demuxer.locate(track, track.ticks(CMTime(seconds: seconds, preferredTimescale: 90000)))) ?? nil else { return nil }
             while !packet.sync, let previous = (try? demuxer.previous(packet, track)) ?? nil { packet = previous }
             defer { demuxer.forget(before: packet, track) }
-            guard packet.sync, let buffer = decode(packet) else { return nil }
+            guard packet.sync else { return nil }
+            if let lastSync, lastSync.pts == packet.pts { return lastSync.image }
+            guard let buffer = decode(packet) else { return nil }
             var full: CGImage?
             VTCreateCGImageFromCVPixelBuffer(buffer, options: nil, imageOut: &full)
-            return full.flatMap(shrink)
+            guard let shrunk = full.flatMap(shrink) else { return nil }
+            lastSync = (packet.pts, shrunk)
+            return shrunk
         }
     }
 

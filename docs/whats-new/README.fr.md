@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Lecteur vidéo : lecture fluide des vidéos MKV et défilement instantané
+
+<sub>1.56.2 · 26 octobre 2026</sub>
+
+Les vidéos aux formats MKV, WebM et MP4 sont désormais lues de manière fluide, sans saccades, blocages lors de la recherche ou ralentissements du curseur.
+
+**Corrigé**
+
+- Les fichiers vidéo MKV et autres ne saccadent plus pendant la lecture et ne se figent plus lors du défilement.
+
+---
+
 ## <a id="v1.56.1"></a>Mode jeu : la molette garde sa direction en jeu
 
 <sub>1.56.1 · 24 octobre 2026</sub>

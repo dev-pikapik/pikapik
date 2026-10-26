@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Video oynatıcı: akıcı MKV oynatma ve anında sarma
+
+<sub>1.56.2 · 26 Ekim 2026</sub>
+
+MKV, WebM ve MP4 formatındaki videolar artık takılma, sarma sırasında donma veya gecikme olmadan akıcı bir şekilde oynatılıyor.
+
+**Düzeltilenler**
+
+- MKV ve diğer video dosyaları oynatma sırasında artık takılmıyor ve sararken donmuyor.
+
+---
+
 ## <a id="v1.56.1"></a>Oyun Modu: oyun içinde tekerlek yönünü korur
 
 <sub>1.56.1 · 24 Ekim 2026</sub>

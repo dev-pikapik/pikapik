@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Odtwarzacz wideo: płynne odtwarzanie MKV i natychmiastowe przewijanie
+
+<sub>1.56.2 · 26 października 2026</sub>
+
+Wideo w formatach MKV, WebM i MP4 odtwarzają się teraz płynnie — bez zacięć, zawieszania się przy przewijaniu czy opóźnień suwaka.
+
+**Poprawki**
+
+- Pliki MKV i inne formaty wideo nie zacinają się już podczas odtwarzania ani nie zawieszają przy przewijaniu.
+
+---
+
 ## <a id="v1.56.1"></a>Tryb gry: kółko zachowuje kierunek w grach
 
 <sub>1.56.1 · 24 października 2026</sub>

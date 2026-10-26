@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Player: smooth MKV video playback and instant seeking
+
+<sub>1.56.2 · October 26, 2026</sub>
+
+Videos in MKV, WebM and MP4 format now play smoothly without stutters, seeking freezes or scrubbing lag.
+
+**Fixed**
+
+- MKV and other video files no longer stutter during playback or freeze when seeking and scrubbing.
+
+---
+
 ## <a id="v1.56.1"></a>Game Mode: the wheel keeps its direction in games
 
 <sub>1.56.1 · October 24, 2026</sub>

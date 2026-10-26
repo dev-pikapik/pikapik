@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Videoplayer: Flüssige MKV-Wiedergabe und sofortiges Spulen
+
+<sub>1.56.2 · 26. Oktober 2026</sub>
+
+Videos in den Formaten MKV, WebM und MP4 werden jetzt flüssig wiedergegeben – ohne Ruckeln, Hängenbleiben beim Spulen oder Verzögerungen beim Scrubbing.
+
+**Behoben**
+
+- MKV- und andere Videodateien ruckeln bei der Wiedergabe nicht mehr und frieren beim Spulen nicht mehr ein.
+
+---
+
 ## <a id="v1.56.1"></a>Spielmodus: Das Rad behält im Spiel seine Richtung
 
 <sub>1.56.1 · 24. Oktober 2026</sub>

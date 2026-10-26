@@ -40,7 +40,7 @@ private func makeVideoFormat(_ stream: UnsafeMutablePointer<AVStream>, _ par: AV
             guard let description = parameterSetFormat(sets, hevc: hevc, extensions: extensions) else { return nil }
             return TrackFormat(mediaType: kCMMediaType_Video, description: description, convert: annexBToLengthPrefixed)
         }
-        convert = { annexBUnits($0).isEmpty || !isAnnexB($0) ? $0 : annexBToLengthPrefixed($0) }
+        convert = { !isAnnexB($0) || annexBUnits($0).isEmpty ? $0 : annexBToLengthPrefixed($0) }
     case AV_CODEC_ID_AV1 where PikaCodec.nativeAV1 && extradata.count >= 4 && extradata[0] == 0x81 && extradata[1] >> 5 == 0:
         extensions[kCMFormatDescriptionExtension_SampleDescriptionExtensionAtoms] = ["av1C": extradata]
         codec = kCMVideoCodecType_AV1

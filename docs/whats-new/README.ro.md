@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Player video: redare lină a fișierelor MKV și derulare instantanee
+
+<sub>1.56.2 · 26 octombrie 2026</sub>
+
+Videoclipurile în format MKV, WebM și MP4 sunt redate acum lin, fără întreruperi, blocaje la căutare sau întârzieri ale barei de redare.
+
+**Reparat**
+
+- Fișierele MKV și alte clipuri video nu se mai blochează în timpul redării și nu mai îngheață la derulare.
+
+---
+
 ## <a id="v1.56.1"></a>Modul joc: rotița își păstrează direcția în jocuri
 
 <sub>1.56.1 · 24 octombrie 2026</sub>

@@ -317,7 +317,12 @@ final class PlayerController: NSWindowController, NSWindowDelegate, NSMenuItemVa
             setUpPictureInPicture(engine)
             if engine.hasVideo, engine.duration.seconds > 0 {
                 let thumbnails = Thumbnails(url: url, size: engine.size, duration: engine.duration.seconds)
-                thumbnails.onReady = { [weak self] _ in self?.hover(self?.hovered) }
+                thumbnails.onReady = { [weak self] bucket in
+                    guard let self, let hovered = self.hovered, let engine = self.engine else { return }
+                    if PlayerThumbnail.bucket(hovered * engine.duration.seconds, duration: engine.duration.seconds) == bucket {
+                        self.hover(hovered)
+                    }
+                }
                 self.thumbnails = thumbnails
             }
             resumeKey = Self.resumeKey(url)

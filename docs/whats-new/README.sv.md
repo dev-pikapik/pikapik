@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Videospelare: mjuk MKV-uppspelning och direkt spolning
+
+<sub>1.56.2 · 26 oktober 2026</sub>
+
+Videor i formaten MKV, WebM och MP4 spelas nu upp mjukt utan hackningar, frysningar vid spolning eller eftersläpning i tidslinjen.
+
+**Åtgärdat**
+
+- MKV och andra videofiler hackar inte längre vid uppspelning och fryser inte vid spolning.
+
+---
+
 ## <a id="v1.56.1"></a>Spelläge: hjulet behåller sin riktning i spel
 
 <sub>1.56.1 · 24 oktober 2026</sub>

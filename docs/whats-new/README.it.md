@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Riproduttore video: riproduzione fluida di MKV e avanzamento istantaneo
+
+<sub>1.56.2 · 26 ottobre 2026</sub>
+
+I video in formato MKV, WebM e MP4 vengono ora riprodotti in modo fluido, senza scatti, blocchi durante l'avanzamento o ritardi nello scorrimento.
+
+**Corretto**
+
+- I file video MKV e di altri formati non scattano più durante la riproduzione e non si bloccano durante l'avanzamento.
+
+---
+
 ## <a id="v1.56.1"></a>Modalità gioco: la rotella mantiene la direzione nei giochi
 
 <sub>1.56.1 · 24 ottobre 2026</sub>

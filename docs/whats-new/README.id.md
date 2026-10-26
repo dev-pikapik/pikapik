@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Pemutar video: pemutaran video MKV yang mulus dan pencarian instan
+
+<sub>1.56.2 · 26 Oktober 2026</sub>
+
+Video dalam format MKV, WebM, dan MP4 kini diputar dengan mulus tanpa tersendat, macet saat melompat, atau keterlambatan penggeser.
+
+**Diperbaiki**
+
+- File MKV dan video lainnya tidak lagi tersendat saat diputar atau macet saat melompat.
+
+---
+
 ## <a id="v1.56.1"></a>Mode Game: roda menjaga arahnya di dalam game
 
 <sub>1.56.1 · 24 Oktober 2026</sub>
