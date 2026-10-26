@@ -107,8 +107,16 @@ final class SampleCursor: NSObject, MESampleCursor {
         AVSampleCursorSyncInfo(sampleIsFullSync: ObjCBool(packet.sync && !packet.open), sampleIsPartialSync: ObjCBool(packet.sync && packet.open), sampleIsDroppable: false)
     }
 
-    func samplesWithEarlierDTSsMayHaveLaterPTSs(than cursor: any MESampleCursor) -> Bool { stream.reorders }
-    func samplesWithLaterDTSsMayHaveEarlierPTSs(than cursor: any MESampleCursor) -> Bool { stream.reorders }
+    func samplesWithEarlierDTSsMayHaveLaterPTSs(than cursor: any MESampleCursor) -> Bool {
+        guard stream.reorders, let other = cursor as? SampleCursor else { return false }
+        let window = max(stream.delay, stream.defaultDuration * 16)
+        return packet.dts > other.packet.pts - window
+    }
+
+    func samplesWithLaterDTSsMayHaveEarlierPTSs(than cursor: any MESampleCursor) -> Bool {
+        guard stream.reorders, let other = cursor as? SampleCursor else { return false }
+        return packet.dts < other.packet.pts
+    }
 
     func stepInDecodeOrder(by stepCount: Int64, completionHandler: @escaping @Sendable (Int64, (any Error)?) -> Void) {
         do {

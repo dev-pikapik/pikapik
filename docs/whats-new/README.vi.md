@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Trình phát video: phát video MKV mượt mà và tua tức thì
+
+<sub>1.56.2 · 26 tháng 10 năm 2026</sub>
+
+Video định dạng MKV, WebM và MP4 giờ đây phát mượt mà, không còn giật hình, treo khi tua hoặc trễ thanh trượt.
+
+**Đã sửa**
+
+- Các tệp MKV và video khác không còn bị giật khi phát hoặc bị đơ khi tua.
+
+---
+
 ## <a id="v1.56.1"></a>Chế độ trò chơi: con lăn giữ nguyên hướng trong game
 
 <sub>1.56.1 · 24 tháng 10 năm 2026</sub>

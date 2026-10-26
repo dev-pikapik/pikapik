@@ -468,6 +468,7 @@ final class Demuxer {
                 scanned += 1
                 if packet.pts <= time, packet.pts > best?.pts ?? .min { best = packet }
                 if best != nil { after += 1 }
+                if packet.sync && !packet.open && packet.pts <= (best?.pts ?? time) { break }
                 start = try previous(packet, stream)
             }
             return best ?? firstInPresentationOrder(stream)
@@ -539,17 +540,17 @@ final class Demuxer {
         var back: Int64 = 0
         for _ in 0..<6 {
             if stream.head === packet { return }
-            try seek(to: microseconds(min(packet.pts, packet.dts), stream).minus(back))
+            try seek(to: microseconds(min(packet.pts, packet.dts), stream).minus(back), any: true)
             try read(stream) { $0 === packet || $0.dts > packet.dts }
             back = back == 0 ? Int64(AV_TIME_BASE) : back * 8
         }
         if stream.head !== packet { throw MediaError.parsingFailure }
     }
 
-    private func seek(to time: Int64) throws {
+    private func seek(to time: Int64, any: Bool = false) throws {
         guard let context else { throw MediaError.internalFailure }
-        let any = streams.contains { $0.parser != nil } ? 0 : AVSEEK_FLAG_ANY
-        guard av_seek_frame(context, -1, time, AVSEEK_FLAG_BACKWARD | any) >= 0 || av_seek_frame(context, -1, time, any) >= 0 else { throw MediaError.parsingFailure }
+        let flags = any ? (AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_ANY) : AVSEEK_FLAG_BACKWARD
+        guard av_seek_frame(context, -1, time, flags) >= 0 || av_seek_frame(context, -1, time, AVSEEK_FLAG_BACKWARD | AVSEEK_FLAG_ANY) >= 0 || av_seek_frame(context, -1, time, AVSEEK_FLAG_ANY) >= 0 else { throw MediaError.parsingFailure }
         context.pointee.pb.pointee.error = 0
         for stream in streams {
             stream.head = nil
@@ -606,6 +607,8 @@ final class Demuxer {
         let raw = packet.dts == PikaNoTimestamp ? nil : packet.dts.minus(stream.offset)
         guard var dts = raw ?? previous.map({ $0.dts.plus($0.duration) }) ?? pts.map({ $0.minus(stream.delay) }) else { return }
         if let previous, dts <= previous.dts { dts = previous.dts.plus(1) }
+        if let pts, dts > pts { dts = pts }
+        if let previous, dts < previous.dts { dts = previous.dts }
         let data = stream.payload(packet)
         let run: Run
         if let previous {

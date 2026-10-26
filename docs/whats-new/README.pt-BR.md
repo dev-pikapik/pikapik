@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Reprodutor de vídeo: reprodução fluida de MKV e busca instantânea
+
+<sub>1.56.2 · 26 de outubro de 2026</sub>
+
+Vídeos nos formatos MKV, WebM e MP4 agora são reproduzidos suavemente, sem engasgos, travamentos ao avançar ou atrasos na barra de reprodução.
+
+**Corrigido**
+
+- Arquivos MKV e outros vídeos não engasgam mais durante a reprodução nem travam ao avançar.
+
+---
+
 ## <a id="v1.56.1"></a>Modo jogo: a roda mantém a direção nos jogos
 
 <sub>1.56.1 · 24 de outubro de 2026</sub>

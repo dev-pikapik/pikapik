@@ -43,12 +43,12 @@ final class FrameDecoder {
         times = []
     }
 
-    func decode(_ data: Data?, pts: Int64, duration: Int64, _ track: Track) -> [CMSampleBuffer] {
+    func decode(_ data: Data?, pts: Int64, duration: Int64, _ track: Track, hide: Int64 = .min) -> [CMSampleBuffer] {
         guard let context, let packet else { return [] }
         var output: [CMSampleBuffer] = []
         guard let data else {
             avcodec_send_packet(context, nil)
-            receive(track, into: &output)
+            receive(track, hide: hide, into: &output)
             flush()
             return output
         }
@@ -59,14 +59,14 @@ final class FrameDecoder {
         packet.pointee.duration = duration
         if presentationOrder { times.append((pts, duration)) }
         if avcodec_send_packet(context, packet) == PikaErrorAgain {
-            receive(track, into: &output)
+            receive(track, hide: hide, into: &output)
             avcodec_send_packet(context, packet)
         }
-        receive(track, into: &output)
+        receive(track, hide: hide, into: &output)
         return output
     }
 
-    private func receive(_ track: Track, into output: inout [CMSampleBuffer]) {
+    private func receive(_ track: Track, hide: Int64, into output: inout [CMSampleBuffer]) {
         guard let context, let frame else { return }
         while avcodec_receive_frame(context, frame) >= 0 {
             defer { av_frame_unref(frame) }
@@ -75,7 +75,7 @@ final class FrameDecoder {
                 guard !times.isEmpty else { continue }
                 (pts, duration) = times.removeFirst()
             }
-            guard pts != PikaNoTimestamp, let image = try? makePixelBuffer(frame, makeImage), let sample = sample(image, track.time(pts), track.time(max(duration, 0))) else { continue }
+            guard pts != PikaNoTimestamp, pts >= hide, let image = try? makePixelBuffer(frame, makeImage), let sample = sample(image, track.time(pts), track.time(max(duration, 0))) else { continue }
             output.append(sample)
         }
     }
@@ -347,6 +347,7 @@ final class Engine {
         synchronizer.rate = 0
         end = .zero
         for feed in feeds {
+            if lock.withLock({ wanted != nil }) { return }
             feed.renderer.stopRequestingMediaData()
             feed.renderer.flush()
             feed.decoder?.flush()
@@ -357,6 +358,7 @@ final class Engine {
             feed.done = false
             pump(feed)
         }
+        if lock.withLock({ wanted != nil }) { return }
         synchronizer.setRate(rate, time: time)
         lock.withLock { if wanted == nil { requested = nil } }
         for feed in feeds {
@@ -368,8 +370,9 @@ final class Engine {
 
     private func pump(_ feed: Feed) {
         while !feed.done, feed.renderer.isReadyForMoreMediaData {
+            if lock.withLock({ wanted != nil }) { return }
             guard let packet = feed.next else {
-                if let decoder = feed.decoder { send(decoder.decode(nil, pts: 0, duration: 0, feed.track), feed) }
+                if let decoder = feed.decoder { send(decoder.decode(nil, pts: 0, duration: 0, feed.track, hide: feed.hide), feed) }
                 feed.done = true
                 feed.renderer.stopRequestingMediaData()
                 if feeds.allSatisfy(\.done) {
@@ -383,7 +386,7 @@ final class Engine {
             end = max(end, feed.track.time(packet.pts.plus(packet.duration)))
             if let decoder = feed.decoder {
                 guard let data = try? demuxer.data(packet, feed.track) else { continue }
-                send(decoder.decode(data, pts: packet.pts, duration: packet.duration, feed.track), feed)
+                send(decoder.decode(data, pts: packet.pts, duration: packet.duration, feed.track, hide: feed.hide), feed)
             } else if let buffer = try? demuxer.sampleBuffer([packet], feed.track) {
                 if packet.pts < feed.hide, feed.renderer !== audio, let attachments = CMSampleBufferGetSampleAttachmentsArray(buffer, createIfNecessary: true) as? [NSMutableDictionary] {
                     attachments.first?[kCMSampleAttachmentKey_DoNotDisplay] = true

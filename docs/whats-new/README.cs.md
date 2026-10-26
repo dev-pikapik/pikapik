@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.56.2"></a>Přehrávač videa: plynulé přehrávání MKV a okamžité přetáčení
+
+<sub>1.56.2 · 26. října 2026</sub>
+
+Videa ve formátech MKV, WebM a MP4 se nyní přehrávají plynule bez trhání, zamrzání při přetáčení či zpoždění posuvníku.
+
+**Opraveno**
+
+- Soubory MKV a další videa se již při přehrávání netrhají a nezamrzají při přetáčení.
+
+---
+
 ## <a id="v1.56.1"></a>Herní režim: kolečko si ve hrách udrží směr
 
 <sub>1.56.1 · 24. října 2026</sub>
