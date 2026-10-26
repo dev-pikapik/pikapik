@@ -78,8 +78,8 @@ final class Track {
     let reorders: Bool
     var enabled = false
     fileprivate let offset: Int64
-    fileprivate let defaultDuration: Int64
-    fileprivate let delay: Int64
+    let defaultDuration: Int64
+    let delay: Int64
     fileprivate let decodeOrderTimes: Bool
     fileprivate let sampleRate: Int64
     fileprivate let bytesPerFrame: Int
