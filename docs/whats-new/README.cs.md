@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Velikost zobrazení: plynulý ukazatel a všechny velikosti na dvou stejných monitorech
+
+<sub>1.57.1 · 28. října 2026</sub>
+
+Dvě opravy pro monitory, které jste zvětšili v Nastavení › Monitory, a srozumitelný název pro obrazovku navíc.
+
+**Opraveno**
+
+- Při 125 %, 150 % a 175 % se ukazatel už nezasekává, když s ním pohybujete po zvětšeném monitoru nebo z jednoho monitoru na druhý.
+- Dva stejné monitory, například dva stejného modelu, teď oba nabízejí 125 %, 150 % a 175 %, ne jen 100 % a 200 %.
+
+**Další novinky**
+
+- Při těchto velikostech ukazuje Nastavení systému › Monitory ještě jednu obrazovku. Teď má srozumitelný název, například „Mi monitor – zvětšený pomocí pikapik“, a Nastavení › Monitory v pikapik vysvětluje, že s ní nemusíte nic dělat.
+
+---
+
 ## <a id="v1.57.0"></a>Velikost zobrazení: všechno větší a stále ostré
 
 <sub>1.57.0 · 28. října 2026</sub>

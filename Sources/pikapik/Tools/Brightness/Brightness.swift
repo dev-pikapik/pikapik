@@ -408,12 +408,13 @@ extension NSScreen {
         #endif
     }
 
-    /// The monitor's own name: macOS numbers it, "S34CG50 (1)", while pikapik's virtual display shows it.
+    /// The monitor's own name, also while pikapik's virtual display shows it: that screen is "S34CG50 — enlarged by pikapik",
+    /// and "Monitor" stands in, as on the Displays page, while the monitor's name is not known.
     @MainActor var monitorName: String {
         #if APPSTORE
         localizedName
         #else
-        DisplayScale.shared.monitors.first { $0.displayID == monitorID && !$0.name.isEmpty }?.name ?? localizedName
+        DisplayScale.shared.monitors.first { $0.displayID == monitorID && !$0.name.isEmpty }?.name ?? (monitorID == displayID ? localizedName : String(localized: "Monitor"))
         #endif
     }
 }

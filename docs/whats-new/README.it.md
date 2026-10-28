@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Dimensioni di visualizzazione: un puntatore fluido e tutte le dimensioni su due monitor uguali
+
+<sub>1.57.1 · 28 ottobre 2026</sub>
+
+Due correzioni per i monitor che hai ingrandito in Impostazioni › Schermi, e un nome chiaro per lo schermo in più.
+
+**Corretto**
+
+- A 125%, 150% e 175% il puntatore non si blocca più quando lo muovi su un monitor ingrandito o da un monitor all’altro.
+- Due monitor uguali, per esempio due dello stesso modello, ora offrono entrambi 125%, 150% e 175%, non solo 100% e 200%.
+
+**Altre novità**
+
+- A queste dimensioni Impostazioni di Sistema › Schermi mostra uno schermo in più. Ora ha un nome chiaro, per esempio «Mi monitor – ingrandito da pikapik», e Impostazioni › Schermi in pikapik spiega che non devi farci nulla.
+
+---
+
 ## <a id="v1.57.0"></a>Dimensioni di visualizzazione: tutto più grande, ancora nitido
 
 <sub>1.57.0 · 28 ottobre 2026</sub>

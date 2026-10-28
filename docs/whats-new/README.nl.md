@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Weergavegrootte: een soepele aanwijzer en alle groottes op twee gelijke monitoren
+
+<sub>1.57.1 · 28 oktober 2026</sub>
+
+Twee verbeteringen voor monitoren die je in Instellingen › Beeldschermen hebt vergroot, en een duidelijke naam voor het extra scherm.
+
+**Opgelost**
+
+- Bij 125%, 150% en 175% blijft de aanwijzer niet meer hangen als je hem over een vergrote monitor of van de ene monitor naar de andere beweegt.
+- Twee gelijke monitoren, bijvoorbeeld twee van hetzelfde model, bieden nu allebei 125%, 150% en 175%, niet alleen 100% en 200%.
+
+**Ook nieuw**
+
+- Bij deze groottes toont Systeeminstellingen › Beeldschermen nog een scherm. Het heeft nu een duidelijke naam, zoals ‘Mi monitor – vergroot door pikapik’, en Instellingen › Beeldschermen in pikapik legt uit dat je er niets mee hoeft te doen.
+
+---
+
 ## <a id="v1.57.0"></a>Weergavegrootte: alles groter en toch scherp
 
 <sub>1.57.0 · 28 oktober 2026</sub>

@@ -99,10 +99,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         displaysItem.isHidden = NSScreen.screens.count < 2
         displays.removeAllItems()
         for screen in NSScreen.screens {
-            let item = NSMenuItem(title: screen.localizedName, action: #selector(PlayerController.moveToScreen(_:)), keyEquivalent: "")
+            let item = NSMenuItem(title: PlayerDisplays.monitorName(screen.localizedName, formats: Self.enlarged), action: #selector(PlayerController.moveToScreen(_:)), keyEquivalent: "")
             item.representedObject = screen
             displays.addItem(item)
         }
+    }
+
+    /// The name of the screen pikapik's Display scale shows a monitor larger through, in every language the Player carries:
+    /// pikapik names it in its own language, which may not be the Player's.
+    private static let enlarged = Bundle.main.localizations.compactMap { language in
+        Bundle.main.path(forResource: language, ofType: "lproj").flatMap { Bundle(path: $0)?.localizedString(forKey: "%@ — enlarged by pikapik", value: nil, table: nil) }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { !players.contains(where: \.hiddenForPip) }

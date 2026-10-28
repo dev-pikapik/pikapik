@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Taille d’affichage : un pointeur fluide et toutes les tailles sur deux moniteurs identiques
+
+<sub>1.57.1 · 28 octobre 2026</sub>
+
+Deux corrections pour les moniteurs agrandis dans Réglages › Moniteurs, et un nom clair pour l’écran supplémentaire.
+
+**Corrigé**
+
+- À 125 %, 150 % et 175 %, le pointeur ne se bloque plus quand vous le déplacez sur un moniteur agrandi ou d’un moniteur à l’autre.
+- Deux moniteurs identiques, par exemple deux du même modèle, proposent maintenant tous les deux 125 %, 150 % et 175 %, et plus seulement 100 % et 200 %.
+
+**Aussi nouveau**
+
+- À ces tailles, Réglages Système › Moniteurs affiche un écran de plus. Il porte maintenant un nom clair, par exemple « Mi monitor – agrandi par pikapik », et Réglages › Moniteurs dans pikapik explique que vous n’avez rien à faire avec lui.
+
+---
+
 ## <a id="v1.57.0"></a>Taille d’affichage : tout en plus grand, toujours net
 
 <sub>1.57.0 · 28 octobre 2026</sub>

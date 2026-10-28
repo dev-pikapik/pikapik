@@ -1431,6 +1431,149 @@
         }
       }
     },
+    "%@ — enlarged by pikapik": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "‏%@ — مكبّرة بواسطة pikapik"
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ – zvětšený pomocí pikapik"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ – von pikapik vergrößert"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — enlarged by pikapik"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — ampliado por pikapik"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ – agrandi par pikapik"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — pikapik से बड़ा किया गया"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — diperbesar oleh pikapik"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ – ingrandito da pikapik"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@（pikapikで拡大）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@(pikapik으로 확대됨)"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ – vergroot door pikapik"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ – powiększony przez pikapik"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — ampliado pelo pikapik"
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ – mărit de pikapik"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — увеличен в pikapik"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ – förstorad av pikapik"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (ขยายโดย pikapik)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — pikapik ile büyütülmüş"
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ — збільшений у pikapik"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ – được pikapik phóng to"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@（由 pikapik 放大）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@（由 pikapik 放大）"
+          }
+        }
+      }
+    },
     "%lld items": {
       "extractionState": "manual",
       "localizations": {
@@ -64590,6 +64733,149 @@
           "stringUnit": {
             "state": "translated",
             "value": "在 Finder 中，⌫ 和 ⌦（筆電上為 fn ⌫）會把所選檔案移到垃圾桶，和 ⌘⌫ 一樣。輸入名稱或搜尋時，它們照常刪除文字。"
+          }
+        }
+      }
+    },
+    "In System Settings › Displays you’ll see one more screen, “%@”: that’s how pikapik makes everything larger, and you don’t need to do anything with it.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تظهر في إعدادات النظام › شاشات العرض شاشة إضافية باسم «%@»: هكذا يعرض pikapik الصورة المكبّرة، ولا حاجة إلى فعل أي شيء بها."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "V Nastavení systému › Monitory uvidíte ještě jednu obrazovku, „%@“: takto pikapik zobrazuje zvětšený obraz a nemusíte s ní nic dělat."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Systemeinstellungen › Displays siehst du einen weiteren Bildschirm, „%@“: So zeigt pikapik das größere Bild, und du musst damit nichts tun."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In System Settings › Displays you’ll see one more screen, “%@”: that’s how pikapik makes everything larger, and you don’t need to do anything with it."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En Ajustes del Sistema › Pantallas verás una pantalla más, «%@»: así es como pikapik muestra la imagen más grande, y no tienes que hacer nada con ella."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dans Réglages Système › Moniteurs, vous verrez un écran de plus, « %@ » : c’est ainsi que pikapik affiche l’image agrandie, et vous n’avez rien à faire."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "सिस्टम सेटिंग › डिस्प्ले में आपको एक और स्क्रीन “%@” दिखेगी: pikapik इसी तरह सब कुछ बड़ा करता है, और आपको इसके साथ कुछ करने की ज़रूरत नहीं है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Di Pengaturan Sistem › Layar, Anda akan melihat satu layar lagi, “%@”: begitulah cara pikapik menampilkan gambar yang lebih besar, dan Anda tidak perlu melakukan apa pun dengannya."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Impostazioni di Sistema › Schermi vedrai uno schermo in più, «%@»: è così che pikapik mostra l’immagine più grande, e non devi farci nulla."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "システム設定 › ディスプレイには画面「%@」も表示されますが、これはpikapikが拡大表示するためのもので、何もする必要はありません。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시스템 설정 › 디스플레이에 ‘%@’ 화면이 하나 더 표시되는데, pikapik이 화면을 크게 보여 주는 방식이므로 아무것도 하지 않아도 됩니다."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Systeeminstellingen › Beeldschermen zie je nog een scherm, ‘%@’: zo toont pikapik het grotere beeld, en je hoeft er niets mee te doen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W Ustawieniach systemowych › Wyświetlacze zobaczysz jeszcze jeden ekran, „%@”: tak pikapik pokazuje powiększony obraz i nie musisz nic z nim robić."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Em Ajustes do Sistema › Telas, você verá mais uma tela, “%@”: é assim que o pikapik mostra a imagem maior, e não é preciso fazer nada com ela."
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "În Configurări sistem › Afișaje veți vedea încă un ecran, „%@”: așa afișează pikapik imaginea mărită și nu trebuie să faceți nimic cu el."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "В Системных настройках › Дисплеи вы увидите ещё один экран, «%@»: так pikapik показывает увеличенное изображение, и делать с ним ничего не нужно."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I Systeminställningar › Bildskärmar ser du ytterligare en skärm, ”%@”: så gör pikapik allt större, och du behöver inte göra något med den."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ในการตั้งค่าระบบ › จอภาพ คุณจะเห็นหน้าจอเพิ่มขึ้นอีกหนึ่งจอชื่อ “%@” ซึ่งเป็นวิธีที่ pikapik ใช้แสดงภาพให้ใหญ่ขึ้น คุณไม่ต้องทำอะไรกับหน้าจอนี้"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sistem Ayarları › Ekranlar’da “%@” adlı bir ekran daha göreceksiniz: pikapik büyütülmüş görüntüyü bu şekilde gösterir ve onunla ilgili bir şey yapmanız gerekmez."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "У Системних параметрах › Дисплеї ви побачите ще один екран, «%@»: так pikapik показує збільшене зображення, і робити з ним нічого не потрібно."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trong Cài đặt hệ thống › Màn hình, bạn sẽ thấy thêm một màn hình “%@”: đây là cách pikapik hiển thị hình ảnh lớn hơn, và bạn không cần làm gì với nó."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在“系统设置” › “显示器”中会多出一个屏幕“%@”：pikapik 正是通过它显示放大的画面，你无需对它进行任何操作。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在「系統設定」›「顯示器」中會多出一個螢幕「%@」：pikapik 就是透過它顯示放大的畫面，你不需要對它做任何事。"
           }
         }
       }

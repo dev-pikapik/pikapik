@@ -242,3 +242,16 @@ enum PlayerThumbnail {
         return nil
     }
 }
+
+enum PlayerDisplays {
+    /// The monitor's own name, also while pikapik's Display scale shows it larger through a screen named after it in one of
+    /// `formats`, "S34CG50 — enlarged by pikapik".
+    static func monitorName(_ name: String, formats: [String]) -> String {
+        for format in formats {
+            let parts = format.components(separatedBy: "%@")
+            guard parts.count == 2, name.count > parts[0].count + parts[1].count, name.hasPrefix(parts[0]), name.hasSuffix(parts[1]) else { continue }
+            return String(name.dropFirst(parts[0].count).dropLast(parts[1].count))
+        }
+        return name
+    }
+}

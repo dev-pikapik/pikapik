@@ -18,6 +18,8 @@ import AppKit
         var usual: Int
         var stored: Int?
         var available: Bool
+        /// The name of pikapik's virtual display while it shows the monitor: System Settings lists it as one more screen.
+        var virtualName: String?
 
         func looksLike(_ percent: Int) -> (width: Int, height: Int) {
             DisplayScaleMath.looksLike(nativeWidth: nativeWidth, nativeHeight: nativeHeight, percent: percent)
@@ -44,6 +46,8 @@ import AppKit
     @ObservationIgnored private var attempts: [CGDirectDisplayID: Int] = [:]
     /// When a broken mirror was last put back: broken again within a minute, the monitor keeps its own picture.
     @ObservationIgnored private var repaired: [CGDirectDisplayID: Date] = [:]
+    /// Id changes since the last wake or choice (see `renamed`).
+    @ObservationIgnored private var renames: [CGDirectDisplayID: Int] = [:]
     /// While the screens sleep a mirror reads as ended; nothing is put back until they wake.
     @ObservationIgnored private var screensAsleep = false
     /// The pending change started from the monitor's own picture, so going back ends pikapik's changes.
@@ -66,6 +70,7 @@ import AppKit
                     // macOS ends the mirror itself as the screens wake: no sign that something else holds the monitor.
                     DisplayScale.shared.repaired = [:]
                     DisplayScale.shared.attempts = [:]
+                    DisplayScale.shared.renames = [:]
                     DisplayScale.shared.screensChanged()
                 }
             }
@@ -89,6 +94,7 @@ import AppKit
         settled = []
         failed = []
         attempts = [:]
+        renames = [:]
     }
 
     func refresh() {
@@ -97,28 +103,26 @@ import AppKit
         var builtIn = false
         let saved = Self.saved
         let displays = VirtualDisplay.onlineDisplays()
-        // While one of pikapik's virtual displays of a monitor is online, macOS numbers both names: "S34CG50 (1)".
+        // A virtual display named exactly as its monitor, as pikapik 1.57.0 and older made them and another copy may
+        // still hold during a hand-over, makes macOS number both names: "S34CG50 (1)".
         let numbered = Set(displays.compactMap { id in Self.physicalDisplay(of: id) == id ? nil : Self.physicalDisplay(of: id) })
-        let key = { (display: CGDirectDisplayID) in "\(CGDisplayVendorNumber(display))-\(CGDisplayModelNumber(display))-\(CGDisplaySerialNumber(display))" }
-        let keys = displays.map(key)
         for display in displays {
             if CGDisplayIsBuiltin(display) != 0 { builtIn = true; continue }
             // pikapik's own virtual displays stay out, also in the moment their monitor is gone.
             guard !scalers.values.contains(where: { $0.virtual?.id == display }), Self.physicalDisplay(of: display) == display else { continue }
-            // Two monitors of one model with the same serial number: their unit numbers tell them apart, and they keep
-            // to their own modes, because their virtual displays would share one identity.
-            let twin = keys.filter { $0 == key(display) }.count > 1
-            let id = twin ? "\(key(display))-\(CGDisplayUnitNumber(display))" : key(display)
+            let (id, key, unit) = identity(of: display, among: displays)
             if !numbered.contains(display), let screen = NSScreen.screens.first(where: { $0.displayID == display }) { names[id] = screen.localizedName }
+            // Its id changed before screensChanged saw it; the scaler under the old id is released below.
+            if scalers[id]?.display != display, let old = scalers.first(where: { $0.value.display == display }) { renamed(old.value, from: old.key, to: id) }
             var scaler = scalers[id].flatMap { keeps($0, display, id) ? $0 : nil }
             // A monitor in a mirror set pikapik did not make is never touched.
-            if scaler == nil, CGDisplayIsInMirrorSet(display) == 0 { scaler = DisplayScaler(display: display, name: names[id] ?? "") }
+            if scaler == nil, CGDisplayIsInMirrorSet(display) == 0 { scaler = DisplayScaler(display: display, name: names[id] ?? "", unit: unit) }
             guard let native = scaler.map({ (width: $0.nativeWidth, height: $0.nativeHeight) })
                 ?? DisplayScaler.native(in: DisplayScaler.modes(of: display)).map({ (width: $0.pixelWidth, height: $0.pixelHeight) })
             else { continue }
             next[id] = scaler
             let steps = DisplayScaleMath.steps(nativeWidth: native.width, nativeHeight: native.height)
-                .filter { $0 == 100 || scaler?.nativeMode($0) != nil || VirtualDisplay.isAvailable && !twin }
+                .filter { $0 == 100 || scaler?.nativeMode($0) != nil || VirtualDisplay.isAvailable }
             let master = CGDisplayMirrorsDisplay(display)
             let shown = master == scaler?.virtual?.id ? master : display
             let measured = DisplayScaleMath.percent(nativeWidth: native.width, looksLikeWidth: CGDisplayCopyDisplayMode(shown)?.width ?? native.width)
@@ -127,8 +131,9 @@ import AppKit
                 id: id, displayID: display, name: names[id] ?? scaler?.name ?? "", nativeWidth: native.width, nativeHeight: native.height,
                 millimeters: scaler?.millimeters ?? CGDisplayScreenSize(display), steps: steps,
                 virtualSteps: Set(steps.filter { $0 != 100 && scaler?.nativeMode($0) == nil }),
-                current: scaler.flatMap { $0.holds ? $0.percent : nil } ?? measured, usual: usual, stored: saved[id],
-                available: scaler != nil && (CGDisplayIsInMirrorSet(display) == 0 || master == scaler?.virtual?.id)))
+                current: scaler.flatMap { $0.holds ? $0.percent : nil } ?? measured, usual: usual,
+                stored: saved[id] ?? unit.flatMap { _ in DisplayScaleMath.twinSize(saved: saved, key: key, online: Set(displays.map { identity(of: $0, among: displays).id })) },
+                available: scaler != nil && (CGDisplayIsInMirrorSet(display) == 0 || master == scaler?.virtual?.id), virtualName: scaler?.virtual?.name))
         }
         for (id, old) in scalers where next[id] !== old { old.release() }
         scalers = next
@@ -150,6 +155,7 @@ import AppKit
               monitor.available, monitor.steps.contains(percent), percent != monitor.current, let scaler = scalers[id] else { return }
         busy = id
         forgive(allBut: monitor.displayID)
+        renames[monitor.displayID] = nil
         if failure?.monitor == id { failure = nil }
         fromOwn = !scaler.changed
         Task {
@@ -177,8 +183,10 @@ import AppKit
     func keep() {
         guard let pending else { return }
         var saved = Self.saved
-        // Kept at its own picture, the monitor needs no entry: it shows that size without pikapik.
-        saved[pending.monitor] = scalers[pending.monitor]?.changed == false ? nil : pending.to
+        // Kept at its own picture, the monitor needs no entry: it shows that size without pikapik. One of two identical
+        // monitors keeps it all the same, or it would take a size saved for its twin (`DisplayScaleMath.twinSize`).
+        let own = scalers[pending.monitor].map { !$0.changed && $0.unit == nil } ?? false
+        saved[pending.monitor] = own ? nil : pending.to
         UserDefaults.standard.set(saved, forKey: PreferenceKey.displayScale)
         clearPending()
         Log.note("DisplayScale: \(names[pending.monitor] ?? "") keeps \(pending.to)%")
@@ -220,6 +228,21 @@ import AppKit
         UserDefaults.standard.dictionary(forKey: PreferenceKey.displayScale) as? [Monitor.ID: Int] ?? [:]
     }
 
+    /// A monitor's id: vendor-model-serial (`key`), as Brightness keys it. Two monitors of one model with the same serial
+    /// number (some report 0) add their unit numbers, and so do their virtual displays. This Mac remembers such a model
+    /// for good, so one of them alone keeps its id, its size and its virtual display; a model it never saw twice keeps
+    /// the id it always had.
+    private func identity(of display: CGDirectDisplayID, among displays: [CGDirectDisplayID]) -> (id: Monitor.ID, key: String, unit: UInt32?) {
+        let key = { (display: CGDirectDisplayID) in "\(CGDisplayVendorNumber(display))-\(CGDisplayModelNumber(display))-\(CGDisplaySerialNumber(display))" }
+        let own = key(display), unit = CGDisplayUnitNumber(display)
+        var twins = Set(UserDefaults.standard.stringArray(forKey: PreferenceKey.displayScaleTwins) ?? [])
+        if !twins.contains(own), displays.filter({ key($0) == own }).count > 1 {
+            twins.insert(own)
+            UserDefaults.standard.set(twins.sorted(), forKey: PreferenceKey.displayScaleTwins)
+        }
+        return twins.contains(own) ? ("\(own)-\(unit)", own, unit) : (own, own, nil)
+    }
+
     /// A monitor is read again on every refresh, except while it shows something of pikapik's: its mirror, even a
     /// broken one that is put back, or a mode nobody replaced since but macOS itself. A mode someone else set is theirs.
     private func keeps(_ scaler: DisplayScaler, _ display: CGDirectDisplayID, _ id: Monitor.ID) -> Bool {
@@ -240,7 +263,6 @@ import AppKit
     /// Puts the saved step on a monitor that just appeared, or a broken mirror or 2x mode back, one monitor at a time.
     private func settleNext() {
         guard MainCopy.canAct, busy == nil, pending == nil, !screensAsleep else { return }
-        let saved = Self.saved
         for monitor in monitors {
             let display = monitor.displayID
             // A monitor that becomes free counts as appearing; one that sleeps is judged when it wakes.
@@ -264,7 +286,7 @@ import AppKit
             }
             guard !settled.contains(display), attempts[display, default: 0] < 3 else { continue }
             settled.insert(display)
-            let target = scaler.percent ?? saved[monitor.id] ?? monitor.current
+            let target = scaler.percent ?? monitor.stored ?? monitor.current
             guard target != monitor.current || !scaler.holds, monitor.steps.contains(target) else { continue }
             busy = monitor.id
             forgive(allBut: display, mirrors: !scaler.changed)
@@ -289,16 +311,20 @@ import AppKit
         }
     }
 
-    /// A monitor that went away loses its virtual display at once; the rest waits until the screens settle.
+    /// A monitor that went away, or that goes by another id because an identical one came for the first time or its unit
+    /// number changed, loses its virtual display at once; the rest waits until the screens settle, so it is read again
+    /// showing its own picture.
     private func screensChanged() {
         let online = VirtualDisplay.onlineDisplays()
-        for (id, scaler) in scalers where !online.contains(scaler.display) {
-            if scaler.changed { Log.note("DisplayScale: \(names[id] ?? scaler.name) went away") }
+        for (id, scaler) in scalers {
+            let now = online.contains(scaler.display) ? identity(of: scaler.display, among: online).id : nil
+            if now == id { continue }
+            if let now { renamed(scaler, from: id, to: now) } else if scaler.changed { Log.note("DisplayScale: \(names[id] ?? scaler.name) went away") }
             scaler.release()
             scalers[id] = nil
             settled.remove(scaler.display)
             if let pending, pending.monitor == id {
-                failure = Failure(monitor: id, percent: pending.to, problem: .lost)
+                failure = Failure(monitor: now ?? id, percent: pending.to, problem: .lost)
                 clearPending()
             }
         }
@@ -326,6 +352,21 @@ import AppKit
                 }
             }
         }
+    }
+
+    /// A monitor that goes by another id is settled again under it. A unit number should hold while the monitor stays
+    /// connected; if it moved with every change of the screens, setting the size would change them again without end,
+    /// so the third change leaves the monitor at its own picture until a wake or a choice.
+    private func renamed(_ scaler: DisplayScaler, from old: Monitor.ID, to new: Monitor.ID) {
+        let display = scaler.display, count = renames[display, default: 0] + 1
+        renames[display] = count
+        settled.remove(display)
+        guard count <= 3 else { return }
+        Log.note("DisplayScale: \(names[old] ?? scaler.name) goes by \(new) instead of \(old)")
+        guard count == 3 else { return }
+        Log.note("DisplayScale: \(names[old] ?? scaler.name) changed its id three times, left at its own picture until a wake or a choice")
+        failed.insert(display)
+        attempts[display] = 3
     }
 
     private func clearPending() {

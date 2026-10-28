@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Display scale: a smooth pointer, and every size on two identical monitors
+
+<sub>1.57.1 · October 28, 2026</sub>
+
+Two fixes for monitors you made larger in Settings › Displays, and a clear name for the extra screen.
+
+**Fixed**
+
+- At 125%, 150% and 175%, the pointer no longer gets stuck when you move it across an enlarged monitor or from one monitor to another.
+- Two identical monitors, such as two of the same model, now both offer 125%, 150% and 175%, not only 100% and 200%.
+
+**Also new**
+
+- At these sizes System Settings › Displays shows one more screen. It now has a clear name, such as “Mi monitor — enlarged by pikapik”, and Settings › Displays in pikapik explains that you don’t need to do anything with it.
+
+---
+
 ## <a id="v1.57.0"></a>Display scale: everything larger, still sharp
 
 <sub>1.57.0 · October 28, 2026</sub>

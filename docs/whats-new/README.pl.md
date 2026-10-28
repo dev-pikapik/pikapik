@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Rozmiar wyświetlania: płynny wskaźnik i wszystkie rozmiary na dwóch identycznych monitorach
+
+<sub>1.57.1 · 28 października 2026</sub>
+
+Dwie poprawki dla monitorów powiększonych w Ustawieniach › Wyświetlacze i czytelna nazwa dodatkowego ekranu.
+
+**Poprawki**
+
+- Przy 125%, 150% i 175% wskaźnik nie zacina się już, gdy przesuwasz go po powiększonym monitorze lub z jednego monitora na drugi.
+- Dwa identyczne monitory, na przykład dwa tego samego modelu, oba oferują teraz 125%, 150% i 175%, a nie tylko 100% i 200%.
+
+**Także nowe**
+
+- Przy tych rozmiarach w Ustawieniach systemowych › Wyświetlacze widać jeszcze jeden ekran. Ma teraz czytelną nazwę, na przykład „Mi monitor – powiększony przez pikapik”, a w pikapik w Ustawieniach › Wyświetlacze jest wyjaśnione, że nie trzeba nic z nim robić.
+
+---
+
 ## <a id="v1.57.0"></a>Rozmiar wyświetlania: wszystko większe i nadal ostre
 
 <sub>1.57.0 · 28 października 2026</sub>

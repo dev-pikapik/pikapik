@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Dimensiunea afișării: un cursor fluid și toate dimensiunile pe două monitoare identice
+
+<sub>1.57.1 · 28 octombrie 2026</sub>
+
+Două reparații pentru monitoarele pe care le-ați mărit în Setări › Afișaje și un nume clar pentru ecranul în plus.
+
+**Reparat**
+
+- La 125%, 150% și 175%, cursorul nu se mai blochează când îl mișcați pe un monitor mărit sau de pe un monitor pe altul.
+- Două monitoare identice, de exemplu două de același model, oferă acum amândouă 125%, 150% și 175%, nu doar 100% și 200%.
+
+**Tot nou**
+
+- La aceste dimensiuni, Configurări sistem › Afișaje arată încă un ecran. Acum are un nume clar, de exemplu „Mi monitor – mărit de pikapik”, iar Setări › Afișaje din pikapik explică faptul că nu trebuie să faceți nimic cu el.
+
+---
+
 ## <a id="v1.57.0"></a>Dimensiunea afișării: totul mai mare și tot clar
 
 <sub>1.57.0 · 28 octombrie 2026</sub>

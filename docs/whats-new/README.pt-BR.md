@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Tamanho da exibição: um ponteiro suave e todos os tamanhos em dois monitores iguais
+
+<sub>1.57.1 · 28 de outubro de 2026</sub>
+
+Duas correções para os monitores que você ampliou em Ajustes › Telas, e um nome claro para a tela extra.
+
+**Corrigido**
+
+- Em 125%, 150% e 175%, o ponteiro não trava mais quando você o move por um monitor ampliado ou de um monitor para outro.
+- Dois monitores iguais, por exemplo dois do mesmo modelo, agora oferecem 125%, 150% e 175%, e não só 100% e 200%.
+
+**Também novo**
+
+- Nesses tamanhos, Ajustes do Sistema › Telas mostra mais uma tela. Agora ela tem um nome claro, como “Mi monitor — ampliado pelo pikapik”, e Ajustes › Telas no pikapik explica que você não precisa fazer nada com ela.
+
+---
+
 ## <a id="v1.57.0"></a>Tamanho da exibição: tudo maior e ainda nítido
 
 <sub>1.57.0 · 28 de outubro de 2026</sub>

@@ -48,17 +48,31 @@ enum DisplayScaleMath {
             .min { off($0) < off($1) }
     }
 
-    /// The serial number of the virtual display for one monitor and step: FNV-1a over the four values,
-    /// so macOS remembers each step as its own display and never mistakes it for the monitor itself.
-    static func serial(vendor: UInt32, product: UInt32, serial: UInt32, percent: Int) -> UInt32 {
+    /// The serial number of the virtual display for one monitor and step: FNV-1a over the monitor's identity and the
+    /// step, so macOS remembers each step as its own display and never mistakes it for the monitor itself. One of two
+    /// identical monitors adds its unit number, so each gets its own; any other monitor keeps the number it always had.
+    static func serial(vendor: UInt32, product: UInt32, serial: UInt32, unit: UInt32? = nil, percent: Int) -> UInt32 {
         var hash: UInt32 = 2_166_136_261
-        for value in [vendor, product, serial, UInt32(truncatingIfNeeded: percent)] {
+        for value in [vendor, product, serial, UInt32(truncatingIfNeeded: percent)] + [unit].compactMap({ $0 }) {
             for shift in stride(from: 0, to: 32, by: 8) {
                 hash = (hash ^ (value >> UInt32(shift) & 0xFF)) &* 16_777_619
             }
         }
         while hash == 0 || hash == serial { hash &+= 1 }
         return hash
+    }
+
+    /// Whether a display with this serial number is one of the monitor's virtual displays, at any step, made with its
+    /// unit number or without: a monitor that just got an identical twin still has the one made without.
+    static func isVirtual(_ display: UInt32, vendor: UInt32, product: UInt32, serial: UInt32, unit: UInt32) -> Bool {
+        [nil, unit].contains { twin in steps.contains { Self.serial(vendor: vendor, product: product, serial: serial, unit: twin, percent: $0) == display } }
+    }
+
+    /// The saved size for one of two identical monitors whose id has none: macOS may hand out their unit numbers anew
+    /// after a reconnection or a restart, so it takes a size saved for the same model (`key`, alone or with a unit
+    /// number) under an id no monitor has now, the larger one if they differ.
+    static func twinSize(saved: [String: Int], key: String, online: Set<String>) -> Int? {
+        saved.filter { !online.contains($0.key) && ($0.key == key || $0.key.hasPrefix(key + "-")) }.values.max()
     }
 
     /// Whether a monitor mirroring a virtual display shows it sharp: the virtual display at its width and 2x, and the
