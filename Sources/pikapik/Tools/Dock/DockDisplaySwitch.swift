@@ -59,7 +59,10 @@ enum MainDisplay {
         var rest = journal
         rest[set(now)] = nil
         let ours = saved.main.map { now[$0] == .zero } ?? true
-        return (saved.origins != now && ours ? saved.origins : nil, rest)
+        // The display that was main goes back to 0,0 and the rest keep their places around it, also when a display
+        // changed size meanwhile (Display scale) and its old origins would overlap.
+        let home = saved.origins.first { $0.value == .zero }?.key
+        return (ours ? home.flatMap { moved(now, to: $0) } : nil, rest)
     }
 
     static func journal(_ stored: [String: Any]?, old: [String: [Double]]?) -> [String: Saved] {

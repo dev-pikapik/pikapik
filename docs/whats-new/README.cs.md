@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Velikost zobrazení: všechno větší a stále ostré
+
+<sub>1.57.0 · 28. října 2026</sub>
+
+Zvětšete všechno na externím monitoru a nechte to ostré, přímo v aplikaci pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+U mnoha monitorů macOS neumí všechno trochu zvětšit tak, aby zůstalo ostré. Teď dostane každý externí monitor posuvník v Nastavení › Monitory, od 100 % do 200 %. Pod ním je řádek jako „Vypadá jako 2294 × 960“, který ukazuje, kolik se na obrazovku vejde, a malý nákres ukazuje, jak velké bude všechno vypadat.
+
+Stiskněte „Použít 150 %“ a celá obrazovka se změní najednou. Malý panel na tom monitoru se zeptá „Ponechat tuto velikost?“: stiskněte „Ponechat“, nebo „Vrátit zpět“ pro návrat. Když neuděláte nic, původní velikost se sama vrátí po 15 sekundách.
+
+pikapik si pamatuje velikost každého monitoru a nastaví ji znovu při spuštění, při opětovném připojení monitoru a po spánku. Velikost platí, dokud je pikapik spuštěný, i na pozadí, a po úplném ukončení se monitor vrátí k obvyklé velikosti. Pro úplné ukončení podržte Option (⌥), když vybíráte „Ukončit“. Při některých velikostech mohou některé aplikace pro video ukázat černý obraz a stránka na to upozorní. Velikost zobrazení není ve verzi z Mac App Store.
+
+**Vyzkoušejte:** Nastavení › Monitory
+
+---
+
 ## <a id="v1.56.2"></a>Přehrávač videa: plynulé přehrávání MKV a okamžité přetáčení
 
 <sub>1.56.2 · 26. října 2026</sub>

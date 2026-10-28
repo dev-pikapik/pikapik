@@ -150,7 +150,7 @@ private struct SettingsView: View {
                         #if APPSTORE
                         Section("Mac") { rows([.battery, .keepAwake, .brightness, .fans, .temperatures, .ports]) }
                         #else
-                        Section("Mac") { rows([.battery, .keepAwake, .brightness, .fans, .temperatures, .speedTest, .ports]) }
+                        Section("Mac") { rows([.battery, .keepAwake, .brightness, .displays, .fans, .temperatures, .speedTest, .ports]) }
                         #endif
                         Section("Enhancements") { rows([.sound, .keyboard, .mouse, .windows, .dock, .finder, .animations]) }
                         Section("Apps") { rows([.player, .uninstaller, .background, .games, .pet]) }
@@ -277,6 +277,7 @@ private struct SettingsView: View {
         case .battery: BatterySettings()
         case .temperatures: TemperatureSettings()
         #if !APPSTORE
+        case .displays: DisplayScaleSettings()
         case .speedTest: SpeedTestSettings()
         #endif
         case .ports: PortsPage()

@@ -57,6 +57,7 @@ struct SettingsItem: Identifiable {
             SettingsItem(tab: .brightness, title: SettingTitle.brightness, synonyms: "monitor, display, screen, external display, dim, dimmer, brighter, darker, DDC, backlight"),
             SettingsItem(tab: .brightness, title: SettingTitle.brightnessKeys, synonyms: "keyboard, F1, F2, brightness up, brightness down, keys, monitor, display"),
             SettingsItem(tab: .brightness, title: SettingTitle.dimPictureInstead, synonyms: "gamma, dim, darker, software dimming, monitor, display, screen", directOnly: true),
+        ] + displayScaleItems + [
             SettingsItem(tab: .battery, title: SettingTitle.batteryHealth, synonyms: "battery, condition, maximum capacity, cycle count, cycles, wear, service, replace"),
             SettingsItem(tab: .battery, title: SettingTitle.powerAdapter, synonyms: "charger, charging, watts, power use, adapter, plug"),
             SettingsItem(tab: .battery, title: SettingTitle.keepItHealthy, synonyms: "charge limit, 80%, optimized battery charging, charging on hold, heat, temperature, storage, tips"),
@@ -178,6 +179,14 @@ struct SettingsItem: Identifiable {
         ] + (SettingsTab.sound.isAvailable ? [
             SettingsItem(tab: .permissions, title: SettingTitle.systemAudioRecording, synonyms: "privacy, security, access"),
         ] : []) + GameShortcutGroup.allCases.map { SettingsItem(tab: .games, title: $0.title, synonyms: $0.detail) }
+    }
+
+    private static var displayScaleItems: [SettingsItem] {
+        #if APPSTORE
+        []
+        #else
+        [SettingsItem(tab: .displays, title: SettingTitle.displayScale, synonyms: "resolution, scale, scaling, larger, bigger text, text size, zoom, monitor, display, screen, sharp, 4K, HiDPI, Retina")]
+        #endif
     }
 
     private static var speedTestItems: [SettingsItem] {

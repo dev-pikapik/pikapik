@@ -5,6 +5,7 @@ enum TabTitle {
     static var battery: String { String(localized: "Battery") }
     static var keepAwake: String { String(localized: "Keep Awake") }
     static var brightness: String { String(localized: "Brightness") }
+    static var displays: String { String(localized: "Displays") }
     static var fans: String { String(localized: "Fans") }
     static var temperatures: String { String(localized: "Temperature") }
     static var speedTest: String { String(localized: "Speed Test") }
@@ -47,6 +48,9 @@ enum SettingTitle {
     static var brightness: String { String(localized: "Brightness") }
     static var brightnessKeys: String { String(localized: "Brightness keys") }
     static var dimPictureInstead: String { String(localized: "Dim the picture instead") }
+
+    // Displays
+    static var displayScale: String { String(localized: "Display scale") }
 
     // Battery, Fans & Temperature
     static var batteryHealth: String { String(localized: "Battery Health") }

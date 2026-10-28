@@ -31,6 +31,7 @@ body:
         - "Brightness › Brightness"
         - "Brightness › Dim the picture instead"
         - "Brightness › Brightness keys"
+        - "Displays › Display scale"
         - "Fans › Fan speed"
         - "Temperature › Temperature"
         - "Temperature › Processor, Graphics, Memory, Storage, Battery and Wi-Fi"

@@ -272,6 +272,11 @@ Zarówno powyższe polecenie, jak i Homebrew umieszczają aplikację w `/Applica
 <br><b>Środkowe kliknięcie na gładziku</b>
 <br>Stuknij trzema palcami, aby otworzyć link w nowej karcie, jak środkowym przyciskiem myszy.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Rozmiar wyświetlania</b>
+<br>Powiększ wszystko na monitorze, a obraz nadal będzie ostry, od 100% do 200%.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik nie nagrywa, nie przechowuje i nie wysyła niczego, co piszesz lub klika
 **Głośność aplikacji.** Otwórz Ustawienia › Dźwięk i włącz **Głośność aplikacji**. Każda aplikacja, która odtwarza dźwięk, dostaje własny suwak i przycisk wyciszenia, w Ustawieniach i w menu. Ścisz zbyt głośną rozmowę wideo, wycisz hałaśliwą grę i zostaw muzykę, jak jest: głośność Maca i pozostałych aplikacji się nie zmienia. pikapik zapamiętuje poziom każdej aplikacji, a aplikacji, którą zostawisz na pełnej głośności, nigdy nie rusza. Aplikacja, którą ustawisz, zostaje na liście także po restarcie, przyciemniona, gdy jest zamknięta, więc poziom możesz ustawić, zanim aplikacja się uruchomi: kliknij **Dodaj aplikację…** albo przeciągnij aplikację z Findera. Krzyżyk ✕ obok aplikacji ją zapomina i przywraca pełną głośność. Aby zmienić głośność aplikacji, pikapik przepuszcza jej dźwięk przez siebie, dlatego potrzebuje uprawnienia **Nagrywanie dźwięku systemowego**, które włączasz na stronie Uprawnienia. Dźwięk jest tylko przekazywany dalej: nie jest nagrywany, zapisywany ani nigdzie wysyłany, a mikrofon nie jest używany. Wymaga macOS 14.2 lub nowszego, a w macOS 14.0 i 14.1 funkcja jest ukryta. Domyślnie wyłączone.
 
 **Jasność monitorów.** macOS zmienia jasność wbudowanego ekranu i monitorów Apple, ale nie większości innych monitorów. Otwórz Ustawienia › Jasność: każdy monitor, którego macOS nie umie ustawić sam, dostaje własny suwak, a wiersz „Jasność” możesz też dodać do panelu na pasku menu. pikapik zmienia jasność samego monitora, to samo ustawienie co jego przyciski. Jeśli monitor nie reaguje, włącz **Zamiast tego przyciemniaj obraz**: obraz robi się ciemniejszy, ale nigdy czarny. Włącz **Klawisze jasności**, a klawisze jasności będą zmieniać jasność monitora, na którym jest wskaźnik, i pokazywać mały pasek jasności; przytrzymaj ⌥⇧, aby zmieniać ją drobniejszymi krokami. Klawisze potrzebują uprawnienia **Dostępność**, które włączasz na stronie Uprawnienia, a suwaki działają i bez niego. pikapik zapamiętuje jasność każdego monitora i ustawia ją ponownie po uśpieniu. Wersja z Mac App Store tylko przyciemnia obraz. Klawisze jasności są domyślnie wyłączone.
+
+**Rozmiar wyświetlania.** Na wielu monitorach macOS nie potrafi trochę powiększyć wszystkiego tak, by nadal było ostre. Otwórz Ustawienia › Wyświetlacze: każdy zewnętrzny monitor dostaje suwak od 100% do 200%, a pod nim wiersz taki jak „Wygląda jak 2294 × 960” pokazuje, ile mieści się na ekranie. Naciśnij **Użyj 150%**, a cały ekran zmieni się naraz, z ostrym tekstem. Mały panel na tym monitorze zapyta „Zachować ten rozmiar?”: naciśnij **Zachowaj** albo **Wróć**, aby wrócić. Jeśli nic nie zrobisz, dawny rozmiar wróci sam po 15 sekundach. pikapik zapamiętuje rozmiar każdego monitora i ustawia go ponownie przy uruchomieniu, po ponownym podłączeniu monitora i po uśpieniu. Rozmiar obowiązuje, dopóki pikapik działa, także w tle, a po całkowitym zakończeniu pikapik monitor wraca do zwykłego rozmiaru. Aby zakończyć całkowicie, przytrzymaj Option (⌥), wybierając „Zakończ”. Przy niektórych rozmiarach kilka aplikacji wideo może pokazywać czarny obraz, a strona o tym uprzedza. Nie ma go w wersji z Mac App Store.
 
 **Ochrona ⌘Q i ⌘W.** Same ⌘Q i ⌘W nic nie robią, więc nie zamkniesz przypadkiem aplikacji ani okna. Dodaj Shift, aby zrobić to celowo: ⇧⌘Q kończy aplikację, ⇧⌘W zamyka okno. Działa we wszystkich aplikacjach. Każdy klawisz ma własny przełącznik. Domyślnie wyłączone.
 
@@ -421,6 +428,7 @@ Otwórz ustawienia z menu poleceniem **Ustawienia…** lub skrótem ⌘, albo po
 - **Bateria**: poziom naładowania, czas do pełnego naładowania lub pozostały czas, stan, maksymalna pojemność, liczba cykli, zasilacz i moc w watach oraz wskazówki, jak dbać o baterię. Strona tylko pokazuje informacje: limit ładowania nadal znajdziesz w **Ustawienia systemowe › Bateria**. Widać ją tylko na Macu z baterią.
 - **Bez usypiania**: czas trwania, opcje ekranu i pokrywy.
 - **Jasność**: suwak dla każdego monitora, którego macOS nie umie ustawić sam, klawisze jasności i przyciemnianie obrazu zamiast monitora.
+- **Wyświetlacze**: rozmiar od 100% do 200% dla każdego zewnętrznego monitora i rysunek pokazujący, jak duże będzie wszystko.
 - **Wentylatory**: prędkość każdego wentylatora, tryb Auto lub prędkość ustawiana ręcznie, gdy zezwolono na Dostęp administratora.
 - **Temperatura**: jak bardzo nagrzał się Mac, ogólnie i dla każdej części, na przykład procesora, pamięci i baterii.
 - **Test prędkości**: sprawdzenie internetu i tego, do czego wystarczy.

@@ -44,6 +44,7 @@ enum ToolID {
     static let quitOnClose = "quit-on-close"
     static let dockHide = "dock-hide"
     static let dockDisplay = "dock-display"
+    static let displayScale = "display-scale"
     static let newFile = "new-file"
     static let compress = "compress"
     static let convert = "convert"
@@ -116,6 +117,8 @@ enum PreferenceKey {
     static let keepAwakeDisplay = "keep-awake-display"
     static let keepAwakeLid = "keep-awake-lid"
     static let keepAwakeBattery = "keep-awake-battery"
+
+    static let displayScale = "display-scale"
 
     static let fansRPM = "fans-rpm"
     static let speedTestResult = "speed-test-result"
@@ -215,4 +218,5 @@ enum SystemPane {
     static let sharing = "x-apple.systempreferences:com.apple.Sharing-Settings.extension"
     static let mouse = "x-apple.systempreferences:com.apple.Mouse-Settings.extension"
     static let battery = URL(string: "x-apple.systempreferences:com.apple.Battery-Settings.extension")!
+    static let displays = URL(string: "x-apple.systempreferences:com.apple.Displays-Settings.extension")!
 }

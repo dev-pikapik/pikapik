@@ -2,7 +2,11 @@ import AppKit
 import SwiftUI
 
 enum SettingsTab: String, CaseIterable, Identifiable {
-    case general, battery, keepAwake, brightness, fans, temperatures
+    case general, battery, keepAwake, brightness
+    #if !APPSTORE
+    case displays
+    #endif
+    case fans, temperatures
     #if !APPSTORE
     case speedTest
     #endif
@@ -16,6 +20,9 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .battery: TabTitle.battery
         case .keepAwake: TabTitle.keepAwake
         case .brightness: TabTitle.brightness
+        #if !APPSTORE
+        case .displays: TabTitle.displays
+        #endif
         case .fans: TabTitle.fans
         case .temperatures: TabTitle.temperatures
         #if !APPSTORE
@@ -45,6 +52,9 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .battery: .battery100percent
         case .keepAwake: .cupAndSaucerFill
         case .brightness: .sunMaxFill
+        #if !APPSTORE
+        case .displays: .display
+        #endif
         case .fans: .fan
         case .temperatures: .thermometerMedium
         #if !APPSTORE
@@ -83,6 +93,7 @@ enum SettingsTab: String, CaseIterable, Identifiable {
         case .fans: .teal
         case .pet, .temperatures: .red
         #if !APPSTORE
+        case .displays: .blue
         case .speedTest: .green
         #endif
         case .battery: .green

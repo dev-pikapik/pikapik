@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Rozmiar wyświetlania: wszystko większe i nadal ostre
+
+<sub>1.57.0 · 28 października 2026</sub>
+
+Powiększ wszystko na zewnętrznym monitorze, a obraz nadal będzie ostry, prosto z pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+Na wielu monitorach macOS nie potrafi trochę powiększyć wszystkiego tak, by nadal było ostre. Teraz każdy zewnętrzny monitor ma suwak na stronie Ustawienia › Wyświetlacze, od 100% do 200%. Pod nim wiersz taki jak „Wygląda jak 2294 × 960” pokazuje, ile mieści się na ekranie, a mały rysunek pokazuje, jak duże będzie wszystko.
+
+Naciśnij „Użyj 150%”, a cały ekran zmieni się naraz. Mały panel na tym monitorze zapyta „Zachować ten rozmiar?”: naciśnij „Zachowaj” albo „Wróć”, aby wrócić. Jeśli nic nie zrobisz, dawny rozmiar wróci sam po 15 sekundach.
+
+pikapik zapamiętuje rozmiar każdego monitora i ustawia go ponownie przy uruchomieniu, po ponownym podłączeniu monitora i po uśpieniu. Rozmiar obowiązuje, dopóki pikapik działa, także w tle, a po całkowitym zakończeniu pikapik monitor wraca do zwykłego rozmiaru. Aby zakończyć całkowicie, przytrzymaj Option (⌥), wybierając „Zakończ”. Przy niektórych rozmiarach kilka aplikacji wideo może pokazywać czarny obraz, a strona o tym uprzedza. Tej funkcji nie ma w wersji z Mac App Store.
+
+**Wypróbuj:** Ustawienia › Wyświetlacze
+
+---
+
 ## <a id="v1.56.2"></a>Odtwarzacz wideo: płynne odtwarzanie MKV i natychmiastowe przewijanie
 
 <sub>1.56.2 · 26 października 2026</sub>

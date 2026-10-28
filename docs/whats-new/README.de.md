@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Anzeigegröße: alles größer und trotzdem scharf
+
+<sub>1.57.0 · 28. Oktober 2026</sub>
+
+Mach alles auf einem externen Monitor größer und trotzdem scharf, direkt in pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+Bei vielen Monitoren kann macOS Dinge nicht ein wenig größer darstellen und trotzdem scharf halten. Jetzt bekommt jeder externe Monitor einen Regler unter Einstellungen › Displays, von 100 % bis 200 %. Darunter zeigt eine Zeile wie „Sieht aus wie 2294 × 960“, wie viel auf den Bildschirm passt, und eine kleine Zeichnung zeigt, wie groß alles aussehen wird.
+
+Drücke „150 % verwenden“, und der ganze Bildschirm ändert sich auf einmal. Ein kleines Fenster auf diesem Monitor fragt „Diese Größe behalten?“: Drücke „Behalten“, oder „Zurück“, um zurückzukehren. Tust du nichts, kehrt die alte Größe nach 15 Sekunden von selbst zurück.
+
+pikapik merkt sich die Größe jedes Monitors und stellt sie beim Start, wenn du den Monitor wieder anschließt und nach dem Ruhezustand wieder ein. Die Größe gilt, solange pikapik läuft, auch im Hintergrund; erst beim vollständigen Beenden kehrt der Monitor zu seiner üblichen Größe zurück. Um ganz zu beenden, halte die Wahltaste (⌥) gedrückt, wenn du „Beenden“ wählst. Bei manchen Größen zeigen einige Video-Apps ein schwarzes Bild, und die Seite weist darauf hin. Die Anzeigegröße gibt es nicht in der Version aus dem Mac App Store.
+
+**Ausprobieren:** Einstellungen › Displays
+
+---
+
 ## <a id="v1.56.2"></a>Videoplayer: Flüssige MKV-Wiedergabe und sofortiges Spulen
 
 <sub>1.56.2 · 26. Oktober 2026</sub>

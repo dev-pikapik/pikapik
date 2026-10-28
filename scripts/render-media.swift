@@ -5,6 +5,16 @@ func AXIsProcessTrusted() -> Bool { true }
 func CGPreflightListenEventAccess() -> Bool { true }
 func CGPreflightScreenCaptureAccess() -> Bool { true }
 
+/// Art plays only while the app is active, and cards render in an offscreen window of an app that never comes forward.
+private final class RenderApp: NSApplication {
+    override var isActive: Bool { CommandLine.arguments[2] == "cards" || super.isActive }
+}
+
+/// Cards render at 2x even when every screen of this Mac is 1x, so text stays sharp.
+private final class CardWindow: NSWindow {
+    override var backingScaleFactor: CGFloat { 2 }
+}
+
 @main
 @MainActor
 enum RenderMedia {
@@ -52,6 +62,7 @@ enum RenderMedia {
         ("background", BackgroundCard.length, AnyView(BackgroundCard())),
         ("app-volume", 4.8, AnyView(AppVolumeArt(on: true))),
         ("brightness", 7.4, AnyView(BrightnessArt(on: true))),
+        ("display-scale", DisplayScaleCard.length, AnyView(DisplayScaleCard())),
         ("player", PlayerCard.length, AnyView(PlayerCard())),
         ("whats-new/1.23.2/game-shortcuts", 4.2, AnyView(SwitchRowsArt(rows: [(AnyView(KeyCaps(keys: ["⌘Q"])), 64), (AnyView(KeyCaps(keys: ["⌘W"])), 52), (AnyView(KeyCaps(keys: ["⌘Tab", "⌘`"])), 40)]))),
         ("whats-new/1.25.0/game-pictures", 4.2, AnyView(SwitchRowsArt(rows: [(AnyView(GameRuleFrame(rule: .commandQ, story: .still(on: false), height: 32)), 64), (AnyView(GameRuleFrame(rule: .spotlight, story: .still(on: false), height: 32)), 52), (AnyView(GameRuleFrame(rule: .missionControl, story: .still(on: false), height: 32)), 72)], height: 36))),
@@ -73,10 +84,11 @@ enum RenderMedia {
         ("whats-new/1.45.0/app-volume", AppVolumeMixerCard.length, AnyView(AppVolumeMixerCard())),
         ("whats-new/1.54.0/format-owners", FormatOwnersCard.length, AnyView(FormatOwnersCard())),
         ("whats-new/1.55.0/open-with", OpenWithCard.length, AnyView(OpenWithCard())),
+        ("whats-new/1.57.0/display-scale", DisplayScaleCard.length, AnyView(DisplayScaleCard())),
     ]
 
     static func main() {
-        NSApplication.shared.setActivationPolicy(.accessory)
+        RenderApp.shared.setActivationPolicy(.accessory)
         Task {
             let only = Set(CommandLine.arguments.dropFirst(3).filter { !$0.hasPrefix("-") && !$0.hasPrefix("(") })
             if CommandLine.arguments[2] == "cards" {
@@ -96,7 +108,7 @@ enum RenderMedia {
         let host = NSHostingView(rootView: art
             .background(RoundedRectangle(cornerRadius: Art.radius, style: .continuous).fill(page))
             .frame(width: card.width, height: card.height))
-        let window = NSWindow(contentRect: CGRect(origin: CGPoint(x: -8000, y: -8000), size: card), styleMask: .borderless, backing: .buffered, defer: false)
+        let window = CardWindow(contentRect: CGRect(origin: CGPoint(x: -8000, y: -8000), size: card), styleMask: .borderless, backing: .buffered, defer: false)
         window.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
         window.backgroundColor = .clear
         window.isOpaque = false
@@ -1885,5 +1897,62 @@ private struct PlayerScene: View {
         }
         .font(.system(size: 10, weight: .semibold))
         .frame(width: 58, height: 18)
+    }
+}
+
+private struct DisplayScaleCard: View {
+    static let durations = [1.2, 3.2, 1.2]
+    static var length: Double { durations.reduce(0, +) }
+    private static let steps = [100, 125, 150, 175, 200]
+    private static let track = CGRect(x: 224, y: 76, width: 56, height: 4)
+
+    var body: some View {
+        IllustrationRow(loop: Self.durations) { tick in
+            let percent = tick % Self.durations.count == 1 ? 150 : 100
+            Stage {
+                DisplayScalePreview(nativeWidth: 3440, nativeHeight: 1440, percent: percent)
+                    .frame(width: 190, height: 96)
+                    .position(x: 100, y: 64)
+                Text(verbatim: "\(percent)%")
+                    .font(.system(size: 26, weight: .semibold, design: .rounded))
+                    .monospacedDigit()
+                    .contentTransition(.numericText(value: Double(percent)))
+                    .position(x: Self.track.midX, y: 46)
+                slider(Self.steps.firstIndex(of: percent) ?? 0)
+            }
+            .animation(.snappy, value: percent)
+        }
+    }
+
+    private func slider(_ step: Int) -> some View {
+        let track = Self.track
+        let stop = { (step: Int) in track.minX + 6 + (track.width - 12) * CGFloat(step) / CGFloat(Self.steps.count - 1) }
+        let knob = stop(step)
+        return ZStack {
+            Image(.textformatSizeSmaller)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .position(x: track.minX - 10, y: track.midY)
+            Image(.textformatSizeLarger)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .position(x: track.maxX + 12, y: track.midY)
+            ForEach(Self.steps.indices, id: \.self) { index in
+                Capsule().fill(Color.primary.opacity(0.25))
+                    .frame(width: 1, height: 3.5)
+                    .position(x: stop(index), y: track.maxY + 7.5)
+            }
+            Capsule().fill(Color.primary.opacity(0.15))
+                .frame(width: track.width, height: track.height)
+                .position(x: track.midX, y: track.midY)
+            Capsule().fill(Color.accentColor)
+                .frame(width: knob - track.minX, height: track.height)
+                .position(x: (track.minX + knob) / 2, y: track.midY)
+            Circle().fill(.white)
+                .overlay(Circle().strokeBorder(Color.primary.opacity(0.18), lineWidth: 0.5))
+                .frame(width: 12, height: 12)
+                .shadow(color: .black.opacity(0.22), radius: 1.5, y: 1)
+                .position(x: knob, y: track.midY)
+        }
     }
 }

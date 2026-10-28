@@ -272,6 +272,11 @@ Atât comanda de mai sus, cât și Homebrew pun aplicația în `/Applications`, 
 <br><b>Clic de mijloc pe trackpad</b>
 <br>Atinge cu trei degete ca să deschizi un link într-o filă nouă, ca și cu butonul din mijloc al mausului.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Dimensiunea afișării</b>
+<br>Mărește tot ce apare pe un monitor și păstrează imaginea clară, de la 100% la 200%.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik nu înregistrează, nu păstrează și nu trimite nimic din ce tastezi s
 **Volumul aplicațiilor.** Deschide Setări › Sunet și pornește **Volumul aplicațiilor**. Fiecare aplicație care redă sunet primește propriul cursor și un buton pentru oprirea sunetului, în Setări și în meniu. Redu volumul unui apel video prea tare, oprește sunetul unui joc zgomotos și lasă muzica așa cum este: volumul Mac-ului și al celorlalte aplicații rămâne neschimbat. pikapik reține nivelul fiecărei aplicații, iar o aplicație pe care o lași la volum maxim nu este atinsă niciodată. O aplicație pe care ai reglat-o rămâne în listă, chiar și după repornire, estompată cât timp este închisă, așa că poți stabili volumul înainte să pornească: apasă **Adaugă aplicație…** sau trage o aplicație din Finder. ✕ de lângă o aplicație o uită și o readuce la volum maxim. Ca să schimbe volumul unei aplicații, pikapik trece sunetul ei prin el însuși, de aceea are nevoie de permisiunea **Înregistrarea audio a sistemului**, pe care o permiți în pagina Permisiuni. Sunetul este doar trecut mai departe: nu este înregistrat, salvat sau trimis nicăieri, iar microfonul nu este folosit. Necesită macOS 14.2 sau mai nou și este ascuns pe macOS 14.0 și 14.1. Dezactivat implicit.
 
 **Luminozitatea monitoarelor.** macOS schimbă luminozitatea ecranului integrat și a monitoarelor Apple, dar nu și pe a majorității celorlalte monitoare. Deschide Setări › Luminozitate: fiecare monitor pe care macOS nu îl poate regla singur primește propriul glisor, iar în panoul din bara de meniu poți adăuga un rând „Luminozitate”. pikapik schimbă luminozitatea monitorului însuși, aceeași setare pe care o schimbă butoanele lui. Dacă un monitor nu răspunde, pornește **Întunecă imaginea în schimb**: imaginea devine mai întunecată, dar niciodată neagră. Pornește **Tastele de luminozitate** și tastele de luminozitate vor regla monitorul pe care se află cursorul și vor afișa un mic indicator; ține apăsate ⌥⇧ pentru pași mai fini. Tastele au nevoie de permisiunea **Accesibilitate**, pe care o permiți în pagina Permisiuni, iar glisoarele funcționează și fără ea. pikapik reține nivelul fiecărui monitor și îl setează din nou după repaus. Versiunea din Mac App Store doar întunecă imaginea. Tastele de luminozitate sunt dezactivate implicit.
+
+**Dimensiunea afișării.** Pe multe monitoare, macOS nu are cum să mărească puțin lucrurile și să le păstreze clare. Deschide Setări › Afișaje: fiecare monitor extern primește un glisor de la 100% la 200%, iar dedesubt un rând ca „Arată ca 2294 × 960” arată cât încape pe ecran. Apasă **Utilizați 150%** și tot ecranul se schimbă dintr-odată, cu text clar. Un mic panou de pe acel monitor întreabă „Păstrați această dimensiune?”: apasă **Păstrați** sau **Reveniți** ca să revii. Dacă nu faci nimic, dimensiunea veche revine singură după 15 secunde. pikapik reține dimensiunea fiecărui monitor și o setează din nou la pornire, când reconectezi monitorul și după repaus. Dimensiunea ține cât timp pikapik rulează, și în fundal, iar monitorul revine la dimensiunea obișnuită când ieși complet din pikapik. Ca să ieși complet, ține apăsat Option (⌥) când alegi „Ieșiți”. La unele dimensiuni, câteva aplicații video pot afișa o imagine neagră, iar pagina te avertizează. Nu există în versiunea din Mac App Store.
 
 **Protejarea ⌘Q și ⌘W.** ⌘Q și ⌘W singure nu fac nimic, așa că nu închizi din greșeală o aplicație sau o fereastră. Adaugă Shift ca să o faci intenționat: ⇧⌘Q închide aplicația, ⇧⌘W închide fereastra. Funcționează în toate aplicațiile. Fiecare tastă are propriul comutator. Dezactivat implicit.
 
@@ -421,6 +428,7 @@ Deschide configurările din meniu cu **Configurări…** sau ⌘, ori pornește 
 - **Baterie**: nivel de încărcare, timp până la încărcarea completă sau timp rămas, stare, capacitate maximă, număr de cicluri, adaptor alimentare și putere în wați, plus sfaturi ca bateria să țină mai mult. Pagina doar arată informații: limita de încărcare rămâne în **Configurări sistem › Baterie**. Apare doar pe un Mac cu baterie.
 - **Menține activ**: durată, opțiuni pentru ecran și capac.
 - **Luminozitate**: un glisor pentru fiecare monitor pe care macOS nu îl poate regla singur, tastele de luminozitate și opțiunea de a întuneca imaginea în schimb.
+- **Afișaje**: o dimensiune de la 100% la 200% pentru fiecare monitor extern, cu un desen care arată cât de mare va fi totul.
 - **Ventilatoare**: viteza fiecărui ventilator, modul Auto sau o viteză manuală, după ce Accesul de administrator este permis.
 - **Temperatură**: cât de cald este Mac-ul, per total și pentru fiecare componentă, cum ar fi procesorul, memoria și bateria.
 - **Viteza internetului**: măsoară conexiunea și arată la ce e bună.

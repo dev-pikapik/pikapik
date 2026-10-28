@@ -133,7 +133,7 @@ private struct MainDisplayRow: View {
             if screens.count > 1 {
                 LabeledContent {
                     Picker(selection: Binding(get: { screens.first { $0.origin == .zero }?.id }, set: { id in screens.first { $0.id == id }.map(change) })) {
-                        ForEach(screens) { Text(verbatim: $0.name).tag(Optional($0.id)) }
+                        ForEach(screens) { Text(verbatim: name(of: $0)).tag(Optional($0.id)) }
                     } label: { Text("Main display") }
                     .labelsHidden()
                     .fixedSize()
@@ -145,6 +145,11 @@ private struct MainDisplayRow: View {
             }
         }
         .onReceive(NotificationCenter.default.publisher(for: NSApplication.didChangeScreenParametersNotification)) { _ in screens = MainDisplayControl.screens }
+    }
+
+    /// The monitor's own name, also while Display scale shows it larger.
+    private func name(of screen: MainDisplayControl.Screen) -> String {
+        NSScreen.screens.first { $0.displayID == screen.id }?.monitorName ?? screen.name
     }
 
     private func change(to screen: MainDisplayControl.Screen) {
@@ -167,7 +172,8 @@ enum MainDisplayControl {
         NSScreen.screens.compactMap { screen in
             guard let number = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? NSNumber else { return nil }
             let id = CGDirectDisplayID(number.uint32Value)
-            guard let uuid = CGDisplayCreateUUIDFromDisplayID(id)?.takeRetainedValue(), let text = CFUUIDCreateString(nil, uuid) as String? else { return nil }
+            // The monitor's own UUID, also while Display scale shows it larger through a virtual display of pikapik's.
+            guard let uuid = CGDisplayCreateUUIDFromDisplayID(screen.monitorID)?.takeRetainedValue(), let text = CFUUIDCreateString(nil, uuid) as String? else { return nil }
             return Screen(id: id, uuid: text, name: screen.localizedName, origin: CGDisplayBounds(id).origin)
         }
     }

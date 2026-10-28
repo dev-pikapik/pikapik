@@ -272,6 +272,11 @@ Yukarıdaki komut da Homebrew de uygulamayı `/Applications` klasörüne koyar, 
 <br><b>İzleme dörtgeninde orta tıklama</b>
 <br>Bir bağlantıyı yeni sekmede açmak için üç parmakla dokunun; farenin orta düğmesi gibi.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Ekran ölçeği</b>
+<br>Bir monitördeki her şeyi büyütün, görüntü keskin kalsın: %100’den %200’e kadar.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik yazdığınız veya tıkladığınız hiçbir şeyi kaydetmez, saklamaz 
 **Uygulama Sesi.** Ayarlar › Ses sayfasına gidin ve **Uygulama Sesi** anahtarını açın. Ses çalan her uygulama kendi sürgüsünü ve bir sessize alma düğmesini alır, hem Ayarlar’da hem menüde. Yüksek sesli bir görüntülü görüşmenin sesini kısın, gürültülü bir oyunu sessize alın, müziğinize dokunmayın: Mac’inizin ve diğer uygulamaların ses düzeyi aynı kalır. pikapik her uygulamanın düzeyini hatırlar ve tam sesle bıraktığınız uygulamaya hiç dokunmaz. Ayarladığınız bir uygulama, yeniden başlatmadan sonra da listede kalır ve kapalıyken soluk görünür; böylece uygulama başlamadan önce düzeyini belirleyebilirsiniz: **Uygulama Ekle…** düğmesine tıklayın veya Finder’dan bir uygulama sürükleyin. Uygulamanın yanındaki ✕ onu unutturur ve tam sese döndürür. Bir uygulamanın ses düzeyini değiştirmek için pikapik onun sesini kendi içinden geçirir, bu yüzden İzinler sayfasında verdiğiniz **Sistem Sesi Kaydı** iznine ihtiyaç duyar. Ses yalnızca aktarılır: kaydedilmez, saklanmaz, hiçbir yere gönderilmez ve mikrofon kullanılmaz. macOS 14.2 veya sonrasını gerektirir ve macOS 14.0 ile 14.1’de gizlidir. Varsayılan olarak kapalıdır.
 
 **Monitör parlaklığı.** macOS yerleşik ekranın ve Apple ekranlarının parlaklığını değiştirir, ancak diğer monitörlerin çoğunda bunu yapamaz. Ayarlar › Parlaklık sayfasını açın: macOS’in kendi ayarlayamadığı her monitör kendi sürgüsünü alır ve menü çubuğu paneline bir “Parlaklık” satırı da ekleyebilirsiniz. pikapik monitörün kendi parlaklığını değiştirir, yani monitörün düğmeleriyle aynı ayarı. Bir monitör tepki vermiyorsa **Bunun yerine görüntüyü karart** anahtarını açın: görüntü kararır ama asla siyah olmaz. **Parlaklık tuşları** anahtarını açın; parlaklık tuşları işaretçinin bulunduğu monitörü ayarlar ve ekranda küçük bir gösterge belirir. Daha ince adımlar için ⌥⇧ tuşlarını basılı tutun. Tuşlar, İzinler sayfasında verdiğiniz **Erişilebilirlik** iznine ihtiyaç duyar; sürgüler bu izin olmadan da çalışır. pikapik her monitörün düzeyini hatırlar ve uykudan sonra yeniden ayarlar. Mac App Store sürümü yalnızca görüntüyü karartır. Parlaklık tuşları varsayılan olarak kapalıdır.
+
+**Ekran ölçeği.** Birçok monitörde macOS, her şeyi biraz büyütüp keskin tutmanın bir yolunu sunmaz. Ayarlar › Ekranlar sayfasını açın: her harici monitör %100 ile %200 arasında bir sürgü alır; altında “2294 × 960 gibi görünür” gibi bir satır ekrana ne kadar şeyin sığacağını gösterir. **%150 Kullan** düğmesine basın; ekranın tamamı bir anda değişir ve metin keskin kalır. O monitörde küçük bir panel “Bu boyut korunsun mu?” diye sorar: **Koru** düğmesine basın ya da geri dönmek için **Geri Dön** düğmesine basın. Hiçbir şey yapmazsanız eski boyut 15 saniye sonra kendiliğinden geri gelir. pikapik her monitörün boyutunu hatırlar ve başlangıçta, monitörü yeniden taktığınızda ve uykudan sonra yeniden ayarlar. Boyut, pikapik çalıştığı sürece, arka planda da geçerlidir; pikapik’ten tamamen çıktığınızda monitör olağan boyutuna döner. Tamamen çıkmak için “Çık”ı seçerken Option (⌥) tuşunu basılı tutun. Bazı boyutlarda birkaç video uygulaması siyah görüntü gösterebilir ve sayfa bunu belirtir. Mac App Store sürümünde yoktur.
 
 **⌘Q ve ⌘W’yi koruma.** ⌘Q ve ⌘W tek başına hiçbir şey yapmaz, böylece bir uygulamadan yanlışlıkla çıkmaz ya da bir pencereyi yanlışlıkla kapatmazsınız. Bilerek yapmak için Shift ekleyin: ⇧⌘Q çıkar, ⇧⌘W kapatır. Tüm uygulamalarda çalışır. Her tuşun kendi anahtarı vardır. Varsayılan olarak kapalıdır.
 
@@ -421,6 +428,7 @@ Ayarları menüden **Ayarlar…** ile ya da ⌘, ile açın veya pikapik’i Fin
 - **Pil**: şarj düzeyi, dolmasına kalan süre veya kalan kullanım süresi, durum, maksimum kapasite, devir sayısı, güç adaptörü ve vat cinsinden güç, bir de pilin ömrünü uzatmak için ipuçları. Yalnızca bilgi gösterir: şarj sınırı **Sistem Ayarları › Pil** içinde kalır. Yalnızca pili olan Mac’lerde görünür.
 - **Uyanık Tut**: süre, ekran ve kapak seçenekleri.
 - **Parlaklık**: macOS’in kendi ayarlayamadığı her monitör için bir sürgü, parlaklık tuşları ve bunun yerine görüntüyü karartma seçeneği.
+- **Ekranlar**: her harici monitör için %100 ile %200 arasında bir boyut ve her şeyin ne kadar büyük görüneceğini gösteren bir çizim.
 - **Fanlar**: her fanın hızı, Yönetici erişimine izin verildiğinde Otomatik veya elle seçilen hız.
 - **Sıcaklık**: Mac’inizin ne kadar ısındığı, genel olarak ve işlemci, bellek, pil gibi her parça için.
 - **Hız Testi**: internet hızını ölçer ve neye yettiğini gösterir.

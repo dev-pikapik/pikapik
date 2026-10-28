@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Tamaño en pantalla: todo más grande y igual de nítido
+
+<sub>1.57.0 · 28 de octubre de 2026</sub>
+
+Haz que todo se vea más grande en un monitor externo y siga nítido, directamente desde pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+En muchos monitores, macOS no tiene forma de agrandar un poco las cosas y mantenerlas nítidas. Ahora cada monitor externo tiene un control deslizante en Ajustes › Pantallas, del 100 % al 200 %. Debajo hay una línea como «Parece 2294 × 960» que indica cuánto cabe en la pantalla, y un pequeño dibujo muestra lo grande que se verá todo.
+
+Pulsa «Usar 150 %» y toda la pantalla cambia de golpe. Un pequeño panel en ese monitor pregunta «¿Mantener este tamaño?»: pulsa «Mantener», o «Volver» para volver. Si no haces nada, el tamaño anterior vuelve solo a los 15 segundos.
+
+pikapik recuerda el tamaño de cada monitor y lo vuelve a poner al iniciarse, al volver a conectar el monitor y tras el reposo. El tamaño dura mientras pikapik funciona, también en segundo plano, y el monitor vuelve a su tamaño habitual al salir del todo de pikapik. Para salir del todo, mantén pulsada Opción (⌥) al elegir «Salir». Con algunos tamaños, unas pocas apps de vídeo pueden mostrar una imagen negra, y la página lo avisa. «Tamaño en pantalla» no está en la versión de la Mac App Store.
+
+**Pruébalo:** Ajustes › Pantallas
+
+---
+
 ## <a id="v1.56.2"></a>Reproductor: reproducción fluida de MKV y avance instantáneo
 
 <sub>1.56.2 · 26 de octubre de 2026</sub>

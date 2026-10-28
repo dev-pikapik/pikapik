@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Taille d’affichage : tout en plus grand, toujours net
+
+<sub>1.57.0 · 28 octobre 2026</sub>
+
+Agrandissez tout sur un écran externe en gardant une image nette, directement depuis pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+Sur beaucoup d’écrans, macOS ne sait pas agrandir un peu les choses tout en les gardant nettes. Désormais, chaque écran externe a un curseur dans Réglages › Moniteurs, de 100 % à 200 %. Dessous, une ligne comme « Ressemble à 2294 × 960 » indique ce qui tient à l’écran, et un petit dessin montre la taille que prendra tout ce qui s’affiche.
+
+Appuyez sur « Utiliser 150 % » et tout l’écran change d’un coup. Un petit panneau sur cet écran demande « Conserver cette taille ? » : appuyez sur « Conserver », ou sur « Revenir » pour retrouver l’ancienne taille. Si vous ne faites rien, l’ancienne taille revient toute seule après 15 secondes.
+
+pikapik retient la taille de chaque écran et la rétablit au démarrage, quand vous rebranchez l’écran et après la veille. La taille dure tant que pikapik fonctionne, même en arrière-plan, et l’écran retrouve sa taille habituelle quand vous quittez complètement pikapik. Pour quitter complètement, maintenez Option (⌥) en choisissant « Quitter ». À certaines tailles, quelques apps vidéo peuvent afficher une image noire, et la page le signale. « Taille d’affichage » n’existe pas dans la version du Mac App Store.
+
+**Pour essayer :** Réglages › Moniteurs
+
+---
+
 ## <a id="v1.56.2"></a>Lecteur vidéo : lecture fluide des vidéos MKV et défilement instantané
 
 <sub>1.56.2 · 26 octobre 2026</sub>

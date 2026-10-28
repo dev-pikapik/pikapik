@@ -272,6 +272,11 @@ Perintah di atas maupun Homebrew sama-sama menaruh app di `/Applications`, membu
 <br><b>Klik tengah di trackpad</b>
 <br>Ketuk dengan tiga jari untuk membuka tautan di tab baru, seperti tombol tengah tetikus.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Ukuran tampilan</b>
+<br>Buat semua yang ada di monitor lebih besar dan tetap tajam, dari 100% sampai 200%.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik tidak merekam, menyimpan, atau mengirim apa pun yang Anda ketik atau kli
 **Volume App.** Buka Pengaturan › Suara, lalu aktifkan **Volume App**. Setiap app yang memutar suara mendapat slider dan tombol bisu sendiri, di Pengaturan maupun di menu. Kecilkan suara panggilan video yang terlalu keras, bisukan game yang berisik, dan biarkan musik Anda apa adanya: volume Mac Anda dan app lain tidak berubah. pikapik mengingat level tiap app, dan app yang Anda biarkan di volume penuh tidak pernah disentuh. App yang sudah Anda atur tetap ada di daftar, juga setelah restart, dan tampak redup selama tertutup, jadi Anda bisa mengatur levelnya sebelum app dibuka: klik **Tambah App…** atau seret app dari Finder. Tanda ✕ di samping app membuat app itu dilupakan dan mengembalikannya ke volume penuh. Untuk mengubah volume sebuah app, pikapik meneruskan suaranya melalui dirinya sendiri, jadi ia membutuhkan izin **Perekaman Audio Sistem**, yang Anda izinkan di halaman Izin. Suara hanya diteruskan: tidak direkam, disimpan, atau dikirim ke mana pun, dan mikrofon tidak digunakan. Memerlukan macOS 14.2 atau lebih baru dan disembunyikan di macOS 14.0 dan 14.1. Mati secara default.
 
 **Kecerahan monitor.** macOS mengubah kecerahan layar bawaan dan monitor Apple, tetapi tidak untuk sebagian besar monitor lain. Buka Pengaturan › Kecerahan: setiap monitor yang tidak bisa diatur macOS sendiri mendapat slider sendiri, dan Anda juga bisa menambahkan baris “Kecerahan” ke panel bar menu. pikapik mengubah kecerahan monitor itu sendiri, pengaturan yang sama dengan tombol di monitor. Jika monitor tidak merespons, aktifkan **Redupkan gambar sebagai gantinya**: gambar menjadi lebih gelap, tetapi tidak pernah hitam. Aktifkan **Tombol kecerahan**, maka tombol kecerahan mengatur monitor tempat penunjuk berada dan menampilkan indikator kecil; tahan ⌥⇧ untuk langkah yang lebih halus. Tombol ini memerlukan izin **Aksesibilitas**, yang Anda izinkan di halaman Izin, sedangkan slider tetap berfungsi tanpanya. pikapik mengingat level tiap monitor dan mengaturnya lagi setelah tidur. Versi Mac App Store hanya meredupkan gambar. Tombol kecerahan mati secara default.
+
+**Ukuran tampilan.** Pada banyak monitor, macOS tidak punya cara untuk membuat tampilan sedikit lebih besar dan tetap tajam. Buka Pengaturan › Layar: setiap monitor eksternal mendapat slider dari 100% sampai 200%, dan di bawahnya ada baris seperti “Terlihat seperti 2294 × 960” yang menunjukkan seberapa banyak yang muat di layar. Tekan **Gunakan 150%**, maka seluruh layar berubah sekaligus dan teks tetap tajam. Panel kecil di monitor itu bertanya “Pertahankan ukuran ini?”: tekan **Pertahankan**, atau **Kembali** untuk kembali. Jika Anda tidak melakukan apa-apa, ukuran lama kembali sendiri setelah 15 detik. pikapik mengingat ukuran tiap monitor dan mengaturnya lagi saat dijalankan, saat monitor dicolokkan kembali, dan setelah tidur. Ukuran bertahan selama pikapik berjalan, juga di latar belakang, dan monitor kembali ke ukuran biasanya saat Anda keluar sepenuhnya dari pikapik. Untuk keluar sepenuhnya, tahan Option (⌥) saat memilih “Keluar”. Pada beberapa ukuran, sebagian aplikasi video bisa menampilkan gambar hitam, dan halaman memberi tahu hal itu. Tidak ada di versi Mac App Store.
 
 **Lindungi ⌘Q dan ⌘W.** ⌘Q dan ⌘W saja tidak melakukan apa pun, jadi Anda tidak akan keluar dari app atau menutup jendela secara tidak sengaja. Tambahkan Shift untuk melakukannya dengan sengaja: ⇧⌘Q keluar, ⇧⌘W menutup. Berfungsi di semua app. Setiap tombol punya saklarnya sendiri. Mati secara default.
 
@@ -421,6 +428,7 @@ Buka pengaturan dari menu dengan **Pengaturan…** atau ⌘, atau buka lagi pika
 - **Baterai**: tingkat daya, waktu hingga penuh atau sisa waktu, kondisi, kapasitas maksimum, jumlah siklus, adaptor daya dan daya dalam watt, serta tips agar baterai lebih awet. Halaman ini hanya menampilkan informasi: batas pengisian daya tetap ada di **Pengaturan Sistem › Baterai**. Hanya muncul di Mac yang punya baterai.
 - **Tetap Terjaga**: durasi, opsi layar dan penutup.
 - **Kecerahan**: slider untuk setiap monitor yang tidak bisa diatur macOS sendiri, tombol kecerahan, dan opsi untuk meredupkan gambar sebagai gantinya.
+- **Layar**: ukuran dari 100% sampai 200% untuk setiap monitor eksternal, dengan gambar yang menunjukkan seberapa besar tampilan semuanya.
 - **Kipas**: kecepatan setiap kipas, pilih Otomatis atau kecepatan manual setelah Akses administrator diizinkan.
 - **Suhu**: seberapa hangat Mac Anda, secara keseluruhan dan per komponen, seperti prosesor, memori, dan baterai.
 - **Tes Kecepatan**: cek kecepatan internet dan lihat cocok untuk apa.

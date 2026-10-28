@@ -84,6 +84,13 @@ enum Lifecycle {
                 .powerOff: .none("quit hands off right after"),
                 .uninstall: .called("FanControl.putBackServices()"),
             ]),
+            Row(owner: "DisplayScale", changes: "the display mode of a monitor and its mirror of pikapik's virtual display", cells: [
+                .start: .run { DisplayScale.shared.refresh() },
+                .handOver: .run { DisplayScale.shared.release() },
+                .quit: .run { DisplayScale.shared.release() },
+                .powerOff: .none("quit runs release() right after"),
+                .uninstall: .none("the mode, the mirror and the virtual display last only while pikapik runs"),
+            ]),
             Row(owner: "Updater", changes: nil, cells: [
                 .start: .run { Updater.shared.resume() },
                 .handOver: .run { Updater.shared.pause() },

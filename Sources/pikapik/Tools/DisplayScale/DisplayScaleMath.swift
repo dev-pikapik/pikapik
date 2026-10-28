@@ -1,0 +1,93 @@
+import CoreGraphics
+import Foundation
+
+/// Sizes for a monitor shown larger and still sharp: every step draws at twice its "looks like" size in points.
+enum DisplayScaleMath {
+    static let steps = [100, 125, 150, 175, 200]
+    /// The widest picture Apple silicon draws for one display; 8192 is the absolute limit.
+    static let maxBackingWidth = 6720
+    static let minLooksLikeHeight = 600
+    static let tolerance = 0.03
+
+    struct Mode: Equatable {
+        var width, height, pixelWidth, pixelHeight: Int
+        var refresh: Double
+        var usable: Bool
+    }
+
+    /// The size in points the desktop gets at `percent`: an even width, so the picture splits evenly at 2x.
+    static func looksLike(nativeWidth: Int, nativeHeight: Int, percent: Int) -> (width: Int, height: Int) {
+        let width = Int((Double(nativeWidth) * 50 / Double(percent)).rounded()) * 2
+        let height = Int((Double(nativeHeight) * 100 / Double(percent)).rounded())
+        return (width, height)
+    }
+
+    static func steps(nativeWidth: Int, nativeHeight: Int) -> [Int] {
+        steps.filter { percent in
+            let size = looksLike(nativeWidth: nativeWidth, nativeHeight: nativeHeight, percent: percent)
+            return percent == 100 || 2 * size.width <= maxBackingWidth && size.height >= minLooksLikeHeight
+        }
+    }
+
+    static func percent(nativeWidth: Int, looksLikeWidth: Int) -> Int {
+        guard looksLikeWidth > 0 else { return 100 }
+        return Int((100 * Double(nativeWidth) / Double(looksLikeWidth)).rounded())
+    }
+
+    /// The monitor's own mode for a step, nil when only a virtual display can show it.
+    static func nativeMatch(percent: Int, nativeWidth: Int, nativeHeight: Int, modes: [Mode], refresh: Double) -> Mode? {
+        if percent == 100 {
+            return modes.filter { $0.usable && $0.width == nativeWidth && $0.height == nativeHeight && $0.pixelWidth == nativeWidth && $0.pixelHeight == nativeHeight }
+                .min { abs($0.refresh - refresh) < abs($1.refresh - refresh) }
+        }
+        let size = looksLike(nativeWidth: nativeWidth, nativeHeight: nativeHeight, percent: percent)
+        let off = { (mode: Mode) in
+            max(abs(Double(mode.width - size.width)) / Double(size.width), abs(Double(mode.height - size.height)) / Double(size.height))
+        }
+        return modes.filter { $0.usable && $0.pixelWidth == 2 * $0.width && $0.pixelHeight == 2 * $0.height && off($0) <= tolerance && abs($0.refresh - refresh) <= 0.5 }
+            .min { off($0) < off($1) }
+    }
+
+    /// The serial number of the virtual display for one monitor and step: FNV-1a over the four values,
+    /// so macOS remembers each step as its own display and never mistakes it for the monitor itself.
+    static func serial(vendor: UInt32, product: UInt32, serial: UInt32, percent: Int) -> UInt32 {
+        var hash: UInt32 = 2_166_136_261
+        for value in [vendor, product, serial, UInt32(truncatingIfNeeded: percent)] {
+            for shift in stride(from: 0, to: 32, by: 8) {
+                hash = (hash ^ (value >> UInt32(shift) & 0xFF)) &* 16_777_619
+            }
+        }
+        while hash == 0 || hash == serial { hash &+= 1 }
+        return hash
+    }
+
+    /// Whether a monitor mirroring a virtual display shows it sharp: the virtual display at its width and 2x, and the
+    /// monitor in that very mode. The first time macOS meets a set of displays, another monitor's mirror can leave this
+    /// monitor reported in its first listed mode, 800 x 600 at 2x: that is 2x too, so only the size tells it apart.
+    static func mirrorHolds(width: Int, shown: Mode, monitor: Mode) -> Bool {
+        shown.width == width && shown.pixelWidth == 2 * shown.width && monitor.width == shown.width
+            && monitor.height == shown.height && monitor.pixelWidth == shown.pixelWidth && monitor.pixelHeight == shown.pixelHeight
+    }
+
+    enum Mend { case keep, repair, giveUp }
+
+    /// A larger picture that broke goes back once; broken again within a minute of that, something else holds the
+    /// monitor (a full-screen game, the other monitor's repair), so it keeps its own picture instead of a ping-pong.
+    static func mend(holds: Bool, lastRepair: Date?, now: Date) -> Mend {
+        if holds { return .keep }
+        if let lastRepair, now.timeIntervalSince(lastRepair) < 60 { return .giveUp }
+        return .repair
+    }
+
+    /// Where a picture of width × height points keeps a monitor's place (`here`): on each axis it keeps the edge that
+    /// touches another display, the main one first, so a monitor left of the main one still touches it. The main
+    /// display stays at 0,0, so the menu bar and the Dock stay where they were.
+    static func origin(of here: CGRect, among others: [CGRect], width: Int, height: Int) -> CGPoint {
+        guard here.origin != .zero else { return here.origin }
+        let others = others.sorted { $0.origin == .zero && $1.origin != .zero }
+        let beside = others.first { ($0.minX == here.maxX || $0.maxX == here.minX) && $0.minY < here.maxY && $0.maxY > here.minY }
+        let stacked = others.first { ($0.minY == here.maxY || $0.maxY == here.minY) && $0.minX < here.maxX && $0.maxX > here.minX }
+        return CGPoint(x: beside?.minX == here.maxX ? here.maxX - CGFloat(width) : here.minX,
+                       y: stacked?.minY == here.maxY ? here.maxY - CGFloat(height) : here.minY)
+    }
+}

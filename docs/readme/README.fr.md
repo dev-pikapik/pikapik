@@ -272,6 +272,11 @@ La commande ci-dessus et Homebrew placent tous deux l’app dans `/Applications`
 <br><b>Clic du milieu sur le trackpad</b>
 <br>Touchez avec trois doigts pour ouvrir un lien dans un nouvel onglet, comme avec le bouton du milieu de la souris.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Taille d’affichage</b>
+<br>Agrandissez tout sur un écran en gardant une image nette, de 100 % à 200 %.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik n’enregistre, ne conserve et n’envoie rien de ce que vous tapez ou c
 **Volume des apps.** Ouvre Réglages › Son et active **Volume des apps**. Chaque app qui joue du son a son propre curseur et un bouton pour couper le son, dans les Réglages et dans le menu. Baisse le volume d’un appel vidéo trop fort, coupe le son d’un jeu bruyant et laisse ta musique comme elle est : le volume de ton Mac et celui des autres apps ne change pas. pikapik retient le volume de chaque app, et une app que tu laisses à fond n’est jamais touchée. Une app que tu as réglée reste dans la liste, même après un redémarrage, grisée tant qu’elle est fermée : tu peux donc fixer son volume avant qu’elle démarre. Clique sur **Ajouter une app…** ou glisse une app depuis le Finder. La ✕ à côté d’une app l’oublie et la remet à fond. Pour changer le volume d’une app, pikapik fait passer son son par lui-même, il a donc besoin de l’autorisation **Enregistrement de l’audio système**, que tu accordes sur la page Autorisations. Le son est seulement transmis : il n’est ni enregistré, ni conservé, ni envoyé nulle part, et le micro n’est pas utilisé. Il faut macOS 14.2 ou plus récent ; sous macOS 14.0 et 14.1, la fonction est masquée. Désactivé par défaut.
 
 **Luminosité des écrans.** macOS règle la luminosité de l’écran intégré et des écrans Apple, mais pas celle de la plupart des autres écrans. Ouvrez Réglages › Luminosité : chaque écran que macOS ne peut pas régler lui-même a son propre curseur, et vous pouvez aussi ajouter une ligne « Luminosité » au panneau de la barre des menus. pikapik change la luminosité de l’écran lui-même, comme le font ses propres boutons. Si un écran ne réagit pas, activez **Assombrir plutôt l’image** : l’image devient plus sombre, mais jamais noire. Activez **Touches de luminosité**, et les touches de luminosité règlent l’écran sous le pointeur et affichent un petit indicateur ; maintenez ⌥⇧ pour un réglage plus fin. Les touches ont besoin de l’autorisation **Accessibilité**, que vous accordez sur la page Autorisations ; les curseurs fonctionnent sans elle. pikapik retient le niveau de chaque écran et le rétablit après la veille. La version du Mac App Store se contente d’assombrir l’image. Les touches de luminosité sont désactivées par défaut.
+
+**Taille d’affichage.** Sur beaucoup d’écrans, macOS ne sait pas agrandir un peu les choses tout en les gardant nettes. Ouvrez Réglages › Moniteurs : chaque écran externe a un curseur de 100 % à 200 %, et dessous une ligne comme « Ressemble à 2294 × 960 » indique ce qui tient à l’écran. Appuyez sur **Utiliser 150 %** et tout l’écran change d’un coup, avec un texte net. Un petit panneau sur cet écran demande « Conserver cette taille ? » : appuyez sur **Conserver**, ou sur **Revenir** pour retrouver l’ancienne taille. Si vous ne faites rien, l’ancienne taille revient toute seule après 15 secondes. pikapik retient la taille de chaque écran et la rétablit au démarrage, quand vous rebranchez l’écran et après la veille. La taille dure tant que pikapik fonctionne, même en arrière-plan, et l’écran retrouve sa taille habituelle quand vous quittez complètement pikapik. Pour quitter complètement, maintenez Option (⌥) en choisissant « Quitter ». À certaines tailles, quelques apps vidéo peuvent afficher une image noire, et la page le signale. Elle n’existe pas dans la version du Mac App Store.
 
 **Protéger ⌘Q et ⌘W.** ⌘Q et ⌘W seuls ne font rien, vous ne quittez donc pas une app ni ne fermez une fenêtre par accident. Ajoutez Maj pour le faire exprès : ⇧⌘Q quitte, ⇧⌘W ferme. Fonctionne dans toutes les apps. Chaque touche a son propre interrupteur. Désactivé par défaut.
 
@@ -421,6 +428,7 @@ Ouvrez les réglages depuis le menu avec **Réglages…** ou ⌘, ou relancez si
 - **Batterie** : niveau de charge, temps avant la charge complète ou temps restant, état, capacité maximum, nombre de cycles, adaptateur secteur et puissance en watts, et conseils pour faire durer la batterie. La page se contente d’afficher des informations : la limite de recharge reste dans **Réglages Système › Batterie**. Elle n’apparaît que sur un Mac avec batterie.
 - **Rester éveillé** : durée, options d’écran et de capot.
 - **Luminosité** : un curseur pour chaque écran que macOS ne peut pas régler lui-même, les touches de luminosité et l’option pour assombrir plutôt l’image.
+- **Moniteurs** : une taille de 100 % à 200 % pour chaque écran externe, avec un dessin de la taille que prendra tout ce qui s’affiche.
 - **Ventilateurs** : vitesse de chaque ventilateur, mode Auto ou vitesse manuelle une fois l’accès administrateur autorisé.
 - **Température** : la chaleur de votre Mac, au global et pour chaque composant, comme le processeur, la mémoire et la batterie.
 - **Test de débit** : mesurer la connexion et voir ce qu’elle permet.

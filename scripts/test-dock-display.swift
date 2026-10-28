@@ -91,7 +91,10 @@ struct TestDockDisplay {
         let theirs = MainDisplay.restored(picked, now: MainDisplay.moved(side, to: "c")!)
         precondition(theirs.write == nil && theirs.journal.isEmpty)
         precondition(MainDisplay.restored([MainDisplay.set(side): Saved(origins: side, main: nil)], now: MainDisplay.moved(side, to: "c")!).write == side)
-        print("restoring writes the old arrangement only when it differs and pikapik's pick is still the main display: ok")
+        let resized = MainDisplay.restored(picked, now: ["a": CGPoint(x: -1600, y: 120), "b": .zero, "c": CGPoint(x: -3040, y: 180)])
+        precondition(resized.write == ["a": .zero, "b": CGPoint(x: 1600, y: -120), "c": CGPoint(x: -1440, y: 60)],
+                     "a display that changed size since: the old main one goes back to 0,0, the rest keep their places around it")
+        print("restoring makes the old main display the main one again only when pikapik's pick is still the main display: ok")
 
         let away = MainDisplay.restored(picked, now: home)
         precondition(away.write == nil && away.journal == picked)
