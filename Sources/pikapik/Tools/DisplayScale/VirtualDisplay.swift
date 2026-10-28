@@ -9,6 +9,8 @@ import CoreGraphics
     static var isAvailable: Bool { runtime != nil }
 
     let id: CGDirectDisplayID
+    /// The name it goes by, in System Settings › Displays too.
+    let name: String
     /// The size it looks like, in points; macOS draws it at twice this.
     let width: Int, height: Int
     private let display: VirtualDisplayObject
@@ -40,6 +42,7 @@ import CoreGraphics
         settings.setModes([runtime.mode.init(width: UInt32(width), height: UInt32(height), refreshRate: refresh)])
         guard display.applySettings(settings) else { return nil }
         id = display.displayID
+        self.name = name
         self.width = width
         self.height = height
         self.display = display
@@ -56,14 +59,13 @@ import CoreGraphics
     }
 
     /// The monitor behind a display: one of pikapik's virtual displays maps to the monitor it was made for, any
-    /// other display to itself. It goes by identity, so it holds before the mirror is set up and from any thread.
+    /// other display to itself. It goes by identity, with the unit number of one of two identical monitors, so it
+    /// holds before the mirror is set up and from any thread.
     nonisolated static func physical(of id: CGDirectDisplayID) -> CGDirectDisplayID {
         let vendor = CGDisplayVendorNumber(id), product = CGDisplayModelNumber(id), serial = CGDisplaySerialNumber(id)
         let monitors = onlineDisplays().filter { other in
             other != id && CGDisplayVendorNumber(other) == vendor && CGDisplayModelNumber(other) == product
-                && DisplayScaleMath.steps.contains {
-                    DisplayScaleMath.serial(vendor: vendor, product: product, serial: CGDisplaySerialNumber(other), percent: $0) == serial
-                }
+                && DisplayScaleMath.isVirtual(serial, vendor: vendor, product: product, serial: CGDisplaySerialNumber(other), unit: CGDisplayUnitNumber(other))
         }
         return monitors.first { CGDisplayMirrorsDisplay($0) == id } ?? monitors.first ?? id
     }
@@ -129,12 +131,19 @@ import CoreGraphics
     let display: CGDirectDisplayID
     let name: String
     let vendor: UInt32, product: UInt32, serial: UInt32
+    /// The unit number of one of two identical monitors, which its virtual displays carry; nil for any other monitor.
+    let unit: UInt32?
     let nativeWidth: Int, nativeHeight: Int
     let millimeters: CGSize
     let refresh: Double
     let primaries: [CGPoint]?
     let modes: [CGDisplayMode]
-    private(set) var virtual: VirtualDisplay?
+    private(set) var virtual: VirtualDisplay? {
+        didSet {
+            if let old = oldValue?.id, old != virtual?.id { PointerNudge.track(old, false) }
+            if let id = virtual?.id { PointerNudge.track(id, true) }
+        }
+    }
     /// The step pikapik put on screen, nil while the monitor shows its own picture.
     private(set) var percent: Int?
     /// The monitor's own mode before pikapik changed it, and the one pikapik set.
@@ -146,7 +155,7 @@ import CoreGraphics
     static let option = CGConfigureOption.forAppOnly
 
     /// Reads the monitor while it shows its own picture: mirroring hides its name, size and colors.
-    init?(display: CGDirectDisplayID, name: String) {
+    init?(display: CGDirectDisplayID, name: String, unit: UInt32?) {
         let modes = Self.modes(of: display)
         guard let native = Self.native(in: modes) else { return nil }
         self.display = display
@@ -154,6 +163,7 @@ import CoreGraphics
         vendor = CGDisplayVendorNumber(display)
         product = CGDisplayModelNumber(display)
         serial = CGDisplaySerialNumber(display)
+        self.unit = unit
         nativeWidth = native.pixelWidth
         nativeHeight = native.pixelHeight
         millimeters = CGDisplayScreenSize(display)
@@ -244,6 +254,9 @@ import CoreGraphics
                 try await wait(2, mine)
                 if holds { return }
             }
+            let mode = CGDisplayCopyDisplayMode(display).map { "\($0.width)x\($0.height) (\($0.pixelWidth) px wide)" } ?? "none"
+            let state = "online \(!Self.offline(current.id)), mirrored \(CGDisplayMirrorsDisplay(display) == current.id), monitor at \(mode)"
+            Log.note("DisplayScale: \(name) did not take its mirror back (\(state)), making a new display")
         }
         // The old display goes before the new one comes: macOS puts a stored arrangement back when a display leaves,
         // and that breaks a mirror already on the new display. One identity is never online twice either.
@@ -255,8 +268,8 @@ import CoreGraphics
             original = CGDisplayCopyDisplayMode(display)
         }
         guard let next = VirtualDisplay(
-            name: name, vendor: vendor, product: product,
-            serial: DisplayScaleMath.serial(vendor: vendor, product: product, serial: serial, percent: percent),
+            name: String(localized: "\(name.isEmpty ? String(localized: "Monitor") : name) — enlarged by pikapik"), vendor: vendor, product: product,
+            serial: DisplayScaleMath.serial(vendor: vendor, product: product, serial: serial, unit: unit, percent: percent),
             millimeters: millimeters, width: size.width, height: size.height, refresh: refresh, primaries: primaries)
         else { throw Refusal(reason: .unavailable, description: "no virtual display for \(size.width)x\(size.height)") }
         guard try await sharpen(next, mine)

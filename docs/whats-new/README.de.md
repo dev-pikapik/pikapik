@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Anzeigegröße: ein flüssiger Mauszeiger und alle Größen auf zwei gleichen Monitoren
+
+<sub>1.57.1 · 28. Oktober 2026</sub>
+
+Zwei Korrekturen für Monitore, die du in Einstellungen › Displays vergrößert hast, und ein klarer Name für den zusätzlichen Bildschirm.
+
+**Behoben**
+
+- Bei 125 %, 150 % und 175 % bleibt der Mauszeiger nicht mehr hängen, wenn du ihn über einen vergrößerten Monitor oder von einem Monitor zum anderen bewegst.
+- Zwei gleiche Monitore, etwa zwei vom selben Modell, bieten jetzt beide 125 %, 150 % und 175 % statt nur 100 % und 200 %.
+
+**Außerdem neu**
+
+- Bei diesen Größen zeigt Systemeinstellungen › Displays einen weiteren Bildschirm. Er hat jetzt einen klaren Namen, etwa „Mi monitor – von pikapik vergrößert“, und Einstellungen › Displays in pikapik erklärt, dass du nichts damit tun musst.
+
+---
+
 ## <a id="v1.57.0"></a>Anzeigegröße: alles größer und trotzdem scharf
 
 <sub>1.57.0 · 28. Oktober 2026</sub>

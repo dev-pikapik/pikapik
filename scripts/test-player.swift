@@ -195,6 +195,17 @@ enum TestPlayer {
         precondition(videoTypes.contains(.mpeg4Movie) && videoTypes.contains(.quickTimeMovie) && videoTypes.contains(.avi), "the usual video types are not in the list")
         let musicTypes = PlayerFormats.musicTypes
         precondition(musicTypes.count >= 8 && Set(musicTypes).count == musicTypes.count && musicTypes.contains(.mp3) && musicTypes.contains(.wav) && Set(musicTypes).isDisjoint(with: videoTypes), "the music types are missing, repeated or shared with video")
+
+        let catalog = try! JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: "Resources/Localizable.xcstrings"))) as! [String: Any]
+        let enlarged = ((catalog["strings"] as! [String: Any])["%@ — enlarged by pikapik"] as! [String: Any])["localizations"] as! [String: [String: [String: String]]]
+        let formats = enlarged.values.compactMap { $0["stringUnit"]?["value"] }
+        precondition(formats.count == enlarged.count, "a language has no name for the enlarged screen")
+        for format in formats {
+            let name = format.replacingOccurrences(of: "%@", with: "Mi monitor")
+            precondition(PlayerDisplays.monitorName(name, formats: formats) == "Mi monitor", "\(name) keeps the added words")
+        }
+        for name in ["S34CG50", "S34CG50 (1)", "Built-in Retina Display"] { precondition(PlayerDisplays.monitorName(name, formats: formats) == name, name) }
+        print("Move to Display lists a monitor that Display scale shows larger by its own name, in all \(formats.count) languages: ok")
         checkPlaylist()
         await checkDefaultApps()
     }

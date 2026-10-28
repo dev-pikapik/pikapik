@@ -123,6 +123,9 @@ private struct MonitorSection: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("pikapik keeps this size while it runs, also in the background. When pikapik quits completely, the monitor goes back to its usual size.")
                     if monitor.virtualSteps.contains(selected) { Text("Some video apps may show a black picture at this size.") }
+                    if let virtual = monitor.virtualName, monitor.virtualSteps.contains(selected) {
+                        Text("In System Settings › Displays you’ll see one more screen, “\(virtual)”: that’s how pikapik makes everything larger, and you don’t need to do anything with it.")
+                    }
                 }
                 .font(.callout)
                 .foregroundStyle(.secondary)

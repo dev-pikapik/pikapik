@@ -47,6 +47,30 @@ enum TestDisplayScale {
         precondition(DisplayScaleMath.serial(vendor: 19501, product: 29455, serial: 0, percent: 150) != 0, "a monitor without a serial number gets one")
         print("serial numbers of the virtual displays: ok")
 
+        // Two identical Mi monitors both report serial number 0: their unit numbers tell their virtual displays apart.
+        let mi = { (unit: UInt32?, percent: Int) in DisplayScaleMath.serial(vendor: 25001, product: 8193, serial: 0, unit: unit, percent: percent) }
+        precondition(mi(nil, 125) == 1_526_297_147, "a Mi alone, as at home, keeps the number macOS knows: \(mi(nil, 125))")
+        let twins = ([nil, 0, 1, 2, 3] as [UInt32?]).flatMap { unit in DisplayScaleMath.steps.map { mi(unit, $0) } }
+        precondition(Set(twins).count == twins.count && !twins.contains(0), "every unit and step gets its own number: \(twins)")
+        precondition(!DisplayScaleMath.steps.contains { DisplayScaleMath.serial(vendor: 19501, product: 29455, serial: 810432311, unit: 1, percent: $0) == 810432311 },
+                     "a twin's virtual display never takes the monitor's own number")
+        let isMi = { (serial: UInt32, unit: UInt32) in DisplayScaleMath.isVirtual(serial, vendor: 25001, product: 8193, serial: 0, unit: unit) }
+        precondition(isMi(mi(1, 125), 1) && !isMi(mi(1, 125), 2), "a twin's virtual display belongs to its own monitor only")
+        precondition(isMi(mi(nil, 125), 7), "the virtual display made before the twin came still belongs to the monitor")
+        precondition(DisplayScaleMath.isVirtual(samsung(150), vendor: 19501, product: 29455, serial: 810432311, unit: 3), "a monitor without a twin keeps its virtual displays")
+        precondition(!isMi(0, 2) && !DisplayScaleMath.isVirtual(810432311, vendor: 19501, product: 29455, serial: 810432311, unit: 3),
+                     "a monitor is never taken for a virtual display of its twin or of itself")
+        print("identical monitors get virtual displays of their own: ok")
+
+        let kept = ["25001-8193-0-1": 125, "25001-8193-0-2": 150, "25001-8193-0": 100, "19501-29455-810432311": 175]
+        precondition(DisplayScaleMath.twinSize(saved: kept, key: "25001-8193-0", online: ["25001-8193-0-2", "25001-8193-0-4"]) == 125,
+                     "a twin numbered anew takes the larger size its model has under an id not in use, never its twin's or another model's")
+        precondition(DisplayScaleMath.twinSize(saved: ["25001-8193-0-2": 150], key: "25001-8193-0", online: ["25001-8193-0-2", "25001-8193-0-4"]) == nil,
+                     "the size of the twin that is there stays its own")
+        precondition(DisplayScaleMath.twinSize(saved: ["25001-8193-12": 200, "25001-8193-1-3": 125], key: "25001-8193-1", online: []) == 125,
+                     "serial number 12 is another monitor, not a twin of serial number 1")
+        print("a twin numbered anew keeps a saved size: ok")
+
         let sharp = mode(2294, 960, refresh: 100)
         precondition(DisplayScaleMath.mirrorHolds(width: 2294, shown: sharp, monitor: sharp), "the Samsung at 150%: 2294x960 px 4588x1920")
         precondition(!DisplayScaleMath.mirrorHolds(width: 2294, shown: sharp, monitor: mode(800, 600, refresh: 100)),

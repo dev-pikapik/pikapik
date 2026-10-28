@@ -119,6 +119,7 @@ enum PreferenceKey {
     static let keepAwakeBattery = "keep-awake-battery"
 
     static let displayScale = "display-scale"
+    static let displayScaleTwins = "display-scale-twins"
 
     static let fansRPM = "fans-rpm"
     static let speedTestResult = "speed-test-result"

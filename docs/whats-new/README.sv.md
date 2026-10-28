@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Visningsstorlek: en smidig pekare och alla storlekar på två likadana bildskärmar
+
+<sub>1.57.1 · 28 oktober 2026</sub>
+
+Två rättningar för bildskärmar som du har förstorat i Inställningar › Bildskärmar, och ett tydligt namn på den extra skärmen.
+
+**Åtgärdat**
+
+- Vid 125 %, 150 % och 175 % fastnar pekaren inte längre när du flyttar den över en förstorad bildskärm eller från en bildskärm till en annan.
+- Två likadana bildskärmar, till exempel två av samma modell, erbjuder nu båda 125 %, 150 % och 175 %, inte bara 100 % och 200 %.
+
+**Även nytt**
+
+- Vid de här storlekarna visar Systeminställningar › Bildskärmar ytterligare en skärm. Den har nu ett tydligt namn, till exempel ”Mi monitor – förstorad av pikapik”, och Inställningar › Bildskärmar i pikapik förklarar att du inte behöver göra något med den.
+
+---
+
 ## <a id="v1.57.0"></a>Visningsstorlek: allt större, ändå skarpt
 
 <sub>1.57.0 · 28 oktober 2026</sub>

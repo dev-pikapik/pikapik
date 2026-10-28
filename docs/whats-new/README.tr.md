@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Ekran ölçeği: akıcı imleç ve iki aynı monitörde tüm boyutlar
+
+<sub>1.57.1 · 28 Ekim 2026</sub>
+
+Ayarlar › Ekranlar’da büyüttüğünüz monitörler için iki düzeltme ve ek ekran için anlaşılır bir ad.
+
+**Düzeltilenler**
+
+- %125, %150 ve %175 boyutlarında imleç, büyütülmüş bir monitörde ya da bir monitörden diğerine taşırken artık takılmıyor.
+- İki aynı monitör, örneğin aynı modelden iki monitör, artık ikisi de yalnızca %100 ve %200 değil, %125, %150 ve %175 boyutlarını da sunuyor.
+
+**Ayrıca yeni**
+
+- Bu boyutlarda Sistem Ayarları › Ekranlar bir ekran daha gösterir. Bu ekranın artık “Mi monitor — pikapik ile büyütülmüş” gibi anlaşılır bir adı var ve pikapik’teki Ayarlar › Ekranlar onunla bir şey yapmanız gerekmediğini açıklıyor.
+
+---
+
 ## <a id="v1.57.0"></a>Ekran ölçeği: her şey daha büyük, yine keskin
 
 <sub>1.57.0 · 28 Ekim 2026</sub>

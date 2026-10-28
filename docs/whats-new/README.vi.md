@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Kích thước hiển thị: con trỏ mượt mà và mọi kích thước trên hai màn hình giống nhau
+
+<sub>1.57.1 · 28 tháng 10 năm 2026</sub>
+
+Hai bản sửa cho các màn hình bạn đã phóng to trong Cài đặt › Màn hình, và một tên rõ ràng cho màn hình phụ.
+
+**Đã sửa**
+
+- Ở 125%, 150% và 175%, con trỏ không còn bị kẹt khi bạn di chuyển trên màn hình đã phóng to hoặc từ màn hình này sang màn hình khác.
+- Hai màn hình giống nhau, ví dụ hai chiếc cùng mẫu, giờ đều có 125%, 150% và 175%, không chỉ 100% và 200%.
+
+**Cũng mới**
+
+- Ở các kích thước này, Cài đặt hệ thống › Màn hình hiển thị thêm một màn hình. Giờ màn hình đó có tên rõ ràng, chẳng hạn “Mi monitor – được pikapik phóng to”, và Cài đặt › Màn hình trong pikapik giải thích rằng bạn không cần làm gì với nó.
+
+---
+
 ## <a id="v1.57.0"></a>Kích thước hiển thị: mọi thứ lớn hơn mà vẫn sắc nét
 
 <sub>1.57.0 · 28 tháng 10 năm 2026</sub>

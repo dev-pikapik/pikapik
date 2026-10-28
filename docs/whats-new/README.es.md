@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Tamaño en pantalla: un puntero fluido y todos los tamaños en dos monitores iguales
+
+<sub>1.57.1 · 28 de octubre de 2026</sub>
+
+Dos correcciones para los monitores que ampliaste en Ajustes › Pantallas, y un nombre claro para la pantalla adicional.
+
+**Corregido**
+
+- Con 125 %, 150 % y 175 %, el puntero ya no se queda atascado cuando lo mueves por un monitor ampliado o de un monitor a otro.
+- Dos monitores iguales, por ejemplo dos del mismo modelo, ahora ofrecen los dos 125 %, 150 % y 175 %, no solo 100 % y 200 %.
+
+**También nuevo**
+
+- Con estos tamaños, Ajustes del Sistema › Pantallas muestra una pantalla más. Ahora tiene un nombre claro, por ejemplo «Mi monitor — ampliado por pikapik», y Ajustes › Pantallas en pikapik explica que no tienes que hacer nada con ella.
+
+---
+
 ## <a id="v1.57.0"></a>Tamaño en pantalla: todo más grande y igual de nítido
 
 <sub>1.57.0 · 28 de octubre de 2026</sub>

@@ -5,6 +5,23 @@
 
 ---
 
+## <a id="v1.57.1"></a>Ukuran tampilan: penunjuk yang mulus dan semua ukuran di dua monitor yang sama
+
+<sub>1.57.1 · 28 Oktober 2026</sub>
+
+Dua perbaikan untuk monitor yang Anda perbesar di Pengaturan › Layar, dan nama yang jelas untuk layar tambahan.
+
+**Diperbaiki**
+
+- Pada 125%, 150%, dan 175%, penunjuk tidak lagi tersendat saat Anda menggerakkannya di monitor yang diperbesar atau dari satu monitor ke monitor lain.
+- Dua monitor yang sama, misalnya dua monitor dengan model yang sama, kini sama-sama menawarkan 125%, 150%, dan 175%, bukan hanya 100% dan 200%.
+
+**Juga baru**
+
+- Pada ukuran ini, Pengaturan Sistem › Layar menampilkan satu layar lagi. Kini layar itu punya nama yang jelas, misalnya “Mi monitor — diperbesar oleh pikapik”, dan Pengaturan › Layar di pikapik menjelaskan bahwa Anda tidak perlu melakukan apa pun dengannya.
+
+---
+
 ## <a id="v1.57.0"></a>Ukuran tampilan: semuanya lebih besar, tetap tajam
 
 <sub>1.57.0 · 28 Oktober 2026</sub>
