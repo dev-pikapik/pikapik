@@ -151,9 +151,10 @@ private let ioKitFrameworkPath = SystemPath.ioKitFramework
 
     private func scan() {
         let old = monitors
+        var seen: Set<CGDirectDisplayID> = []
         monitors = NSScreen.screens.compactMap { screen in
-            let id = screen.displayID
-            guard CGDisplayIsBuiltin(id) == 0, !Self.adjustsItself(id) else { return nil }
+            let id = screen.monitorID
+            guard seen.insert(id).inserted, CGDisplayIsBuiltin(id) == 0, !Self.adjustsItself(id) else { return nil }
             let key = "\(CGDisplayVendorNumber(id))-\(CGDisplayModelNumber(id))-\(CGDisplaySerialNumber(id))"
             let saved = UserDefaults.standard.object(forKey: Self.levelKey(key)) as? Double
             let picture = UserDefaults.standard.bool(forKey: Self.pictureKey(key))
@@ -162,7 +163,7 @@ private let ioKitFrameworkPath = SystemPath.ioKitFramework
             #else
             let control = controlled.contains(id), reports = !silent.contains(key)
             #endif
-            return Monitor(id: id, key: key, name: screen.localizedName, level: saved ?? old.first { $0.id == id }?.level ?? 1, hasControl: control, dimsPicture: picture, reports: reports)
+            return Monitor(id: id, key: key, name: screen.monitorName, level: saved ?? old.first { $0.id == id }?.level ?? 1, hasControl: control, dimsPicture: picture, reports: reports)
         }
         #if !APPSTORE
         for key in BrightnessMath.restarted(old.map(\.key), monitors.map(\.key), wrote: wrote) {
@@ -395,5 +396,24 @@ private final class MonitorLink: @unchecked Sendable {
 extension NSScreen {
     var displayID: CGDirectDisplayID {
         deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID ?? 0
+    }
+
+    /// The monitor that shows the screen: while Display scale draws a monitor larger, the screen is pikapik's
+    /// virtual display and the monitor mirrors it.
+    var monitorID: CGDirectDisplayID {
+        #if APPSTORE
+        displayID
+        #else
+        DisplayScale.physicalDisplay(of: displayID)
+        #endif
+    }
+
+    /// The monitor's own name: macOS numbers it, "S34CG50 (1)", while pikapik's virtual display shows it.
+    @MainActor var monitorName: String {
+        #if APPSTORE
+        localizedName
+        #else
+        DisplayScale.shared.monitors.first { $0.displayID == monitorID && !$0.name.isEmpty }?.name ?? localizedName
+        #endif
     }
 }

@@ -79,7 +79,7 @@ final class BrightnessKeysTool: Tool {
         else { return false }
         let fine = event.modifierFlags.contains([.option, .shift])
         let changed = MainActor.assumeIsolated {
-            guard let level = Brightness.shared.step(screen.displayID, up: key == 2, fine: fine) else { return false }
+            guard let level = Brightness.shared.step(screen.monitorID, up: key == 2, fine: fine) else { return false }
             BrightnessHUD.show(level, on: screen)
             return true
         }

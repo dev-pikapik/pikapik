@@ -272,6 +272,11 @@ The command above and Homebrew both put the app in `/Applications`, launch it an
 <br><b>Middle click on the trackpad</b>
 <br>Tap with three fingers to open a link in a new tab, like the middle mouse button.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/media/display-scale-dark.png"><img src="docs/media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Display scale</b>
+<br>Make everything on a monitor larger and still sharp, from 100% to 200%.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik doesn't record, store or send anything you type or click. Events are han
 **App Volume.** Open Settings › Sound and switch on **App Volume**. Every app that plays sound gets its own slider and a mute button, in Settings and in the menu bar panel. Lower a loud video call, mute a noisy game and leave your music as it is: the volume of your Mac and of the other apps stays the same. pikapik remembers the level of each app, and an app you leave at full volume is never touched. An app you have set stays in the list, also after a restart, dimmed while it is closed, so you can set a level before the app starts: click **Add App…** or drag an app in from Finder. The ✕ next to an app forgets it and returns it to full volume. To change an app's volume, pikapik passes its sound through itself, so it needs the **System Audio Recording** permission, which you allow on the Permissions page. The sound is only passed on: it isn't recorded, saved or sent anywhere, and the microphone isn't used. It needs macOS 14.2 or later and is hidden on macOS 14.0 and 14.1. Off by default.
 
 **Monitor brightness.** macOS changes the brightness of the built-in screen and of Apple displays, but not of most other monitors. Open Settings › Brightness: every monitor that macOS can’t adjust gets its own slider, and you can add a Brightness row to the menu bar panel. pikapik changes the monitor’s own brightness, the same setting as the buttons on the monitor. If a monitor doesn’t respond, switch on **Dim the picture instead**: the picture gets darker, but never black. Switch on **Brightness keys**, and the brightness keys adjust the monitor under the pointer and show a small indicator; hold ⌥⇧ for finer steps. The keys need the **Accessibility** permission from the Permissions page, and the sliders work without it. pikapik remembers the level of each monitor and sets it again after sleep. The Mac App Store version dims the picture. Brightness keys are off by default.
+
+**Display scale.** On many monitors, macOS has no way to make things a little larger and keep them sharp. Open Settings › Displays: every external monitor gets a slider from 100% to 200%, and under it a line such as “Looks like 2294 × 960” shows how much fits on the screen. Press **Use 150%** and the whole screen changes at once, with sharp text. A small panel on that monitor asks “Keep this size?”: press **Keep**, or **Go Back** to return. If you do nothing, the old size comes back by itself after 15 seconds. pikapik remembers the size of each monitor and sets it again when it starts, when you plug the monitor back in and after sleep. The size lasts while pikapik runs, also in the background, and the monitor goes back to its usual size when you quit pikapik completely. To quit completely, hold Option when you choose Quit. At some sizes a few video apps may show a black picture, and the page says so. It isn’t in the Mac App Store version.
 
 **Protect ⌘Q and ⌘W.** ⌘Q and ⌘W alone do nothing, so you don't quit an app or close a window by accident. Add Shift to do it on purpose: ⇧⌘Q quits, ⇧⌘W closes. Works in every app. Each key has its own switch. Off by default.
 
@@ -421,6 +428,7 @@ Open Settings from the menu with **Settings…** or ⌘, or launch pikapik again
 - **Battery**: charge, time until full or time left, condition, maximum capacity, cycle count, power adapter and watts, and tips to make it last. It only shows information: the charge limit stays in **System Settings › Battery**. Only on a Mac with a battery.
 - **Keep Awake**: duration, display and lid options.
 - **Brightness**: a slider for each monitor that macOS can’t adjust, the brightness keys, and dimming the picture instead.
+- **Displays**: a size from 100% to 200% for each external monitor, with a drawing of how big everything will look.
 - **Fans**: see each fan’s speed, choose Auto or a manual speed once Administrator access is allowed.
 - **Temperature**: how warm your Mac is, overall and for each part, such as the processor, memory and battery.
 - **Speed Test**: check the internet speed and see what it's good for.

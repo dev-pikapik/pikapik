@@ -26,6 +26,7 @@ final class NewMarks {
         NewItem(version: "1.50.0", tab: "permissions", row: ToolID.appsCanAsk, build: .appStore),
         NewItem(version: "1.50.0", tab: "sound", row: ToolID.appVolume),
         NewItem(version: "1.50.0", tab: "ports", build: .direct),
+        NewItem(version: "1.57.0", tab: "displays", row: ToolID.displayScale, build: .direct),
     ]
 
     static let lifetime: TimeInterval = 21 * 24 * 3600

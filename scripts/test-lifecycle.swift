@@ -75,9 +75,9 @@ enum TestLifecycle {
 
         let rows = Lifecycle.rows
         let expected: [Lifecycle.Moment: [String]] = [
-            .start: ["TextFocus", "DesktopIcons", "ToolRegistry", "Permissions", "SettingsSync", "Brightness", "KeepAwake", "Updater"],
-            .handOver: ["TextFocus", "DesktopIcons", "ToolRegistry", "SettingsSync", "Brightness", "KeepAwake", "FanControl", "Updater", "GameMode", "DockEdges", "HotCorners", "HiddenFiles"],
-            .quit: ["TextFocus", "DesktopIcons", "ToolRegistry", "SettingsSync", "Brightness", "FanControl", "Updater", "GameMode", "DockEdges", "HotCorners", "HiddenFiles", "TextFocus wait"],
+            .start: ["TextFocus", "DesktopIcons", "ToolRegistry", "Permissions", "SettingsSync", "Brightness", "KeepAwake", "DisplayScale", "Updater"],
+            .handOver: ["TextFocus", "DesktopIcons", "ToolRegistry", "SettingsSync", "Brightness", "KeepAwake", "FanControl", "DisplayScale", "Updater", "GameMode", "DockEdges", "HotCorners", "HiddenFiles"],
+            .quit: ["TextFocus", "DesktopIcons", "ToolRegistry", "SettingsSync", "Brightness", "FanControl", "DisplayScale", "Updater", "GameMode", "DockEdges", "HotCorners", "HiddenFiles", "TextFocus wait"],
             .powerOff: ["DesktopIcons", "DockEdges", "HotCorners", "Animations", "DockDisplay", "KeyRepeat", "Journals", "Dock", "HiddenFiles"],
             .uninstall: [],
         ]
@@ -123,13 +123,14 @@ enum TestLifecycle {
         }
         print("lifecycle quit: ok")
 
-        let patterns = ["CFPreferencesSet", "IOHIDServiceClientSetProperty", "CGConfigureDisplayOrigin", "CoreDockSet", "CGSSetSymbolicHotKeyEnabled", "CGSetDisplayTransferByTable", "disablesleep", "AXManualAccessibility", #"launchctl(["disable""#]
+        let patterns = ["CFPreferencesSet", "IOHIDServiceClientSetProperty", "CGConfigureDisplayOrigin", "CoreDockSet", "CGSSetSymbolicHotKeyEnabled", "CGSetDisplayTransferByTable", "disablesleep", "AXManualAccessibility", #"launchctl(["disable""#, "CGConfigureDisplayWithDisplayMode", "CGConfigureDisplayMirrorOfDisplay", "CGVirtualDisplay"]
         let owners: [String: [String]] = [
             "Sources/pikapik/Core/TextFocus.swift": ["TextFocus"],
             "Sources/pikapik/Tools/Animations/AnimationSetting.swift": ["Animations"],
             "Sources/pikapik/Tools/Animations/AnimationsTool.swift": ["Animations"],
             "Sources/pikapik/Tools/Background/BackgroundTasks.swift": ["BackgroundTasks"],
             "Sources/pikapik/Tools/Brightness/Brightness.swift": ["Brightness"],
+            "Sources/pikapik/Tools/DisplayScale/VirtualDisplay.swift": ["DisplayScale"],
             "Sources/pikapik/Tools/Dock/DockDisplayTool.swift": ["DockDisplay", "MainDisplay"],
             "Sources/pikapik/Tools/Fans/FanHelperProtocol.swift": ["BackgroundTasks", "FanControl"],
             "Sources/pikapik/Tools/Finder/DesktopIcons.swift": ["DesktopIcons"],

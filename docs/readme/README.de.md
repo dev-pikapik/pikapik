@@ -272,6 +272,11 @@ Der obige Befehl und Homebrew legen die App in `/Applications` ab, starten sie u
 <br><b>Mittelklick auf dem Trackpad</b>
 <br>Tippe mit drei Fingern, um einen Link in einem neuen Tab zu öffnen – wie mit der mittleren Maustaste.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Anzeigegröße</b>
+<br>Alles auf einem Monitor größer und trotzdem scharf machen, von 100 % bis 200 %.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik zeichnet nichts auf, speichert nichts und sendet nichts von dem, was du 
 **App-Lautstärke.** Öffne Einstellungen › Ton und schalte **App-Lautstärke** ein. Jede App, die Ton abspielt, bekommt einen eigenen Regler und eine Taste zum Stummschalten, in den Einstellungen und im Menü. Mach einen zu lauten Videoanruf leiser, schalte ein lärmendes Spiel stumm und lass deine Musik, wie sie ist: Die Lautstärke deines Macs und der anderen Apps bleibt gleich. pikapik merkt sich die Lautstärke jeder App, und eine App, die du auf voller Lautstärke lässt, bleibt unangetastet. Eine App, die du eingestellt hast, bleibt auch nach einem Neustart in der Liste, abgeblendet, solange sie geschlossen ist. So legst du die Lautstärke schon vor dem Start fest: Klicke auf **App hinzufügen …** oder ziehe eine App aus dem Finder hinein. Das ✕ neben einer App vergisst sie und setzt sie auf volle Lautstärke zurück. Um die Lautstärke einer App zu ändern, leitet pikapik ihren Ton durch sich selbst. Dafür braucht es die Berechtigung **Systemaudio-Aufnahme**, die du auf der Seite „Berechtigungen“ erlaubst. Der Ton wird nur weitergeleitet: Er wird nicht aufgenommen, gespeichert oder irgendwohin gesendet, und das Mikrofon wird nicht benutzt. Erfordert macOS 14.2 oder neuer und ist unter macOS 14.0 und 14.1 ausgeblendet. Standardmäßig aus.
 
 **Monitorhelligkeit.** macOS ändert die Helligkeit des eingebauten Bildschirms und von Apple-Displays, aber nicht die der meisten anderen Monitore. Öffne Einstellungen › Helligkeit: Jeder Monitor, den macOS nicht selbst regeln kann, bekommt einen eigenen Regler, und du kannst auch eine Zeile „Helligkeit“ zum Fenster der Menüleiste hinzufügen. pikapik ändert die Helligkeit des Monitors selbst, also dieselbe Einstellung wie die Tasten am Monitor. Reagiert ein Monitor nicht, schalte **Stattdessen das Bild abdunkeln** ein: Das Bild wird dunkler, aber nie schwarz. Schalte **Helligkeitstasten** ein, dann regeln die Helligkeitstasten den Monitor, auf dem der Zeiger steht, und blenden eine kleine Anzeige ein; halte ⌥⇧ für feinere Schritte. Die Tasten brauchen die Berechtigung **Bedienungshilfen**, die du auf der Seite „Berechtigungen“ erlaubst; die Regler funktionieren auch ohne sie. pikapik merkt sich die Helligkeit jedes Monitors und stellt sie nach dem Ruhezustand wieder ein. Die Version aus dem Mac App Store dunkelt nur das Bild ab. Helligkeitstasten sind standardmäßig aus.
+
+**Anzeigegröße.** Bei vielen Monitoren kann macOS Dinge nicht ein wenig größer darstellen und trotzdem scharf halten. Öffne Einstellungen › Displays: Jeder externe Monitor bekommt einen Regler von 100 % bis 200 %, und darunter zeigt eine Zeile wie „Sieht aus wie 2294 × 960“, wie viel auf den Bildschirm passt. Drücke **150 % verwenden**, und der ganze Bildschirm ändert sich auf einmal, der Text bleibt scharf. Ein kleines Fenster auf diesem Monitor fragt „Diese Größe behalten?“: Drücke **Behalten**, oder **Zurück**, um zurückzukehren. Tust du nichts, kehrt die alte Größe nach 15 Sekunden von selbst zurück. pikapik merkt sich die Größe jedes Monitors und stellt sie beim Start, wenn du den Monitor wieder anschließt und nach dem Ruhezustand wieder ein. Die Größe gilt, solange pikapik läuft, auch im Hintergrund; erst beim vollständigen Beenden kehrt der Monitor zu seiner üblichen Größe zurück. Um ganz zu beenden, halte die Wahltaste (⌥) gedrückt, wenn du „Beenden“ wählst. Bei manchen Größen zeigen einige Video-Apps ein schwarzes Bild, und die Seite weist darauf hin. In der Version aus dem Mac App Store gibt es sie nicht.
 
 **⌘Q und ⌘W schützen.** ⌘Q und ⌘W allein bewirken nichts, damit du nicht aus Versehen eine App beendest oder ein Fenster schließt. Nimm Shift dazu, um es bewusst zu tun: ⇧⌘Q beendet, ⇧⌘W schließt. Funktioniert in jeder App. Jede Taste hat einen eigenen Schalter. Standardmäßig aus.
 
@@ -421,6 +428,7 @@ Zeigt, wie schnell dein Internet gerade ist. Klick auf **Geschwindigkeit prüfen
 - **Batterie**: Ladestand, Zeit bis zur vollen Ladung oder verbleibende Zeit, Zustand, maximale Kapazität, Anzahl der Zyklen, Netzteil und Leistung in Watt sowie Tipps, damit die Batterie lange durchhält. Die Seite zeigt nur Informationen an: Das Ladelimit bleibt in **Systemeinstellungen › Batterie**. Sie erscheint nur auf einem Mac mit Batterie.
 - **Wach bleiben**: Dauer, Display- und Deckeloptionen.
 - **Helligkeit**: ein Regler für jeden Monitor, den macOS nicht selbst regeln kann, die Helligkeitstasten und die Option, stattdessen das Bild abzudunkeln.
+- **Displays**: eine Größe von 100 % bis 200 % für jeden externen Monitor, mit einer Zeichnung, wie groß alles aussehen wird.
 - **Lüfter**: Geschwindigkeit jedes Lüfters sehen, Automatisch oder eine eigene Geschwindigkeit wählen, sobald der Administratorzugriff erlaubt ist.
 - **Temperatur**: wie warm dein Mac ist, insgesamt und für jedes Bauteil, etwa Prozessor, Arbeitsspeicher und Akku.
 - **Speedtest**: Internetgeschwindigkeit messen und sehen, wofür sie reicht.

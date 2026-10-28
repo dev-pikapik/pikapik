@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Display scale: everything larger, still sharp
+
+<sub>1.57.0 · October 28, 2026</sub>
+
+Make everything on an external monitor larger and still sharp, right from pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+On many monitors, macOS has no way to make things a little larger and keep them sharp. Now each external monitor gets a slider in Settings › Displays, from 100% to 200%. Under it, a line such as “Looks like 2294 × 960” shows how much fits on the screen, and a small drawing shows how big things will look.
+
+Press “Use 150%”, and the whole screen changes at once. A small panel on that monitor asks “Keep this size?”: press “Keep” to stay, or “Go Back” to return. If you do nothing, the old size comes back by itself after 15 seconds.
+
+pikapik remembers the size of each monitor and sets it again when it starts, when you plug the monitor back in and after sleep. The size lasts while pikapik runs, also in the background, and the monitor goes back to its usual size when you quit pikapik completely. To quit completely, hold Option when you choose Quit. At some sizes a few video apps may show a black picture, and the page says so. Display scale isn’t in the Mac App Store version.
+
+**Try it:** Settings › Displays
+
+---
+
 ## <a id="v1.56.2"></a>Player: smooth MKV video playback and instant seeking
 
 <sub>1.56.2 · October 26, 2026</sub>

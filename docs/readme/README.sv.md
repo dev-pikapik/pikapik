@@ -272,6 +272,11 @@ Både kommandot ovan och Homebrew lägger appen i `/Applications`, öppnar den o
 <br><b>Mittklick på styrplattan</b>
 <br>Tryck med tre fingrar för att öppna en länk i en ny flik, som med mittknappen på en mus.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Visningsstorlek</b>
+<br>Gör allt på en bildskärm större och ändå skarpt, från 100 % till 200 %.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik spelar inte in, sparar inte och skickar inte något av det du skriver el
 **Appvolym.** Öppna Inställningar › Ljud och slå på **Appvolym**. Varje app som spelar upp ljud får ett eget reglage och en knapp för att stänga av ljudet, i Inställningar och i menyn. Sänk volymen på ett högljutt videosamtal, stäng av ljudet för ett bullrigt spel och låt musiken vara som den är: volymen på din Mac och på de andra apparna ändras inte. pikapik kommer ihåg nivån för varje app, och en app som du lämnar på full volym rörs aldrig. En app som du har ställt in finns kvar i listan, även efter en omstart, och är dämpad medan den är stängd, så du kan välja nivå innan appen startar: klicka på **Lägg till app…** eller dra in en app från Finder. ✕ bredvid en app glömmer den och återställer full volym. För att ändra en apps volym leder pikapik dess ljud genom sig själv, så det behöver behörigheten **Inspelning av systemljud**, som du tillåter på sidan Behörigheter. Ljudet leds bara vidare: det spelas inte in, sparas inte och skickas ingenstans, och mikrofonen används inte. Kräver macOS 14.2 eller senare och är dold i macOS 14.0 och 14.1. Av som standard.
 
 **Ljusstyrka för bildskärmar.** macOS ändrar ljusstyrkan på den inbyggda skärmen och på Apple-skärmar, men inte på de flesta andra bildskärmar. Öppna Inställningar › Ljusstyrka: varje bildskärm som macOS inte kan justera själv får ett eget reglage, och du kan också lägga till en rad ”Ljusstyrka” i panelen i menyraden. pikapik ändrar bildskärmens egen ljusstyrka, samma inställning som knapparna på bildskärmen. Om en bildskärm inte reagerar slår du på **Dämpa bilden i stället**: bilden blir mörkare, men aldrig svart. Slå på **Ljusstyrketangenter**, så justerar ljusstyrketangenterna bildskärmen där pekaren är och visar en liten indikator; håll ned ⌥⇧ för finare steg. Tangenterna behöver behörigheten **Hjälpmedel**, som du tillåter på sidan Behörigheter, och reglagen fungerar utan den. pikapik kommer ihåg ljusstyrkan för varje bildskärm och ställer in den igen efter vila. Versionen från Mac App Store dämpar bara bilden. Ljusstyrketangenter är av som standard.
+
+**Visningsstorlek.** På många bildskärmar kan macOS inte göra allt lite större och ändå hålla det skarpt. Öppna Inställningar › Bildskärmar: varje extern bildskärm får ett reglage från 100 % till 200 %, och under det visar en rad som ”Ser ut som 2294 × 960” hur mycket som ryms på skärmen. Tryck på **Använd 150 %**, så ändras hela skärmen på en gång, med skarp text. En liten panel på den bildskärmen frågar ”Behålla den här storleken?”: tryck på **Behåll**, eller på **Gå tillbaka** för att gå tillbaka. Om du inte gör något kommer den gamla storleken tillbaka av sig själv efter 15 sekunder. pikapik kommer ihåg storleken för varje bildskärm och ställer in den igen vid start, när du kopplar in bildskärmen igen och efter vila. Storleken gäller så länge pikapik körs, även i bakgrunden, och bildskärmen går tillbaka till sin vanliga storlek när du avslutar pikapik helt. Håll ned Alternativ (⌥) när du väljer ”Avsluta” för att avsluta helt. Vid vissa storlekar kan några videoappar visa en svart bild, och sidan varnar för det. Den finns inte i versionen från Mac App Store.
 
 **Skydda ⌘Q och ⌘W.** ⌘Q och ⌘W ensamma gör ingenting, så du avslutar inte en app eller stänger ett fönster av misstag. Lägg till skift för att göra det med flit: ⇧⌘Q avslutar, ⇧⌘W stänger. Fungerar i alla appar. Varje tangent har en egen reglage. Av som standard.
 
@@ -421,6 +428,7 @@ Visar hur snabbt ditt internet är just nu. Klicka på **Testa hastigheten** und
 - **Batteri**: laddning, tid till fulladdat eller återstående tid, skick, maximal kapacitet, cykelantal, strömadapter och effekt i watt samt tips för att batteriet ska räcka längre. Sidan visar bara information: laddningsbegränsningen finns kvar i **Systeminställningar › Batteri**. Visas bara på en Mac med batteri.
 - **Håll vaken**: tid, alternativ för skärm och lock.
 - **Ljusstyrka**: ett reglage för varje bildskärm som macOS inte kan justera själv, ljusstyrketangenterna och att dämpa bilden i stället.
+- **Bildskärmar**: en storlek från 100 % till 200 % för varje extern bildskärm, med en teckning av hur stort allt blir.
 - **Fläktar**: hastigheten för varje fläkt, Auto eller en egen hastighet när Administratörsåtkomst är tillåten.
 - **Temperatur**: hur varm din Mac är, totalt och för varje del, som processorn, minnet och batteriet.
 - **Hastighetstest**: mät internet och se vad det räcker till.

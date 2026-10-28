@@ -122,6 +122,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         Brightness.shared.start()
         #if !APPSTORE
         FanControl.shared.start()
+        DisplayScale.shared.start()
         signals = [SIGTERM, SIGINT, SIGHUP].map { number in
             signal(number, SIG_IGN)
             let source = DispatchSource.makeSignalSource(signal: number, queue: .main)

@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Ukuran tampilan: semuanya lebih besar, tetap tajam
+
+<sub>1.57.0 · 28 Oktober 2026</sub>
+
+Buat semua yang ada di monitor eksternal lebih besar dan tetap tajam, langsung dari pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+Pada banyak monitor, macOS tidak punya cara untuk membuat tampilan sedikit lebih besar dan tetap tajam. Sekarang setiap monitor eksternal mendapat slider di Pengaturan › Layar, dari 100% sampai 200%. Di bawahnya ada baris seperti “Terlihat seperti 2294 × 960” yang menunjukkan seberapa banyak yang muat di layar, dan gambar kecil menunjukkan seberapa besar tampilannya nanti.
+
+Tekan “Gunakan 150%”, maka seluruh layar berubah sekaligus. Panel kecil di monitor itu bertanya “Pertahankan ukuran ini?”: tekan “Pertahankan” untuk menetap, atau “Kembali” untuk kembali. Jika Anda tidak melakukan apa-apa, ukuran lama kembali sendiri setelah 15 detik.
+
+pikapik mengingat ukuran tiap monitor dan mengaturnya lagi saat dijalankan, saat monitor dicolokkan kembali, dan setelah tidur. Ukuran bertahan selama pikapik berjalan, juga di latar belakang, dan monitor kembali ke ukuran biasanya saat Anda keluar sepenuhnya dari pikapik. Untuk keluar sepenuhnya, tahan Option (⌥) saat memilih “Keluar”. Pada beberapa ukuran, sebagian aplikasi video bisa menampilkan gambar hitam, dan halaman memberi tahu hal itu. “Ukuran tampilan” tidak ada di versi Mac App Store.
+
+**Coba:** Pengaturan › Layar
+
+---
+
 ## <a id="v1.56.2"></a>Pemutar video: pemutaran video MKV yang mulus dan pencarian instan
 
 <sub>1.56.2 · 26 Oktober 2026</sub>

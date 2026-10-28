@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Weergavegrootte: alles groter en toch scherp
+
+<sub>1.57.0 · 28 oktober 2026</sub>
+
+Maak alles op een externe monitor groter en toch scherp, gewoon vanuit pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+Op veel monitors kan macOS dingen niet een beetje groter maken en toch scherp houden. Nu krijgt elke externe monitor een schuifregelaar in Instellingen › Beeldschermen, van 100% tot 200%. Daaronder laat een regel als ‘Lijkt op 2294 × 960’ zien hoeveel er op het scherm past, en een kleine tekening toont hoe groot alles wordt.
+
+Druk op ‘Gebruik 150%’ en het hele scherm verandert in één keer. Een klein paneel op die monitor vraagt ‘Deze grootte behouden?’: druk op ‘Behoud’, of op ‘Ga terug’ om terug te gaan. Doe je niets, dan komt de oude grootte na 15 seconden vanzelf terug.
+
+pikapik onthoudt de grootte van elke monitor en stelt die opnieuw in bij het opstarten, als je de monitor weer aansluit en na de sluimerstand. De grootte blijft zolang pikapik draait, ook op de achtergrond, en de monitor gaat terug naar zijn gebruikelijke grootte als je pikapik helemaal stopt. Houd Option (⌥) ingedrukt als je ‘Stop’ kiest om helemaal te stoppen. Bij sommige groottes kunnen een paar video-apps een zwart beeld tonen, en de pagina waarschuwt daarvoor. ‘Weergavegrootte’ zit niet in de versie uit de Mac App Store.
+
+**Probeer het:** Instellingen › Beeldschermen
+
+---
+
 ## <a id="v1.56.2"></a>Videospeler: soepel afspelen van MKV en direct vooruitspoelen
 
 <sub>1.56.2 · 26 oktober 2026</sub>

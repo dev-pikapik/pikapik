@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Kích thước hiển thị: mọi thứ lớn hơn mà vẫn sắc nét
+
+<sub>1.57.0 · 28 tháng 10 năm 2026</sub>
+
+Làm mọi thứ trên màn hình ngoài lớn hơn mà vẫn sắc nét, ngay trong pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+Trên nhiều màn hình, macOS không có cách làm mọi thứ lớn hơn một chút mà vẫn sắc nét. Giờ đây mỗi màn hình ngoài có một thanh trượt trong Cài đặt › Màn hình, từ 100% đến 200%. Bên dưới là dòng như “Trông như 2294 × 960” cho biết màn hình chứa được bao nhiêu nội dung, cùng một hình vẽ nhỏ cho thấy mọi thứ sẽ lớn đến đâu.
+
+Bấm “Dùng 150%” thì toàn bộ màn hình đổi cùng lúc. Một bảng nhỏ trên màn hình đó hỏi “Giữ kích thước này?”: bấm “Giữ lại”, hoặc “Quay lại” để quay lại. Nếu bạn không làm gì, kích thước cũ tự quay lại sau 15 giây.
+
+pikapik nhớ kích thước của từng màn hình và đặt lại khi khởi động, khi bạn cắm lại màn hình và sau khi ngủ. Kích thước giữ nguyên khi pikapik còn chạy, kể cả trong nền, và màn hình trở về kích thước quen thuộc khi bạn thoát hẳn pikapik. Để thoát hẳn, giữ Option (⌥) khi chọn “Thoát”. Ở một số kích thước, vài ứng dụng video có thể hiện hình đen, và trang cài đặt có nhắc điều đó. “Kích thước hiển thị” không có trong phiên bản Mac App Store.
+
+**Thử ngay:** Cài đặt › Màn hình
+
+---
+
 ## <a id="v1.56.2"></a>Trình phát video: phát video MKV mượt mà và tua tức thì
 
 <sub>1.56.2 · 26 tháng 10 năm 2026</sub>

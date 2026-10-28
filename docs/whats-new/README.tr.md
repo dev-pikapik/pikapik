@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Ekran ölçeği: her şey daha büyük, yine keskin
+
+<sub>1.57.0 · 28 Ekim 2026</sub>
+
+Harici bir monitördeki her şeyi doğrudan pikapik’ten büyütün, görüntü keskin kalsın.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+Birçok monitörde macOS, her şeyi biraz büyütüp keskin tutmanın bir yolunu sunmaz. Artık her harici monitör Ayarlar › Ekranlar sayfasında %100 ile %200 arasında bir sürgü alıyor. Altında “2294 × 960 gibi görünür” gibi bir satır ekrana ne kadar şeyin sığacağını gösteriyor, küçük bir çizim de her şeyin ne kadar büyük görüneceğini.
+
+“%150 Kullan” düğmesine basın; ekranın tamamı bir anda değişir. O monitörde küçük bir panel “Bu boyut korunsun mu?” diye sorar: “Koru” düğmesine basın ya da geri dönmek için “Geri Dön” düğmesine basın. Hiçbir şey yapmazsanız eski boyut 15 saniye sonra kendiliğinden geri gelir.
+
+pikapik her monitörün boyutunu hatırlar ve başlangıçta, monitörü yeniden taktığınızda ve uykudan sonra yeniden ayarlar. Boyut, pikapik çalıştığı sürece, arka planda da geçerlidir; pikapik’ten tamamen çıktığınızda monitör olağan boyutuna döner. Tamamen çıkmak için “Çık”ı seçerken Option (⌥) tuşunu basılı tutun. Bazı boyutlarda birkaç video uygulaması siyah görüntü gösterebilir ve sayfa bunu belirtir. “Ekran ölçeği” Mac App Store sürümünde yoktur.
+
+**Deneyin:** Ayarlar › Ekranlar
+
+---
+
 ## <a id="v1.56.2"></a>Video oynatıcı: akıcı MKV oynatma ve anında sarma
 
 <sub>1.56.2 · 26 Ekim 2026</sub>

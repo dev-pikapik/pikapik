@@ -272,6 +272,11 @@ Zowel de opdracht hierboven als Homebrew zetten de app in `/Applications`, opene
 <br><b>Middelklik op het trackpad</b>
 <br>Tik met drie vingers om een link in een nieuw tabblad te openen, net als met de middelste muisknop.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Weergavegrootte</b>
+<br>Maak alles op een monitor groter en toch scherp, van 100% tot 200%.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik legt niets vast, bewaart niets en verstuurt niets van wat je typt of aan
 **App-volume.** Open Instellingen › Geluid en zet **App-volume** aan. Elke app die geluid afspeelt krijgt een eigen schuifregelaar en een dempknop, in Instellingen en in het menu. Zet een te luid videogesprek zachter, demp een lawaaierige game en laat je muziek zoals die is: het volume van je Mac en van de andere apps verandert niet. pikapik onthoudt het niveau van elke app, en een app die je op vol volume laat staan, wordt nooit aangeraakt. Een app die je hebt ingesteld blijft ook na een herstart in de lijst staan, gedimd zolang hij gesloten is. Zo kun je het niveau instellen voordat de app start: klik op **Voeg app toe…** of sleep een app vanuit de Finder. Met de ✕ naast een app vergeet pikapik de app en staat hij weer op vol volume. Om het volume van een app te wijzigen, leidt pikapik het geluid ervan door zichzelf heen. Daarvoor heeft het de toestemming **Opname van systeemaudio** nodig, die je toestaat op de pagina Toestemmingen. Het geluid wordt alleen doorgegeven: het wordt niet opgenomen, bewaard of ergens naartoe gestuurd, en de microfoon wordt niet gebruikt. Vereist macOS 14.2 of nieuwer en is verborgen op macOS 14.0 en 14.1. Standaard uit.
 
 **Monitorhelderheid.** macOS wijzigt de helderheid van het ingebouwde scherm en van Apple-schermen, maar niet van de meeste andere monitors. Open Instellingen › Helderheid: elke monitor die macOS niet zelf kan regelen krijgt een eigen schuifregelaar, en je kunt ook een rij ‘Helderheid’ toevoegen aan het paneel in de menubalk. pikapik wijzigt de helderheid van de monitor zelf, dezelfde instelling als de knoppen op de monitor. Reageert een monitor niet, zet dan **In plaats daarvan het beeld dimmen** aan: het beeld wordt donkerder, maar nooit zwart. Zet **Helderheidstoetsen** aan, dan regelen de helderheidstoetsen de monitor waar de aanwijzer staat en tonen ze een kleine indicator; houd ⌥⇧ ingedrukt voor fijnere stappen. De toetsen hebben de toestemming **Toegankelijkheid** nodig, die je toestaat op de pagina Toestemmingen; de schuifregelaars werken ook zonder. pikapik onthoudt de helderheid van elke monitor en stelt die na de sluimerstand opnieuw in. De versie uit de Mac App Store dimt alleen het beeld. Helderheidstoetsen staan standaard uit.
+
+**Weergavegrootte.** Op veel monitors kan macOS dingen niet een beetje groter maken en toch scherp houden. Open Instellingen › Beeldschermen: elke externe monitor krijgt een schuifregelaar van 100% tot 200%, en daaronder laat een regel als ‘Lijkt op 2294 × 960’ zien hoeveel er op het scherm past. Druk op **Gebruik 150%** en het hele scherm verandert in één keer, met scherpe tekst. Een klein paneel op die monitor vraagt ‘Deze grootte behouden?’: druk op **Behoud**, of op **Ga terug** om terug te gaan. Doe je niets, dan komt de oude grootte na 15 seconden vanzelf terug. pikapik onthoudt de grootte van elke monitor en stelt die opnieuw in bij het opstarten, als je de monitor weer aansluit en na de sluimerstand. De grootte blijft zolang pikapik draait, ook op de achtergrond, en de monitor gaat terug naar zijn gebruikelijke grootte als je pikapik helemaal stopt. Houd Option (⌥) ingedrukt als je ‘Stop’ kiest om helemaal te stoppen. Bij sommige groottes kunnen een paar video-apps een zwart beeld tonen, en de pagina waarschuwt daarvoor. Het zit niet in de versie uit de Mac App Store.
 
 **⌘Q en ⌘W beschermen.** ⌘Q en ⌘W alleen doen niets, zodat je niet per ongeluk een app stopt of een venster sluit. Voeg Shift toe om het bewust te doen: ⇧⌘Q stopt, ⇧⌘W sluit. Werkt in elke app. Elke toets heeft een eigen schakelaar. Standaard uit.
 
@@ -421,6 +428,7 @@ Open de instellingen vanuit het menu met **Instellingen…** of ⌘, of open pik
 - **Batterij**: oplaadniveau, tijd tot vol of resterende tijd, conditie, maximumcapaciteit, aantal cycli, lichtnetadapter en vermogen in watt, plus tips om je batterij langer mee te laten gaan. De pagina toont alleen informatie: de oplaadlimiet blijft in **Systeeminstellingen › Batterij**. Alleen te zien op een Mac met een batterij.
 - **Wakker houden**: duur, opties voor het scherm en de klep.
 - **Helderheid**: een schuifregelaar voor elke monitor die macOS niet zelf kan regelen, de helderheidstoetsen en de optie om in plaats daarvan het beeld te dimmen.
+- **Beeldschermen**: een grootte van 100% tot 200% voor elke externe monitor, met een tekening van hoe groot alles wordt.
 - **Ventilatoren**: de snelheid van elke ventilator, Auto of een handmatige snelheid zodra Beheerderstoegang is toegestaan.
 - **Temperatuur**: hoe warm je Mac is, in het algemeen en per onderdeel, zoals de processor, het geheugen en de batterij.
 - **Snelheidstest**: meet je internet en zie waar het geschikt voor is.

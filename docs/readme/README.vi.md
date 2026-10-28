@@ -272,6 +272,11 @@ Cả lệnh ở trên và Homebrew đều đặt ứng dụng vào `/Application
 <br><b>Bấm giữa trên bàn di chuột</b>
 <br>Chạm bằng ba ngón tay để mở liên kết trong tab mới, giống như nút giữa của chuột.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Kích thước hiển thị</b>
+<br>Làm mọi thứ trên màn hình lớn hơn mà vẫn sắc nét, từ 100% đến 200%.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik không ghi lại, không lưu và không gửi bất cứ thứ gì bạ
 **Âm lượng ứng dụng.** Mở Cài đặt › Âm thanh rồi bật **Âm lượng ứng dụng**. Mỗi ứng dụng phát âm thanh có thanh trượt riêng và nút tắt tiếng, trong Cài đặt lẫn trong menu. Hãy giảm âm lượng cuộc gọi video quá to, tắt tiếng một trò chơi ồn ào và để nhạc của bạn như cũ: âm lượng của Mac và của các ứng dụng khác không thay đổi. pikapik nhớ mức âm lượng của từng ứng dụng, và ứng dụng nào bạn để ở âm lượng tối đa thì không bao giờ bị đụng đến. Ứng dụng bạn đã chỉnh vẫn nằm trong danh sách, kể cả sau khi khởi động lại, và mờ đi khi đang đóng, nên bạn có thể đặt âm lượng trước khi ứng dụng chạy: bấm **Thêm ứng dụng…** hoặc kéo một ứng dụng vào từ Finder. Nút ✕ bên cạnh ứng dụng sẽ quên ứng dụng đó và đưa về âm lượng tối đa. Để đổi âm lượng của một ứng dụng, pikapik cho âm thanh của ứng dụng đó đi qua chính nó, nên cần quyền **Ghi âm thanh hệ thống**, mà bạn cho phép ở trang Quyền. Âm thanh chỉ được chuyển tiếp: không được ghi lại, lưu hay gửi đi đâu, và micro không được dùng. Cần macOS 14.2 trở lên và bị ẩn trên macOS 14.0 và 14.1. Tắt theo mặc định.
 
 **Độ sáng màn hình.** macOS chỉnh được độ sáng của màn hình tích hợp và màn hình Apple, nhưng không chỉnh được hầu hết các màn hình khác. Mở Cài đặt › Độ sáng: mỗi màn hình mà macOS không tự chỉnh được đều có thanh trượt riêng, và bạn cũng có thể thêm dòng “Độ sáng” vào bảng điều khiển trên thanh menu. pikapik thay đổi độ sáng của chính màn hình, giống như các nút trên màn hình. Nếu màn hình không phản hồi, hãy bật **Làm tối hình ảnh thay vào đó**: hình ảnh tối đi nhưng không bao giờ đen hẳn. Bật **Phím độ sáng** thì các phím độ sáng sẽ chỉnh màn hình đang có con trỏ và hiện một chỉ báo nhỏ; giữ ⌥⇧ để chỉnh từng bước nhỏ hơn. Các phím cần quyền **Trợ năng**, mà bạn cho phép ở trang Quyền, còn thanh trượt vẫn hoạt động khi không có quyền này. pikapik nhớ mức độ sáng của từng màn hình và đặt lại sau khi ngủ. Phiên bản Mac App Store chỉ làm tối hình ảnh. Phím độ sáng tắt theo mặc định.
+
+**Kích thước hiển thị.** Trên nhiều màn hình, macOS không có cách làm mọi thứ lớn hơn một chút mà vẫn sắc nét. Mở Cài đặt › Màn hình: mỗi màn hình ngoài có một thanh trượt từ 100% đến 200%, và bên dưới là dòng như “Trông như 2294 × 960” cho biết màn hình chứa được bao nhiêu nội dung. Bấm **Dùng 150%** thì toàn bộ màn hình đổi cùng lúc, chữ vẫn sắc nét. Một bảng nhỏ trên màn hình đó hỏi “Giữ kích thước này?”: bấm **Giữ lại**, hoặc **Quay lại** để quay lại. Nếu bạn không làm gì, kích thước cũ tự quay lại sau 15 giây. pikapik nhớ kích thước của từng màn hình và đặt lại khi khởi động, khi bạn cắm lại màn hình và sau khi ngủ. Kích thước giữ nguyên khi pikapik còn chạy, kể cả trong nền, và màn hình trở về kích thước quen thuộc khi bạn thoát hẳn pikapik. Để thoát hẳn, giữ Option (⌥) khi chọn “Thoát”. Ở một số kích thước, vài ứng dụng video có thể hiện hình đen, và trang cài đặt có nhắc điều đó. Không có trong phiên bản Mac App Store.
 
 **Bảo vệ ⌘Q và ⌘W.** Chỉ nhấn ⌘Q hoặc ⌘W thì không có gì xảy ra, nên bạn sẽ không vô tình thoát ứng dụng hay đóng cửa sổ. Thêm Shift khi bạn thật sự muốn: ⇧⌘Q để thoát, ⇧⌘W để đóng. Hoạt động trong mọi ứng dụng. Mỗi phím có công tắc riêng. Tắt theo mặc định.
 
@@ -421,6 +428,7 @@ Mở cài đặt từ menu bằng **Cài đặt…** hoặc ⌘, hoặc mở l�
 - **Pin**: mức pin, thời gian đến khi đầy hoặc thời gian còn lại, tình trạng, dung lượng tối đa, số lượng chu kỳ, bộ tiếp hợp nguồn và công suất tính bằng watt, cùng mẹo giúp pin dùng được lâu hơn. Trang chỉ hiển thị thông tin: giới hạn sạc vẫn nằm trong **Cài đặt hệ thống › Pin**. Chỉ xuất hiện trên Mac có pin.
 - **Giữ máy thức**: thời lượng, tùy chọn màn hình và nắp.
 - **Độ sáng**: thanh trượt cho từng màn hình mà macOS không tự chỉnh được, các phím độ sáng và tùy chọn làm tối hình ảnh thay vào đó.
+- **Màn hình**: kích thước từ 100% đến 200% cho từng màn hình ngoài, kèm hình vẽ cho thấy mọi thứ sẽ lớn đến đâu.
 - **Quạt**: tốc độ từng quạt, chọn Tự động hoặc tốc độ thủ công sau khi cho phép Quyền quản trị.
 - **Nhiệt độ**: máy Mac nóng đến mức nào, tổng thể và từng bộ phận, như bộ xử lý, bộ nhớ và pin.
 - **Kiểm tra tốc độ**: đo internet và xem nó phù hợp cho gì.

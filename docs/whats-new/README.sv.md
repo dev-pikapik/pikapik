@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Visningsstorlek: allt större, ändå skarpt
+
+<sub>1.57.0 · 28 oktober 2026</sub>
+
+Gör allt på en extern bildskärm större och ändå skarpt, direkt i pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+På många bildskärmar kan macOS inte göra allt lite större och ändå hålla det skarpt. Nu får varje extern bildskärm ett reglage i Inställningar › Bildskärmar, från 100 % till 200 %. Under det visar en rad som ”Ser ut som 2294 × 960” hur mycket som ryms på skärmen, och en liten teckning visar hur stort allt blir.
+
+Tryck på ”Använd 150 %”, så ändras hela skärmen på en gång. En liten panel på den bildskärmen frågar ”Behålla den här storleken?”: tryck på ”Behåll”, eller på ”Gå tillbaka” för att gå tillbaka. Om du inte gör något kommer den gamla storleken tillbaka av sig själv efter 15 sekunder.
+
+pikapik kommer ihåg storleken för varje bildskärm och ställer in den igen vid start, när du kopplar in bildskärmen igen och efter vila. Storleken gäller så länge pikapik körs, även i bakgrunden, och bildskärmen går tillbaka till sin vanliga storlek när du avslutar pikapik helt. Håll ned Alternativ (⌥) när du väljer ”Avsluta” för att avsluta helt. Vid vissa storlekar kan några videoappar visa en svart bild, och sidan varnar för det. ”Visningsstorlek” finns inte i versionen från Mac App Store.
+
+**Prova:** Inställningar › Bildskärmar
+
+---
+
 ## <a id="v1.56.2"></a>Videospelare: mjuk MKV-uppspelning och direkt spolning
 
 <sub>1.56.2 · 26 oktober 2026</sub>

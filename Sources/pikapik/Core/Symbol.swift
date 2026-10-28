@@ -195,6 +195,8 @@ enum Symbol: String, CaseIterable {
     case sunriseFill = "sunrise.fill"
     case terminal = "terminal"
     case textBubble = "text.bubble"
+    case textformatSizeLarger = "textformat.size.larger"
+    case textformatSizeSmaller = "textformat.size.smaller"
     case theatermasksFill = "theatermasks.fill"
     case thermometerMedium = "thermometer.medium"
     case tornado = "tornado"

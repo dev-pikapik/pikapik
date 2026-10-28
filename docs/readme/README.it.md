@@ -272,6 +272,11 @@ Sia il comando qui sopra sia Homebrew mettono l’app in `/Applications`, la avv
 <br><b>Clic centrale sul trackpad</b>
 <br>Tocca con tre dita per aprire un link in una nuova scheda, come con il tasto centrale del mouse.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Dimensioni di visualizzazione</b>
+<br>Ingrandisci tutto su un monitor mantenendolo nitido, dal 100% al 200%.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ pikapik non registra, non conserva e non invia nulla di ciò che digiti o clicch
 **Volume delle app.** Apri Impostazioni › Suono e attiva **Volume delle app**. Ogni app che riproduce suoni ha il suo cursore e un pulsante per silenziarla, nelle Impostazioni e nel menu. Abbassa il volume di una videochiamata troppo forte, silenzia un gioco rumoroso e lascia la tua musica com’è: il volume del Mac e delle altre app non cambia. pikapik ricorda il livello di ogni app, e un’app che lasci a volume pieno non viene mai toccata. Un’app che hai impostato resta nell’elenco, anche dopo un riavvio, in grigio finché è chiusa: così puoi fissarne il livello prima che si avvii. Fai clic su **Aggiungi app…** oppure trascina un’app dal Finder. La ✕ accanto a un’app la dimentica e la riporta a volume pieno. Per cambiare il volume di un’app, pikapik fa passare il suo suono attraverso se stesso, quindi serve il permesso **Registrazione dell’audio di sistema**, che consenti nella pagina Permessi. Il suono viene solo fatto passare: non viene registrato, salvato né inviato da nessuna parte, e il microfono non viene usato. Richiede macOS 14.2 o successivo ed è nascosto su macOS 14.0 e 14.1. Disattivato di default.
 
 **Luminosità dei monitor.** macOS cambia la luminosità dello schermo integrato e dei monitor Apple, ma non quella della maggior parte degli altri monitor. Apri Impostazioni › Luminosità: ogni monitor che macOS non sa regolare da solo ha il suo cursore, e puoi anche aggiungere una riga «Luminosità» al pannello della barra dei menu. pikapik cambia la luminosità del monitor stesso, la stessa impostazione dei suoi pulsanti. Se un monitor non risponde, attiva **Scurisci invece l’immagine**: l’immagine diventa più scura, ma mai nera. Attiva **Tasti della luminosità** e i tasti della luminosità regolano il monitor sotto il puntatore e mostrano un piccolo indicatore; tieni premuti ⌥⇧ per passi più fini. I tasti hanno bisogno del permesso **Accessibilità**, che consenti nella pagina Permessi, mentre i cursori funzionano anche senza. pikapik ricorda il livello di ogni monitor e lo reimposta dopo lo stop. La versione del Mac App Store si limita a scurire l’immagine. I tasti della luminosità sono disattivati di default.
+
+**Dimensioni di visualizzazione.** Su molti monitor, macOS non ha modo di ingrandire un po’ le cose mantenendole nitide. Apri Impostazioni › Schermi: ogni monitor esterno ha un cursore dal 100% al 200%, e sotto una riga come «Sembra 2294 × 960» mostra quanto sta sullo schermo. Premi **Usa 150%** e l’intero schermo cambia in un colpo solo, con il testo nitido. Un piccolo pannello su quel monitor chiede «Mantenere queste dimensioni?»: premi **Mantieni**, oppure **Torna indietro** per tornare. Se non fai nulla, la vecchia dimensione torna da sola dopo 15 secondi. pikapik ricorda la dimensione di ogni monitor e la reimposta all’avvio, quando ricolleghi il monitor e dopo lo stop. La dimensione dura finché pikapik è in funzione, anche in background, e il monitor torna alla sua dimensione abituale quando esci del tutto da pikapik. Per uscire del tutto, tieni premuto Opzione (⌥) quando scegli «Esci». A certe dimensioni alcune app video possono mostrare un’immagine nera, e la pagina lo segnala. Non è nella versione del Mac App Store.
 
 **Proteggi ⌘Q e ⌘W.** ⌘Q e ⌘W da soli non fanno nulla, così non chiudi un’app o una finestra per sbaglio. Aggiungi Maiuscole per farlo apposta: ⇧⌘Q esce, ⇧⌘W chiude. Funziona in tutte le app. Ogni tasto ha il suo interruttore. Disattivato di default.
 
@@ -421,6 +428,7 @@ Apri le impostazioni dal menu con **Impostazioni…** o ⌘, oppure avvia di nuo
 - **Batteria**: carica, tempo alla carica completa o tempo rimasto, stato, capacità massima, conteggio cicli, alimentatore di corrente e potenza in watt, e consigli per far durare di più la batteria. Mostra solo informazioni: il limite di caricamento resta in **Impostazioni di Sistema › Batteria**. Compare solo su un Mac con batteria.
 - **Resta sveglio**: durata, opzioni per schermo e coperchio.
 - **Luminosità**: un cursore per ogni monitor che macOS non sa regolare da solo, i tasti della luminosità e l’opzione per scurire invece l’immagine.
+- **Schermi**: una dimensione dal 100% al 200% per ogni monitor esterno, con un disegno di quanto sarà grande tutto.
 - **Ventole**: velocità di ogni ventola, modalità Auto o velocità manuale quando l’accesso amministratore è consentito.
 - **Temperatura**: quanto è caldo il Mac, nel complesso e per ogni componente, come processore, memoria e batteria.
 - **Velocità internet**: misura la connessione e mostra a cosa basta.

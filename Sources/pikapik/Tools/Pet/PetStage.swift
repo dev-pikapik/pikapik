@@ -522,7 +522,7 @@ final class PetStage: NSObject {
 
     private func reconcile() {
         guard let window, let field, let pet = petScreen, let toy = ballScreen else { return }
-        asleep = CGDisplayIsAsleep(CGMainDisplayID()) != 0
+        asleep = CGDisplayIsAsleep(NSScreen.screens.first?.monitorID ?? CGMainDisplayID()) != 0
         locked = GameModeTool.screenLocked
         guard !asleep, !locked else { return update() }
         snapshot = CGWindowListCopyWindowInfo([.optionOnScreenOnly], kCGNullWindowID) as? [[String: Any]]

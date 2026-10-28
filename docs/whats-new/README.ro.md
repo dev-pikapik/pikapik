@@ -5,6 +5,24 @@
 
 ---
 
+## <a id="v1.57.0"></a>Dimensiunea afișării: totul mai mare și tot clar
+
+<sub>1.57.0 · 28 octombrie 2026</sub>
+
+Mărește tot ce apare pe un monitor extern și păstrează imaginea clară, direct din pikapik.
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/whats-new/1.57.0/display-scale-dark.png"><img src="../media/whats-new/1.57.0/display-scale-light.png" width="340" alt=""></picture>
+
+Pe multe monitoare, macOS nu are cum să mărească puțin lucrurile și să le păstreze clare. Acum fiecare monitor extern primește un glisor în Setări › Afișaje, de la 100% la 200%. Dedesubt, un rând ca „Arată ca 2294 × 960” arată cât încape pe ecran, iar un mic desen arată cât de mare va fi totul.
+
+Apasă „Utilizați 150%” și tot ecranul se schimbă dintr-odată. Un mic panou de pe acel monitor întreabă „Păstrați această dimensiune?”: apasă „Păstrați” sau „Reveniți” ca să revii. Dacă nu faci nimic, dimensiunea veche revine singură după 15 secunde.
+
+pikapik reține dimensiunea fiecărui monitor și o setează din nou la pornire, când reconectezi monitorul și după repaus. Dimensiunea ține cât timp pikapik rulează, și în fundal, iar monitorul revine la dimensiunea obișnuită când ieși complet din pikapik. Ca să ieși complet, ține apăsat Option (⌥) când alegi „Ieșiți”. La unele dimensiuni, câteva aplicații video pot afișa o imagine neagră, iar pagina te avertizează. „Dimensiunea afișării” nu există în versiunea din Mac App Store.
+
+**Încearcă:** Setări › Afișaje
+
+---
+
 ## <a id="v1.56.2"></a>Player video: redare lină a fișierelor MKV și derulare instantanee
 
 <sub>1.56.2 · 26 octombrie 2026</sub>

@@ -272,6 +272,11 @@ Tanto o comando acima quanto o Homebrew colocam o app em `/Applications`, abrem 
 <br><b>Clique do meio no trackpad</b>
 <br>Toque com três dedos para abrir um link em uma nova aba, como com o botão do meio do mouse.
 </td>
+<td width="50%" valign="top">
+<picture><source media="(prefers-color-scheme: dark)" srcset="../media/display-scale-dark.png"><img src="../media/display-scale-light.png" width="340" alt=""></picture>
+<br><b>Tamanho da exibição</b>
+<br>Deixe tudo em um monitor maior e ainda nítido, de 100% a 200%.
+</td>
 </tr></tbody>
 </table>
 
@@ -303,6 +308,8 @@ O pikapik não grava, não guarda e não envia nada do que você digita ou clica
 **Volume dos apps.** Abra Ajustes › Som e ative **Volume dos apps**. Cada app que toca som ganha seu próprio controle deslizante e um botão para silenciar, nos Ajustes e no menu. Diminua o volume de uma videochamada alta demais, silencie um jogo barulhento e deixe sua música como está: o volume do seu Mac e dos outros apps não muda. O pikapik lembra o volume de cada app, e um app que você deixa no volume máximo nunca é tocado. Um app que você ajustou continua na lista, também depois de reiniciar, esmaecido enquanto está fechado, então dá para definir o volume antes de ele abrir: clique em **Adicionar app…** ou arraste um app do Finder. O ✕ ao lado de um app faz o pikapik esquecê-lo e o devolve ao volume máximo. Para alterar o volume de um app, o pikapik faz o som dele passar por ele mesmo, por isso precisa da permissão **Gravação do áudio do sistema**, que você concede na página Permissões. O som só é repassado: não é gravado, salvo nem enviado a lugar nenhum, e o microfone não é usado. Exige macOS 14.2 ou posterior e fica oculto no macOS 14.0 e 14.1. Desativado por padrão.
 
 **Brilho dos monitores.** O macOS muda o brilho da tela integrada e dos monitores da Apple, mas não o da maioria dos outros monitores. Abra Ajustes › Brilho: cada monitor que o macOS não consegue ajustar sozinho ganha seu próprio controle deslizante, e você também pode adicionar uma linha “Brilho” ao painel da barra de menus. O pikapik muda o brilho do próprio monitor, o mesmo ajuste dos botões dele. Se um monitor não responder, ative **Escurecer a imagem em vez disso**: a imagem fica mais escura, mas nunca preta. Ative **Teclas de brilho**, e as teclas de brilho ajustam o monitor onde está o cursor e mostram um pequeno indicador; segure ⌥⇧ para passos menores. As teclas precisam da permissão **Acessibilidade**, que você concede na página Permissões, e os controles deslizantes funcionam sem ela. O pikapik lembra o brilho de cada monitor e volta a aplicá-lo depois do repouso. A versão da Mac App Store só escurece a imagem. As teclas de brilho vêm desativadas por padrão.
+
+**Tamanho da exibição.** Em muitos monitores, o macOS não tem como deixar as coisas um pouco maiores e ainda nítidas. Abra Ajustes › Telas: cada monitor externo ganha um controle deslizante de 100% a 200%, e abaixo dele uma linha como “Parece 2294 × 960” mostra quanto cabe na tela. Clique em **Usar 150%** e a tela inteira muda de uma vez, com o texto nítido. Um pequeno painel nesse monitor pergunta “Manter este tamanho?”: clique em **Manter**, ou em **Voltar** para voltar. Se você não fizer nada, o tamanho anterior volta sozinho depois de 15 segundos. O pikapik lembra o tamanho de cada monitor e volta a aplicá-lo ao iniciar, quando você reconecta o monitor e depois do repouso. O tamanho dura enquanto o pikapik estiver funcionando, também em segundo plano, e o monitor volta ao tamanho habitual quando você encerra o pikapik de vez. Para encerrar de vez, segure Option (⌥) ao escolher “Encerrar”. Em certos tamanhos, alguns apps de vídeo podem mostrar uma imagem preta, e a página avisa isso. Ele não está na versão da Mac App Store.
 
 **Proteger ⌘Q e ⌘W.** ⌘Q e ⌘W sozinhos não fazem nada, então você não encerra um app nem fecha uma janela sem querer. Adicione Shift para fazer isso de propósito: ⇧⌘Q encerra, ⇧⌘W fecha. Funciona em todos os apps. Cada tecla tem a própria chave. Desativado por padrão.
 
@@ -421,6 +428,7 @@ Abra os ajustes pelo menu com **Ajustes…** ou ⌘, ou abra o pikapik de novo p
 - **Bateria**: carga, tempo até a carga completa ou tempo restante, condição, capacidade máxima, número de ciclos, adaptador de energia e potência em watts, além de dicas para a bateria durar mais. A página só mostra informações: o limite de carga continua em **Ajustes do Sistema › Bateria**. Aparece apenas em um Mac com bateria.
 - **Manter Ativo**: duração e opções de tela e de tampa.
 - **Brilho**: um controle deslizante para cada monitor que o macOS não consegue ajustar sozinho, as teclas de brilho e a opção de escurecer a imagem em vez disso.
+- **Telas**: um tamanho de 100% a 200% para cada monitor externo, com um desenho de quão grande tudo ficará.
 - **Ventoinhas**: velocidade de cada ventoinha, modo Auto ou velocidade manual quando o acesso de administrador está permitido.
 - **Temperatura**: o quanto o Mac está quente, no geral e por peça, como o processador, a memória e a bateria.
 - **Teste de velocidade**: mede a internet e mostra para que ela serve.
