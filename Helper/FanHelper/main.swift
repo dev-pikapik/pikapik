@@ -25,6 +25,7 @@ final class Service: NSObject, FanHelperProtocol, NSXPCListenerDelegate {
     private let lock = NSLock()
     private let updates = NSLock()
     private let records = NSLock()
+    private let overrides = NSLock()
     private let smc: SMC?
     private let services: ServiceSwitch
     private let requirement: String?
@@ -124,6 +125,13 @@ final class Service: NSObject, FanHelperProtocol, NSXPCListenerDelegate {
         records.lock()
         defer { records.unlock() }
         reply(services.restore(by: caller))
+    }
+
+    func setScaleModes(vendor: Int, product: Int, sizes: [Int], reply: @escaping (Bool) -> Void) {
+        guard let caller = NSXPCConnection.current()?.effectiveUserIdentifier else { return reply(false) }
+        overrides.lock()
+        defer { overrides.unlock() }
+        reply(ScaleOverride().write(vendor: vendor, product: product, sizes: sizes, by: caller))
     }
 
     func finish() -> Never {
