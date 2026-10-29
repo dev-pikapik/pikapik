@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Weergavegrootte: weer zoals in 1.57, en geen geflikker
+
+<sub>1.58.1 · 29 oktober 2026</sub>
+
+Grotere formaten op een externe monitor werken weer zoals in 1.57, met het extra scherm dat pikapik ervoor maakt. De monitor gaat niet meer op zwart als je een formaat kiest.
+
+pikapik verwijdert zelf, zonder wachtwoord, de monitorformaten die 1.58.0 aan je Mac had toegevoegd. Daardoor flikkerden sommige monitoren. Flikkert een monitor na de update nog, zet hem dan één keer uit en weer aan.
+
+**Probeer het:** Instellingen › Beeldschermen
+
+---
+
 ## <a id="v1.58.0"></a>Weergavegrootte: grotere formaten op de monitor zelf
 
 <sub>1.58.0 · 29 oktober 2026</sub>

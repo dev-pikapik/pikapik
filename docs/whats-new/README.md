@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Display scale: back to the 1.57 way, and no flicker
+
+<sub>1.58.1 · October 29, 2026</sub>
+
+Larger sizes on an external monitor work the way they did in 1.57 again, with the extra screen pikapik makes for them. The monitor no longer goes dark when you pick a size.
+
+pikapik removes the monitor sizes 1.58.0 added to your Mac by itself, with no password. They made some monitors flicker. If a monitor still flickers after the update, turn it off and on once.
+
+**Try it:** Settings › Displays
+
+---
+
 ## <a id="v1.58.0"></a>Display scale: larger sizes on the monitor itself
 
 <sub>1.58.0 · October 29, 2026</sub>

@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Ekran ölçeği: yeniden 1.57’deki gibi, titreme yok
+
+<sub>1.58.1 · 29 Ekim 2026</sub>
+
+Harici monitördeki büyük boyutlar, pikapik’in onlar için oluşturduğu ek ekranla yeniden 1.57’deki gibi çalışıyor. Bir boyut seçtiğinizde monitör artık kararmıyor.
+
+pikapik, 1.58.0’ın Mac’inize eklediği monitör boyutlarını parola istemeden kendisi siliyor. Bu boyutlar bazı monitörlerin titremesine yol açıyordu. Güncellemeden sonra monitör hâlâ titriyorsa onu bir kez kapatıp açın.
+
+**Deneyin:** Ayarlar › Ekranlar
+
+---
+
 ## <a id="v1.58.0"></a>Ekran ölçeği: büyük boyutlar doğrudan monitörde
 
 <sub>1.58.0 · 29 Ekim 2026</sub>

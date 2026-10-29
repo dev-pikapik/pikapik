@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Tamanho da exibição: de volta ao jeito da 1.57, e sem tremulação
+
+<sub>1.58.1 · 29 de outubro de 2026</sub>
+
+Os tamanhos maiores em um monitor externo voltam a funcionar como na 1.57, com a tela extra que o pikapik cria para eles. O monitor não apaga mais quando você escolhe um tamanho.
+
+O pikapik remove sozinho, sem senha, os tamanhos de monitor que a 1.58.0 adicionou ao seu Mac. Eles faziam alguns monitores tremularem. Se um monitor ainda tremular depois da atualização, desligue e ligue de novo uma vez.
+
+**Experimente:** Ajustes › Telas
+
+---
+
 ## <a id="v1.58.0"></a>Tamanho da exibição: tamanhos maiores no próprio monitor
 
 <sub>1.58.0 · 29 de outubro de 2026</sub>

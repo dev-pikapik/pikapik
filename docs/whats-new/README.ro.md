@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Dimensiunea afișării: din nou ca în 1.57, și fără pâlpâire
+
+<sub>1.58.1 · 29 octombrie 2026</sub>
+
+Dimensiunile mari pe un monitor extern funcționează din nou ca în 1.57, cu ecranul suplimentar pe care pikapik îl creează pentru ele. Monitorul nu se mai stinge când alegi o dimensiune.
+
+pikapik șterge singur, fără parolă, dimensiunile de monitor pe care 1.58.0 le-a adăugat pe Mac. Din cauza lor unele monitoare pâlpâiau. Dacă un monitor încă pâlpâie după actualizare, oprește-l și pornește-l o dată.
+
+**Încearcă:** Setări › Afișaje
+
+---
+
 ## <a id="v1.58.0"></a>Dimensiunea afișării: dimensiunile mari, direct pe monitor
 
 <sub>1.58.0 · 29 octombrie 2026</sub>

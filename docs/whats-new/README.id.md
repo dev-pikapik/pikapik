@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Ukuran tampilan: kembali seperti 1.57, dan tidak berkedip
+
+<sub>1.58.1 · 29 Oktober 2026</sub>
+
+Ukuran besar di monitor eksternal kembali bekerja seperti di 1.57, dengan layar tambahan yang dibuat pikapik untuknya. Monitor tidak lagi padam saat Anda memilih ukuran.
+
+pikapik menghapus sendiri ukuran monitor yang ditambahkan 1.58.0 ke Mac Anda, tanpa kata sandi. Ukuran itu membuat beberapa monitor berkedip. Jika monitor masih berkedip setelah pembaruan, matikan lalu nyalakan sekali.
+
+**Coba:** Pengaturan › Layar
+
+---
+
 ## <a id="v1.58.0"></a>Ukuran tampilan: ukuran besar langsung di monitor
 
 <sub>1.58.0 · 29 Oktober 2026</sub>
