@@ -75176,145 +75176,145 @@
         }
       }
     },
-    "Lets the app change the fan speed and turn off background tasks for the whole Mac": {
+    "Lets the app change the fan speed, turn off background tasks for the whole Mac and add sharp sizes for monitors": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يسمح للتطبيق بتغيير سرعة المراوح وإيقاف المهام في الخلفية لجهاز Mac بالكامل"
+            "value": "يسمح للتطبيق بتغيير سرعة المراوح وإيقاف المهام في الخلفية لجهاز Mac بالكامل وإضافة أحجام واضحة للشاشات"
           }
         },
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Umožňuje aplikaci měnit rychlost ventilátorů a vypínat úlohy na pozadí pro celý Mac"
+            "value": "Umožňuje aplikaci měnit rychlost ventilátorů, vypínat úlohy na pozadí pro celý Mac a přidávat ostré velikosti pro monitory"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Damit die App die Lüftergeschwindigkeit ändern und Hintergrundaufgaben für den ganzen Mac ausschalten kann"
+            "value": "Damit die App die Lüftergeschwindigkeit ändern, Hintergrundaufgaben für den ganzen Mac ausschalten und Monitoren scharfe Größen hinzufügen kann"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lets the app change the fan speed and turn off background tasks for the whole Mac"
+            "value": "Lets the app change the fan speed, turn off background tasks for the whole Mac and add sharp sizes for monitors"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Para cambiar la velocidad de los ventiladores y desactivar tareas en segundo plano de todo el Mac"
+            "value": "Para cambiar la velocidad de los ventiladores, desactivar tareas en segundo plano de todo el Mac y añadir tamaños nítidos para monitores"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pour changer la vitesse des ventilateurs et désactiver des tâches en arrière-plan pour tout le Mac"
+            "value": "Pour changer la vitesse des ventilateurs, désactiver des tâches en arrière-plan pour tout le Mac et ajouter des tailles nettes pour les écrans"
           }
         },
         "hi": {
           "stringUnit": {
             "state": "translated",
-            "value": "ऐप को पंखों की गति बदलने और पूरे Mac के लिए बैकग्राउंड टास्क बंद करने देता है"
+            "value": "ऐप को पंखों की गति बदलने, पूरे Mac के लिए बैकग्राउंड टास्क बंद करने और मॉनिटर के लिए साफ़ साइज़ जोड़ने देता है"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "Memungkinkan app mengubah kecepatan kipas dan mematikan tugas latar belakang untuk seluruh Mac"
+            "value": "Memungkinkan app mengubah kecepatan kipas, mematikan tugas latar belakang untuk seluruh Mac, dan menambahkan ukuran tajam untuk monitor"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Per cambiare la velocità delle ventole e disattivare le attività in background di tutto il Mac"
+            "value": "Per cambiare la velocità delle ventole, disattivare le attività in background di tutto il Mac e aggiungere dimensioni nitide per i monitor"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "ファンの回転数を変更し、Mac 全体のバックグラウンドタスクをオフにするため"
+            "value": "ファンの回転数を変更し、Mac 全体のバックグラウンドタスクをオフにし、モニタにくっきり表示できるサイズを追加するため"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "팬 속도를 바꾸고 Mac 전체의 백그라운드 작업을 끄는 데 필요"
+            "value": "팬 속도를 바꾸고, Mac 전체의 백그라운드 작업을 끄고, 모니터에 선명한 크기를 추가하는 데 필요"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Laat de app de ventilatorsnelheid wijzigen en achtergrondtaken voor de hele Mac uitzetten"
+            "value": "Laat de app de ventilatorsnelheid wijzigen, achtergrondtaken voor de hele Mac uitzetten en scherpe formaten voor monitors toevoegen"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pozwala aplikacji zmieniać prędkość wentylatorów i wyłączać zadania w tle dla całego Maca"
+            "value": "Pozwala aplikacji zmieniać prędkość wentylatorów, wyłączać zadania w tle dla całego Maca i dodawać ostre rozmiary dla monitorów"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Para mudar a velocidade das ventoinhas e desligar tarefas em segundo plano do Mac inteiro"
+            "value": "Para mudar a velocidade das ventoinhas, desligar tarefas em segundo plano do Mac inteiro e adicionar tamanhos nítidos para monitores"
           }
         },
         "ro": {
           "stringUnit": {
             "state": "translated",
-            "value": "Permite aplicației să schimbe viteza ventilatoarelor și să oprească sarcinile din fundal pentru tot Mac-ul"
+            "value": "Permite aplicației să schimbe viteza ventilatoarelor, să oprească sarcinile din fundal pentru tot Mac-ul și să adauge dimensiuni clare pentru monitoare"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Чтобы менять скорость вентиляторов и выключать фоновые задачи для всего Mac"
+            "value": "Чтобы менять скорость вентиляторов, выключать фоновые задачи для всего Mac и добавлять чёткие размеры для мониторов"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Låter appen ändra fläkthastigheten och stänga av bakgrundsuppgifter för hela Macen"
+            "value": "Låter appen ändra fläkthastigheten, stänga av bakgrundsuppgifter för hela Macen och lägga till skarpa storlekar för bildskärmar"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ให้แอปเปลี่ยนความเร็วพัดลมและปิดงานเบื้องหลังสำหรับทั้งเครื่อง Mac"
+            "value": "ให้แอปเปลี่ยนความเร็วพัดลม ปิดงานเบื้องหลังสำหรับทั้งเครื่อง Mac และเพิ่มขนาดที่คมชัดสำหรับจอภาพ"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uygulamanın fan hızını değiştirmesini ve tüm Mac için arka plan görevlerini kapatmasını sağlar"
+            "value": "Uygulamanın fan hızını değiştirmesini, tüm Mac için arka plan görevlerini kapatmasını ve monitörlere net boyutlar eklemesini sağlar"
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "Щоб змінювати швидкість вентиляторів і вимикати фонові завдання для всього Mac"
+            "value": "Щоб змінювати швидкість вентиляторів, вимикати фонові завдання для всього Mac і додавати чіткі розміри для моніторів"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cho phép ứng dụng đổi tốc độ quạt và tắt tác vụ nền cho cả máy Mac"
+            "value": "Cho phép ứng dụng đổi tốc độ quạt, tắt tác vụ nền cho cả máy Mac và thêm kích thước sắc nét cho màn hình"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "用于更改风扇转速，以及为整台 Mac 关闭后台任务"
+            "value": "用于更改风扇转速、为整台 Mac 关闭后台任务，以及为显示器添加清晰的尺寸"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "用於更改風扇轉速，以及為整台 Mac 關閉背景工作"
+            "value": "用於更改風扇轉速、為整台 Mac 關閉背景工作，以及為顯示器加入清晰的尺寸"
           }
         }
       }
@@ -155213,6 +155213,149 @@
         }
       }
     },
+    "The “%@” screen didn’t come back. Unplug its cable and plug it in again.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم تعمل الشاشة «%@» مجددًا. افصل كابلها ثم أعد توصيله."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obrazovka „%@“ se znovu nezapnula. Odpojte její kabel a znovu ho připojte."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Bildschirm „%@“ ist nicht wieder angegangen. Zieh sein Kabel ab und steck es wieder ein."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The “%@” screen didn’t come back. Unplug its cable and plug it in again."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La pantalla «%@» no volvió a encenderse. Desconecta su cable y vuelve a conectarlo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’écran « %@ » ne s’est pas rallumé. Débranchez son câble, puis rebranchez-le."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” स्क्रीन वापस चालू नहीं हुई। उसकी केबल निकालें और फिर से लगाएँ।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layar “%@” tidak menyala lagi. Cabut kabelnya, lalu colokkan lagi."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lo schermo «%@» non si è riacceso. Scollega il suo cavo e ricollegalo."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画面「%@」が再表示されませんでした。ケーブルを抜いて、もう一度差し込んでください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "‘%@’ 화면이 다시 켜지지 않았습니다. 케이블을 뽑았다가 다시 꽂으세요."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Het scherm ‘%@’ is niet teruggekomen. Trek de kabel eruit en steek hem er weer in."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekran „%@” nie włączył się ponownie. Odłącz jego kabel i podłącz go jeszcze raz."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A tela “%@” não voltou. Desconecte o cabo dela e conecte de novo."
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ecranul „%@” nu a pornit din nou. Scoateți-i cablul și conectați-l din nou."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Экран «%@» не включился. Выньте его кабель и вставьте снова."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skärmen ”%@” kom inte tillbaka. Dra ut dess kabel och sätt i den igen."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "หน้าจอ “%@” ไม่กลับมาแสดงผล ให้ถอดสายของจอแล้วเสียบใหม่"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” ekranı geri gelmedi. Kablosunu çıkarıp yeniden takın."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Екран «%@» не ввімкнувся. Вийміть його кабель і вставте знову."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Màn hình “%@” không bật lại. Hãy rút cáp của nó ra rồi cắm lại."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "屏幕“%@”没有重新亮起。请拔下它的线缆，然后重新插上。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "螢幕「%@」沒有重新亮起。請拔下它的線材，然後重新插上。"
+          }
+        }
+      }
+    },
     "Then paste to move them": {
       "extractionState": "manual",
       "localizations": {
@@ -160786,6 +160929,149 @@
           "stringUnit": {
             "state": "translated",
             "value": "若要顯示下一張圖片，請允許存取此資料夾。"
+          }
+        }
+      }
+    },
+    "To show this size without the extra screen, turn on Administrator access in Settings › Permissions. macOS will ask for your password once.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لعرض هذا الحجم بدون الشاشة الإضافية، فعّل «صلاحيات المسؤول» في الإعدادات › الأذونات. سيطلب macOS كلمة السر مرة واحدة."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chcete-li tuto velikost zobrazit bez obrazovky navíc, zapněte Přístup správce v Nastavení › Oprávnění. macOS se jednou zeptá na heslo."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Damit diese Größe ohne den zusätzlichen Bildschirm läuft, schalte Administratorzugriff in Einstellungen › Berechtigungen ein. macOS fragt einmal nach deinem Passwort."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To show this size without the extra screen, turn on Administrator access in Settings › Permissions. macOS will ask for your password once."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para mostrar este tamaño sin la pantalla de más, activa Acceso de administrador en Ajustes › Permisos. macOS te pedirá la contraseña una vez."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour afficher cette taille sans l’écran en plus, activez Accès administrateur dans Réglages › Autorisations. macOS vous demandera votre mot de passe une fois."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "इस साइज़ को अतिरिक्त स्क्रीन के बिना दिखाने के लिए सेटिंग्ज़ › अनुमतियाँ में एडमिन एक्सेस चालू करें। macOS एक बार आपका पासवर्ड पूछेगा।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Untuk menampilkan ukuran ini tanpa layar tambahan, nyalakan Akses administrator di Pengaturan › Izin. macOS akan meminta kata sandi Anda sekali."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per mostrare questa dimensione senza lo schermo in più, attiva Accesso amministratore in Impostazioni › Permessi. macOS ti chiederà la password una volta."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "余分な画面なしでこのサイズを表示するには、設定 › 許可 で「管理者アクセス」をオンにしてください。macOS が一度だけパスワードを尋ねます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "추가 화면 없이 이 크기로 보려면 설정 › 권한에서 관리자 접근을 켜세요. macOS가 암호를 한 번 묻습니다."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zet Beheerderstoegang aan in Instellingen › Toestemmingen om dit formaat zonder het extra scherm te tonen. macOS vraagt één keer om je wachtwoord."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aby pokazać ten rozmiar bez dodatkowego ekranu, włącz Dostęp administratora w Ustawieniach › Uprawnienia. macOS raz zapyta o hasło."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para mostrar este tamanho sem a tela extra, ative Acesso de administrador em Ajustes › Permissões. O macOS vai pedir sua senha uma vez."
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ca această dimensiune să funcționeze fără ecranul în plus, activați Acces de administrator în Setări › Permisiuni. macOS vă va cere parola o singură dată."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Чтобы этот размер работал без лишнего экрана, включите «Доступ администратора» в Настройках › Разрешения. macOS один раз спросит пароль."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slå på Administratörsåtkomst i Inställningar › Behörigheter för att visa storleken utan den extra skärmen. macOS frågar efter ditt lösenord en gång."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "หากต้องการแสดงขนาดนี้โดยไม่มีหน้าจอเพิ่ม ให้เปิด การเข้าถึงของผู้ดูแลระบบ ใน การตั้งค่า › การอนุญาต macOS จะถามรหัสผ่านของคุณหนึ่งครั้ง"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu boyutu fazladan ekran olmadan göstermek için Ayarlar › İzinler’de Yönetici erişimi’ni açın. macOS parolanızı bir kez soracak."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Щоб цей розмір працював без зайвого екрана, увімкніть «Доступ адміністратора» в Налаштуваннях › Дозволи. macOS один раз запитає пароль."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Để hiển thị kích thước này mà không có màn hình thừa, hãy bật Quyền quản trị trong Cài đặt › Quyền. macOS sẽ hỏi mật khẩu của bạn một lần."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "要在不多出屏幕的情况下显示此尺寸，请在“设置” › “权限”中打开“管理员权限”。macOS 会询问一次密码。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "若要在不多出螢幕的情況下顯示此尺寸，請在「設定」›「權限」中開啟「管理員權限」。macOS 會詢問一次密碼。"
           }
         }
       }
@@ -193680,145 +193966,145 @@
         }
       }
     },
-    "pikapik wants to change the fan speed and turn services off and on.": {
+    "pikapik wants to change the fan speed, turn services off and on, and add sharp sizes for monitors.": {
       "extractionState": "manual",
       "localizations": {
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يريد pikapik تغيير سرعة المراوح وإيقاف الخدمات وتشغيلها."
+            "value": "يريد pikapik تغيير سرعة المراوح وإيقاف الخدمات وتشغيلها وإضافة أحجام واضحة للشاشات."
           }
         },
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik chce měnit rychlost ventilátorů a vypínat a zapínat služby."
+            "value": "pikapik chce měnit rychlost ventilátorů, vypínat a zapínat služby a přidávat ostré velikosti pro monitory."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik möchte die Lüftergeschwindigkeit ändern und Dienste aus- und einschalten."
+            "value": "pikapik möchte die Lüftergeschwindigkeit ändern, Dienste aus- und einschalten und Monitoren scharfe Größen hinzufügen."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik wants to change the fan speed and turn services off and on."
+            "value": "pikapik wants to change the fan speed, turn services off and on, and add sharp sizes for monitors."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik quiere cambiar la velocidad de los ventiladores y desactivar y activar servicios."
+            "value": "pikapik quiere cambiar la velocidad de los ventiladores, desactivar y activar servicios y añadir tamaños nítidos para monitores."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik souhaite changer la vitesse des ventilateurs et éteindre ou rallumer des services."
+            "value": "pikapik souhaite changer la vitesse des ventilateurs, éteindre ou rallumer des services et ajouter des tailles nettes pour les écrans."
           }
         },
         "hi": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik पंखे की गति बदलना और सेवाएँ बंद और चालू करना चाहता है।"
+            "value": "pikapik पंखे की गति बदलना, सेवाएँ बंद और चालू करना और मॉनिटर के लिए साफ़ साइज़ जोड़ना चाहता है।"
           }
         },
         "id": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik ingin mengubah kecepatan kipas serta mematikan dan menyalakan layanan."
+            "value": "pikapik ingin mengubah kecepatan kipas, mematikan dan menyalakan layanan, serta menambahkan ukuran tajam untuk monitor."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik vuole cambiare la velocità delle ventole e spegnere e riaccendere i servizi."
+            "value": "pikapik vuole cambiare la velocità delle ventole, spegnere e riaccendere i servizi e aggiungere dimensioni nitide per i monitor."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik がファンの回転数の変更とサービスのオン/オフを行おうとしています。"
+            "value": "pikapik がファンの回転数の変更、サービスのオン/オフ、モニタにくっきり表示できるサイズの追加を行おうとしています。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik이(가) 팬 속도를 바꾸고 서비스를 끄거나 켜려고 합니다."
+            "value": "pikapik이(가) 팬 속도를 바꾸고, 서비스를 끄거나 켜고, 모니터에 선명한 크기를 추가하려고 합니다."
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik wil de ventilatorsnelheid wijzigen en diensten uit- en aanzetten."
+            "value": "pikapik wil de ventilatorsnelheid wijzigen, diensten uit- en aanzetten en scherpe formaten voor monitors toevoegen."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik chce zmienić prędkość wentylatorów oraz wyłączać i włączać usługi."
+            "value": "pikapik chce zmienić prędkość wentylatorów, wyłączać i włączać usługi oraz dodać ostre rozmiary dla monitorów."
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "O pikapik quer mudar a velocidade das ventoinhas e desligar e ligar serviços."
+            "value": "O pikapik quer mudar a velocidade das ventoinhas, desligar e ligar serviços e adicionar tamanhos nítidos para monitores."
           }
         },
         "ro": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik vrea să schimbe viteza ventilatoarelor și să oprească și să pornească servicii."
+            "value": "pikapik vrea să schimbe viteza ventilatoarelor, să oprească și să pornească servicii și să adauge dimensiuni clare pentru monitoare."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik хочет менять скорость вентиляторов и выключать и включать службы."
+            "value": "pikapik хочет менять скорость вентиляторов, выключать и включать службы и добавлять чёткие размеры для мониторов."
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik vill ändra fläkthastigheten och stänga av och slå på tjänster."
+            "value": "pikapik vill ändra fläkthastigheten, stänga av och slå på tjänster och lägga till skarpa storlekar för bildskärmar."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik ต้องการเปลี่ยนความเร็วพัดลมและปิดหรือเปิดบริการ"
+            "value": "pikapik ต้องการเปลี่ยนความเร็วพัดลม ปิดหรือเปิดบริการ และเพิ่มขนาดที่คมชัดสำหรับจอภาพ"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik fan hızını değiştirmek ve hizmetleri kapatıp açmak istiyor."
+            "value": "pikapik fan hızını değiştirmek, hizmetleri kapatıp açmak ve monitörlere net boyutlar eklemek istiyor."
           }
         },
         "uk": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik хоче змінювати швидкість вентиляторів та вимикати й вмикати служби."
+            "value": "pikapik хоче змінювати швидкість вентиляторів, вимикати й вмикати служби та додавати чіткі розміри для моніторів."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik muốn đổi tốc độ quạt và tắt, bật dịch vụ."
+            "value": "pikapik muốn đổi tốc độ quạt, tắt, bật dịch vụ và thêm kích thước sắc nét cho màn hình."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik 想要更改风扇转速，并关闭和开启服务。"
+            "value": "pikapik 想要更改风扇转速、关闭和开启服务，并为显示器添加清晰的尺寸。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "pikapik 想要更改風扇轉速，並關閉和開啟服務。"
+            "value": "pikapik 想要更改風扇轉速、關閉和開啟服務，並為顯示器加入清晰的尺寸。"
           }
         }
       }
