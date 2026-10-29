@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Tamaño en pantalla: los monitores siguen uno al lado del otro, y sin franjas moradas al 125 %
+
+<sub>1.57.2 · 29 de octubre de 2026</sub>
+
+Después de cambiar el tamaño, tus monitores siguen donde los colocaste, y cada tamaño del control deslizante se ve nítido en cualquier puerto.
+
+**Corregido**
+
+- Cuando cambias el tamaño de un monitor, todos tus monitores siguen uno al lado del otro tal como los ordenaste, y el puntero siempre puede pasar de uno a otro.
+- El panel «¿Mantener este tamaño?» se abre en la pantalla donde está el puntero, así que siempre lo tienes a mano. Pulsa Return para mantener el tamaño o Esc para volver.
+- Algunos puertos no pueden mostrar el 125 % con nitidez en un monitor ancho, por ejemplo el puerto HDMI de un Mac mini. Ahí la pantalla mostraba franjas moradas e iba con retraso. Ahora el control deslizante ofrece el 135 %, el tamaño nítido más cercano, y una línea debajo explica el motivo. Un 125 % que guardaste antes se muestra como 135 % en ese puerto.
+- El brillo sigue cambiando en el monitor con estos nuevos tamaños.
+- Al volver al 100 %, un monitor ya no queda encima de otro.
+
+**También nuevo**
+
+- Algunos monitores reciben un tamaño nuevo entre los habituales, por ejemplo 153 % en un monitor de 5120 × 2160 y 180 % en uno de 6016 × 3384.
+
+**Pruébalo:** Ajustes › Pantallas
+
+---
+
 ## <a id="v1.57.1"></a>Tamaño en pantalla: un puntero fluido y todos los tamaños en dos monitores iguales
 
 <sub>1.57.1 · 28 de octubre de 2026</sub>

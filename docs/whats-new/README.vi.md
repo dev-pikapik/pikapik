@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Kích thước hiển thị: các màn hình vẫn nằm cạnh nhau, và không còn sọc tím ở 125%
+
+<sub>1.57.2 · 29 tháng 10 năm 2026</sub>
+
+Sau khi đổi kích thước, các màn hình vẫn ở đúng chỗ bạn đã sắp xếp, và mọi kích thước trên thanh trượt đều sắc nét ở mọi cổng.
+
+**Đã sửa**
+
+- Khi bạn đổi kích thước một màn hình, tất cả màn hình vẫn nằm cạnh nhau như bạn đã sắp xếp, nên con trỏ luôn đi được từ màn hình này sang màn hình khác.
+- Bảng “Giữ kích thước này?” mở trên màn hình có con trỏ, nên lúc nào cũng trong tầm tay. Nhấn Return để giữ kích thước, hoặc Esc để quay lại.
+- Một số cổng không thể hiển thị 125% sắc nét trên màn hình rộng, ví dụ cổng HDMI của Mac mini. Ở đó màn hình hiện sọc tím và bị trễ. Giờ thanh trượt đề xuất 135%, kích thước sắc nét gần nhất, và một dòng bên dưới giải thích lý do. Mức 125% bạn đã lưu trước đây sẽ hiện thành 135% trên cổng đó.
+- Độ sáng vẫn thay đổi được trên màn hình ở các kích thước mới này.
+- Khi quay về 100%, một màn hình không còn chồng lên màn hình khác.
+
+**Cũng mới**
+
+- Một số màn hình có thêm một kích thước mới giữa các mức quen thuộc, ví dụ 153% trên màn hình 5120 × 2160 và 180% trên màn hình 6016 × 3384.
+
+**Thử ngay:** Cài đặt › Màn hình
+
+---
+
 ## <a id="v1.57.1"></a>Kích thước hiển thị: con trỏ mượt mà và mọi kích thước trên hai màn hình giống nhau
 
 <sub>1.57.1 · 28 tháng 10 năm 2026</sub>

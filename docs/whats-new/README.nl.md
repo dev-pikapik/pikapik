@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Weergavegrootte: monitoren blijven naast elkaar, en geen paarse strepen bij 125%
+
+<sub>1.57.2 · 29 oktober 2026</sub>
+
+Na een andere grootte blijven je monitoren staan waar je ze hebt neergezet, en elke grootte op de schuifregelaar is scherp op elke poort.
+
+**Opgelost**
+
+- Als je de grootte van één monitor verandert, blijven alle monitoren naast elkaar zoals je ze hebt gerangschikt, zodat de aanwijzer altijd van de ene naar de andere kan.
+- Het paneel ‘Deze grootte behouden?’ opent op het scherm met de aanwijzer, zodat het altijd binnen bereik is. Druk op Return om de grootte te behouden, of op Esc om terug te gaan.
+- Sommige poorten kunnen 125% op een brede monitor niet scherp tonen, bijvoorbeeld de HDMI-poort van een Mac mini. Daar toonde het scherm paarse strepen en liep het beeld achter. Nu biedt de schuifregelaar 135% aan, de dichtstbijzijnde scherpe grootte, en een regel eronder legt uit waarom. Een eerder bewaarde 125% wordt op zo’n poort 135%.
+- De helderheid blijft ook bij deze nieuwe groottes op de monitor werken.
+- Bij terugkeer naar 100% schuift de ene monitor niet meer over de andere.
+
+**Ook nieuw**
+
+- Sommige monitoren krijgen een nieuwe grootte tussen de gewone in, bijvoorbeeld 153% op een monitor van 5120 × 2160 en 180% op een van 6016 × 3384.
+
+**Probeer het:** Instellingen › Beeldschermen
+
+---
+
 ## <a id="v1.57.1"></a>Weergavegrootte: een soepele aanwijzer en alle groottes op twee gelijke monitoren
 
 <sub>1.57.1 · 28 oktober 2026</sub>

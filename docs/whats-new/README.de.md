@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Anzeigegröße: Monitore bleiben nebeneinander, und keine violetten Streifen bei 125 %
+
+<sub>1.57.2 · 29. Oktober 2026</sub>
+
+Nach einer Größenänderung bleiben deine Monitore dort, wo du sie angeordnet hast, und jede Größe auf dem Regler ist an jedem Anschluss scharf.
+
+**Behoben**
+
+- Wenn du die Größe eines Monitors änderst, bleiben alle Monitore so nebeneinander, wie du sie angeordnet hast, und der Mauszeiger kommt immer von einem zum anderen.
+- Das Fenster „Diese Größe behalten?“ öffnet sich auf dem Bildschirm mit dem Mauszeiger, so ist es immer in Reichweite. Drücke Return, um die Größe zu behalten, oder Esc, um zurückzukehren.
+- Manche Anschlüsse können 125 % auf einem breiten Monitor nicht scharf darstellen, etwa der HDMI-Anschluss eines Mac mini. Dort zeigte der Bildschirm violette Streifen und reagierte verzögert. Jetzt bietet der Regler 135 % an, die nächste scharfe Größe, und eine Zeile darunter sagt, warum. Früher gespeicherte 125 % erscheinen an so einem Anschluss als 135 %.
+- Die Helligkeit lässt sich auch bei diesen neuen Größen am Monitor ändern.
+- Beim Zurückgehen auf 100 % liegt kein Monitor mehr über einem anderen.
+
+**Außerdem neu**
+
+- Manche Monitore bekommen eine neue Größe zwischen den üblichen, etwa 153 % bei einem Monitor mit 5120 × 2160 und 180 % bei einem mit 6016 × 3384.
+
+**Ausprobieren:** Einstellungen › Displays
+
+---
+
 ## <a id="v1.57.1"></a>Anzeigegröße: ein flüssiger Mauszeiger und alle Größen auf zwei gleichen Monitoren
 
 <sub>1.57.1 · 28. Oktober 2026</sub>

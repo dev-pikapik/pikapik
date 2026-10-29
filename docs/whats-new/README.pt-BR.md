@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Tamanho da exibição: monitores lado a lado, e sem listras roxas em 125%
+
+<sub>1.57.2 · 29 de outubro de 2026</sub>
+
+Depois de mudar o tamanho, seus monitores ficam onde você os colocou, e cada tamanho do controle deslizante fica nítido em qualquer porta.
+
+**Corrigido**
+
+- Quando você muda o tamanho de um monitor, todos os monitores continuam lado a lado do jeito que você os organizou, e o ponteiro sempre consegue passar de um para outro.
+- O painel “Manter este tamanho?” abre na tela onde está o ponteiro, então ele está sempre ao alcance. Pressione Return para manter o tamanho, ou Esc para voltar.
+- Algumas portas não conseguem mostrar 125% com nitidez em um monitor largo, como a porta HDMI de um Mac mini. Nelas a tela mostrava listras roxas e ficava lenta. Agora o controle deslizante oferece 135%, o tamanho nítido mais próximo, e uma linha abaixo explica o motivo. Um 125% que você salvou antes aparece como 135% nessa porta.
+- O brilho continua mudando no monitor nesses novos tamanhos.
+- Ao voltar para 100%, um monitor não fica mais por cima de outro.
+
+**Também novo**
+
+- Alguns monitores ganham um novo tamanho entre os de sempre, por exemplo 153% em um monitor de 5120 × 2160 e 180% em um de 6016 × 3384.
+
+**Experimente:** Ajustes › Telas
+
+---
+
 ## <a id="v1.57.1"></a>Tamanho da exibição: um ponteiro suave e todos os tamanhos em dois monitores iguais
 
 <sub>1.57.1 · 28 de outubro de 2026</sub>

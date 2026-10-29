@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Display scale: monitors stay side by side, and no purple stripes at 125%
+
+<sub>1.57.2 · October 29, 2026</sub>
+
+After a size change your monitors stay where you put them, and every size on the slider is sharp on every port.
+
+**Fixed**
+
+- After you change the size of one monitor, all your monitors stay side by side the way you arranged them, so the pointer can always move from one to another.
+- The “Keep this size?” panel opens on the screen with the pointer, so it’s always in reach. Press Return to keep the size, or Esc to go back.
+- Some ports can’t show 125% sharply on a wide monitor, such as the HDMI port of a Mac mini. There the screen showed purple stripes and lagged. Now the slider offers 135%, the closest sharp size, and a line under it says why. A 125% you saved before shows as 135% on that port.
+- Brightness keeps working on a monitor at these new sizes.
+- Going back to 100% no longer leaves one monitor on top of another.
+
+**Also new**
+
+- Some monitors get a new size between the usual ones, such as 153% on a 5120 × 2160 monitor and 180% on a 6016 × 3384 monitor.
+
+**Try it:** Settings › Displays
+
+---
+
 ## <a id="v1.57.1"></a>Display scale: a smooth pointer, and every size on two identical monitors
 
 <sub>1.57.1 · October 28, 2026</sub>
