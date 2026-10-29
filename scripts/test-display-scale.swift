@@ -49,6 +49,24 @@ enum TestDisplayScale {
         precondition(DisplayScaleMath.nativeMatch(percent: 150, nativeWidth: 3840, nativeHeight: 2160, modes: [mode(2560, 1440, refresh: 59.94)], refresh: 60) != nil)
         print("the monitor's own modes within 3%: ok")
 
+        let listed = [mode(3440, 1440, scale: 1), mode(1720, 720), mode(3440, 1440)]
+        precondition(DisplayScaleMath.overrideSizes(nativeWidth: 3440, nativeHeight: 1440, pipes: [6144], listed: listed) == [2752, 1152, 2294, 960, 1966, 823],
+                     "1720x720 is listed already, so it isn't added again")
+        precondition(DisplayScaleMath.overrideSizes(nativeWidth: 3440, nativeHeight: 1440, pipes: [5120], listed: listed) == [2548, 1067, 2294, 960, 1966, 823],
+                     "a 5120-pixel pipe gets 135% in place of 125%")
+        precondition(DisplayScaleMath.overrideSizes(nativeWidth: 3440, nativeHeight: 1440, pipes: [6144, 5120, 6144], listed: listed)
+            == [2752, 1152, 2548, 1067, 2294, 960, 1966, 823], "one file for a Mac with both pipes")
+        precondition(DisplayScaleMath.overrideSizes(nativeWidth: 3440, nativeHeight: 1440, pipes: [6720], listed: listed) == [2752, 1152, 2294, 960, 1966, 823])
+        precondition(DisplayScaleMath.overrideSizes(nativeWidth: 3440, nativeHeight: 1440, pipes: [6144], listed: listed + [mode(2294, 960, refresh: 180)]) == [2752, 1152, 1966, 823],
+                     "a size listed at any refresh rate is there already")
+        precondition(DisplayScaleMath.overrideSizes(nativeWidth: 2160, nativeHeight: 3840, pipes: [6144], listed: [mode(2160, 3840, scale: 1)])
+            == [1728, 3072, 1440, 2560, 1234, 2194, 1080, 1920], "a portrait monitor")
+        let wide = [mode(2752, 1152, refresh: 180)]
+        precondition(DisplayScaleMath.nativeMatch(percent: 125, nativeWidth: 3440, nativeHeight: 1440, modes: wide, refresh: 180, pipe: 5120) == nil,
+                     "5504 pixels don't fit a 5120-pixel pipe")
+        precondition(DisplayScaleMath.nativeMatch(percent: 125, nativeWidth: 3440, nativeHeight: 1440, modes: wide, refresh: 180, pipe: 6144) != nil)
+        print("monitor sizes to add, only where the pipe takes them: ok")
+
         let samsung = { (percent: Int) in DisplayScaleMath.serial(vendor: 19501, product: 29455, serial: 810432311, percent: percent) }
         precondition(samsung(150) == 4_181_960_172, "macOS remembers each step by this number; a new number starts the step blurry at 1x again: \(samsung(150))")
         let serials = DisplayScaleMath.steps.map(samsung)
