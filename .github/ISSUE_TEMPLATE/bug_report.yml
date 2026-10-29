@@ -190,6 +190,7 @@ body:
       default: 0
       options:
         - Latest version
+        - "1.58.1"
         - "1.58.0"
         - "1.57.2"
         - "1.57.1"
