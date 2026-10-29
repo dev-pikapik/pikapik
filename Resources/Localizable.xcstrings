@@ -148635,6 +148635,149 @@
         }
       }
     },
+    "The Mac can’t show this monitor at %@ sharply, so pikapik offers %@, the closest sharp size.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا يستطيع الـ Mac عرض هذه الشاشة بحجم %1$@ بوضوح، لذا يقدّم pikapik ‏%2$@، وهو أقرب حجم واضح."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac nedokáže tento monitor zobrazit ostře na %1$@, a tak pikapik nabízí %2$@, nejbližší ostrou velikost."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Mac kann diesen Monitor nicht scharf mit %1$@ anzeigen, deshalb bietet pikapik %2$@ an, die nächste scharfe Größe."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Mac can’t show this monitor at %@ sharply, so pikapik offers %@, the closest sharp size."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El Mac no puede mostrar este monitor al %1$@ con nitidez, así que pikapik ofrece el %2$@, el tamaño nítido más cercano."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Mac ne peut pas afficher cet écran à %1$@ avec netteté : pikapik propose donc %2$@, la taille nette la plus proche."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac इस मॉनिटर को %1$@ पर साफ़ नहीं दिखा सकता, इसलिए pikapik %2$@ देता है, जो सबसे नज़दीकी साफ़ आकार है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac tidak dapat menampilkan monitor ini pada %1$@ dengan tajam, jadi pikapik menawarkan %2$@, ukuran tajam yang terdekat."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il Mac non può mostrare questo monitor al %1$@ in modo nitido, quindi pikapik offre il %2$@, la dimensione nitida più vicina."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macはこのモニタを%1$@でくっきり表示できないため、pikapikはいちばん近いくっきり表示できるサイズの%2$@を用意しています。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac이 이 모니터를 %1$@로 선명하게 표시할 수 없어서, pikapik은 가장 가까운 선명한 크기인 %2$@를 제공합니다."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De Mac kan deze monitor niet scherp op %1$@ weergeven, dus biedt pikapik %2$@, de dichtstbijzijnde scherpe grootte."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac nie może wyświetlić tego monitora ostro w skali %1$@, więc pikapik proponuje %2$@, najbliższy ostry rozmiar."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Mac não consegue mostrar este monitor em %1$@ com nitidez, então o pikapik oferece %2$@, o tamanho nítido mais próximo."
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac-ul nu poate afișa clar acest monitor la %1$@, așa că pikapik oferă %2$@, cea mai apropiată dimensiune clară."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac не может показать этот монитор в масштабе %1$@ чётко, поэтому pikapik предлагает %2$@ — ближайший чёткий размер."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac-datorn kan inte visa den här bildskärmen skarpt i %1$@, så pikapik erbjuder %2$@, den närmaste skarpa storleken."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac แสดงจอภาพนี้ที่ %1$@ ให้คมชัดไม่ได้ pikapik จึงเสนอ %2$@ ซึ่งเป็นขนาดคมชัดที่ใกล้ที่สุด"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac bu monitörü %1$@ değerinde net gösteremiyor, bu yüzden pikapik en yakın net boyut olan %2$@ değerini sunuyor."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac не може показати цей монітор у масштабі %1$@ чітко, тому pikapik пропонує %2$@ — найближчий чіткий розмір."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máy Mac không thể hiển thị màn hình này ở %1$@ sắc nét, nên pikapik đưa ra %2$@, kích thước sắc nét gần nhất."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 无法以 %1$@ 清晰显示这台显示器，因此 pikapik 提供 %2$@，即最接近的清晰大小。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 無法以 %1$@ 清晰顯示這台顯示器，因此 pikapik 提供 %2$@，也就是最接近的清晰大小。"
+          }
+        }
+      }
+    },
     "The app": {
       "extractionState": "manual",
       "localizations": {
@@ -157783,6 +157926,149 @@
           "stringUnit": {
             "state": "translated",
             "value": "三指拖移已開啟：請選擇四指"
+          }
+        }
+      }
+    },
+    "Through this port the Mac can’t show %@ sharply, so pikapik offers %@, the closest sharp size. Another port on the Mac may allow %@.": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عبر هذا المنفذ لا يستطيع الـ Mac عرض %1$@ بوضوح، لذا يقدّم pikapik ‏%2$@، وهو أقرب حجم واضح. قد يسمح منفذ آخر في الـ Mac بـ %3$@."
+          }
+        },
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přes tento port Mac nedokáže zobrazit %1$@ ostře, a tak pikapik nabízí %2$@, nejbližší ostrou velikost. Jiný port na Macu může %3$@ umožnit."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Über diesen Anschluss kann der Mac %1$@ nicht scharf anzeigen, deshalb bietet pikapik %2$@ an, die nächste scharfe Größe. Ein anderer Anschluss am Mac schafft %3$@ vielleicht."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Through this port the Mac can’t show %@ sharply, so pikapik offers %@, the closest sharp size. Another port on the Mac may allow %@."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Por este puerto, el Mac no puede mostrar el %1$@ con nitidez, así que pikapik ofrece el %2$@, el tamaño nítido más cercano. Otro puerto del Mac puede permitir el %3$@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Par ce port, le Mac ne peut pas afficher %1$@ avec netteté : pikapik propose donc %2$@, la taille nette la plus proche. Un autre port du Mac permet peut-être %3$@."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "इस पोर्ट से Mac %1$@ को साफ़ नहीं दिखा सकता, इसलिए pikapik %2$@ देता है, जो सबसे नज़दीकी साफ़ आकार है। Mac का कोई दूसरा पोर्ट %3$@ दिखा सकता है।"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melalui port ini, Mac tidak dapat menampilkan %1$@ dengan tajam, jadi pikapik menawarkan %2$@, ukuran tajam yang terdekat. Port lain di Mac mungkin dapat menampilkan %3$@."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Da questa porta il Mac non può mostrare il %1$@ in modo nitido, quindi pikapik offre il %2$@, la dimensione nitida più vicina. Un’altra porta del Mac potrebbe consentire il %3$@."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このポートではMacは%1$@をくっきり表示できないため、pikapikはいちばん近いくっきり表示できるサイズの%2$@を用意しています。Macの別のポートなら%3$@にできる場合があります。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 포트로는 Mac이 %1$@를 선명하게 표시할 수 없어서, pikapik은 가장 가까운 선명한 크기인 %2$@를 제공합니다. Mac의 다른 포트에서는 %3$@가 가능할 수 있습니다."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Via deze poort kan de Mac %1$@ niet scherp weergeven, dus biedt pikapik %2$@, de dichtstbijzijnde scherpe grootte. Een andere poort van de Mac kan %3$@ misschien wel."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Przez ten port Mac nie może wyświetlić skali %1$@ ostro, więc pikapik proponuje %2$@, najbliższy ostry rozmiar. Inny port Maca może pozwolić na %3$@."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Por esta porta, o Mac não consegue mostrar %1$@ com nitidez, então o pikapik oferece %2$@, o tamanho nítido mais próximo. Outra porta do Mac pode permitir %3$@."
+          }
+        },
+        "ro": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prin acest port, Mac-ul nu poate afișa clar %1$@, așa că pikapik oferă %2$@, cea mai apropiată dimensiune clară. Alt port al Mac-ului poate permite %3$@."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Через этот порт Mac не может показать %1$@ чётко, поэтому pikapik предлагает %2$@ — ближайший чёткий размер. Другой порт Mac может позволить %3$@."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Via den här porten kan Mac-datorn inte visa %1$@ skarpt, så pikapik erbjuder %2$@, den närmaste skarpa storleken. En annan port på Mac-datorn kanske klarar %3$@."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ผ่านพอร์ตนี้ Mac แสดง %1$@ ให้คมชัดไม่ได้ pikapik จึงเสนอ %2$@ ซึ่งเป็นขนาดคมชัดที่ใกล้ที่สุด พอร์ตอื่นของ Mac อาจแสดง %3$@ ได้"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bu bağlantı noktasından Mac %1$@ değerini net gösteremiyor, bu yüzden pikapik en yakın net boyut olan %2$@ değerini sunuyor. Mac’teki başka bir bağlantı noktası %3$@ değerine izin verebilir."
+          }
+        },
+        "uk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Через цей порт Mac не може показати %1$@ чітко, тому pikapik пропонує %2$@ — найближчий чіткий розмір. Інший порт Mac може дозволити %3$@."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qua cổng này, máy Mac không thể hiển thị %1$@ sắc nét, nên pikapik đưa ra %2$@, kích thước sắc nét gần nhất. Một cổng khác trên máy Mac có thể cho phép %3$@."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通过这个端口，Mac 无法清晰显示 %1$@，因此 pikapik 提供 %2$@，即最接近的清晰大小。Mac 上的其他端口也许可以使用 %3$@。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "透過這個連接埠，Mac 無法清晰顯示 %1$@，因此 pikapik 提供 %2$@，也就是最接近的清晰大小。Mac 上的其他連接埠或許可以使用 %3$@。"
           }
         }
       }

@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Ekran ölçeği: monitörler yan yana kalır, %125’te mor çizgiler yok
+
+<sub>1.57.2 · 29 Ekim 2026</sub>
+
+Boyut değiştikten sonra monitörleriniz yerleştirdiğiniz yerde kalır ve sürgüdeki her boyut her portta keskin görünür.
+
+**Düzeltilenler**
+
+- Bir monitörün boyutunu değiştirdiğinizde tüm monitörler düzenlediğiniz gibi yan yana kalır, böylece imleç her zaman birinden diğerine geçebilir.
+- “Bu boyut korunsun mu?” paneli imlecin bulunduğu ekranda açılır, böylece her zaman elinizin altındadır. Boyutu korumak için Return tuşuna, geri dönmek için Esc tuşuna basın.
+- Bazı portlar geniş bir monitörde %125 boyutunu keskin gösteremez, örneğin bir Mac mini’nin HDMI portu. Orada ekranda mor çizgiler çıkıyor ve görüntü gecikiyordu. Artık sürgü en yakın keskin boyut olan %135 boyutunu önerir ve altındaki bir satır nedenini açıklar. Daha önce kaydettiğiniz %125 bu portta %135 olarak görünür.
+- Parlaklık bu yeni boyutlarda da monitörde değişmeye devam eder.
+- %100’e dönünce bir monitör artık diğerinin üstüne binmiyor.
+
+**Ayrıca yeni**
+
+- Bazı monitörler alışılmış boyutların arasında yeni bir boyut alır, örneğin 5120 × 2160 bir monitörde %153 ve 6016 × 3384 bir monitörde %180.
+
+**Deneyin:** Ayarlar › Ekranlar
+
+---
+
 ## <a id="v1.57.1"></a>Ekran ölçeği: akıcı imleç ve iki aynı monitörde tüm boyutlar
 
 <sub>1.57.1 · 28 Ekim 2026</sub>

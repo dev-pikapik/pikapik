@@ -14,9 +14,19 @@ enum TestDisplayScale {
         precondition(DisplayScaleMath.percent(nativeWidth: 3440, looksLikeWidth: 0) == 100)
         print("3440x1440 steps and sizes: ok")
 
-        precondition(DisplayScaleMath.steps(nativeWidth: 5120, nativeHeight: 2160) == [100, 175, 200], "125% and 150% of 5120x2160 would draw wider than 6720 pixels")
+        precondition(DisplayScaleMath.steps(nativeWidth: 5120, nativeHeight: 2160) == [100, 153, 175, 200],
+                     "125% and 150% of 5120x2160 would draw wider than 6720 pixels, so 153% stands in for them")
         precondition(DisplayScaleMath.steps(nativeWidth: 1920, nativeHeight: 1080) == [100, 125, 150, 175], "200% of 1920x1080 would look like 960x540, under 600 points high")
-        precondition(DisplayScaleMath.steps(nativeWidth: 6016, nativeHeight: 3384) == [100, 200])
+        precondition(DisplayScaleMath.steps(nativeWidth: 6016, nativeHeight: 3384) == [100, 180, 200])
+        precondition(DisplayScaleMath.steps(nativeWidth: 3440, nativeHeight: 1440, maxBackingWidth: 5120) == [100, 135, 150, 175, 200],
+                     "the HDMI port of a Mac mini M4 takes 5120 pixels: 125% would draw 5504, 135% draws 5096")
+        precondition(DisplayScaleMath.steps(nativeWidth: 3440, nativeHeight: 1440, maxBackingWidth: 6144) == [100, 125, 150, 175, 200])
+        for pipe in [4096, 5120, 6144] {
+            for percent in DisplayScaleMath.steps(nativeWidth: 3440, nativeHeight: 1440, maxBackingWidth: pipe) where percent != 100 {
+                let size = DisplayScaleMath.looksLike(nativeWidth: 3440, nativeHeight: 1440, percent: percent)
+                precondition(2 * size.width <= pipe && DisplayScaleMath.percent(nativeWidth: 3440, looksLikeWidth: size.width) == percent, "\(percent)% on \(pipe): \(size)")
+            }
+        }
         for (width, height) in [(3440, 1440), (5120, 2160), (3840, 2160), (2560, 1440), (2560, 1080), (1920, 1080), (6016, 3384), (7680, 4320)] {
             for percent in DisplayScaleMath.steps(nativeWidth: width, nativeHeight: height) {
                 let size = DisplayScaleMath.looksLike(nativeWidth: width, nativeHeight: height, percent: percent)
@@ -25,7 +35,7 @@ enum TestDisplayScale {
                 precondition(DisplayScaleMath.percent(nativeWidth: width, looksLikeWidth: size.width) == percent, "\(width)x\(height) reads back as \(percent)%: \(size)")
             }
         }
-        print("steps a monitor gets, never wider than 6720 pixels: ok")
+        print("steps a monitor gets, never wider than its pipe: ok")
 
         let uhd = [mode(3840, 2160, scale: 1, refresh: 30), mode(3840, 2160, scale: 1), mode(3008, 1692), mode(2560, 1440, usable: false), mode(2560, 1440),
                    mode(2304, 1296), mode(2048, 1152), mode(1920, 1080, scale: 1), mode(1920, 1080), mode(1600, 900)]
@@ -58,6 +68,8 @@ enum TestDisplayScale {
         precondition(isMi(mi(1, 125), 1) && !isMi(mi(1, 125), 2), "a twin's virtual display belongs to its own monitor only")
         precondition(isMi(mi(nil, 125), 7), "the virtual display made before the twin came still belongs to the monitor")
         precondition(DisplayScaleMath.isVirtual(samsung(150), vendor: 19501, product: 29455, serial: 810432311, unit: 3), "a monitor without a twin keeps its virtual displays")
+        precondition([135, 153, 180].allSatisfy { DisplayScaleMath.isVirtual(samsung($0), vendor: 19501, product: 29455, serial: 810432311, unit: 3) },
+                     "a size that takes the place of a step on a narrow pipe is a virtual display too")
         precondition(!isMi(0, 2) && !DisplayScaleMath.isVirtual(810432311, vendor: 19501, product: 29455, serial: 810432311, unit: 3),
                      "a monitor is never taken for a virtual display of its twin or of itself")
         print("identical monitors get virtual displays of their own: ok")
@@ -104,5 +116,48 @@ enum TestDisplayScale {
                      "between two displays: keeps the edge at the main one")
         precondition(DisplayScaleMath.origin(of: main, among: [left], width: 2294, height: 960) == .zero, "the main display stays at 0,0")
         print("a larger picture keeps the monitor beside the main display: ok")
+
+        // Two identical 3440x1440 monitors side by side at 125% (2752x1152 points), the left one main.
+        let twin125 = CGRect(x: 0, y: 0, width: 2752, height: 1152), right125 = CGRect(x: 2752, y: 0, width: 2752, height: 1152)
+        var arranged = DisplayScaleMath.arrange(twin125, among: [right125], width: 2294, height: 960)
+        precondition(arranged.here == .zero && arranged.others == [CGPoint(x: 2294, y: 0)],
+                     "the main monitor at 150%: the one right of it moves 458 points left and still touches it: \(arranged)")
+        let main150 = CGRect(x: 0, y: 0, width: 2294, height: 960)
+        arranged = DisplayScaleMath.arrange(CGRect(x: 2294, y: 0, width: 2752, height: 1152), among: [main150], width: 2294, height: 960)
+        precondition(arranged.here == CGPoint(x: 2294, y: 0) && arranged.others == [.zero], "then the right one at 150%: \(arranged)")
+        arranged = DisplayScaleMath.arrange(main150, among: [CGRect(x: 2294, y: 0, width: 2294, height: 960)], width: 2752, height: 1152)
+        precondition(arranged.others == [CGPoint(x: 2752, y: 0)], "the main one back at 125%: the right one moves back: \(arranged)")
+        arranged = DisplayScaleMath.arrange(CGRect(x: -2752, y: 0, width: 2752, height: 1152), among: [twin125], width: 2294, height: 960)
+        precondition(arranged.here == CGPoint(x: -2294, y: 0) && arranged.others == [.zero], "the Samsung left of the main Mi at 150%: \(arranged)")
+        let beyond = [CGRect(x: -2752, y: 0, width: 2752, height: 1152), right125, CGRect(x: 0, y: 1152, width: 1920, height: 1080),
+                      CGRect(x: 0, y: -1080, width: 1920, height: 1080)]
+        arranged = DisplayScaleMath.arrange(twin125, among: beyond, width: 2294, height: 960)
+        precondition(arranged.others == [CGPoint(x: -2752, y: 0), CGPoint(x: 2294, y: 0), CGPoint(x: 0, y: 960), CGPoint(x: 0, y: -1080)],
+                     "only the displays beyond the edges that move move with them: \(arranged)")
+        let cases = [
+            ("A: the right monitor at 150 %, a laptop under the main one", right125, [twin125, CGRect(x: 0, y: 1152, width: 1512, height: 982)]),
+            ("B: the main one at 150 %, a wide display under it, another right of that", twin125,
+             [CGRect(x: 0, y: 1152, width: 3000, height: 1000), CGRect(x: 3000, y: 1152, width: 1920, height: 1080)]),
+            ("C: the monitor above the main one at 150 %, another right of the main one", CGRect(x: 0, y: -1152, width: 2752, height: 1152),
+             [twin125, CGRect(x: 2752, y: 0, width: 1920, height: 1080)]),
+            ("D: the monitor left of the main one at 150 %, another under it", CGRect(x: -2752, y: 0, width: 2752, height: 1152),
+             [twin125, CGRect(x: -1920, y: 1152, width: 1920, height: 1080)]),
+        ]
+        let overlap = { (a: CGRect, b: CGRect) in a.intersection(b).width > 0 && a.intersection(b).height > 0 }
+        let touch = { (a: CGRect, b: CGRect) in
+            ((a.maxX == b.minX || b.maxX == a.minX) && a.minY < b.maxY && b.minY < a.maxY)
+                || ((a.maxY == b.minY || b.maxY == a.minY) && a.minX < b.maxX && b.minX < a.maxX)
+        }
+        for (name, here, others) in cases {
+            let arranged = DisplayScaleMath.arrange(here, among: others, width: 2294, height: 960)
+            let frames = [CGRect(origin: arranged.here, size: CGSize(width: 2294, height: 960))]
+                + zip(others, arranged.others).map { CGRect(origin: $1, size: $0.size) }
+            precondition(frames.filter { $0.origin == .zero }.count == 1, "\(name): the main display stays at 0,0: \(frames)")
+            for (index, frame) in frames.enumerated() {
+                precondition(!frames[(index + 1)...].contains { overlap(frame, $0) }, "\(name): no display covers another: \(frames)")
+                precondition(frames.indices.contains { $0 != index && touch(frame, frames[$0]) }, "\(name): every display still touches another: \(frames)")
+            }
+        }
+        print("every display still touches the ones it touched after a size change: ok")
     }
 }

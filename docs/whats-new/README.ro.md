@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Dimensiunea afișării: monitoarele rămân alăturate și fără dungi mov la 125%
+
+<sub>1.57.2 · 29 octombrie 2026</sub>
+
+După o schimbare de dimensiune, monitoarele rămân unde le-ați așezat, iar fiecare dimensiune de pe glisor este clară pe orice port.
+
+**Reparat**
+
+- Când schimbați dimensiunea unui monitor, toate monitoarele rămân alăturate așa cum le-ați aranjat, iar cursorul poate trece oricând de pe unul pe altul.
+- Panoul „Păstrați această dimensiune?” se deschide pe ecranul cu cursorul, așa că este mereu la îndemână. Apăsați Return ca să păstrați dimensiunea sau Esc ca să reveniți.
+- Unele porturi nu pot afișa clar 125% pe un monitor lat, de exemplu portul HDMI al unui Mac mini. Acolo ecranul arăta dungi mov și răspundea cu întârziere. Acum glisorul oferă 135%, cea mai apropiată dimensiune clară, iar un rând dedesubt explică de ce. Un 125% salvat înainte apare ca 135% pe acel port.
+- Luminozitatea se schimbă în continuare pe monitor la aceste dimensiuni noi.
+- La revenirea la 100%, un monitor nu mai ajunge peste altul.
+
+**Tot nou**
+
+- Unele monitoare primesc o dimensiune nouă între cele obișnuite, de exemplu 153% pe un monitor de 5120 × 2160 și 180% pe unul de 6016 × 3384.
+
+**Încearcă:** Setări › Afișaje
+
+---
+
 ## <a id="v1.57.1"></a>Dimensiunea afișării: un cursor fluid și toate dimensiunile pe două monitoare identice
 
 <sub>1.57.1 · 28 octombrie 2026</sub>

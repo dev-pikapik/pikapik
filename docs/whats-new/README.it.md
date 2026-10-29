@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Dimensioni di visualizzazione: monitor sempre affiancati, e niente strisce viola al 125%
+
+<sub>1.57.2 · 29 ottobre 2026</sub>
+
+Dopo un cambio di dimensioni i monitor restano dove li hai messi, e ogni dimensione del cursore è nitida su ogni porta.
+
+**Corretto**
+
+- Quando cambi le dimensioni di un monitor, tutti i monitor restano affiancati come li hai disposti, e il puntatore può sempre passare dall’uno all’altro.
+- Il pannello «Mantenere queste dimensioni?» si apre sullo schermo in cui si trova il puntatore, così è sempre a portata di mano. Premi Invio per mantenere le dimensioni, o Esc per tornare indietro.
+- Alcune porte non riescono a mostrare il 125% in modo nitido su un monitor largo, per esempio la porta HDMI di un Mac mini. Lì lo schermo mostrava strisce viola e rispondeva in ritardo. Ora il cursore propone il 135%, la dimensione nitida più vicina, e una riga sotto ne spiega il motivo. Un 125% salvato prima appare come 135% su quella porta.
+- La luminosità continua a cambiare sul monitor anche con queste nuove dimensioni.
+- Tornando al 100%, un monitor non finisce più sopra un altro.
+
+**Altre novità**
+
+- Alcuni monitor hanno una nuova dimensione tra quelle solite, per esempio 153% su un monitor 5120 × 2160 e 180% su uno 6016 × 3384.
+
+**Provalo:** Impostazioni › Schermi
+
+---
+
 ## <a id="v1.57.1"></a>Dimensioni di visualizzazione: un puntatore fluido e tutte le dimensioni su due monitor uguali
 
 <sub>1.57.1 · 28 ottobre 2026</sub>

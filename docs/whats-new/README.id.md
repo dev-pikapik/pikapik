@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Ukuran tampilan: monitor tetap berdampingan, dan tanpa garis ungu di 125%
+
+<sub>1.57.2 · 29 Oktober 2026</sub>
+
+Setelah ukuran diubah, monitor Anda tetap di tempat Anda menatanya, dan setiap ukuran di slider tajam di port mana pun.
+
+**Diperbaiki**
+
+- Setelah Anda mengubah ukuran satu monitor, semua monitor tetap berdampingan seperti yang Anda atur, sehingga penunjuk selalu bisa berpindah dari satu monitor ke monitor lain.
+- Panel “Pertahankan ukuran ini?” terbuka di layar tempat penunjuk berada, jadi selalu mudah dijangkau. Tekan Return untuk mempertahankan ukuran, atau Esc untuk kembali.
+- Beberapa port tidak bisa menampilkan 125% dengan tajam di monitor lebar, misalnya port HDMI pada Mac mini. Di sana layar menampilkan garis ungu dan terasa lambat. Kini slider menawarkan 135%, ukuran tajam terdekat, dan sebuah baris di bawahnya menjelaskan alasannya. Ukuran 125% yang Anda simpan sebelumnya tampil sebagai 135% di port itu.
+- Kecerahan tetap bisa diubah di monitor pada ukuran-ukuran baru ini.
+- Saat kembali ke 100%, satu monitor tidak lagi menimpa monitor lain.
+
+**Juga baru**
+
+- Beberapa monitor mendapat ukuran baru di antara ukuran biasa, misalnya 153% pada monitor 5120 × 2160 dan 180% pada monitor 6016 × 3384.
+
+**Coba:** Pengaturan › Layar
+
+---
+
 ## <a id="v1.57.1"></a>Ukuran tampilan: penunjuk yang mulus dan semua ukuran di dua monitor yang sama
 
 <sub>1.57.1 · 28 Oktober 2026</sub>

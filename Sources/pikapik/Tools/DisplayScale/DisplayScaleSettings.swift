@@ -66,6 +66,17 @@ private struct MonitorSection: View {
         return inches.formatted(.measurement(width: .narrow, usage: .asProvided, numberFormatStyle: .number.precision(.fractionLength(0)))) + " · " + resolution
     }
 
+    /// Why the slider has a size such as 135 %: it stands in for a step the monitor's port can't show sharply.
+    private var substitution: String? {
+        guard let offered = monitor.steps.first(where: { !DisplayScaleMath.steps.contains($0) }),
+              let missing = DisplayScaleMath.steps.filter({ $0 > 100 && $0 < offered && !monitor.steps.contains($0) }).max() else { return nil }
+        let (shown, closest) = (missing.formatted(.percent), offered.formatted(.percent))
+        // Another port helps only when the step fits the widest pipe there is.
+        return DisplayScaleMath.steps(nativeWidth: monitor.nativeWidth, nativeHeight: monitor.nativeHeight).contains(missing)
+            ? String(localized: "Through this port the Mac can’t show \(shown) sharply, so pikapik offers \(closest), the closest sharp size. Another port on the Mac may allow \(shown).")
+            : String(localized: "The Mac can’t show this monitor at \(shown) sharply, so pikapik offers \(closest), the closest sharp size.")
+    }
+
     var body: some View {
         Section {
             if monitor.available {
@@ -78,6 +89,15 @@ private struct MonitorSection: View {
                     if monitor.steps.count > 1 {
                         ScaleSlider(steps: monitor.steps, selected: $selected, name: name)
                             .padding(.top, 22)
+                        if let substitution {
+                            Text(substitution)
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .frame(maxWidth: 460)
+                                .padding(.top, 12)
+                        }
                         apply
                             .padding(.top, 22)
                     } else {

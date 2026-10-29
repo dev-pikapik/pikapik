@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Taille d’affichage : des moniteurs côte à côte, et plus de bandes violettes à 125 %
+
+<sub>1.57.2 · 29 octobre 2026</sub>
+
+Après un changement de taille, vos moniteurs restent là où vous les avez placés, et chaque taille du curseur est nette sur chaque port.
+
+**Corrigé**
+
+- Quand vous changez la taille d’un moniteur, tous vos moniteurs restent côte à côte comme vous les avez disposés, et le pointeur peut toujours passer de l’un à l’autre.
+- Le panneau « Conserver cette taille ? » s’ouvre sur l’écran où se trouve le pointeur, il est donc toujours à portée. Appuyez sur Retour pour conserver la taille, ou sur Esc pour revenir.
+- Certains ports ne peuvent pas afficher 125 % de façon nette sur un moniteur large, par exemple le port HDMI d’un Mac mini. L’écran y montrait des bandes violettes et réagissait avec du retard. Le curseur propose maintenant 135 %, la taille nette la plus proche, et une ligne en dessous en explique la raison. Un 125 % enregistré avant s’affiche à 135 % sur ce port.
+- La luminosité se règle toujours sur le moniteur à ces nouvelles tailles.
+- En revenant à 100 %, un moniteur ne passe plus par-dessus un autre.
+
+**Aussi nouveau**
+
+- Certains moniteurs reçoivent une nouvelle taille entre les tailles habituelles, par exemple 153 % sur un moniteur 5120 × 2160 et 180 % sur un moniteur 6016 × 3384.
+
+**Pour essayer :** Réglages › Moniteurs
+
+---
+
 ## <a id="v1.57.1"></a>Taille d’affichage : un pointeur fluide et toutes les tailles sur deux moniteurs identiques
 
 <sub>1.57.1 · 28 octobre 2026</sub>

@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Rozmiar wyświetlania: monitory zostają obok siebie, a przy 125% nie ma fioletowych pasów
+
+<sub>1.57.2 · 29 października 2026</sub>
+
+Po zmianie rozmiaru monitory zostają na swoich miejscach, a każdy rozmiar na suwaku jest ostry na każdym porcie.
+
+**Poprawki**
+
+- Gdy zmieniasz rozmiar jednego monitora, wszystkie monitory zostają obok siebie w tym samym układzie, więc wskaźnik zawsze może przejść z jednego na drugi.
+- Panel „Zachować ten rozmiar?” otwiera się na ekranie ze wskaźnikiem, więc jest zawsze pod ręką. Naciśnij Return, aby zachować rozmiar, lub Esc, aby wrócić.
+- Niektóre porty nie mogą pokazać ostro 125% na szerokim monitorze, na przykład port HDMI w Macu mini. Na ekranie pojawiały się tam fioletowe pasy, a obraz się opóźniał. Teraz suwak proponuje 135%, najbliższy ostry rozmiar, a wiersz pod nim wyjaśnia dlaczego. Zapisane wcześniej 125% pokazuje się na takim porcie jako 135%.
+- Jasność nadal zmienia się na monitorze przy tych nowych rozmiarach.
+- Po powrocie do 100% jeden monitor nie nachodzi już na drugi.
+
+**Także nowe**
+
+- Niektóre monitory dostają nowy rozmiar pomiędzy zwykłymi, na przykład 153% na monitorze 5120 × 2160 i 180% na monitorze 6016 × 3384.
+
+**Wypróbuj:** Ustawienia › Wyświetlacze
+
+---
+
 ## <a id="v1.57.1"></a>Rozmiar wyświetlania: płynny wskaźnik i wszystkie rozmiary na dwóch identycznych monitorach
 
 <sub>1.57.1 · 28 października 2026</sub>

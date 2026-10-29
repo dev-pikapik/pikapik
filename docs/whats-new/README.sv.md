@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Visningsstorlek: bildskärmarna står kvar bredvid varandra, och inga lila ränder vid 125 %
+
+<sub>1.57.2 · 29 oktober 2026</sub>
+
+Efter en storleksändring står dina bildskärmar kvar där du placerade dem, och varje storlek på reglaget är skarp i varje port.
+
+**Åtgärdat**
+
+- När du ändrar storleken på en bildskärm står alla bildskärmar kvar bredvid varandra som du har ordnat dem, så att pekaren alltid kan flytta från den ena till den andra.
+- Panelen ”Behålla den här storleken?” öppnas på skärmen med pekaren, så den är alltid inom räckhåll. Tryck på Return för att behålla storleken, eller på Esc för att gå tillbaka.
+- Vissa portar kan inte visa 125 % skarpt på en bred bildskärm, till exempel HDMI-porten på en Mac mini. Där visade skärmen lila ränder och släpade efter. Nu erbjuder reglaget 135 %, den närmaste skarpa storleken, och en rad under det förklarar varför. 125 % som du sparade tidigare visas som 135 % i den porten.
+- Ljusstyrkan fortsätter att ändras på bildskärmen även i de här nya storlekarna.
+- När du går tillbaka till 100 % hamnar inte längre en bildskärm ovanpå en annan.
+
+**Även nytt**
+
+- Vissa bildskärmar får en ny storlek mellan de vanliga, till exempel 153 % på en bildskärm med 5120 × 2160 och 180 % på en med 6016 × 3384.
+
+**Prova:** Inställningar › Bildskärmar
+
+---
+
 ## <a id="v1.57.1"></a>Visningsstorlek: en smidig pekare och alla storlekar på två likadana bildskärmar
 
 <sub>1.57.1 · 28 oktober 2026</sub>

@@ -2,6 +2,18 @@
 
 Every update to pikapik, version by version. The same news, told simply with a picture, is in [What’s new](docs/whats-new/README.md), also in your language: [Русский](docs/whats-new/README.ru.md) · [Українська](docs/whats-new/README.uk.md) · [Deutsch](docs/whats-new/README.de.md) · [Français](docs/whats-new/README.fr.md) · [Español](docs/whats-new/README.es.md) · [Italiano](docs/whats-new/README.it.md) · [Português (Brasil)](docs/whats-new/README.pt-BR.md) · [日本語](docs/whats-new/README.ja.md) · [简体中文](docs/whats-new/README.zh-Hans.md) · [한국어](docs/whats-new/README.ko.md) · [Română](docs/whats-new/README.ro.md) · [Polski](docs/whats-new/README.pl.md) · [Türkçe](docs/whats-new/README.tr.md) · [Nederlands](docs/whats-new/README.nl.md) · [Svenska](docs/whats-new/README.sv.md) · [Čeština](docs/whats-new/README.cs.md) · [繁體中文](docs/whats-new/README.zh-Hant.md) · [العربية](docs/whats-new/README.ar.md) · [हिन्दी](docs/whats-new/README.hi.md) · [Bahasa Indonesia](docs/whats-new/README.id.md) · [Tiếng Việt](docs/whats-new/README.vi.md) · [ไทย](docs/whats-new/README.th.md).
 
+## [1.57.2] - Unreleased
+
+### Fixed
+- Display scale: after you change the size of one monitor, every monitor stays side by side the way you arranged them, so the pointer can always move from one to another. macOS moves the other monitors about while the size changes, and pikapik now puts each one back.
+- Display scale: the “Keep this size?” panel opens on the screen with the pointer, so it is always in reach. Return keeps the size, Esc goes back.
+- Display scale: no more purple stripes and lag at 125%. Each port of a Mac can draw a picture only so wide, and on some ports, such as HDMI on a Mac mini, 125% on a wide monitor is wider than that. On such a port the slider now offers 135%, the closest sharp size, and a line under it says why. A 125% you saved before then shows as 135% and stays saved, so on a port that can show it, 125% comes back.
+- Display scale: brightness keeps reaching the monitor at these new sizes, such as 135%.
+- Display scale: going back to 100% no longer leaves one monitor on top of another.
+
+### Changed
+- Display scale: some monitors get a new size between the usual steps where those steps can’t be sharp, for example 153% on a 5120 × 2160 monitor and 180% on a 6016 × 3384 monitor.
+
 ## [1.57.1] - 2026-10-28
 
 ### Fixed

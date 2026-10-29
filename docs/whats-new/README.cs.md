@@ -5,6 +5,28 @@
 
 ---
 
+## <a id="v1.57.2"></a>Velikost zobrazení: monitory zůstávají vedle sebe a při 125 % žádné fialové pruhy
+
+<sub>1.57.2 · 29. října 2026</sub>
+
+Po změně velikosti zůstanou monitory tam, kam jste je umístili, a každá velikost na posuvníku je ostrá na každém portu.
+
+**Opraveno**
+
+- Když změníte velikost jednoho monitoru, všechny monitory zůstanou vedle sebe tak, jak jste je uspořádali, takže ukazatel může vždy přejít z jednoho na druhý.
+- Panel „Ponechat tuto velikost?“ se otevře na obrazovce s ukazatelem, takže je vždy po ruce. Stiskněte Return pro ponechání velikosti, nebo Esc pro návrat.
+- Některé porty neumí ukázat 125 % na širokém monitoru ostře, například port HDMI na Macu mini. Obrazovka tam ukazovala fialové pruhy a obraz se zpožďoval. Teď posuvník nabídne 135 %, nejbližší ostrou velikost, a řádek pod ním vysvětlí proč. Dříve uložených 125 % se na takovém portu ukáže jako 135 %.
+- Jas se na monitoru mění i při těchto nových velikostech.
+- Po návratu na 100 % už jeden monitor nepřekrývá druhý.
+
+**Další novinky**
+
+- Některé monitory dostanou novou velikost mezi obvyklými, například 153 % na monitoru 5120 × 2160 a 180 % na monitoru 6016 × 3384.
+
+**Vyzkoušejte:** Nastavení › Monitory
+
+---
+
 ## <a id="v1.57.1"></a>Velikost zobrazení: plynulý ukazatel a všechny velikosti na dvou stejných monitorech
 
 <sub>1.57.1 · 28. října 2026</sub>
