@@ -56,6 +56,14 @@ enum DisplayScaleMath {
             .min { off($0) < off($1) }
     }
 
+    /// The id a monitor that was turned off and on came back under, among the lit displays of its model and serial
+    /// number: its own id, else its unit number, else the only one that is new. A twin with the same serial number that
+    /// stayed lit (`litBefore`) is never taken for it.
+    static func cameBack(_ display: UInt32, unit: UInt32, lit: [(id: UInt32, unit: UInt32)], litBefore: Set<UInt32>) -> UInt32? {
+        let new = lit.filter { $0.id == display || !litBefore.contains($0.id) }
+        return (new.first { $0.id == display } ?? new.first { $0.unit == unit } ?? (new.count == 1 ? new.first : nil))?.id
+    }
+
     /// The sizes above 100 % to add to a monitor model's own modes, as w,h pairs in points: every step any of this Mac's
     /// `pipes` takes, so the file suits whichever port the monitor is on, less those the monitor lists already.
     static func overrideSizes(nativeWidth: Int, nativeHeight: Int, pipes: [Int], listed: [Mode]) -> [Int] {

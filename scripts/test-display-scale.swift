@@ -67,6 +67,15 @@ enum TestDisplayScale {
         precondition(DisplayScaleMath.nativeMatch(percent: 125, nativeWidth: 3440, nativeHeight: 1440, modes: wide, refresh: 180, pipe: 6144) != nil)
         print("monitor sizes to add, only where the pipe takes them: ok")
 
+        precondition(DisplayScaleMath.cameBack(5, unit: 1, lit: [(5, 1)], litBefore: []) == 5)
+        precondition(DisplayScaleMath.cameBack(5, unit: 1, lit: [(9, 1)], litBefore: []) == 9, "a new id, the same unit")
+        precondition(DisplayScaleMath.cameBack(5, unit: 1, lit: [(9, 4)], litBefore: []) == 9, "the only one of its model")
+        precondition(DisplayScaleMath.cameBack(5, unit: 1, lit: [(7, 2)], litBefore: [7]) == nil, "the twin that stayed lit is not it")
+        precondition(DisplayScaleMath.cameBack(5, unit: 1, lit: [(7, 2), (9, 3)], litBefore: [7]) == 9, "the new one beside the twin")
+        precondition(DisplayScaleMath.cameBack(5, unit: 1, lit: [(7, 2), (5, 1)], litBefore: [5, 7]) == 5)
+        precondition(DisplayScaleMath.cameBack(5, unit: 1, lit: [], litBefore: [7]) == nil)
+        print("a monitor turned off and on is found again, never as its lit twin: ok")
+
         let samsung = { (percent: Int) in DisplayScaleMath.serial(vendor: 19501, product: 29455, serial: 810432311, percent: percent) }
         precondition(samsung(150) == 4_181_960_172, "macOS remembers each step by this number; a new number starts the step blurry at 1x again: \(samsung(150))")
         let serials = DisplayScaleMath.steps.map(samsung)

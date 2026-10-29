@@ -463,11 +463,11 @@ import IOKit
     static func reconnect(_ display: CGDirectDisplayID) async -> CGDirectDisplayID? {
         let vendor = CGDisplayVendorNumber(display), product = CGDisplayModelNumber(display), serial = CGDisplaySerialNumber(display)
         let unit = CGDisplayUnitNumber(display)
+        let alike = { VirtualDisplay.onlineDisplays().filter { CGDisplayVendorNumber($0) == vendor && CGDisplayModelNumber($0) == product && CGDisplaySerialNumber($0) == serial } }
+        let litBefore = Set(alike())
         let back = { () -> CGDirectDisplayID? in
-            let online = VirtualDisplay.onlineDisplays().filter {
-                CGDisplayVendorNumber($0) == vendor && CGDisplayModelNumber($0) == product && CGDisplaySerialNumber($0) == serial && CGDisplayIsAsleep($0) == 0
-            }
-            return online.first { $0 == display } ?? online.first { CGDisplayUnitNumber($0) == unit } ?? (online.count == 1 ? online.first : nil)
+            DisplayScaleMath.cameBack(display, unit: unit, lit: alike().filter { CGDisplayIsAsleep($0) == 0 }.map { ($0, CGDisplayUnitNumber($0)) },
+                                      litBefore: litBefore)
         }
         await DisplaySwitch.set(display, on: false)
         guard await until(5, { VirtualDisplay.onlineDisplays().contains(display) ? nil : true }) != nil else {
@@ -496,14 +496,17 @@ import IOKit
 
     /// Turns on the monitor that was `lastID`, and any of its model and serial number macOS still has off: a monitor
     /// pikapik turned off must never stay dark. It comes after a change still under way and waits for macOS, so it runs
-    /// off the main thread but when quitting. `lastID` is turned on even if listed: it may be about to go.
+    /// off the main thread but when quitting. A monitor that is on is left alone, as a second "on" starts its link over,
+    /// unless pikapik just turned it off and macOS still lists it.
     nonisolated static func enable(vendor: UInt32, product: UInt32, serial: UInt32, lastID: CGDirectDisplayID) {
         DisplaySwitch.queue.sync {
             let online = VirtualDisplay.onlineDisplays()
             let off = DisplaySwitch.all().filter {
                 !online.contains($0) && CGDisplayVendorNumber($0) == vendor && CGDisplayModelNumber($0) == product && CGDisplaySerialNumber($0) == serial
             }
-            for id in Set([lastID] + off) where id != 0 { DisplaySwitch.setNow(id, on: true) }
+            for id in Set([lastID] + off) where id != 0 && (DisplaySwitch.turnedOff.contains(id) || !online.contains(id)) {
+                DisplaySwitch.setNow(id, on: true)
+            }
         }
     }
 
@@ -578,6 +581,8 @@ private enum DisplaySwitch {
     static let queue = DispatchQueue(label: "pikapik.display-switch")
 
     static var isAvailable: Bool { enable != nil && list != nil }
+    /// The displays this copy turned off and not on since; read and written only on `queue`.
+    static var turnedOff: Set<CGDirectDisplayID> = []
 
     static func set(_ display: CGDirectDisplayID, on: Bool) async {
         await queue.run { setNow(display, on: on) }
@@ -587,6 +592,7 @@ private enum DisplaySwitch {
         var config: CGDisplayConfigRef?
         guard let enable, CGBeginDisplayConfiguration(&config) == .success, let config else { return }
         guard enable(config, display, on) == 0 else { _ = CGCancelDisplayConfiguration(config); return }
+        if on { turnedOff.remove(display) } else { turnedOff.insert(display) }
         // The error says little: the online list tells whether it worked.
         _ = CGCompleteDisplayConfiguration(config, .permanently)
     }

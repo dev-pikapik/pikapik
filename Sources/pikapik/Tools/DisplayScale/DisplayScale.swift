@@ -94,9 +94,9 @@ import AppKit
         turnOnMarked(now: false)
     }
 
+    /// The marker stays until `refresh` sees the monitor lit, so every launch and wake tries again until then.
     private func turnOnMarked(now: Bool) {
         guard let marker = UserDefaults.standard.dictionary(forKey: PreferenceKey.displayScaleReconnecting) else { return }
-        UserDefaults.standard.removeObject(forKey: PreferenceKey.displayScaleReconnecting)
         // A monitor that is off has no name, so the marker keeps who it is.
         let number = { (key: String) in (marker[key] as? NSNumber)?.uint32Value ?? 0 }
         Log.note("DisplayScale: turning on the monitor \(String(format: "%x-%x", number("vendor"), number("product"))) pikapik turned off")
@@ -132,6 +132,12 @@ import AppKit
         var builtIn = false
         let saved = Self.saved
         let displays = VirtualDisplay.onlineDisplays()
+        // A monitor pikapik left dark that is lit again, by pikapik or a replug, needs no more turning on. Matched by
+        // id, as its twin with the same serial number may be the lit one.
+        if reconnecting == nil, let marker = UserDefaults.standard.dictionary(forKey: PreferenceKey.displayScaleReconnecting),
+           let id = (marker["id"] as? NSNumber)?.uint32Value, displays.contains(id), CGDisplayIsAsleep(id) == 0 {
+            UserDefaults.standard.removeObject(forKey: PreferenceKey.displayScaleReconnecting)
+        }
         // A virtual display named exactly as its monitor, as pikapik 1.57.0 and older made them and another copy may
         // still hold during a hand-over, makes macOS number both names: "S34CG50 (1)".
         let numbered = Set(displays.compactMap { id in Self.physicalDisplay(of: id) == id ? nil : Self.physicalDisplay(of: id) })
@@ -474,17 +480,28 @@ import AppKit
             failure = Failure(monitor: monitor.id, percent: target, problem: .dark(monitor.name))
             Log.note("DisplayScale: \(monitor.name) did not come back after turning on")
         }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { MainActor.assumeIsolated { Brightness.shared.hold(false) } }
+        // Brightness waits for the link to settle, unless another monitor is off by then.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            MainActor.assumeIsolated { if DisplayScale.shared.reconnecting == nil { Brightness.shared.hold(false) } }
+        }
         reconnecting = nil
+        // A wake meanwhile skipped its rescue: one more try once the link had time.
+        if back == nil {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 10) { MainActor.assumeIsolated { DisplayScale.shared.rescue() } }
+        }
         return true
     }
 
-    /// A safe moment to turn a monitor off: the screens awake, nothing else under way, and another screen stays lit
+    /// A safe moment to turn a monitor off: the screens awake, nothing else under way, no display captured, and another screen stays lit
     /// for the windows, the menu bar and the pointer (one that shows pikapik's virtual display counts).
     private func canTurnOff(_ display: CGDirectDisplayID) -> Bool {
         let online = VirtualDisplay.onlineDisplays()
         guard MainCopy.canAct, !screensAsleep, reconnecting == nil, pending == nil, DisplayScaler.canReconnect, online.contains(display),
               CGDisplayIsAsleep(display) == 0 else { return false }
+        // CGDisplayIsCaptured is unavailable in Swift; a captured display (a game, a lock screen) shows a window at the
+        // shielding level, and a window list that can't be read counts as captured.
+        guard let windows = CGWindowListCopyWindowInfo(.optionOnScreenOnly, kCGNullWindowID) as? [[String: Any]],
+              !windows.contains(where: { ($0[kCGWindowLayer as String] as? Int ?? 0) >= Int(CGShieldingWindowLevel()) }) else { return false }
         let master = CGDisplayMirrorsDisplay(display)
         return online.contains { other in
             let shows = CGDisplayMirrorsDisplay(other)
