@@ -9,6 +9,8 @@ Every update to pikapik, version by version. The same news, told simply with a p
 
 ### Fixed
 - Display scale: a monitor no longer flickers after 1.58.0. The fan helper updates itself to version 6 with no password and, each time it starts, removes the monitor sizes 1.58.0 added under `/Library/Displays`: only regular files with pikapik's mark, never a link or another app's file, then the folders that leaves empty. pikapik also forgets the settings 1.58.0 kept for those sizes. A monitor that still flickers takes the change once it is turned off and on.
+- Display scale: a monitor 1.58.0 left dark comes back on when pikapik starts, unless it is already on and awake.
+- Administrator access: turning it off, `uninstall.sh` and `brew uninstall --zap` remove a monitor file only when root owns it and its pikapik mark is set to true, and never through a link.
 
 ## [1.58.0] - 2026-10-29
 

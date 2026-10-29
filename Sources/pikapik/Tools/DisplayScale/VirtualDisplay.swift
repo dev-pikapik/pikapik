@@ -524,3 +524,37 @@ private struct Runtime {
         return type
     }
 }
+
+/// pikapik 1.58.0 turned a monitor off and on to read new sizes, and kept a marker until it saw the monitor lit.
+/// A monitor that marker names comes back on once, at launch, through the same SkyLight call; then the marker goes.
+enum DarkMonitor {
+    private typealias Enable = @convention(c) (CGDisplayConfigRef?, CGDirectDisplayID, Bool) -> Int32
+    private typealias List = @convention(c) (UInt32, UnsafeMutablePointer<CGDirectDisplayID>?, UnsafeMutablePointer<UInt32>?) -> Int32
+
+    static func turnOn() {
+        guard let marker = UserDefaults.standard.dictionary(forKey: PreferenceKey.displayScaleReconnecting) else { return }
+        // A monitor that is off has no name, so the marker keeps who it is; its id may differ after a restart.
+        let number = { (key: String) in (marker[key] as? NSNumber)?.uint32Value ?? 0 }
+        let vendor = number("vendor"), product = number("product"), serial = number("serial"), last = number("id")
+        Log.note("DisplayScale: turning on the monitor \(String(format: "%x-%x", vendor, product)) pikapik 1.58.0 turned off")
+        // Completing the change waits for the monitor's link, for seconds.
+        DispatchQueue.global().async {
+            let library = dlopen(SystemPath.skyLightFramework, RTLD_LAZY)
+            let find = { (names: [String]) in names.lazy.compactMap { dlsym(library, $0) }.first }
+            if let enable = find(["SLSConfigureDisplayEnabled", "CGSConfigureDisplayEnabled"]).map({ unsafeBitCast($0, to: Enable.self) }),
+               let list = find(["SLSGetDisplayList", "CGSGetDisplayList"]).map({ unsafeBitCast($0, to: List.self) }) {
+                var ids = [CGDirectDisplayID](repeating: 0, count: 32), count: UInt32 = 0
+                let all = list(UInt32(ids.count), &ids, &count) == 0 ? Array(ids.prefix(Int(min(count, 32)))) : []
+                let online = VirtualDisplay.onlineDisplays()
+                // A monitor that is on and awake is left alone: a second "on" while its link comes up starts the link over.
+                for id in all where CGDisplayVendorNumber(id) == vendor && CGDisplayModelNumber(id) == product
+                    && (id == last || CGDisplaySerialNumber(id) == serial) && !(online.contains(id) && CGDisplayIsAsleep(id) == 0) {
+                    var config: CGDisplayConfigRef?
+                    guard CGBeginDisplayConfiguration(&config) == .success, let config else { continue }
+                    if enable(config, id, true) == 0 { _ = CGCompleteDisplayConfiguration(config, .permanently) } else { CGCancelDisplayConfiguration(config) }
+                }
+            }
+            UserDefaults.standard.removeObject(forKey: PreferenceKey.displayScaleReconnecting)
+        }
+    }
+}

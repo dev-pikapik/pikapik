@@ -2,7 +2,7 @@ import Foundation
 
 final class AppRemover {
     private static let launchctlPath = SystemPath.launchctl
-    private static let statPath = "/usr/bin/stat"
+    private static let statPath = SystemPath.stat
     private static let mvPath = "/bin/mv"
     private static let pkgutilPath = SystemPath.pkgutil
 
