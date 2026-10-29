@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Velikost zobrazení: zase jako v 1.57 a bez blikání
+
+<sub>1.58.1 · 29. října 2026</sub>
+
+Velké velikosti na externím monitoru znovu fungují jako v 1.57, s další obrazovkou, kterou pro ně pikapik vytvoří. Monitor už při výběru velikosti nezhasne.
+
+pikapik sám a bez hesla odstraní velikosti monitorů, které na váš Mac přidala verze 1.58.0. Kvůli nim některé monitory blikaly. Pokud monitor po aktualizaci stále bliká, jednou ho vypněte a znovu zapněte.
+
+**Vyzkoušejte:** Nastavení › Monitory
+
+---
+
 ## <a id="v1.58.0"></a>Velikost zobrazení: velké velikosti přímo na monitoru
 
 <sub>1.58.0 · 29. října 2026</sub>

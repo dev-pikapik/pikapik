@@ -11,7 +11,7 @@ import Security
     func setService(label: String, on: Bool, reply: @escaping (Bool) -> Void)
     func adopt(labels: [String], reply: @escaping (Bool) -> Void)
     func restoreServices(reply: @escaping (Bool) -> Void)
-    /// Writes or replaces pikapik's override for one monitor model; sizes are looks-like points, w,h pairs.
+    /// Helper 5 wrote pikapik's override for one monitor model here; from helper 6 on it writes nothing and answers false.
     func setScaleModes(vendor: Int, product: Int, sizes: [Int], reply: @escaping (Bool) -> Void)
 }
 
@@ -140,7 +140,7 @@ enum HelperServices {
 }
 
 enum FanHelperInfo {
-    static let version = 5
+    static let version = 6
     static let selfUpdating = 2
     static let suffix = ".fans"
     static let recordSuffix = ".turned-off"
@@ -209,77 +209,52 @@ enum FanHelperInfo {
     }
 }
 
-/// A monitor model's extra HiDPI sizes, in the folder CoreDisplay reads on the next enumeration of that monitor.
+/// The monitor sizes helper 5 (pikapik 1.58.0) wrote to the display overrides. Helper 6 removes them when it starts.
 struct ScaleOverride {
     static let marker = "pikapik"
-    static let system = "/System/Library/Displays/Contents/Resources/Overrides"
-    static let limit = 8 // pikapik files on one Mac
+    static let limit = 8 // helper 5 never wrote more files than this
     var base = "/Library/Displays/Contents/Resources/Overrides" // tests pass a temp folder
     var owner: uid_t = 0 // tests pass getuid()
-    var top = "/Library" // the first folder checked; tests pass their temp folder
+    var top = "/Library" // the first folder checked, never removed; tests pass their temp folder
 
-    static func relative(vendor: Int, product: Int) -> String {
-        String(format: "DisplayVendorID-%x/DisplayProductID-%x", vendor, product) // lowercase, no padding, as CoreDisplay
-    }
-
-    static func valid(vendor: Int, product: Int, sizes: [Int]) -> Bool {
-        (1...0xFFFF).contains(vendor) && (0...0xFFFF).contains(product)
-            && sizes.count % 2 == 0 && (2...2 * limit).contains(sizes.count)
-            && stride(from: 0, to: sizes.count, by: 2).allSatisfy { (640...3360).contains(sizes[$0]) && (600...3360).contains(sizes[$0 + 1]) }
-    }
-
-    /// XML, so uninstall finds the marker with grep. Each entry: big-endian {2w, 2h, 0x1, 0x200000}, as Apple's.
-    static func data(vendor: Int, product: Int, sizes: [Int]) -> Data? {
-        guard valid(vendor: vendor, product: product, sizes: sizes) else { return nil }
-        let entries = stride(from: 0, to: sizes.count, by: 2).map { i -> Data in
-            [UInt32(2 * sizes[i]), UInt32(2 * sizes[i + 1]), 1, 0x0020_0000].reduce(into: Data()) { d, v in
-                withUnsafeBytes(of: v.bigEndian) { d.append(contentsOf: $0) }
-            }
+    /// pikapik's files: DisplayVendorID-*/DisplayProductID-* under `base`, each a regular file owned by `owner` with
+    /// the pikapik mark, in folders only `owner` can write to. Anything else is not pikapik's: hands off.
+    func files() -> [String] {
+        let fm = FileManager.default
+        guard folders(for: base) else { return [] }
+        let vendors = ((try? fm.contentsOfDirectory(atPath: base)) ?? []).filter { $0.hasPrefix("DisplayVendorID-") && folders(for: base + "/" + $0) }
+        return vendors.flatMap { vendor in
+            ((try? fm.contentsOfDirectory(atPath: base + "/" + vendor)) ?? []).filter { $0.hasPrefix("DisplayProductID-") }.map { base + "/" + vendor + "/" + $0 }
+        }.filter { path in
+            var info = stat()
+            return lstat(path, &info) == 0 && info.st_mode & S_IFMT == S_IFREG && info.st_uid == owner
+                && (NSDictionary(contentsOfFile: path)?[Self.marker] as? Bool) == true
         }
-        let plist: [String: Any] = ["DisplayVendorID": vendor, "DisplayProductID": product, marker: true, "scale-resolutions": entries]
-        return try? PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
     }
 
-    func write(vendor: Int, product: Int, sizes: [Int], by caller: uid_t) -> Bool {
-        let rel = Self.relative(vendor: vendor, product: product), path = base + "/" + rel
-        guard HelperAccess.isAdmin(caller), let data = Self.data(vendor: vendor, product: product, sizes: sizes),
-              !FileManager.default.fileExists(atPath: Self.system + "/" + rel), // never shadow Apple's file
-              folders(for: (path as NSString).deletingLastPathComponent) else { return false }
-        var info = stat()
-        if lstat(path, &info) == 0 {
-            guard info.st_mode & S_IFMT == S_IFREG, ours(path) else { return false } // foreign or odd file: hands off
-            if FileManager.default.contents(atPath: path) == data { return true }
-        } else if files().count >= Self.limit { return false }
-        guard (try? data.write(to: URL(fileURLWithPath: path), options: .atomic)) != nil else { return false }
-        return chown(path, owner, gid_t.max) == 0 && chmod(path, 0o644) == 0 // root:wheel 0644, the group from the folder
+    /// Deletes pikapik's files, then the folders that leaves empty up to, not including, `top`. Returns how many files went.
+    @discardableResult
+    func removeAll() -> Int {
+        let gone = files().prefix(Self.limit).filter { unlink($0) == 0 }
+        guard !gone.isEmpty else { return 0 }
+        Set(gone.map { ($0 as NSString).deletingLastPathComponent }).forEach { _ = rmdir($0) } // rmdir takes only an empty folder
+        var dir = base
+        while dir.count > top.count, dir.hasPrefix(top + "/") {
+            guard rmdir(dir) == 0 else { break }
+            dir = (dir as NSString).deletingLastPathComponent
+        }
+        return gone.count
     }
 
-    /// Every component from `top` down: a real directory owned by `owner`, writable by nobody else; missing ones are made 0755.
+    /// Every component from `top` down: a real directory owned by `owner`, writable by nobody else.
     private func folders(for dir: String) -> Bool {
         var path = ""
         for part in dir.split(separator: "/") {
             path += "/" + part
             guard path.count >= top.count else { continue }
             var info = stat()
-            if lstat(path, &info) != 0 {
-                guard errno == ENOENT, mkdir(path, 0o755) == 0, chown(path, owner, gid_t.max) == 0, // group from the parent: wheel under /Library
-                      chmod(path, 0o755) == 0,
-                      lstat(path, &info) == 0 else { return false }
-            }
-            guard info.st_mode & S_IFMT == S_IFDIR, info.st_uid == owner, info.st_mode & 0o022 == 0 else { return false }
+            guard lstat(path, &info) == 0, info.st_mode & S_IFMT == S_IFDIR, info.st_uid == owner, info.st_mode & 0o022 == 0 else { return false }
         }
         return true
-    }
-
-    private func ours(_ path: String) -> Bool { (NSDictionary(contentsOfFile: path)?[Self.marker] as? Bool) == true }
-
-    private func files() -> [String] {
-        let fm = FileManager.default
-        return ((try? fm.contentsOfDirectory(atPath: base)) ?? []).filter { $0.hasPrefix("DisplayVendorID-") }.flatMap { vendor in
-            ((try? fm.contentsOfDirectory(atPath: base + "/" + vendor)) ?? []).filter { $0.hasPrefix("DisplayProductID-") }.map { base + "/" + vendor + "/" + $0 }
-        }.filter { path in
-            var info = stat()
-            return lstat(path, &info) == 0 && info.st_mode & S_IFMT == S_IFREG && ours(path)
-        }
     }
 }

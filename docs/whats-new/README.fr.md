@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Taille d’affichage : de nouveau comme en 1.57, et sans scintillement
+
+<sub>1.58.1 · 29 octobre 2026</sub>
+
+Les grandes tailles sur un moniteur externe fonctionnent de nouveau comme en 1.57, avec l’écran supplémentaire que pikapik crée pour elles. Le moniteur ne s’éteint plus quand vous choisissez une taille.
+
+pikapik supprime tout seul, sans mot de passe, les tailles de moniteur que la 1.58.0 a ajoutées à votre Mac. Elles faisaient scintiller certains moniteurs. Si un moniteur scintille encore après la mise à jour, éteignez-le et rallumez-le une fois.
+
+**Pour essayer :** Réglages › Moniteurs
+
+---
+
 ## <a id="v1.58.0"></a>Taille d’affichage : les grandes tailles sur le moniteur lui-même
 
 <sub>1.58.0 · 29 octobre 2026</sub>

@@ -26,9 +26,8 @@ import AppKit
         }
     }
 
-    /// notBack: going back to the size before the change failed, whatever the reason; dark: the monitor, by its name,
-    /// did not come back after pikapik turned it off and on.
-    enum Problem: Equatable { case unavailable, refused, lost, notBack, dark(String) }
+    /// notBack: going back to the size before the change failed, whatever the reason.
+    enum Problem: Equatable { case unavailable, refused, lost, notBack }
     struct Failure: Equatable { let monitor: Monitor.ID; let percent: Int; let problem: Problem }
     struct Pending: Equatable { let monitor: Monitor.ID; let from: Int; let to: Int; let deadline: Date }
 
@@ -51,8 +50,6 @@ import AppKit
     @ObservationIgnored private var renames: [CGDirectDisplayID: Int] = [:]
     /// While the screens sleep a mirror reads as ended; nothing is put back until they wake.
     @ObservationIgnored private var screensAsleep = false
-    /// The monitor pikapik turns off and on so that macOS reads its new sizes: left alone until it is back.
-    @ObservationIgnored private var reconnecting: CGDirectDisplayID?
     /// The pending change started from the monitor's own picture, so going back ends pikapik's changes.
     @ObservationIgnored private var fromOwn = false
     @ObservationIgnored private var deadline: DispatchWorkItem?
@@ -70,9 +67,6 @@ import AppKit
             workspace.addObserver(forName: name, object: nil, queue: .main) { _ in
                 MainActor.assumeIsolated {
                     if name == NSWorkspace.screensDidWakeNotification { DisplayScale.shared.screensAsleep = false }
-                    if name == NSWorkspace.didWakeNotification {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { MainActor.assumeIsolated { DisplayScale.shared.rescue() } }
-                    }
                     // macOS ends the mirror itself as the screens wake: no sign that something else holds the monitor.
                     DisplayScale.shared.repaired = [:]
                     DisplayScale.shared.attempts = [:]
@@ -87,32 +81,9 @@ import AppKit
         recheck()
     }
 
-    /// Turns on a monitor pikapik left off, when it crashed or the monitor did not come back: at launch and after a
-    /// wake, by the main copy only, as a second call while a monitor comes back starts its link over.
-    func rescue() {
-        guard MainCopy.canAct, reconnecting == nil else { return }
-        turnOnMarked(now: false)
-    }
-
-    /// The marker stays until `refresh` sees the monitor lit, so every launch and wake tries again until then.
-    private func turnOnMarked(now: Bool) {
-        guard let marker = UserDefaults.standard.dictionary(forKey: PreferenceKey.displayScaleReconnecting) else { return }
-        // A monitor that is off has no name, so the marker keeps who it is.
-        let number = { (key: String) in (marker[key] as? NSNumber)?.uint32Value ?? 0 }
-        Log.note("DisplayScale: turning on the monitor \(String(format: "%x-%x", number("vendor"), number("product"))) pikapik turned off")
-        let enable = { DisplayScaler.enable(vendor: number("vendor"), product: number("product"), serial: number("serial"), lastID: number("id")) }
-        if now { enable() } else { DispatchQueue.global().async { enable() } }
-    }
-
     /// Every monitor back to its own picture: on quit, and when this copy stops being the main one.
     func release() {
         generation += 1
-        // Quitting or handing over while a monitor is off: it comes back on before anything else.
-        if reconnecting != nil {
-            reconnecting = nil
-            turnOnMarked(now: true)
-            Brightness.shared.hold(false)
-        }
         settle?.cancel()
         if pending != nil { clearPending() }
         for (id, scaler) in scalers {
@@ -132,19 +103,11 @@ import AppKit
         var builtIn = false
         let saved = Self.saved
         let displays = VirtualDisplay.onlineDisplays()
-        // A monitor pikapik left dark that is lit again, by pikapik or a replug, needs no more turning on. Matched by
-        // id, as its twin with the same serial number may be the lit one.
-        if reconnecting == nil, let marker = UserDefaults.standard.dictionary(forKey: PreferenceKey.displayScaleReconnecting),
-           let id = (marker["id"] as? NSNumber)?.uint32Value, displays.contains(id), CGDisplayIsAsleep(id) == 0 {
-            UserDefaults.standard.removeObject(forKey: PreferenceKey.displayScaleReconnecting)
-        }
         // A virtual display named exactly as its monitor, as pikapik 1.57.0 and older made them and another copy may
         // still hold during a hand-over, makes macOS number both names: "S34CG50 (1)".
         let numbered = Set(displays.compactMap { id in Self.physicalDisplay(of: id) == id ? nil : Self.physicalDisplay(of: id) })
         for display in displays {
             if CGDisplayIsBuiltin(display) != 0 { builtIn = true; continue }
-            // Its modes change while it comes back: it is read once it has.
-            if display == reconnecting { continue }
             // pikapik's own virtual displays stay out, also in the moment their monitor is gone.
             guard !scalers.values.contains(where: { $0.virtual?.id == display }), Self.physicalDisplay(of: display) == display else { continue }
             let (id, key, unit) = identity(of: display, among: displays)
@@ -331,17 +294,10 @@ import AppKit
             // A saved size this port can't show sharply, say 125 % on a 5120-pixel pipe, becomes the nearest one it can, the smaller of two as near.
             let target = monitor.steps.contains(wanted) || wanted == monitor.current
                 ? wanted : monitor.steps.min { abs($0 - wanted) < abs($1 - wanted) } ?? wanted
-            // A size only a virtual display shows gets the monitor's own mode instead once the fan helper adds it.
-            let sizes = monitor.virtualSteps.contains(target) ? scaler.overrideSizes : []
-            let ask = Self.lacks(sizes, asked: Self.asked[monitor.id])
-            guard ask || target != monitor.current || !scaler.holds, monitor.steps.contains(target) else { continue }
+            guard target != monitor.current || !scaler.holds, monitor.steps.contains(target) else { continue }
             busy = monitor.id
             forgive(allBut: display, mirrors: !scaler.changed)
             Task {
-                if ask, await addNativeModes(monitor, scaler, sizes, target) {
-                    busy = nil
-                    return recheck()
-                }
                 do {
                     try await scaler.show(target)
                     failed.remove(display)
@@ -418,107 +374,6 @@ import AppKit
         Log.note("DisplayScale: \(names[old] ?? scaler.name) changed its id three times, left at its own picture until a wake or a choice")
         failed.insert(display)
         attempts[display] = 3
-    }
-
-    private static var asked: [Monitor.ID: [Int]] {
-        UserDefaults.standard.dictionary(forKey: PreferenceKey.displayScaleModes) as? [Monitor.ID: [Int]] ?? [:]
-    }
-
-    /// Whether `sizes` holds one not asked for yet. Asked once, a size stays in the file: macOS may list only some, and
-    /// a file written anew with only the missing ones would take the others away, the monitor dark each time.
-    private static func lacks(_ sizes: [Int], asked: [Int]?) -> Bool {
-        !Set(pairs(sizes)).isSubset(of: pairs(asked ?? []))
-    }
-
-    private static func pairs(_ sizes: [Int]) -> [[Int]] {
-        stride(from: 0, to: sizes.count - 1, by: 2).map { [sizes[$0], sizes[$0 + 1]] }
-    }
-
-    /// Asks the fan helper for the sizes the monitor lacks, then turns the monitor off and on once, so macOS reads them.
-    /// True when it went off (the next refresh reads it anew and takes its own mode), false when it keeps the virtual
-    /// display for now: no helper, or not a safe moment; the sizes then come with the next reconnection or restart.
-    private func addNativeModes(_ monitor: Monitor, _ scaler: DisplayScaler, _ sizes: [Int], _ target: Int) async -> Bool {
-        // Spent first: one try per set of sizes, also across a crash, so the monitor never goes dark in a loop.
-        var asked = Self.asked
-        let all = Set(Self.pairs(sizes) + Self.pairs(asked[monitor.id] ?? [])).sorted { ($0[0], $0[1]) > ($1[0], $1[1]) }.flatMap { $0 }
-        asked[monitor.id] = all
-        UserDefaults.standard.set(asked, forKey: PreferenceKey.displayScaleModes)
-        let model = String(format: "%x-%x", scaler.vendor, scaler.product)
-        guard await FanControl.shared.addScaleModes(vendor: scaler.vendor, product: scaler.product, sizes: all) == true else { return false }
-        Log.note("DisplayScale: \(monitor.name) sizes written for \(model): \(all)")
-        let display = scaler.display
-        guard canTurnOff(display), scalers[monitor.id] === scaler else {
-            Log.note("DisplayScale: \(monitor.name) sizes appear after the monitor reconnects")
-            return false
-        }
-        // The monitor shows its own picture while it is off: a mirror would leave the virtual display behind as an
-        // invisible screen that catches the windows.
-        try? await scaler.restore()
-        guard CGDisplayMirrorsDisplay(display) == kCGNullDirectDisplay, canTurnOff(display) else {
-            Log.note("DisplayScale: \(monitor.name) sizes appear after the monitor reconnects")
-            return false
-        }
-        let managed = Set(scalers.values.filter(\.changed).map(\.display))
-        let placements = DisplayScaler.placements(keepingModesOf: managed)
-        scaler.release()
-        scalers[monitor.id] = nil
-        settled.remove(display)
-        reconnecting = display
-        Brightness.shared.hold(true)
-        UserDefaults.standard.set(["vendor": scaler.vendor, "product": scaler.product, "serial": scaler.serial, "unit": scaler.unit ?? 0,
-                                   "id": display, "date": Date()], forKey: PreferenceKey.displayScaleReconnecting)
-        Log.note("DisplayScale: \(monitor.name) turns off and on to read its new sizes")
-        let back = await DisplayScaler.reconnect(display)
-        // release() turned it on meanwhile: this copy quits or hands over.
-        guard reconnecting == display else { return true }
-        if let back {
-            DisplayScaler.putBack(placements, renamed: [display: back])
-            UserDefaults.standard.removeObject(forKey: PreferenceKey.displayScaleReconnecting)
-            Log.note("DisplayScale: \(monitor.name) is back")
-        } else {
-            // The marker stays: the next launch or wake turns it on again.
-            failure = Failure(monitor: monitor.id, percent: target, problem: .dark(monitor.name))
-            Log.note("DisplayScale: \(monitor.name) did not come back after turning on")
-        }
-        // Brightness waits for the link to settle, unless another monitor is off by then.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            MainActor.assumeIsolated { if DisplayScale.shared.reconnecting == nil { Brightness.shared.hold(false) } }
-        }
-        reconnecting = nil
-        // A wake meanwhile skipped its rescue: one more try once the link had time.
-        if back == nil {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 10) { MainActor.assumeIsolated { DisplayScale.shared.rescue() } }
-        }
-        return true
-    }
-
-    /// A safe moment to turn a monitor off: the screens awake, nothing else under way, no display captured, and another screen stays lit
-    /// for the windows, the menu bar and the pointer (one that shows pikapik's virtual display counts).
-    private func canTurnOff(_ display: CGDirectDisplayID) -> Bool {
-        let online = VirtualDisplay.onlineDisplays()
-        guard MainCopy.canAct, !screensAsleep, reconnecting == nil, pending == nil, DisplayScaler.canReconnect, online.contains(display),
-              CGDisplayIsAsleep(display) == 0 else { return false }
-        // CGDisplayIsCaptured is unavailable in Swift; a captured display (a game, a lock screen) shows a window at the
-        // shielding level, and a window list that can't be read counts as captured.
-        guard let windows = CGWindowListCopyWindowInfo(.optionOnScreenOnly, kCGNullWindowID) as? [[String: Any]],
-              !windows.contains(where: { ($0[kCGWindowLayer as String] as? Int ?? 0) >= Int(CGShieldingWindowLevel()) }) else { return false }
-        let master = CGDisplayMirrorsDisplay(display)
-        return online.contains { other in
-            let shows = CGDisplayMirrorsDisplay(other)
-            return other != display && other != master && shows != display && (master == kCGNullDirectDisplay || shows != master)
-                && Self.physicalDisplay(of: other) == other && (1...0xFFFF).contains(CGDisplayVendorNumber(other)) && CGDisplayIsAsleep(other) == 0
-        }
-    }
-
-    /// Lets the monitors that show a size through a virtual display ask for their own modes again: the fan helper was
-    /// just installed, so a monitor asked for before without one tries once more.
-    func addSizesSoon() {
-        let virtual = scalers.filter { $0.value.virtual != nil }
-        var asked = Self.asked
-        for id in virtual.keys { asked[id] = nil }
-        UserDefaults.standard.set(asked, forKey: PreferenceKey.displayScaleModes)
-        settled.subtract(virtual.values.map(\.display))
-        refresh()
     }
 
     private func clearPending() {

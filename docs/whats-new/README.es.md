@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Tamaño en pantalla: otra vez como en la 1.57, y sin parpadeo
+
+<sub>1.58.1 · 29 de octubre de 2026</sub>
+
+Los tamaños grandes en un monitor externo vuelven a funcionar como en la 1.57, con la pantalla adicional que pikapik crea para ellos. El monitor ya no se apaga al elegir un tamaño.
+
+pikapik elimina por sí solo, sin contraseña, los tamaños de monitor que la 1.58.0 añadió a tu Mac. Hacían parpadear algunos monitores. Si un monitor sigue parpadeando después de la actualización, apágalo y vuelve a encenderlo una vez.
+
+**Pruébalo:** Ajustes › Pantallas
+
+---
+
 ## <a id="v1.58.0"></a>Tamaño en pantalla: los tamaños grandes, en el propio monitor
 
 <sub>1.58.0 · 29 de octubre de 2026</sub>

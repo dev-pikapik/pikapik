@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Rozmiar wyświetlania: znowu jak w 1.57 i bez migotania
+
+<sub>1.58.1 · 29 października 2026</sub>
+
+Duże rozmiary na monitorze zewnętrznym znów działają jak w 1.57, z dodatkowym ekranem, który pikapik dla nich tworzy. Monitor nie gaśnie już, gdy wybierasz rozmiar.
+
+pikapik sam usuwa, bez hasła, rozmiary monitorów, które wersja 1.58.0 dodała na Twoim Macu. Przez nie niektóre monitory migotały. Jeśli monitor nadal migocze po aktualizacji, wyłącz go i włącz jeden raz.
+
+**Wypróbuj:** Ustawienia › Wyświetlacze
+
+---
+
 ## <a id="v1.58.0"></a>Rozmiar wyświetlania: duże rozmiary na samym monitorze
 
 <sub>1.58.0 · 29 października 2026</sub>

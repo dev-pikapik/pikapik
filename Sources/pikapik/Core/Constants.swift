@@ -188,7 +188,8 @@ enum SystemPath {
     static let sh = "/bin/sh"
     static let bash = "/bin/bash"
     static let sleep = "/bin/sleep"
-    static let grep = "/usr/bin/grep"
+    static let stat = "/usr/bin/stat"
+    static let plutil = "/usr/bin/plutil"
     static let rmdir = "/bin/rmdir"
     static let standardBinPath = "/usr/bin:/bin"
 

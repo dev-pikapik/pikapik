@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Kích thước hiển thị: trở lại cách của 1.57 và không còn nhấp nháy
+
+<sub>1.58.1 · 29 tháng 10 năm 2026</sub>
+
+Các kích thước lớn trên màn hình ngoài lại hoạt động như ở 1.57, với màn hình phụ mà pikapik tạo cho chúng. Màn hình không còn tắt khi bạn chọn kích thước.
+
+pikapik tự xóa các kích thước màn hình mà 1.58.0 đã thêm vào máy Mac của bạn, không cần mật khẩu. Chúng làm một số màn hình nhấp nháy. Nếu màn hình vẫn nhấp nháy sau khi cập nhật, hãy tắt rồi bật lại một lần.
+
+**Thử ngay:** Cài đặt › Màn hình
+
+---
+
 ## <a id="v1.58.0"></a>Kích thước hiển thị: kích thước lớn chạy ngay trên màn hình
 
 <sub>1.58.0 · 29 tháng 10 năm 2026</sub>

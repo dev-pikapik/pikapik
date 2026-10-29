@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Anzeigegröße: wieder wie in 1.57, und kein Flackern
+
+<sub>1.58.1 · 29. Oktober 2026</sub>
+
+Größere Größen auf einem externen Monitor funktionieren wieder wie in 1.57, mit dem zusätzlichen Bildschirm, den pikapik dafür anlegt. Der Monitor wird nicht mehr dunkel, wenn du eine Größe wählst.
+
+pikapik entfernt die Monitorgrößen, die 1.58.0 auf deinem Mac hinzugefügt hat, von selbst und ohne Passwort. Sie haben manche Monitore flackern lassen. Flackert ein Monitor nach dem Update noch, schalte ihn einmal aus und wieder ein.
+
+**Ausprobieren:** Einstellungen › Displays
+
+---
+
 ## <a id="v1.58.0"></a>Anzeigegröße: größere Größen direkt auf dem Monitor
 
 <sub>1.58.0 · 29. Oktober 2026</sub>

@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Visningsstorlek: tillbaka till 1.57-sättet, och inget flimmer
+
+<sub>1.58.1 · 29 oktober 2026</sub>
+
+Större storlekar på en extern bildskärm fungerar igen som i 1.57, med den extra skärm som pikapik skapar för dem. Bildskärmen blir inte längre svart när du väljer en storlek.
+
+pikapik tar själv bort de bildskärmsstorlekar som 1.58.0 lade till på din Mac, utan lösenord. De fick vissa bildskärmar att flimra. Om en bildskärm fortfarande flimrar efter uppdateringen, stäng av den och slå på den igen en gång.
+
+**Prova:** Inställningar › Bildskärmar
+
+---
+
 ## <a id="v1.58.0"></a>Visningsstorlek: större storlekar direkt på bildskärmen
 
 <sub>1.58.0 · 29 oktober 2026</sub>

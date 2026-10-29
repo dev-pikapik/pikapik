@@ -8,7 +8,6 @@ final class FanControl {
     private static let label = app + FanHelperInfo.suffix
     private static let helperDir = SystemPath.privilegedHelperToolsDir
     private static let binary = helperDir + "/" + label
-    static var isInstalled: Bool { FileManager.default.fileExists(atPath: binary) }
     private static let plist = "/Library/LaunchDaemons/" + label + ".plist"
     private static let record = binary + FanHelperInfo.recordSuffix
     private static let oldServicesKey = PreferenceKey.backgroundTurnedOffServices
@@ -22,7 +21,8 @@ final class FanControl {
     private static let codesignPath = SystemPath.codesign
     private static let printfPath = SystemPath.printf
     private static let sleepPath = SystemPath.sleep
-    private static let grepPath = SystemPath.grep
+    private static let statPath = SystemPath.stat
+    private static let plutilPath = SystemPath.plutil
     private static let rmdirPath = SystemPath.rmdir
 
     @ObservationIgnored private let smc = SMC()
@@ -31,6 +31,7 @@ final class FanControl {
     @ObservationIgnored private var connection: NSXPCConnection?
     @ObservationIgnored private var requested: [Int: Date] = [:]
     @ObservationIgnored private var updated = false
+    @ObservationIgnored private var cleaning = false
 
     private(set) var fans: [SMCFan] = []
     private(set) var wanted: [Int: Double] = [:]
@@ -55,10 +56,27 @@ final class FanControl {
         NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.willSleepNotification, object: nil, queue: .main) { [self] _ in
             wanted.keys.forEach(setAuto)
         }
+        removeOldSizes()
+    }
+
+    /// pikapik 1.58.0 added monitor sizes to /Library, and they made a monitor flicker. Helper 6 removes them each time
+    /// it starts, so reaching it once is enough; an older helper updates itself on the way, with no password.
+    private func removeOldSizes() {
+        UserDefaults.standard.removeObject(forKey: PreferenceKey.displayScaleModes)
+        DarkMonitor.turnOn()
+        guard !ScaleOverride().files().isEmpty else { return }
+        cleaning = connection == nil
+        probe()
+        // The helper runs as root: with no fan to hold, it ends instead of idling. A connection anything else used stays.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) { [self] in
+            if cleaning, wanted.isEmpty, watchers == 0 { connection?.invalidate() }
+            cleaning = false
+        }
     }
 
     func watch() {
         watchers += 1
+        cleaning = false
         guard timer == nil else { return }
         refresh()
         probe()
@@ -85,6 +103,7 @@ final class FanControl {
         var saved = (UserDefaults.standard.stringArray(forKey: Self.rpmKey) ?? []).filter { !$0.hasPrefix("\(fan.id):") }
         saved.append("\(fan.id):\(Int(rpm))")
         UserDefaults.standard.set(saved, forKey: Self.rpmKey)
+        cleaning = false
         guard let helper = helper() else { return fail() }
         error = nil
         helper.setManual(fan: fan.id, rpm: rpm) { ok in
@@ -97,6 +116,7 @@ final class FanControl {
 
     func setAuto(_ id: Int) {
         wanted[id] = nil
+        cleaning = false
         helper()?.setAuto(fan: id) { _ in DispatchQueue.main.async { self.refresh() } }
     }
 
@@ -109,6 +129,7 @@ final class FanControl {
                 done(ok)
             }
         }
+        cleaning = false
         guard ready, let helper = helper(onError: { finish(false) }) else { return finish(false) }
         helper.setService(label: label, on: on, reply: finish)
     }
@@ -116,36 +137,6 @@ final class FanControl {
     func handOff() {
         wanted.keys.forEach(setAuto)
         connection?.invalidate()
-    }
-
-    /// Has the helper write a monitor model's sizes (`ScaleOverride`), with no password: nil when there is no helper to
-    /// ask (not installed, not an administrator, or not updated to this version within 20 s), else whether it wrote them.
-    @MainActor
-    func addScaleModes(vendor: UInt32, product: UInt32, sizes: [Int]) async -> Bool? {
-        guard Self.isInstalled, HelperAccess.isAdmin(getuid()) else { return nil }
-        if !ready {
-            // An older helper updates itself first: it stages the new one, exits, and launchd starts it again in about 10 s.
-            probe()
-            let deadline = Date().addingTimeInterval(20)
-            while !ready, Date() < deadline { try? await Task.sleep(nanoseconds: 250_000_000) }
-            guard ready else { return nil }
-        }
-        let ok = await withCheckedContinuation { (done: CheckedContinuation<Bool, Never>) in
-            var finished = false
-            let finish = { (ok: Bool) in
-                DispatchQueue.main.async {
-                    guard !finished else { return }
-                    finished = true
-                    done.resume(returning: ok)
-                }
-            }
-            guard let helper = helper(onError: { finish(false) }) else { return finish(false) }
-            helper.setScaleModes(vendor: Int(vendor), product: Int(product), sizes: sizes, reply: finish)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 15) { finish(false) }
-        }
-        // The helper runs as root: with no fan to hold, it ends instead of idling.
-        if wanted.isEmpty { connection?.invalidate() }
-        return ok
     }
 
     func install() {
@@ -177,15 +168,12 @@ final class FanControl {
             "\(Self.chmodPath) 644 \(q(Self.plist))",
             "\(Self.launchctlPath) bootstrap system \(q(Self.plist))",
         ]
-        let prompt = String(localized: "pikapik wants to change the fan speed, turn services off and on, and add sharp sizes for monitors.")
+        let prompt = String(localized: "pikapik wants to change the fan speed and turn services off and on.")
         DispatchQueue.global().async {
             let ok = KeepAwake.runAsAdmin(steps.joined(separator: " && "), prompt: prompt)
             DispatchQueue.main.async {
                 self.busy = false
-                if ok {
-                    self.probe()
-                    MainActor.assumeIsolated { DisplayScale.shared.addSizesSoon() }
-                } else { self.error = String(localized: "Not allowed: no administrator password") }
+                if ok { self.probe() } else { self.error = String(localized: "Not allowed: no administrator password") }
             }
         }
     }
@@ -198,9 +186,9 @@ final class FanControl {
         connection?.invalidate()
         let q = Self.quoted
         let restore = "\(q(Self.binary)) --restore >/dev/null 2>&1 & p=$!; (\(Self.sleepPath) 30; kill $p) >/dev/null 2>&1 & w=$!; wait $p; kill $w 2>/dev/null"
-        // Monitor sizes go with the helper that wrote them: only files with pikapik's mark, and folders left empty.
+        // Monitor sizes go with the helper that wrote them: only root's files with pikapik's mark set to true, never through a link, and folders left empty.
         let overrides = q(ScaleOverride().base), folders = sequence(first: ScaleOverride().base) { ($0 as NSString).deletingLastPathComponent }.prefix(4).map(q)
-        let sizes = "for f in \(overrides)/DisplayVendorID-*/DisplayProductID-*; do [ -f \"$f\" ] && [ ! -L \"$f\" ] && \(Self.grepPath) -q '<key>pikapik</key>' \"$f\" && \(Self.rmPath) -f \"$f\"; done; \(Self.rmdirPath) \(overrides)/DisplayVendorID-* \(folders.joined(separator: " ")) 2>/dev/null"
+        let sizes = "for f in \(overrides)/DisplayVendorID-*/DisplayProductID-*; do [ -f \"$f\" ] && [ ! -L \"$f\" ] && [ ! -L \"${f%/*}\" ] && [ \"$(\(Self.statPath) -f %u \"$f\")\" = 0 ] && [ \"$(\(Self.plutilPath) -extract pikapik raw -o - \"$f\" 2>/dev/null)\" = true ] && \(Self.rmPath) -f \"$f\"; done; \(Self.rmdirPath) \(overrides)/DisplayVendorID-* \(folders.joined(separator: " ")) 2>/dev/null"
         let command = "\(Self.launchctlPath) bootout system/\(Self.label) >/dev/null 2>&1; [ ! -e \(q(Self.record)) ] || { \(restore); }; \(sizes); \(Self.rmPath) -f \(q(Self.binary)) \(q(Self.binary + ".new")) \(q(Self.record)) \(q(Self.plist))"
         let prompt = String(localized: "pikapik wants to remove administrator access.")
         DispatchQueue.global().async {

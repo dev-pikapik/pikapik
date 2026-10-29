@@ -5,6 +5,18 @@
 
 ---
 
+## <a id="v1.58.1"></a>Dimensioni di visualizzazione: di nuovo come nella 1.57, e niente sfarfallio
+
+<sub>1.58.1 · 29 ottobre 2026</sub>
+
+Le dimensioni grandi su un monitor esterno funzionano di nuovo come nella 1.57, con lo schermo in più che pikapik crea per loro. Il monitor non si spegne più quando scegli una dimensione.
+
+pikapik rimuove da solo, senza password, le dimensioni del monitor che la 1.58.0 aveva aggiunto al tuo Mac. Facevano sfarfallare alcuni monitor. Se un monitor sfarfalla ancora dopo l’aggiornamento, spegnilo e riaccendilo una volta.
+
+**Provalo:** Impostazioni › Schermi
+
+---
+
 ## <a id="v1.58.0"></a>Dimensioni di visualizzazione: le dimensioni grandi sul monitor stesso
 
 <sub>1.58.0 · 29 ottobre 2026</sub>
