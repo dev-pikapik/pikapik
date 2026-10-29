@@ -241,9 +241,6 @@ private let ioKitFrameworkPath = SystemPath.ioKitFramework
     }
 
     #if !APPSTORE
-    /// No DDC message goes to any monitor while one turns off and on (`DisplayScale`): one sent meanwhile can freeze it.
-    func hold(_ on: Bool) { link.hold(on) }
-
     private func poll() {
         guard Date().timeIntervalSince(polled) >= 4.5 else { return }
         polled = Date()
@@ -294,15 +291,6 @@ private final class MonitorLink: @unchecked Sendable {
     private var maximum: [CGDirectDisplayID: Int] = [:]
     private var sent: [CGDirectDisplayID: Double] = [:]
     private var quiet = 0
-    /// Main thread only, so suspending and resuming stay balanced.
-    private var held = false
-
-    /// A message already on its way still goes; the next ones wait until `hold(false)`.
-    func hold(_ on: Bool) {
-        guard on != held else { return }
-        held = on
-        if on { queue.suspend() } else { queue.resume() }
-    }
 
     init() {
         let kit = dlopen(ioKitFrameworkPath, RTLD_LAZY)

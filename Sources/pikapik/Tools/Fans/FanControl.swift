@@ -8,7 +8,6 @@ final class FanControl {
     private static let label = app + FanHelperInfo.suffix
     private static let helperDir = SystemPath.privilegedHelperToolsDir
     private static let binary = helperDir + "/" + label
-    static var isInstalled: Bool { FileManager.default.fileExists(atPath: binary) }
     private static let plist = "/Library/LaunchDaemons/" + label + ".plist"
     private static let record = binary + FanHelperInfo.recordSuffix
     private static let oldServicesKey = PreferenceKey.backgroundTurnedOffServices
@@ -118,36 +117,6 @@ final class FanControl {
         connection?.invalidate()
     }
 
-    /// Has the helper write a monitor model's sizes (`ScaleOverride`), with no password: nil when there is no helper to
-    /// ask (not installed, not an administrator, or not updated to this version within 20 s), else whether it wrote them.
-    @MainActor
-    func addScaleModes(vendor: UInt32, product: UInt32, sizes: [Int]) async -> Bool? {
-        guard Self.isInstalled, HelperAccess.isAdmin(getuid()) else { return nil }
-        if !ready {
-            // An older helper updates itself first: it stages the new one, exits, and launchd starts it again in about 10 s.
-            probe()
-            let deadline = Date().addingTimeInterval(20)
-            while !ready, Date() < deadline { try? await Task.sleep(nanoseconds: 250_000_000) }
-            guard ready else { return nil }
-        }
-        let ok = await withCheckedContinuation { (done: CheckedContinuation<Bool, Never>) in
-            var finished = false
-            let finish = { (ok: Bool) in
-                DispatchQueue.main.async {
-                    guard !finished else { return }
-                    finished = true
-                    done.resume(returning: ok)
-                }
-            }
-            guard let helper = helper(onError: { finish(false) }) else { return finish(false) }
-            helper.setScaleModes(vendor: Int(vendor), product: Int(product), sizes: sizes, reply: finish)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 15) { finish(false) }
-        }
-        // The helper runs as root: with no fan to hold, it ends instead of idling.
-        if wanted.isEmpty { connection?.invalidate() }
-        return ok
-    }
-
     func install() {
         guard !busy, FileManager.default.fileExists(atPath: Self.bundled.path) else { return fail() }
         busy = true
@@ -177,15 +146,12 @@ final class FanControl {
             "\(Self.chmodPath) 644 \(q(Self.plist))",
             "\(Self.launchctlPath) bootstrap system \(q(Self.plist))",
         ]
-        let prompt = String(localized: "pikapik wants to change the fan speed, turn services off and on, and add sharp sizes for monitors.")
+        let prompt = String(localized: "pikapik wants to change the fan speed and turn services off and on.")
         DispatchQueue.global().async {
             let ok = KeepAwake.runAsAdmin(steps.joined(separator: " && "), prompt: prompt)
             DispatchQueue.main.async {
                 self.busy = false
-                if ok {
-                    self.probe()
-                    MainActor.assumeIsolated { DisplayScale.shared.addSizesSoon() }
-                } else { self.error = String(localized: "Not allowed: no administrator password") }
+                if ok { self.probe() } else { self.error = String(localized: "Not allowed: no administrator password") }
             }
         }
     }

@@ -135,8 +135,6 @@ import IOKit
     /// The unit number of one of two identical monitors, which its virtual displays carry; nil for any other monitor.
     let unit: UInt32?
     let nativeWidth: Int, nativeHeight: Int
-    /// The widest picture the display pipe behind the monitor's port takes (`pipeWidth`).
-    let pipe: Int
     let millimeters: CGSize
     let refresh: Double
     let primaries: [CGPoint]?
@@ -169,7 +167,6 @@ import IOKit
         self.unit = unit
         nativeWidth = native.pixelWidth
         nativeHeight = native.pixelHeight
-        pipe = Self.pipeWidth(vendor: vendor, product: product, serial: serial)
         millimeters = CGDisplayScreenSize(display)
         let rate = CGDisplayCopyDisplayMode(display)?.refreshRate ?? 0
         refresh = rate > 0 ? rate : 60
@@ -204,14 +201,8 @@ import IOKit
     func nativeMode(_ percent: Int) -> CGDisplayMode? {
         let listed = modes.map(Self.math)
         guard let match = DisplayScaleMath.nativeMatch(percent: percent, nativeWidth: nativeWidth, nativeHeight: nativeHeight,
-                                                       modes: listed, refresh: refresh, pipe: pipe) else { return nil }
+                                                       modes: listed, refresh: refresh) else { return nil }
         return listed.firstIndex(of: match).map { modes[$0] }
-    }
-
-    /// The sharp sizes the monitor's model lacks, as w,h pairs in points, for the fan helper to add (`ScaleOverride`):
-    /// those any pipe of this Mac takes, as the file serves the model on every port.
-    var overrideSizes: [Int] {
-        DisplayScaleMath.overrideSizes(nativeWidth: nativeWidth, nativeHeight: nativeHeight, pipes: Self.pipeWidths(), listed: modes.map(Self.math))
     }
 
     /// Puts a step on the monitor. A refusal leaves the picture it had or the monitor's own (`Refusal.reason` says
@@ -420,131 +411,25 @@ import IOKit
     /// counts, as their ports can't be told apart, and so does the narrowest of its model when its serial number isn't
     /// listed there; unreadable means the limit every pipe has.
     static func pipeWidth(vendor: UInt32, product: UInt32, serial: UInt32) -> Int {
-        // IOKit keeps these as signed numbers, so an id from 2^31 up reads only through NSNumber.
-        let widths = pipes().compactMap { pipe -> (width: Int, mine: Bool)? in
-            let id = { (key: String) in (pipe.monitor?[key] as? NSNumber)?.uint32Value }
-            guard id("LegacyManufacturerID") == vendor, id("ProductID") == product else { return nil }
-            return (pipe.width, id("SerialNumber") == serial)
-        }
-        let mine = widths.filter(\.mine)
-        return (mine.isEmpty ? widths : mine).map(\.width).min() ?? DisplayScaleMath.maxBackingWidth
-    }
-
-    /// The widths of every display pipe on this Mac, whether a monitor is on it or not; unreadable means the limit every
-    /// pipe has.
-    static func pipeWidths() -> [Int] {
-        let widths = pipes().map(\.width)
-        return widths.isEmpty ? [DisplayScaleMath.maxBackingWidth] : widths
-    }
-
-    private static func pipes() -> [(width: Int, monitor: [String: Any]?)] {
         var iterator: io_iterator_t = 0
         guard IOServiceGetMatchingServices(kIOMainPortDefault, IOServiceMatching("IOMobileFramebufferShim"), &iterator) == KERN_SUCCESS
-        else { return [] }
+        else { return DisplayScaleMath.maxBackingWidth }
         defer { IOObjectRelease(iterator) }
-        var pipes: [(width: Int, monitor: [String: Any]?)] = []
+        var widths: [(width: Int, mine: Bool)] = []
         while case let entry = IOIteratorNext(iterator), entry != 0 {
             defer { IOObjectRelease(entry) }
             let property = { (key: String) in
                 IORegistryEntryCreateCFProperty(entry, key as CFString, kCFAllocatorDefault, 0)?.takeRetainedValue() as? [String: Any]
             }
-            guard let width = (property("IOMFBMaxSrcPixels")?["MaxSrcRectWidthForPipe"] as? [Int])?.first, width > 0 else { continue }
-            pipes.append((min(width, DisplayScaleMath.maxBackingWidth), property("DisplayAttributes")?["ProductAttributes"] as? [String: Any]))
+            // IOKit keeps these as signed numbers, so an id from 2^31 up reads only through NSNumber.
+            guard let monitor = property("DisplayAttributes")?["ProductAttributes"] as? [String: Any] else { continue }
+            let id = { (key: String) in (monitor[key] as? NSNumber)?.uint32Value }
+            guard id("LegacyManufacturerID") == vendor, id("ProductID") == product,
+                  let width = (property("IOMFBMaxSrcPixels")?["MaxSrcRectWidthForPipe"] as? [Int])?.first, width > 0 else { continue }
+            widths.append((width, id("SerialNumber") == serial))
         }
-        return pipes
-    }
-
-    /// Whether macOS lets pikapik turn a monitor off and on (`reconnect`).
-    nonisolated static var canReconnect: Bool { DisplaySwitch.isAvailable }
-
-    /// Turns the monitor off and on again, as if its cable came out and went back in: only then does macOS read its
-    /// modes anew, with the sizes the fan helper added. Returns the id it came back under (the same one, as a rule), or
-    /// nil if it did not come back; when it would not go dark, nothing changed and the same id comes back.
-    static func reconnect(_ display: CGDirectDisplayID) async -> CGDirectDisplayID? {
-        let vendor = CGDisplayVendorNumber(display), product = CGDisplayModelNumber(display), serial = CGDisplaySerialNumber(display)
-        let unit = CGDisplayUnitNumber(display)
-        let alike = { VirtualDisplay.onlineDisplays().filter { CGDisplayVendorNumber($0) == vendor && CGDisplayModelNumber($0) == product && CGDisplaySerialNumber($0) == serial } }
-        let litBefore = Set(alike())
-        let back = { () -> CGDirectDisplayID? in
-            DisplayScaleMath.cameBack(display, unit: unit, lit: alike().filter { CGDisplayIsAsleep($0) == 0 }.map { ($0, CGDisplayUnitNumber($0)) },
-                                      litBefore: litBefore)
-        }
-        await DisplaySwitch.set(display, on: false)
-        guard await until(5, { VirtualDisplay.onlineDisplays().contains(display) ? nil : true }) != nil else {
-            // It stayed on, or goes dark late: turning it on again is harmless either way.
-            await DisplaySwitch.set(display, on: true)
-            return display
-        }
-        // Turned on once: another call within the next seconds starts the link over and keeps it dark longer.
-        await DisplaySwitch.set(display, on: true)
-        var found = await until(8, back)
-        if found == nil {
-            await DispatchQueue.global().run { enable(vendor: vendor, product: product, serial: serial, lastID: display) }
-            found = await until(8, back)
-        }
-        guard let found else { return nil }
-        // macOS lists the modes in several goes: done once two reads half a second apart agree.
-        var count = modes(of: found).count
-        for _ in 0..<10 {
-            try? await Task.sleep(nanoseconds: 500_000_000)
-            let now = modes(of: found).count
-            if now == count { break }
-            count = now
-        }
-        return found
-    }
-
-    /// Turns on the monitor that was `lastID`, and any of its model and serial number macOS still has off: a monitor
-    /// pikapik turned off must never stay dark. It comes after a change still under way and waits for macOS, so it runs
-    /// off the main thread but when quitting. A monitor that is on is left alone, as a second "on" starts its link over,
-    /// unless pikapik just turned it off and macOS still lists it.
-    nonisolated static func enable(vendor: UInt32, product: UInt32, serial: UInt32, lastID: CGDirectDisplayID) {
-        DisplaySwitch.queue.sync {
-            let online = VirtualDisplay.onlineDisplays()
-            let off = DisplaySwitch.all().filter {
-                !online.contains($0) && CGDisplayVendorNumber($0) == vendor && CGDisplayModelNumber($0) == product && CGDisplaySerialNumber($0) == serial
-            }
-            for id in Set([lastID] + off) where id != 0 && (DisplaySwitch.turnedOff.contains(id) || !online.contains(id)) {
-                DisplaySwitch.setNow(id, on: true)
-            }
-        }
-    }
-
-    typealias Placement = (id: CGDirectDisplayID, origin: CGPoint, mode: CGDisplayMode?)
-
-    /// Where every display that shows its own picture is, and its mode unless pikapik set it (`managed`, or one of
-    /// its virtual displays), to put back after `reconnect`: macOS moves the menu bar and the displays meanwhile.
-    static func placements(keepingModesOf managed: Set<CGDirectDisplayID>) -> [Placement] {
-        VirtualDisplay.onlineDisplays().filter { CGDisplayMirrorsDisplay($0) == kCGNullDirectDisplay }.map { id in
-            (id, CGDisplayBounds(id).origin, managed.contains(id) || VirtualDisplay.physical(of: id) != id ? nil : CGDisplayCopyDisplayMode(id))
-        }
-    }
-
-    /// Puts back the modes and places that moved, and with them the main display at 0,0. Kept for good, as macOS
-    /// keeps the change it made; only what was there before is written. `renamed` maps a monitor back under a new id.
-    static func putBack(_ placements: [Placement], renamed: [CGDirectDisplayID: CGDirectDisplayID]) {
-        var config: CGDisplayConfigRef?
-        guard CGBeginDisplayConfiguration(&config) == .success, let config else { return }
-        let online = VirtualDisplay.onlineDisplays()
-        var moved = false
-        for placement in placements {
-            let id = renamed[placement.id] ?? placement.id
-            guard online.contains(id), CGDisplayMirrorsDisplay(id) == kCGNullDirectDisplay else { continue }
-            if let mode = placement.mode, !same(CGDisplayCopyDisplayMode(id), mode), let match = modes(of: id).first(where: { same($0, mode) }),
-               CGConfigureDisplayWithDisplayMode(config, id, match, nil) == .success { moved = true }
-            if CGDisplayBounds(id).origin != placement.origin,
-               CGConfigureDisplayOrigin(config, id, Int32(placement.origin.x), Int32(placement.origin.y)) == .success { moved = true }
-        }
-        if moved { _ = CGCompleteDisplayConfiguration(config, .permanently) } else { CGCancelDisplayConfiguration(config) }
-    }
-
-    private static func until<T>(_ seconds: Double, _ found: () -> T?) async -> T? {
-        let deadline = Date().addingTimeInterval(seconds)
-        while Date() < deadline {
-            if let value = found() { return value }
-            try? await Task.sleep(nanoseconds: 100_000_000)
-        }
-        return found()
+        let mine = widths.filter(\.mine)
+        return min((mine.isEmpty ? widths : mine).map(\.width).min() ?? DisplayScaleMath.maxBackingWidth, DisplayScaleMath.maxBackingWidth)
     }
 
     private static func math(_ mode: CGDisplayMode) -> DisplayScaleMath.Mode {
@@ -566,57 +451,6 @@ import IOKit
             return false
         }
         return CGCompleteDisplayConfiguration(config, option) == .success
-    }
-}
-
-/// Turns a display off and on through SkyLight, each half its own transaction kept for good: a change for this app
-/// only would stay with a process that died meanwhile, and leave the monitor dark.
-private enum DisplaySwitch {
-    private typealias Enable = @convention(c) (CGDisplayConfigRef?, CGDirectDisplayID, Bool) -> Int32
-    private typealias List = @convention(c) (UInt32, UnsafeMutablePointer<CGDirectDisplayID>?, UnsafeMutablePointer<UInt32>?) -> Int32
-    private static let library = dlopen(SystemPath.skyLightFramework, RTLD_LAZY)
-    private static let enable = symbol(["SLSConfigureDisplayEnabled", "CGSConfigureDisplayEnabled"], as: Enable.self)
-    private static let list = symbol(["SLSGetDisplayList", "CGSGetDisplayList"], as: List.self)
-    /// Completing a change can take seconds while the link goes and comes, so changes wait here, one at a time.
-    static let queue = DispatchQueue(label: "pikapik.display-switch")
-
-    static var isAvailable: Bool { enable != nil && list != nil }
-    /// The displays this copy turned off and not on since; read and written only on `queue`.
-    static var turnedOff: Set<CGDirectDisplayID> = []
-
-    static func set(_ display: CGDirectDisplayID, on: Bool) async {
-        await queue.run { setNow(display, on: on) }
-    }
-
-    static func setNow(_ display: CGDirectDisplayID, on: Bool) {
-        var config: CGDisplayConfigRef?
-        guard let enable, CGBeginDisplayConfiguration(&config) == .success, let config else { return }
-        guard enable(config, display, on) == 0 else { _ = CGCancelDisplayConfiguration(config); return }
-        if on { turnedOff.remove(display) } else { turnedOff.insert(display) }
-        // The error says little: the online list tells whether it worked.
-        _ = CGCompleteDisplayConfiguration(config, .permanently)
-    }
-
-    /// Every display macOS knows, also one turned off, which the online list leaves out.
-    static func all() -> [CGDirectDisplayID] {
-        var ids = [CGDirectDisplayID](repeating: 0, count: 32), count: UInt32 = 0
-        guard let list, list(UInt32(ids.count), &ids, &count) == 0 else { return [] }
-        return Array(ids.prefix(Int(min(count, 32))))
-    }
-
-    private static func symbol<T>(_ names: [String], as _: T.Type) -> T? {
-        names.lazy.compactMap { dlsym(library, $0) ?? dlsym(UnsafeMutableRawPointer(bitPattern: -2), $0) }.first.map { unsafeBitCast($0, to: T.self) }
-    }
-}
-
-private extension DispatchQueue {
-    func run(_ work: @escaping () -> Void) async {
-        await withCheckedContinuation { (done: CheckedContinuation<Void, Never>) in
-            self.async {
-                work()
-                done.resume()
-            }
-        }
     }
 }
 
