@@ -120,6 +120,8 @@ enum PreferenceKey {
 
     static let displayScale = "display-scale"
     static let displayScaleTwins = "display-scale-twins"
+    static let displayScaleModes = "display-scale-modes"
+    static let displayScaleReconnecting = "display-scale-reconnecting"
 
     static let fansRPM = "fans-rpm"
     static let speedTestResult = "speed-test-result"
@@ -186,6 +188,8 @@ enum SystemPath {
     static let sh = "/bin/sh"
     static let bash = "/bin/bash"
     static let sleep = "/bin/sleep"
+    static let grep = "/usr/bin/grep"
+    static let rmdir = "/bin/rmdir"
     static let standardBinPath = "/usr/bin:/bin"
 
     static let lsregister = "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"

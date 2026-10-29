@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Rozmiar wyświetlania: duże rozmiary na samym monitorze
+
+<sub>1.58.0 · 29 października 2026</sub>
+
+Duże rozmiary na zewnętrznym monitorze działają teraz na samym monitorze: bez dodatkowego ekranu w Ustawieniach systemowych. Po aktualizacji monitor raz zgaśnie na kilka sekund.
+
+Potrzebny jest do tego Dostęp administratora w Ustawieniach › Uprawnienia. pikapik dodaje wtedy rozmiary, których brakuje monitorowi, na przykład 125% na monitorze 3440 × 1440, a macOS poznaje je, gdy monitor raz się wyłączy i włączy. pikapik robi to tylko wtedy, gdy inny ekran pozostaje włączony; do tego czasu rozmiar działa jak dotąd, z dodatkowym ekranem.
+
+Bez Dostępu administratora strona podpowie, jak go włączyć. Wyłączenie Dostępu administratora usuwa też te rozmiary.
+
+**Wypróbuj:** Ustawienia › Wyświetlacze
+
+---
+
 ## <a id="v1.57.2"></a>Rozmiar wyświetlania: monitory zostają obok siebie, a przy 125% nie ma fioletowych pasów
 
 <sub>1.57.2 · 29 października 2026</sub>

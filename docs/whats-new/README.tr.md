@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Ekran ölçeği: büyük boyutlar doğrudan monitörde
+
+<sub>1.58.0 · 29 Ekim 2026</sub>
+
+Harici monitördeki büyük boyutlar artık doğrudan monitörün kendisinde çalışıyor: Sistem Ayarları’nda fazladan ekran yok. Güncellemeden sonra monitör bir kez birkaç saniyeliğine kararır.
+
+Bunun için Ayarlar › İzinler’de Yönetici erişimi gerekir. pikapik monitörünüzde eksik olan boyutları ekler, örneğin 3440 × 1440 monitörde %125, macOS da monitör bir kez kapanıp açıldığında bunları öğrenir. pikapik bunu yalnızca başka bir ekran açık kalırken yapar; o zamana kadar boyut eskisi gibi, fazladan ekranla çalışır.
+
+Yönetici erişimi yoksa sayfa nasıl açılacağını söyler. Yönetici erişimini kapatmak bu boyutları da kaldırır.
+
+**Deneyin:** Ayarlar › Ekranlar
+
+---
+
 ## <a id="v1.57.2"></a>Ekran ölçeği: monitörler yan yana kalır, %125’te mor çizgiler yok
 
 <sub>1.57.2 · 29 Ekim 2026</sub>

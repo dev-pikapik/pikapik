@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Weergavegrootte: grotere formaten op de monitor zelf
+
+<sub>1.58.0 · 29 oktober 2026</sub>
+
+Grotere formaten op een externe monitor werken nu op de monitor zelf: geen extra scherm in Systeeminstellingen. Na de update wordt de monitor één keer een paar seconden donker.
+
+Daarvoor is Beheerderstoegang nodig in Instellingen › Toestemmingen. pikapik voegt dan de formaten toe die je monitor mist, zoals 125% op een monitor van 3440 × 1440, en macOS leert ze kennen als de monitor één keer uit- en aangaat. pikapik doet dat alleen zolang een ander scherm aan blijft; tot dan werkt het formaat zoals eerst, met het extra scherm.
+
+Zonder Beheerderstoegang legt de pagina uit hoe je die aanzet. Zet je Beheerderstoegang uit, dan gaan deze formaten ook weg.
+
+**Probeer het:** Instellingen › Beeldschermen
+
+---
+
 ## <a id="v1.57.2"></a>Weergavegrootte: monitoren blijven naast elkaar, en geen paarse strepen bij 125%
 
 <sub>1.57.2 · 29 oktober 2026</sub>

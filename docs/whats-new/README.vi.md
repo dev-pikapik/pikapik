@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Kích thước hiển thị: kích thước lớn chạy ngay trên màn hình
+
+<sub>1.58.0 · 29 tháng 10 năm 2026</sub>
+
+Các kích thước lớn trên màn hình ngoài giờ chạy ngay trên chính màn hình: không còn màn hình thừa trong Cài đặt hệ thống. Sau khi cập nhật, màn hình sẽ tối một lần trong vài giây.
+
+Việc này cần Quyền quản trị trong Cài đặt › Quyền. Khi đó pikapik thêm các kích thước mà màn hình của bạn còn thiếu, chẳng hạn 125% trên màn hình 3440 × 1440, và macOS nhận ra chúng khi màn hình tắt rồi bật lại một lần. pikapik chỉ làm vậy khi một màn hình khác vẫn sáng; trước đó, kích thước vẫn chạy như cũ, với màn hình thừa.
+
+Khi chưa có Quyền quản trị, trang sẽ chỉ cách bật. Tắt Quyền quản trị cũng sẽ xóa các kích thước này.
+
+**Thử ngay:** Cài đặt › Màn hình
+
+---
+
 ## <a id="v1.57.2"></a>Kích thước hiển thị: các màn hình vẫn nằm cạnh nhau, và không còn sọc tím ở 125%
 
 <sub>1.57.2 · 29 tháng 10 năm 2026</sub>

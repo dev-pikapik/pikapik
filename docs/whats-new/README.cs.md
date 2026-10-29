@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Velikost zobrazení: velké velikosti přímo na monitoru
+
+<sub>1.58.0 · 29. října 2026</sub>
+
+Velké velikosti na externím monitoru teď běží přímo na monitoru: v Nastavení systému už není obrazovka navíc. Po aktualizaci monitor jednou na několik sekund zhasne.
+
+Je k tomu potřeba Přístup správce v Nastavení › Oprávnění. pikapik pak přidá velikosti, které monitoru chybějí, například 125 % na monitoru 3440 × 1440, a macOS se je naučí, když se monitor jednou vypne a zapne. pikapik to udělá jen tehdy, když zůstává zapnutá jiná obrazovka; do té doby velikost funguje jako dřív, s obrazovkou navíc.
+
+Bez Přístupu správce stránka poradí, jak ho zapnout. Vypnutím Přístupu správce se odstraní i tyto velikosti.
+
+**Vyzkoušejte:** Nastavení › Monitory
+
+---
+
 ## <a id="v1.57.2"></a>Velikost zobrazení: monitory zůstávají vedle sebe a při 125 % žádné fialové pruhy
 
 <sub>1.57.2 · 29. října 2026</sub>

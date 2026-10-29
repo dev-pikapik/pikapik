@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Tamanho da exibição: tamanhos maiores no próprio monitor
+
+<sub>1.58.0 · 29 de outubro de 2026</sub>
+
+Tamanhos maiores em um monitor externo agora funcionam no próprio monitor: sem tela extra nos Ajustes do Sistema. Depois da atualização, o monitor apaga uma vez por alguns segundos.
+
+Para isso, é preciso o Acesso de administrador em Ajustes › Permissões. O pikapik então adiciona os tamanhos que faltam no seu monitor, como 125% em um monitor de 3440 × 1440, e o macOS os reconhece quando o monitor desliga e liga uma vez. O pikapik só faz isso enquanto outra tela continua acesa; até lá, o tamanho funciona como antes, com a tela extra.
+
+Sem o Acesso de administrador, a página explica como ativá-lo. Desativar o Acesso de administrador também remove esses tamanhos.
+
+**Experimente:** Ajustes › Telas
+
+---
+
 ## <a id="v1.57.2"></a>Tamanho da exibição: monitores lado a lado, e sem listras roxas em 125%
 
 <sub>1.57.2 · 29 de outubro de 2026</sub>

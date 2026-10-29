@@ -32,6 +32,8 @@ if [ -e "$FANS" ]; then
     say "Removing fan control"
     sudo launchctl bootout "system/$BUNDLE_ID.fans" >/dev/null 2>&1 || true
     [ ! -e "$FANS.turned-off" ] || sudo /bin/sh -c '"$1" --restore >/dev/null 2>&1 & p=$!; (sleep 30; kill $p) >/dev/null 2>&1 & w=$!; wait $p; kill $w 2>/dev/null' sh "$FANS" || true
+    # The monitor sizes the helper added: only files carrying pikapik's mark, then the folders left empty.
+    sudo /bin/sh -c 'for f in "$1"/Contents/Resources/Overrides/DisplayVendorID-*/DisplayProductID-*; do [ -f "$f" ] && [ ! -L "$f" ] && /usr/bin/grep -q "<key>pikapik</key>" "$f" && /bin/rm -f "$f"; done; /bin/rmdir "$1"/Contents/Resources/Overrides/DisplayVendorID-* "$1"/Contents/Resources/Overrides "$1"/Contents/Resources "$1"/Contents "$1" 2>/dev/null; true' sh /Library/Displays || true
     sudo rm -f "$FANS" "$FANS.new" "$FANS.turned-off" "/Library/LaunchDaemons/$BUNDLE_ID.fans.plist"
 fi
 

@@ -35,7 +35,7 @@ enum Permission: CaseIterable {
             ("", .waveform, SettingTitle.systemAudioRecording, String(localized: "To change each app’s volume"))
         #if !APPSTORE
         case .fans:
-            ("", .lockShield, SettingTitle.adminAccess, String(localized: "Lets the app change the fan speed and turn off background tasks for the whole Mac"))
+            ("", .lockShield, SettingTitle.adminAccess, String(localized: "Lets the app change the fan speed, turn off background tasks for the whole Mac and add sharp sizes for monitors"))
         #endif
         case .finder:
             ("", .puzzlepieceExtension,

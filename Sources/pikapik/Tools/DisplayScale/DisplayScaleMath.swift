@@ -40,8 +40,9 @@ enum DisplayScaleMath {
         return Int((100 * Double(nativeWidth) / Double(looksLikeWidth)).rounded())
     }
 
-    /// The monitor's own mode for a step, nil when only a virtual display can show it.
-    static func nativeMatch(percent: Int, nativeWidth: Int, nativeHeight: Int, modes: [Mode], refresh: Double) -> Mode? {
+    /// The monitor's own mode for a step, nil when only a virtual display can show it. A 2x mode wider than the
+    /// monitor's `pipe` doesn't count: macOS lists it, but it shows purple stripes and lags there.
+    static func nativeMatch(percent: Int, nativeWidth: Int, nativeHeight: Int, modes: [Mode], refresh: Double, pipe: Int = .max) -> Mode? {
         if percent == 100 {
             return modes.filter { $0.usable && $0.width == nativeWidth && $0.height == nativeHeight && $0.pixelWidth == nativeWidth && $0.pixelHeight == nativeHeight }
                 .min { abs($0.refresh - refresh) < abs($1.refresh - refresh) }
@@ -50,8 +51,29 @@ enum DisplayScaleMath {
         let off = { (mode: Mode) in
             max(abs(Double(mode.width - size.width)) / Double(size.width), abs(Double(mode.height - size.height)) / Double(size.height))
         }
-        return modes.filter { $0.usable && $0.pixelWidth == 2 * $0.width && $0.pixelHeight == 2 * $0.height && off($0) <= tolerance && abs($0.refresh - refresh) <= 0.5 }
+        return modes.filter { $0.usable && $0.pixelWidth == 2 * $0.width && $0.pixelHeight == 2 * $0.height && off($0) <= tolerance && abs($0.refresh - refresh) <= 0.5
+            && $0.pixelWidth <= pipe }
             .min { off($0) < off($1) }
+    }
+
+    /// The id a monitor that was turned off and on came back under, among the lit displays of its model and serial
+    /// number: its own id, else its unit number, else the only one that is new. A twin with the same serial number that
+    /// stayed lit (`litBefore`) is never taken for it.
+    static func cameBack(_ display: UInt32, unit: UInt32, lit: [(id: UInt32, unit: UInt32)], litBefore: Set<UInt32>) -> UInt32? {
+        let new = lit.filter { $0.id == display || !litBefore.contains($0.id) }
+        return (new.first { $0.id == display } ?? new.first { $0.unit == unit } ?? (new.count == 1 ? new.first : nil))?.id
+    }
+
+    /// The sizes above 100 % to add to a monitor model's own modes, as w,h pairs in points: every step any of this Mac's
+    /// `pipes` takes, so the file suits whichever port the monitor is on, less those the monitor lists already.
+    static func overrideSizes(nativeWidth: Int, nativeHeight: Int, pipes: [Int], listed: [Mode]) -> [Int] {
+        let anyRate = listed.map { mode in var mode = mode; mode.refresh = 0; return mode }
+        return Set(pipes.flatMap { steps(nativeWidth: nativeWidth, nativeHeight: nativeHeight, maxBackingWidth: $0) }).sorted()
+            .filter { $0 > 100 && nativeMatch(percent: $0, nativeWidth: nativeWidth, nativeHeight: nativeHeight, modes: anyRate, refresh: 0) == nil }
+            .flatMap { percent in
+                let size = looksLike(nativeWidth: nativeWidth, nativeHeight: nativeHeight, percent: percent)
+                return [size.width, size.height]
+            }
     }
 
     /// The serial number of the virtual display for one monitor and step: FNV-1a over the monitor's identity and the

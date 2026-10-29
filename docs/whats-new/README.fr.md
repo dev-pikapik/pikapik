@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Taille d’affichage : les grandes tailles sur le moniteur lui-même
+
+<sub>1.58.0 · 29 octobre 2026</sub>
+
+Les grandes tailles sur un moniteur externe fonctionnent maintenant sur le moniteur lui-même : plus d’écran en plus dans Réglages Système. Après la mise à jour, le moniteur s’éteint une fois pendant quelques secondes.
+
+Il faut pour cela l’Accès administrateur dans Réglages › Autorisations. pikapik ajoute alors les tailles qui manquent à votre moniteur, comme 125 % sur un moniteur 3440 × 1440, et macOS les découvre quand le moniteur s’éteint et se rallume une fois. pikapik ne le fait que lorsqu’un autre écran reste allumé ; d’ici là, la taille fonctionne comme avant, avec l’écran en plus.
+
+Sans Accès administrateur, la page explique comment l’activer. Désactiver l’Accès administrateur supprime aussi ces tailles.
+
+**Pour essayer :** Réglages › Moniteurs
+
+---
+
 ## <a id="v1.57.2"></a>Taille d’affichage : des moniteurs côte à côte, et plus de bandes violettes à 125 %
 
 <sub>1.57.2 · 29 octobre 2026</sub>

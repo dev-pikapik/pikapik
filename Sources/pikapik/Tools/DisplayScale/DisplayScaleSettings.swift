@@ -6,6 +6,13 @@ struct DisplayScaleSettings: View {
     var body: some View {
         Form {
             SettingsHeader(tab: .displays, text: String(localized: "Make everything on a monitor larger and keep it sharp"))
+            // A monitor that stayed off after getting its own sizes is not listed, so its card cannot say so.
+            if let failure = model.failure, case .dark = failure.problem, !model.monitors.contains(where: { $0.id == failure.monitor }) {
+                Section {
+                    Label { Text(MonitorSection.message(failure)) } icon: { Image(.exclamationmarkTriangleFill).foregroundStyle(.orange) }
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
             if model.monitors.isEmpty {
                 Section {
                     Text("Connect a monitor to choose its size.")
@@ -143,6 +150,9 @@ private struct MonitorSection: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("pikapik keeps this size while it runs, also in the background. When pikapik quits completely, the monitor goes back to its usual size.")
                     if monitor.virtualSteps.contains(selected) { Text("Some video apps may show a black picture at this size.") }
+                    if monitor.virtualSteps.contains(selected), !FanControl.isInstalled, HelperAccess.isAdmin(getuid()) {
+                        Text("To show this size without the extra screen, turn on Administrator access in Settings › Permissions. macOS will ask for your password once.")
+                    }
                     if let virtual = monitor.virtualName, monitor.virtualSteps.contains(selected) {
                         Text("In System Settings › Displays you’ll see one more screen, “\(virtual)”: that’s how pikapik makes everything larger, and you don’t need to do anything with it.")
                     }
@@ -213,13 +223,14 @@ private struct MonitorSection: View {
         }
     }
 
-    private static func message(_ failure: DisplayScale.Failure) -> String {
+    static func message(_ failure: DisplayScale.Failure) -> String {
         let percent = failure.percent.formatted(.percent)
         return switch failure.problem {
         case .unavailable: String(localized: "This Mac can’t show the monitor at \(percent) right now. Try another size.")
         case .refused: String(localized: "macOS didn’t switch the monitor to \(percent). Nothing changed. Try again.")
         case .lost: String(localized: "The monitor didn’t stay at \(percent) and went back. Try again.")
         case .notBack: String(localized: "The monitor couldn’t go back to \(percent). Choose a size again.")
+        case .dark(let name): String(localized: "The “\(name)” screen didn’t come back. Unplug its cable and plug it in again.")
         }
     }
 }
