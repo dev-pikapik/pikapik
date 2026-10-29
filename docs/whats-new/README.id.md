@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Ukuran tampilan: ukuran besar langsung di monitor
+
+<sub>1.58.0 · 29 Oktober 2026</sub>
+
+Ukuran besar di monitor eksternal kini berjalan langsung di monitor itu sendiri: tanpa layar tambahan di Pengaturan Sistem. Setelah pembaruan, monitor akan gelap sekali selama beberapa detik.
+
+Untuk itu, Akses administrator di Pengaturan › Izin harus menyala. pikapik lalu menambahkan ukuran yang tidak dimiliki monitor Anda, misalnya 125% di monitor 3440 × 1440, dan macOS mengenalinya saat monitor mati lalu menyala sekali. pikapik melakukannya hanya saat layar lain tetap menyala; sampai saat itu, ukuran berjalan seperti sebelumnya, dengan layar tambahan.
+
+Tanpa Akses administrator, halaman ini menjelaskan cara menyalakannya. Mematikan Akses administrator juga menghapus ukuran-ukuran ini.
+
+**Coba:** Pengaturan › Layar
+
+---
+
 ## <a id="v1.57.2"></a>Ukuran tampilan: monitor tetap berdampingan, dan tanpa garis ungu di 125%
 
 <sub>1.57.2 · 29 Oktober 2026</sub>

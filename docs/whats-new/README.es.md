@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Tamaño en pantalla: los tamaños grandes, en el propio monitor
+
+<sub>1.58.0 · 29 de octubre de 2026</sub>
+
+Los tamaños grandes en un monitor externo ahora funcionan en el propio monitor: sin pantalla de más en Ajustes del Sistema. Tras la actualización, el monitor se apaga una vez durante unos segundos.
+
+Para ello hace falta Acceso de administrador en Ajustes › Permisos. Entonces pikapik añade los tamaños que le faltan a tu monitor, como 125 % en un monitor de 3440 × 1440, y macOS los conoce cuando el monitor se apaga y se enciende una vez. pikapik solo lo hace mientras otra pantalla sigue encendida; hasta entonces, el tamaño funciona como antes, con la pantalla de más.
+
+Sin Acceso de administrador, la página explica cómo activarlo. Si desactivas Acceso de administrador, también se quitan estos tamaños.
+
+**Pruébalo:** Ajustes › Pantallas
+
+---
+
 ## <a id="v1.57.2"></a>Tamaño en pantalla: los monitores siguen uno al lado del otro, y sin franjas moradas al 125 %
 
 <sub>1.57.2 · 29 de octubre de 2026</sub>

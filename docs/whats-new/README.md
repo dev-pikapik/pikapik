@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Display scale: larger sizes on the monitor itself
+
+<sub>1.58.0 · October 29, 2026</sub>
+
+Larger sizes on an external monitor now run on the monitor itself: no extra screen in System Settings. The monitor goes dark once for a few seconds after the update.
+
+This needs Administrator access in Settings › Permissions. pikapik then adds the sizes your monitor is missing, such as 125% on a 3440 × 1440 monitor, and macOS learns them when the monitor turns off and on once. pikapik does this only while another screen stays on; until then, the size works as before, with the extra screen.
+
+Without Administrator access, the page says how to turn it on. Turning Administrator access off removes these sizes too.
+
+**Try it:** Settings › Displays
+
+---
+
 ## <a id="v1.57.2"></a>Display scale: monitors stay side by side, and no purple stripes at 125%
 
 <sub>1.57.2 · October 29, 2026</sub>

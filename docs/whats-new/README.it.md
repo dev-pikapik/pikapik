@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Dimensioni di visualizzazione: le dimensioni grandi sul monitor stesso
+
+<sub>1.58.0 · 29 ottobre 2026</sub>
+
+Le dimensioni grandi su un monitor esterno ora funzionano sul monitor stesso: nessuno schermo in più in Impostazioni di Sistema. Dopo l’aggiornamento il monitor si spegne una volta per qualche secondo.
+
+Serve l’Accesso amministratore in Impostazioni › Permessi. pikapik aggiunge allora le dimensioni che mancano al tuo monitor, come il 125% su un monitor 3440 × 1440, e macOS le impara quando il monitor si spegne e si riaccende una volta. pikapik lo fa solo mentre un altro schermo resta acceso; fino ad allora la dimensione funziona come prima, con lo schermo in più.
+
+Senza Accesso amministratore, la pagina spiega come attivarlo. Disattivando l’Accesso amministratore si tolgono anche queste dimensioni.
+
+**Provalo:** Impostazioni › Schermi
+
+---
+
 ## <a id="v1.57.2"></a>Dimensioni di visualizzazione: monitor sempre affiancati, e niente strisce viola al 125%
 
 <sub>1.57.2 · 29 ottobre 2026</sub>

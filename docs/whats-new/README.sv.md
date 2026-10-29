@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Visningsstorlek: större storlekar direkt på bildskärmen
+
+<sub>1.58.0 · 29 oktober 2026</sub>
+
+Större storlekar på en extern bildskärm körs nu på själva bildskärmen: ingen extra skärm i Systeminställningar. Efter uppdateringen blir bildskärmen svart en gång i några sekunder.
+
+Det kräver Administratörsåtkomst i Inställningar › Behörigheter. Då lägger pikapik till de storlekar som din bildskärm saknar, till exempel 125 % på en bildskärm med 3440 × 1440, och macOS lär sig dem när bildskärmen stängs av och slås på en gång. pikapik gör det bara medan en annan skärm är tänd; tills dess fungerar storleken som förut, med den extra skärmen.
+
+Utan Administratörsåtkomst visar sidan hur du slår på den. Stänger du av Administratörsåtkomst tas även de här storlekarna bort.
+
+**Prova:** Inställningar › Bildskärmar
+
+---
+
 ## <a id="v1.57.2"></a>Visningsstorlek: bildskärmarna står kvar bredvid varandra, och inga lila ränder vid 125 %
 
 <sub>1.57.2 · 29 oktober 2026</sub>

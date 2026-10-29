@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Anzeigegröße: größere Größen direkt auf dem Monitor
+
+<sub>1.58.0 · 29. Oktober 2026</sub>
+
+Größere Größen auf einem externen Monitor laufen jetzt direkt auf dem Monitor: kein zusätzlicher Bildschirm in den Systemeinstellungen. Nach dem Update wird der Monitor einmal für ein paar Sekunden dunkel.
+
+Dafür braucht pikapik den Administratorzugriff in Einstellungen › Berechtigungen. Dann fügt pikapik die Größen hinzu, die deinem Monitor fehlen, etwa 125 % auf einem 3440 × 1440-Monitor, und macOS lernt sie, wenn sich der Monitor einmal aus- und wieder einschaltet. Das macht pikapik nur, solange ein anderer Bildschirm an bleibt; bis dahin funktioniert die Größe wie bisher, mit dem zusätzlichen Bildschirm.
+
+Ohne Administratorzugriff erklärt die Seite, wie du ihn einschaltest. Schaltest du den Administratorzugriff aus, werden auch diese Größen entfernt.
+
+**Ausprobieren:** Einstellungen › Displays
+
+---
+
 ## <a id="v1.57.2"></a>Anzeigegröße: Monitore bleiben nebeneinander, und keine violetten Streifen bei 125 %
 
 <sub>1.57.2 · 29. Oktober 2026</sub>

@@ -5,6 +5,20 @@
 
 ---
 
+## <a id="v1.58.0"></a>Dimensiunea afișării: dimensiunile mari, direct pe monitor
+
+<sub>1.58.0 · 29 octombrie 2026</sub>
+
+Dimensiunile mari pe un monitor extern funcționează acum direct pe monitor: fără ecran în plus în Configurări sistem. După actualizare, monitorul se stinge o dată pentru câteva secunde.
+
+Pentru asta e nevoie de Acces de administrator în Setări › Permisiuni. Atunci pikapik adaugă dimensiunile care îi lipsesc monitorului, cum ar fi 125% pe un monitor 3440 × 1440, iar macOS le află când monitorul se oprește și pornește o dată. pikapik face asta doar cât timp alt ecran rămâne aprins; până atunci, dimensiunea funcționează ca înainte, cu ecranul în plus.
+
+Fără Acces de administrator, pagina arată cum se activează. Dacă dezactivezi Accesul de administrator, aceste dimensiuni sunt șterse și ele.
+
+**Încearcă:** Setări › Afișaje
+
+---
+
 ## <a id="v1.57.2"></a>Dimensiunea afișării: monitoarele rămân alăturate și fără dungi mov la 125%
 
 <sub>1.57.2 · 29 octombrie 2026</sub>
