@@ -104,5 +104,24 @@ enum TestDisplayScale {
                      "between two displays: keeps the edge at the main one")
         precondition(DisplayScaleMath.origin(of: main, among: [left], width: 2294, height: 960) == .zero, "the main display stays at 0,0")
         print("a larger picture keeps the monitor beside the main display: ok")
+
+        // Two identical 3440x1440 monitors side by side at 125% (2752x1152 points), the left one main.
+        let twin125 = CGRect(x: 0, y: 0, width: 2752, height: 1152), right125 = CGRect(x: 2752, y: 0, width: 2752, height: 1152)
+        var arranged = DisplayScaleMath.arrange(twin125, among: [right125], width: 2294, height: 960)
+        precondition(arranged.here == .zero && arranged.others == [CGPoint(x: 2294, y: 0)],
+                     "the main monitor at 150%: the one right of it moves 458 points left and still touches it: \(arranged)")
+        let main150 = CGRect(x: 0, y: 0, width: 2294, height: 960)
+        arranged = DisplayScaleMath.arrange(CGRect(x: 2294, y: 0, width: 2752, height: 1152), among: [main150], width: 2294, height: 960)
+        precondition(arranged.here == CGPoint(x: 2294, y: 0) && arranged.others == [.zero], "then the right one at 150%: \(arranged)")
+        arranged = DisplayScaleMath.arrange(main150, among: [CGRect(x: 2294, y: 0, width: 2294, height: 960)], width: 2752, height: 1152)
+        precondition(arranged.others == [CGPoint(x: 2752, y: 0)], "the main one back at 125%: the right one moves back: \(arranged)")
+        arranged = DisplayScaleMath.arrange(CGRect(x: -2752, y: 0, width: 2752, height: 1152), among: [twin125], width: 2294, height: 960)
+        precondition(arranged.here == CGPoint(x: -2294, y: 0) && arranged.others == [.zero], "the Samsung left of the main Mi at 150%: \(arranged)")
+        let beyond = [CGRect(x: -2752, y: 0, width: 2752, height: 1152), right125, CGRect(x: 0, y: 1152, width: 1920, height: 1080),
+                      CGRect(x: 0, y: -1080, width: 1920, height: 1080)]
+        arranged = DisplayScaleMath.arrange(twin125, among: beyond, width: 2294, height: 960)
+        precondition(arranged.others == [CGPoint(x: -2752, y: 0), CGPoint(x: 2294, y: 0), CGPoint(x: 0, y: 960), CGPoint(x: 0, y: -1080)],
+                     "only the displays beyond the edges that move move with them: \(arranged)")
+        print("every display still touches the ones it touched after a size change: ok")
     }
 }

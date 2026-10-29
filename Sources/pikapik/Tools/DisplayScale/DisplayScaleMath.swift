@@ -104,4 +104,18 @@ enum DisplayScaleMath {
         return CGPoint(x: beside?.minX == here.maxX ? here.maxX - CGFloat(width) : here.minX,
                        y: stacked?.minY == here.maxY ? here.maxY - CGFloat(height) : here.minY)
     }
+
+    /// Where the picture (`origin`) and every other display go when a monitor's picture becomes width × height points:
+    /// a display beyond the edge that moves moves with it, so all keep touching in the order they had. macOS moves
+    /// displays about while a mirror ends and a display comes or goes, so pikapik puts every one back, not just its own.
+    static func arrange(_ here: CGRect, among others: [CGRect], width: Int, height: Int) -> (here: CGPoint, others: [CGPoint]) {
+        let new = origin(of: here, among: others, width: width, height: height)
+        let dx = CGFloat(width) - here.width, dy = CGFloat(height) - here.height
+        let left = new.x != here.minX, top = new.y != here.minY
+        return (new, others.map { other in
+            guard other.origin != .zero else { return .zero }
+            return CGPoint(x: other.minX + (left ? (other.maxX <= here.minX ? -dx : 0) : (other.minX >= here.maxX ? dx : 0)),
+                           y: other.minY + (top ? (other.maxY <= here.minY ? -dy : 0) : (other.minY >= here.maxY ? dy : 0)))
+        })
+    }
 }

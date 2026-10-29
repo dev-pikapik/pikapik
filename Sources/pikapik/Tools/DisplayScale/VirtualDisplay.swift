@@ -209,6 +209,7 @@ import CoreGraphics
     func show(_ percent: Int) async throws {
         generation += 1
         let mine = generation
+        let before = arrangement()
         if !changed { original = CGDisplayCopyDisplayMode(display) }
         if let mode = nativeMode(percent) {
             // The monitor's own mode comes back by itself once pikapik's changes end.
@@ -228,7 +229,10 @@ import CoreGraphics
                 }
             }
             if !Self.same(CGDisplayCopyDisplayMode(display), mode) {
-                guard Self.configure({ CGConfigureDisplayWithDisplayMode($0, display, mode, nil) }) else {
+                guard Self.configure({ config in
+                    let set = CGConfigureDisplayWithDisplayMode(config, display, mode, nil)
+                    return set == .success ? Self.place(config, display, width: mode.width, height: mode.height, before) : set
+                }) else {
                     // undo() takes back a mode pikapik set before, so only a monitor pikapik had not changed stays as it was.
                     let reason: Refusal.Reason = gone == nil && applied == nil ? .refused : .lost
                     undo()
@@ -250,7 +254,7 @@ import CoreGraphics
             if holds { return }
             // A mirror macOS ended goes back onto the same display: a new one would change the set of displays, and
             // macOS then puts that set's stored arrangement back, which ends another monitor's mirror in turn.
-            if !Self.offline(current.id), try await sharpen(current, mine), mirror(onto: current) {
+            if !Self.offline(current.id), try await sharpen(current, mine), mirror(onto: current, before) {
                 try await wait(2, mine)
                 if holds { return }
             }
@@ -289,7 +293,7 @@ import CoreGraphics
             applied = nil
             self.percent = nil
         }
-        guard mirror(onto: next)
+        guard mirror(onto: next, before)
         else { throw Refusal(reason: leftNative ? .lost : .refused, description: "mirroring onto \(size.width)x\(size.height) was refused") }
         virtual = next
         self.percent = percent
@@ -319,18 +323,33 @@ import CoreGraphics
     }
 
     /// One transaction: the monitor mirrors the virtual display, which takes the monitor's place.
-    private func mirror(onto next: VirtualDisplay) -> Bool {
-        let origin = place(width: next.width, height: next.height)
-        return Self.configure { config in
+    private func mirror(onto next: VirtualDisplay, _ before: Arrangement) -> Bool {
+        Self.configure { config in
             let mirrored = CGConfigureDisplayMirrorOfDisplay(config, display, next.id)
-            return mirrored == .success ? CGConfigureDisplayOrigin(config, next.id, Int32(origin.x), Int32(origin.y)) : mirrored
+            return mirrored == .success ? Self.place(config, next.id, width: next.width, height: next.height, before) : mirrored
         }
     }
 
-    /// Where a smaller or larger picture keeps the monitor's place in the arrangement (`DisplayScaleMath.origin`).
-    private func place(width: Int, height: Int) -> CGPoint {
-        let others = VirtualDisplay.onlineDisplays().filter { VirtualDisplay.physical(of: $0) != display }.map(CGDisplayBounds)
-        return DisplayScaleMath.origin(of: CGDisplayBounds(display), among: others, width: width, height: height)
+    typealias Arrangement = (here: CGRect, others: [(id: CGDirectDisplayID, frame: CGRect)])
+
+    /// The monitor's place and every other display's before a change, read before macOS moves them about. A mirror
+    /// moves with the display it shows, so it is left out: setting its origin would end it.
+    private func arrangement() -> Arrangement {
+        let shown = CGDisplayMirrorsDisplay(display)
+        let others = VirtualDisplay.onlineDisplays().filter { VirtualDisplay.physical(of: $0) != display && CGDisplayMirrorsDisplay($0) == kCGNullDirectDisplay }
+        return (CGDisplayBounds(shown == kCGNullDirectDisplay ? display : shown), others.map { ($0, CGDisplayBounds($0)) })
+    }
+
+    /// Puts the monitor's new picture at its place and every other display where it belongs beside it
+    /// (`DisplayScaleMath.arrange`), so the pointer still crosses from one monitor to the next.
+    private static func place(_ config: CGDisplayConfigRef, _ shown: CGDirectDisplayID, width: Int, height: Int, _ before: Arrangement) -> CGError {
+        let arranged = DisplayScaleMath.arrange(before.here, among: before.others.map(\.frame), width: width, height: height)
+        var result = CGConfigureDisplayOrigin(config, shown, Int32(arranged.here.x), Int32(arranged.here.y))
+        for (other, origin) in zip(before.others, arranged.others) where result == .success && !offline(other.id)
+            && CGDisplayMirrorsDisplay(other.id) == kCGNullDirectDisplay {
+            result = CGConfigureDisplayOrigin(config, other.id, Int32(origin.x), Int32(origin.y))
+        }
+        return result
     }
 
     /// Whether a display left the online list; `CGDisplayIsOnline` keeps answering yes for a removed virtual display.

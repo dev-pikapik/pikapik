@@ -1,8 +1,9 @@
 import AppKit
 import SwiftUI
 
-/// The small panel that asks to keep a new size, in the middle of the monitor that changed. Doing nothing for
-/// 15 seconds puts the old size back, so a size that leaves the screen unreadable undoes itself.
+/// The small panel that asks to keep a new size, in the middle of the screen with the pointer, so it is always in
+/// reach; Return keeps the size, Esc goes back. Doing nothing for 15 seconds puts the old size back, so a size that
+/// leaves the screen unreadable undoes itself.
 @MainActor enum DisplayScaleConfirm {
     private static var panel: NSPanel?
     private static var screens: NSObjectProtocol?
@@ -52,9 +53,11 @@ import SwiftUI
         return panel
     }
 
-    /// The middle of the monitor that changed, wherever it shows now; the screens move while the size changes.
+    /// The middle of the screen with the pointer, else of the monitor that changed; the screens move while the size changes.
     private static func place(_ panel: NSPanel) {
-        guard let id = DisplayScale.shared.pending?.monitor, let area = DisplayScale.shared.screen(for: id)?.visibleFrame else {
+        let pointer = NSEvent.mouseLocation
+        guard let area = (NSScreen.screens.first { NSMouseInRect(pointer, $0.frame, false) }
+                          ?? DisplayScale.shared.pending.flatMap { DisplayScale.shared.screen(for: $0.monitor) })?.visibleFrame else {
             panel.center()
             return
         }

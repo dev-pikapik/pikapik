@@ -476,7 +476,7 @@ The **Brightness** page changes the brightness of monitors macOS can’t adjust 
 swiftc -swift-version 5 -parse-as-library Sources/pikapik/Tools/Brightness/BrightnessMath.swift scripts/test-brightness.swift -o build/test-brightness && build/test-brightness
 ```
 
-The **Display scale** page shows a monitor larger and still sharp: macOS draws the desktop at twice the size it looks like, through the monitor’s own mode when it has one that fits, or else through a virtual display that pikapik makes and the monitor mirrors. `DisplayScaleMath.swift` holds the parts that need no monitor: the steps, the size each step looks like, the steps a monitor gets without drawing wider than 6720 pixels, the monitor’s own mode that fits a step and the serial number each virtual display gets. The test uses the sizes of real monitors and never touches a display:
+The **Display scale** page shows a monitor larger and still sharp: macOS draws the desktop at twice the size it looks like, through the monitor’s own mode when it has one that fits, or else through a virtual display that pikapik makes and the monitor mirrors. `DisplayScaleMath.swift` holds the parts that need no monitor: the steps, the size each step looks like, the steps a monitor gets without drawing wider than 6720 pixels, the monitor’s own mode that fits a step, the serial number each virtual display gets and where every display goes when one changes size, so all keep touching in the order they had. The test uses the sizes of real monitors and never touches a display:
 
 ```bash
 swiftc -swift-version 5 -parse-as-library Sources/pikapik/Tools/DisplayScale/DisplayScaleMath.swift scripts/test-display-scale.swift -o build/test-display-scale && build/test-display-scale
