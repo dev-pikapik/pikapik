@@ -14,9 +14,19 @@ enum TestDisplayScale {
         precondition(DisplayScaleMath.percent(nativeWidth: 3440, looksLikeWidth: 0) == 100)
         print("3440x1440 steps and sizes: ok")
 
-        precondition(DisplayScaleMath.steps(nativeWidth: 5120, nativeHeight: 2160) == [100, 175, 200], "125% and 150% of 5120x2160 would draw wider than 6720 pixels")
+        precondition(DisplayScaleMath.steps(nativeWidth: 5120, nativeHeight: 2160) == [100, 153, 175, 200],
+                     "125% and 150% of 5120x2160 would draw wider than 6720 pixels, so 153% stands in for them")
         precondition(DisplayScaleMath.steps(nativeWidth: 1920, nativeHeight: 1080) == [100, 125, 150, 175], "200% of 1920x1080 would look like 960x540, under 600 points high")
-        precondition(DisplayScaleMath.steps(nativeWidth: 6016, nativeHeight: 3384) == [100, 200])
+        precondition(DisplayScaleMath.steps(nativeWidth: 6016, nativeHeight: 3384) == [100, 180, 200])
+        precondition(DisplayScaleMath.steps(nativeWidth: 3440, nativeHeight: 1440, maxBackingWidth: 5120) == [100, 135, 150, 175, 200],
+                     "the HDMI port of a Mac mini M4 takes 5120 pixels: 125% would draw 5504, 135% draws 5096")
+        precondition(DisplayScaleMath.steps(nativeWidth: 3440, nativeHeight: 1440, maxBackingWidth: 6144) == [100, 125, 150, 175, 200])
+        for pipe in [4096, 5120, 6144] {
+            for percent in DisplayScaleMath.steps(nativeWidth: 3440, nativeHeight: 1440, maxBackingWidth: pipe) where percent != 100 {
+                let size = DisplayScaleMath.looksLike(nativeWidth: 3440, nativeHeight: 1440, percent: percent)
+                precondition(2 * size.width <= pipe && DisplayScaleMath.percent(nativeWidth: 3440, looksLikeWidth: size.width) == percent, "\(percent)% on \(pipe): \(size)")
+            }
+        }
         for (width, height) in [(3440, 1440), (5120, 2160), (3840, 2160), (2560, 1440), (2560, 1080), (1920, 1080), (6016, 3384), (7680, 4320)] {
             for percent in DisplayScaleMath.steps(nativeWidth: width, nativeHeight: height) {
                 let size = DisplayScaleMath.looksLike(nativeWidth: width, nativeHeight: height, percent: percent)
@@ -25,7 +35,7 @@ enum TestDisplayScale {
                 precondition(DisplayScaleMath.percent(nativeWidth: width, looksLikeWidth: size.width) == percent, "\(width)x\(height) reads back as \(percent)%: \(size)")
             }
         }
-        print("steps a monitor gets, never wider than 6720 pixels: ok")
+        print("steps a monitor gets, never wider than its pipe: ok")
 
         let uhd = [mode(3840, 2160, scale: 1, refresh: 30), mode(3840, 2160, scale: 1), mode(3008, 1692), mode(2560, 1440, usable: false), mode(2560, 1440),
                    mode(2304, 1296), mode(2048, 1152), mode(1920, 1080, scale: 1), mode(1920, 1080), mode(1600, 900)]

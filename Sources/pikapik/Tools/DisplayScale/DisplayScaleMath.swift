@@ -22,11 +22,17 @@ enum DisplayScaleMath {
         return (width, height)
     }
 
-    static func steps(nativeWidth: Int, nativeHeight: Int) -> [Int] {
-        steps.filter { percent in
+    /// `maxBackingWidth`: the widest picture the monitor's display pipe takes. Steps wider than that give way to the
+    /// nearest size that still fits, so a monitor on a narrow pipe gets, say, 135 % in place of 125 %.
+    static func steps(nativeWidth: Int, nativeHeight: Int, maxBackingWidth: Int = maxBackingWidth) -> [Int] {
+        let fits = { (percent: Int) in
             let size = looksLike(nativeWidth: nativeWidth, nativeHeight: nativeHeight, percent: percent)
-            return percent == 100 || 2 * size.width <= maxBackingWidth && size.height >= minLooksLikeHeight
+            return 2 * size.width <= maxBackingWidth && size.height >= minLooksLikeHeight
         }
+        let kept = steps.filter { $0 == 100 || fits($0) }
+        let nearest = Int((200 * Double(nativeWidth) / Double(maxBackingWidth)).rounded(.up))
+        let dropped = steps.contains { $0 > 100 && $0 < nearest }
+        return dropped && nearest < 200 && !kept.contains(nearest) && fits(nearest) ? (kept + [nearest]).sorted() : kept
     }
 
     static func percent(nativeWidth: Int, looksLikeWidth: Int) -> Int {

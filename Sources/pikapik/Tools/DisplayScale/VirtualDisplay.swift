@@ -1,5 +1,6 @@
 import AppKit
 import CoreGraphics
+import IOKit
 
 /// A display that exists only in software. macOS draws the desktop on it at twice the size it looks like, and a
 /// monitor that mirrors it shows that sharp picture. The classes behind it are private to CoreGraphics: every class,
@@ -398,6 +399,29 @@ import CoreGraphics
     static func native(in modes: [CGDisplayMode]) -> CGDisplayMode? {
         modes.filter { $0.ioFlags & 0x0200_0000 != 0 && $0.pixelWidth == $0.width }.max { $0.pixelWidth < $1.pixelWidth }
             ?? modes.filter { $0.pixelWidth == $0.width && $0.isUsableForDesktopGUI() }.max { $0.pixelWidth * $0.pixelHeight < $1.pixelWidth * $1.pixelHeight }
+    }
+
+    /// The widest picture the display pipe behind the monitor's port takes: on a Mac mini M4 the HDMI port takes 5120
+    /// pixels, the USB-C ports 6144. A wider one shows purple stripes and lags. Of two identical monitors the narrower
+    /// counts, as their ports can't be told apart; unreadable means the limit every pipe has.
+    static func pipeWidth(vendor: UInt32, product: UInt32, serial: UInt32) -> Int {
+        var iterator: io_iterator_t = 0
+        guard IOServiceGetMatchingServices(kIOMainPortDefault, IOServiceMatching("IOMobileFramebufferShim"), &iterator) == KERN_SUCCESS
+        else { return DisplayScaleMath.maxBackingWidth }
+        defer { IOObjectRelease(iterator) }
+        var widths: [Int] = []
+        while case let entry = IOIteratorNext(iterator), entry != 0 {
+            defer { IOObjectRelease(entry) }
+            let property = { (key: String) in
+                IORegistryEntryCreateCFProperty(entry, key as CFString, kCFAllocatorDefault, 0)?.takeRetainedValue() as? [String: Any]
+            }
+            guard let monitor = property("DisplayAttributes")?["ProductAttributes"] as? [String: Any],
+                  monitor["LegacyManufacturerID"] as? UInt32 == vendor, monitor["ProductID"] as? UInt32 == product,
+                  monitor["SerialNumber"] as? UInt32 == serial,
+                  let width = (property("IOMFBMaxSrcPixels")?["MaxSrcRectWidthForPipe"] as? [Int])?.first, width > 0 else { continue }
+            widths.append(width)
+        }
+        return min(widths.min() ?? DisplayScaleMath.maxBackingWidth, DisplayScaleMath.maxBackingWidth)
     }
 
     private static func math(_ mode: CGDisplayMode) -> DisplayScaleMath.Mode {
