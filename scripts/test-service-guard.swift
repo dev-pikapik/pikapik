@@ -209,61 +209,42 @@ enum TestServiceGuard {
         let displays = base + "/Displays", overrides = displays + "/Overrides"
         let scale = ScaleOverride(base: overrides, owner: getuid(), top: base)
         let fm = FileManager.default
-        precondition(ScaleOverride.relative(vendor: 0x61A9, product: 0x2001) == "DisplayVendorID-61a9/DisplayProductID-2001")
-        precondition(ScaleOverride.relative(vendor: 0x469, product: 0xC4D) == "DisplayVendorID-469/DisplayProductID-c4d", "lowercase, no padding, as CoreDisplay")
-        let entries = { (bytes: Data) -> [String] in
-            let plist = try! PropertyListSerialization.propertyList(from: bytes, format: nil) as! [String: Any]
-            precondition(plist["pikapik"] as? Bool == true && plist.count == 4, "\(plist)")
-            return (plist["scale-resolutions"] as! [Data]).map { $0.base64EncodedString() }
+        let put = { (path: String, mark: Bool?) in
+            try! fm.createDirectory(atPath: (path as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
+            let plist: [String: Any] = mark.map { ["DisplayVendorID": 1, "pikapik": $0] } ?? ["DisplayVendorID": 1]
+            precondition(fm.createFile(atPath: path, contents: try! PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)))
         }
-        let mi = [2752, 1152, 2294, 960, 1966, 823]
-        precondition(entries(ScaleOverride.data(vendor: 0x61A9, product: 0x2001, sizes: mi)!)
-            == ["AAAVgAAACQAAAAABACAAAA==", "AAAR7AAAB4AAAAABACAAAA==", "AAAPXAAABm4AAAABACAAAA=="], "the Mi's file, entry for entry as Apple's")
-        // The file macOS took on 29.10 for the Samsung, byte for byte.
-        let samsung = [2548, 1067, 2294, 960, 1966, 823]
-        let bytes = ScaleOverride.data(vendor: 0x4C2D, product: 0x730F, sizes: samsung)!
-        precondition(bytes == Data(base64Encoded: "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCFET0NUWVBFIHBsaXN0IFBVQkxJQyAiLS8vQXBwbGUvL0RURCBQTElTVCAxLjAvL0VOIiAiaHR0cDovL3d3dy5hcHBsZS5jb20vRFREcy9Qcm9wZXJ0eUxpc3QtMS4wLmR0ZCI+CjxwbGlzdCB2ZXJzaW9uPSIxLjAiPgo8ZGljdD4KCTxrZXk+RGlzcGxheVByb2R1Y3RJRDwva2V5PgoJPGludGVnZXI+Mjk0NTU8L2ludGVnZXI+Cgk8a2V5PkRpc3BsYXlWZW5kb3JJRDwva2V5PgoJPGludGVnZXI+MTk1MDE8L2ludGVnZXI+Cgk8a2V5PnBpa2FwaWs8L2tleT4KCTx0cnVlLz4KCTxrZXk+c2NhbGUtcmVzb2x1dGlvbnM8L2tleT4KCTxhcnJheT4KCQk8ZGF0YT4KCQlBQUFUNkFBQUNGWUFBQUFCQUNBQUFBPT0KCQk8L2RhdGE+CgkJPGRhdGE+CgkJQUFBUjdBQUFCNEFBQUFBQkFDQUFBQT09CgkJPC9kYXRhPgoJCTxkYXRhPgoJCUFBQVBYQUFBQm00QUFBQUJBQ0FBQUE9PQoJCTwvZGF0YT4KCTwvYXJyYXk+CjwvZGljdD4KPC9wbGlzdD4K"), "\(bytes.base64EncodedString())")
-        precondition(String(data: bytes, encoding: .utf8)!.contains("<key>pikapik</key>"), "uninstall greps the marker")
-        for sizes in [[], [2294], [2294, 960, 1], [639, 960], [3361, 960], [2294, 599], [2294, 3361], Array(repeating: 1000, count: 18)] {
-            precondition(ScaleOverride.data(vendor: 0x4C2D, product: 0x730F, sizes: sizes) == nil, "\(sizes) refused")
-        }
-        precondition(ScaleOverride.data(vendor: 0x4C2D, product: 0x730F, sizes: Array(repeating: 1000, count: 16)) != nil, "8 sizes at most")
-        for (vendor, product) in [(0, 1), (0x10000, 1), (-1, 1), (1, 0x10000), (1, -1)] {
-            precondition(ScaleOverride.data(vendor: vendor, product: product, sizes: samsung) == nil, "\(vendor)-\(product) refused")
-        }
-        let file = overrides + "/DisplayVendorID-4c2d/DisplayProductID-730f"
-        precondition(!scale.write(vendor: 0x4C2D, product: 0x730F, sizes: samsung, by: 4242), "a non-admin caller writes nothing")
-        precondition(!scale.write(vendor: 0x4C2D, product: 0x730F, sizes: samsung, by: uid_t(bitPattern: -2)) && !fm.fileExists(atPath: displays), "nor does nobody")
-        precondition(scale.write(vendor: 0x4C2D, product: 0x730F, sizes: samsung, by: 0) && fm.contents(atPath: file) == bytes)
-        let mode = { (path: String) -> mode_t in var info = stat(); lstat(path, &info); return info.st_mode }
-        precondition(mode(file) & 0o7777 == 0o644 && mode(overrides) & 0o7777 == 0o755 && mode(displays + "/Overrides/DisplayVendorID-4c2d") & 0o7777 == 0o755)
-        let inode = { (path: String) -> ino_t in var info = stat(); lstat(path, &info); return info.st_ino }
-        let first = inode(file)
-        precondition(scale.write(vendor: 0x4C2D, product: 0x730F, sizes: samsung, by: 0) && inode(file) == first, "the same sizes are not written again")
-        precondition(scale.write(vendor: 0x4C2D, product: 0x730F, sizes: [2294, 960], by: 0) && inode(file) != first, "its own file is replaced")
-        let foreign = overrides + "/DisplayVendorID-61a9/DisplayProductID-2001"
-        try! fm.createDirectory(atPath: (foreign as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
-        try! "<plist><dict/></plist>".write(toFile: foreign, atomically: true, encoding: .utf8)
-        precondition(!scale.write(vendor: 0x61A9, product: 0x2001, sizes: samsung, by: 0) && fm.contents(atPath: foreign) == Data("<plist><dict/></plist>".utf8),
-                     "a hand-made file stays")
-        symlink(file, overrides + "/DisplayVendorID-61a9/DisplayProductID-2002")
-        precondition(!scale.write(vendor: 0x61A9, product: 0x2002, sizes: samsung, by: 0) && fm.contents(atPath: file) == ScaleOverride.data(vendor: 0x4C2D, product: 0x730F, sizes: [2294, 960]),
-                     "a symlink is never written through")
-        try! fm.createDirectory(atPath: overrides + "/DisplayVendorID-61a9/DisplayProductID-2003", withIntermediateDirectories: false)
-        precondition(!scale.write(vendor: 0x61A9, product: 0x2003, sizes: samsung, by: 0), "a folder in the file's place stays")
-        try! fm.createDirectory(atPath: base + "/elsewhere", withIntermediateDirectories: false)
-        symlink(base + "/elsewhere", overrides + "/DisplayVendorID-469")
-        precondition(!scale.write(vendor: 0x469, product: 0xC4D, sizes: samsung, by: 0) && (try! fm.contentsOfDirectory(atPath: base + "/elsewhere")).isEmpty,
-                     "a symlinked folder is never written through")
-        for (path, bits) in [(overrides, 0o775), (overrides, 0o757), (displays, 0o777)] as [(String, mode_t)] {
+        let exists = { (path: String) -> Bool in var info = stat(); return lstat(path, &info) == 0 }
+        precondition(scale.removeAll() == 0 && !exists(displays), "no folder: nothing to do")
+        let samsung = overrides + "/DisplayVendorID-4c2d/DisplayProductID-730f"
+        put(samsung, true)
+        for (path, bits) in [(overrides, 0o775), (overrides, 0o757), (displays, 0o777), (base, 0o777), (overrides + "/DisplayVendorID-4c2d", 0o775)] as [(String, mode_t)] {
             chmod(path, bits)
-            precondition(!scale.write(vendor: 0x1, product: 0x1, sizes: samsung, by: 0), "\(path) others can write is refused")
+            precondition(scale.files().isEmpty && scale.removeAll() == 0 && exists(samsung), "\(path) others can write: hands off")
             chmod(path, 0o755)
         }
-        precondition(!fm.fileExists(atPath: overrides + "/DisplayVendorID-1/DisplayProductID-1"))
-        for product in 1...7 { precondition(scale.write(vendor: 0x2, product: product, sizes: samsung, by: 0), "file \(product + 1)") }
-        precondition(!scale.write(vendor: 0x3, product: 0x1, sizes: samsung, by: 0), "a 9th file is refused")
-        precondition(scale.write(vendor: 0x4C2D, product: 0x730F, sizes: samsung, by: 0), "one of the 8 is still replaced")
-        print("monitor sizes: only pikapik's own file is written, within bounds: ok")
+        let mi = overrides + "/DisplayVendorID-61a9/DisplayProductID-2001", foreign = overrides + "/DisplayVendorID-61a9/DisplayProductID-2002"
+        put(mi, true)
+        put(foreign, nil)
+        put(overrides + "/DisplayVendorID-61a9/DisplayProductID-2005", false)
+        put(overrides + "/DisplayVendorID-61a9/notes", true)
+        put(base + "/elsewhere/DisplayProductID-c4d", true)
+        symlink(base + "/elsewhere/DisplayProductID-c4d", overrides + "/DisplayVendorID-61a9/DisplayProductID-2003")
+        put(overrides + "/DisplayVendorID-61a9/DisplayProductID-2004/inside", true)
+        symlink(base + "/elsewhere", overrides + "/DisplayVendorID-469")
+        precondition(scale.files().sorted() == [samsung, mi].sorted(), "\(scale.files())")
+        precondition(scale.removeAll() == 2 && !exists(samsung) && !exists(mi) && !exists(overrides + "/DisplayVendorID-4c2d"), "pikapik's files and their empty folder go")
+        for path in [foreign, overrides + "/DisplayVendorID-61a9/DisplayProductID-2005", overrides + "/DisplayVendorID-61a9/notes", overrides + "/DisplayVendorID-61a9/DisplayProductID-2003",
+                     overrides + "/DisplayVendorID-61a9/DisplayProductID-2004/inside", overrides + "/DisplayVendorID-469", base + "/elsewhere/DisplayProductID-c4d"] {
+            precondition(exists(path), "\(path) is not pikapik's: it stays")
+        }
+        precondition(scale.removeAll() == 0, "the second start finds nothing")
+        try! fm.removeItem(atPath: overrides)
+        try! fm.createDirectory(atPath: overrides, withIntermediateDirectories: false)
+        precondition(scale.removeAll() == 0 && exists(overrides), "a folder pikapik emptied nothing in stays")
+        for product in 1...9 { put(overrides + "/DisplayVendorID-2/DisplayProductID-\(product)", true) }
+        precondition(scale.removeAll() == ScaleOverride.limit && scale.removeAll() == 1, "8 files at a time")
+        precondition(!exists(displays) && exists(base), "the folders left empty go, up to the first one checked")
+        print("monitor sizes 1.58.0 added: only pikapik's own files go, within bounds: ok")
     }
 }

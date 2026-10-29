@@ -25,7 +25,6 @@ final class Service: NSObject, FanHelperProtocol, NSXPCListenerDelegate {
     private let lock = NSLock()
     private let updates = NSLock()
     private let records = NSLock()
-    private let overrides = NSLock()
     private let smc: SMC?
     private let services: ServiceSwitch
     private let requirement: String?
@@ -128,10 +127,7 @@ final class Service: NSObject, FanHelperProtocol, NSXPCListenerDelegate {
     }
 
     func setScaleModes(vendor: Int, product: Int, sizes: [Int], reply: @escaping (Bool) -> Void) {
-        guard let caller = NSXPCConnection.current()?.effectiveUserIdentifier else { return reply(false) }
-        overrides.lock()
-        defer { overrides.unlock() }
-        reply(ScaleOverride().write(vendor: vendor, product: product, sizes: sizes, by: caller))
+        reply(false) // the sizes made a monitor flicker; pikapik 1.58.0 then keeps to the mirror
     }
 
     func finish() -> Never {
@@ -146,6 +142,7 @@ let appIdentifier = label.hasSuffix(FanHelperInfo.suffix) ? String(label.dropLas
 let service = Service(smc: device, services: services, requirement: FanHelperInfo.requirement(identifier: appIdentifier), candidate: FanHelperInfo.requirement(identifier: label))
 service.resetAll()
 services.prune()
+ScaleOverride().removeAll()
 
 let listener = NSXPCListener(machServiceName: label)
 listener.delegate = service

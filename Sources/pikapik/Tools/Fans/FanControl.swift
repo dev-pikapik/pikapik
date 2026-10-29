@@ -54,6 +54,19 @@ final class FanControl {
         NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.willSleepNotification, object: nil, queue: .main) { [self] _ in
             wanted.keys.forEach(setAuto)
         }
+        removeOldSizes()
+    }
+
+    /// pikapik 1.58.0 added monitor sizes to /Library, and they made a monitor flicker. Helper 6 removes them each time
+    /// it starts, so reaching it once is enough; an older helper updates itself on the way, with no password.
+    private func removeOldSizes() {
+        [PreferenceKey.displayScaleModes, PreferenceKey.displayScaleReconnecting].forEach(UserDefaults.standard.removeObject(forKey:))
+        guard !ScaleOverride().files().isEmpty else { return }
+        probe()
+        // The helper runs as root: with no fan to hold, it ends instead of idling.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) { [self] in
+            if wanted.isEmpty, watchers == 0 { connection?.invalidate() }
+        }
     }
 
     func watch() {
