@@ -68,10 +68,11 @@ enum DisplayScaleMath {
         return hash
     }
 
-    /// Whether a display with this serial number is one of the monitor's virtual displays, at any step, made with its
-    /// unit number or without: a monitor that just got an identical twin still has the one made without.
+    /// Whether a display with this serial number is one of the monitor's virtual displays, at any size above 100 % (a
+    /// narrow pipe gives, say, 135 % in place of a step), made with its unit number or without: a monitor that just got
+    /// an identical twin still has the one made without.
     static func isVirtual(_ display: UInt32, vendor: UInt32, product: UInt32, serial: UInt32, unit: UInt32) -> Bool {
-        [nil, unit].contains { twin in steps.contains { Self.serial(vendor: vendor, product: product, serial: serial, unit: twin, percent: $0) == display } }
+        [nil, unit].contains { twin in (101...200).contains { Self.serial(vendor: vendor, product: product, serial: serial, unit: twin, percent: $0) == display } }
     }
 
     /// The saved size for one of two identical monitors whose id has none: macOS may hand out their unit numbers anew
@@ -112,16 +113,28 @@ enum DisplayScaleMath {
     }
 
     /// Where the picture (`origin`) and every other display go when a monitor's picture becomes width × height points:
-    /// a display beyond the edge that moves moves with it, so all keep touching in the order they had. macOS moves
-    /// displays about while a mirror ends and a display comes or goes, so pikapik puts every one back, not just its own.
+    /// a display touching the edge that moves moves with it, and so does one touching that display further out, so all
+    /// keep touching in the order they had; one that touches none of them stays, and the main display never moves.
+    /// macOS moves displays about while a mirror ends and a display comes or goes, so pikapik puts every one back.
     static func arrange(_ here: CGRect, among others: [CGRect], width: Int, height: Int) -> (here: CGPoint, others: [CGPoint]) {
         let new = origin(of: here, among: others, width: width, height: height)
         let dx = CGFloat(width) - here.width, dy = CGFloat(height) - here.height
         let left = new.x != here.minX, top = new.y != here.minY
-        return (new, others.map { other in
-            guard other.origin != .zero else { return .zero }
-            return CGPoint(x: other.minX + (left ? (other.maxX <= here.minX ? -dx : 0) : (other.minX >= here.maxX ? dx : 0)),
-                           y: other.minY + (top ? (other.maxY <= here.minY ? -dy : 0) : (other.minY >= here.maxY ? dy : 0)))
+        // The displays pushed along: those touching the moving edge of `here`, then those touching them, outward.
+        let pushed = { (touches: (CGRect, CGRect) -> Bool) -> Set<Int> in
+            var moved = Set<Int>(), next = [here]
+            while let edge = next.popLast() {
+                for (index, other) in others.enumerated() where other.origin != .zero && !moved.contains(index) && touches(edge, other) {
+                    moved.insert(index)
+                    next.append(other)
+                }
+            }
+            return moved
+        }
+        let beside = pushed { (left ? $1.maxX == $0.minX : $1.minX == $0.maxX) && $1.minY < $0.maxY && $1.maxY > $0.minY }
+        let stacked = pushed { (top ? $1.maxY == $0.minY : $1.minY == $0.maxY) && $1.minX < $0.maxX && $1.maxX > $0.minX }
+        return (new, others.enumerated().map { index, other in
+            CGPoint(x: other.minX + (beside.contains(index) ? (left ? -dx : dx) : 0), y: other.minY + (stacked.contains(index) ? (top ? -dy : dy) : 0))
         })
     }
 }

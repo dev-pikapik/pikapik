@@ -68,6 +68,8 @@ enum TestDisplayScale {
         precondition(isMi(mi(1, 125), 1) && !isMi(mi(1, 125), 2), "a twin's virtual display belongs to its own monitor only")
         precondition(isMi(mi(nil, 125), 7), "the virtual display made before the twin came still belongs to the monitor")
         precondition(DisplayScaleMath.isVirtual(samsung(150), vendor: 19501, product: 29455, serial: 810432311, unit: 3), "a monitor without a twin keeps its virtual displays")
+        precondition([135, 153, 180].allSatisfy { DisplayScaleMath.isVirtual(samsung($0), vendor: 19501, product: 29455, serial: 810432311, unit: 3) },
+                     "a size that takes the place of a step on a narrow pipe is a virtual display too")
         precondition(!isMi(0, 2) && !DisplayScaleMath.isVirtual(810432311, vendor: 19501, product: 29455, serial: 810432311, unit: 3),
                      "a monitor is never taken for a virtual display of its twin or of itself")
         print("identical monitors get virtual displays of their own: ok")
@@ -132,6 +134,30 @@ enum TestDisplayScale {
         arranged = DisplayScaleMath.arrange(twin125, among: beyond, width: 2294, height: 960)
         precondition(arranged.others == [CGPoint(x: -2752, y: 0), CGPoint(x: 2294, y: 0), CGPoint(x: 0, y: 960), CGPoint(x: 0, y: -1080)],
                      "only the displays beyond the edges that move move with them: \(arranged)")
+        let cases = [
+            ("A: the right monitor at 150 %, a laptop under the main one", right125, [twin125, CGRect(x: 0, y: 1152, width: 1512, height: 982)]),
+            ("B: the main one at 150 %, a wide display under it, another right of that", twin125,
+             [CGRect(x: 0, y: 1152, width: 3000, height: 1000), CGRect(x: 3000, y: 1152, width: 1920, height: 1080)]),
+            ("C: the monitor above the main one at 150 %, another right of the main one", CGRect(x: 0, y: -1152, width: 2752, height: 1152),
+             [twin125, CGRect(x: 2752, y: 0, width: 1920, height: 1080)]),
+            ("D: the monitor left of the main one at 150 %, another under it", CGRect(x: -2752, y: 0, width: 2752, height: 1152),
+             [twin125, CGRect(x: -1920, y: 1152, width: 1920, height: 1080)]),
+        ]
+        let overlap = { (a: CGRect, b: CGRect) in a.intersection(b).width > 0 && a.intersection(b).height > 0 }
+        let touch = { (a: CGRect, b: CGRect) in
+            ((a.maxX == b.minX || b.maxX == a.minX) && a.minY < b.maxY && b.minY < a.maxY)
+                || ((a.maxY == b.minY || b.maxY == a.minY) && a.minX < b.maxX && b.minX < a.maxX)
+        }
+        for (name, here, others) in cases {
+            let arranged = DisplayScaleMath.arrange(here, among: others, width: 2294, height: 960)
+            let frames = [CGRect(origin: arranged.here, size: CGSize(width: 2294, height: 960))]
+                + zip(others, arranged.others).map { CGRect(origin: $1, size: $0.size) }
+            precondition(frames.filter { $0.origin == .zero }.count == 1, "\(name): the main display stays at 0,0: \(frames)")
+            for (index, frame) in frames.enumerated() {
+                precondition(!frames[(index + 1)...].contains { overlap(frame, $0) }, "\(name): no display covers another: \(frames)")
+                precondition(frames.indices.contains { $0 != index && touch(frame, frames[$0]) }, "\(name): every display still touches another: \(frames)")
+            }
+        }
         print("every display still touches the ones it touched after a size change: ok")
     }
 }

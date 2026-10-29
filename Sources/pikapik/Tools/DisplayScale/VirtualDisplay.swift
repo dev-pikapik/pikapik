@@ -369,8 +369,13 @@ import IOKit
         if let virtual, CGDisplayMirrorsDisplay(display) == virtual.id {
             _ = Self.configure { CGConfigureDisplayMirrorOfDisplay($0, display, kCGNullDirectDisplay) }
         }
+        // The monitor's own mode comes back with every display put back beside it, as a step is put on.
         if let applied, let original, Self.same(CGDisplayCopyDisplayMode(display), applied) {
-            _ = Self.configure { CGConfigureDisplayWithDisplayMode($0, display, original, nil) }
+            let before = arrangement()
+            _ = Self.configure({ config in
+                let set = CGConfigureDisplayWithDisplayMode(config, display, original, nil)
+                return set == .success ? Self.place(config, display, width: original.width, height: original.height, before) : set
+            }) || Self.configure { CGConfigureDisplayWithDisplayMode($0, display, original, nil) }
         }
         applied = nil
         original = nil
@@ -403,25 +408,28 @@ import IOKit
 
     /// The widest picture the display pipe behind the monitor's port takes: on a Mac mini M4 the HDMI port takes 5120
     /// pixels, the USB-C ports 6144. A wider one shows purple stripes and lags. Of two identical monitors the narrower
-    /// counts, as their ports can't be told apart; unreadable means the limit every pipe has.
+    /// counts, as their ports can't be told apart, and so does the narrowest of its model when its serial number isn't
+    /// listed there; unreadable means the limit every pipe has.
     static func pipeWidth(vendor: UInt32, product: UInt32, serial: UInt32) -> Int {
         var iterator: io_iterator_t = 0
         guard IOServiceGetMatchingServices(kIOMainPortDefault, IOServiceMatching("IOMobileFramebufferShim"), &iterator) == KERN_SUCCESS
         else { return DisplayScaleMath.maxBackingWidth }
         defer { IOObjectRelease(iterator) }
-        var widths: [Int] = []
+        var widths: [(width: Int, mine: Bool)] = []
         while case let entry = IOIteratorNext(iterator), entry != 0 {
             defer { IOObjectRelease(entry) }
             let property = { (key: String) in
                 IORegistryEntryCreateCFProperty(entry, key as CFString, kCFAllocatorDefault, 0)?.takeRetainedValue() as? [String: Any]
             }
-            guard let monitor = property("DisplayAttributes")?["ProductAttributes"] as? [String: Any],
-                  monitor["LegacyManufacturerID"] as? UInt32 == vendor, monitor["ProductID"] as? UInt32 == product,
-                  monitor["SerialNumber"] as? UInt32 == serial,
+            // IOKit keeps these as signed numbers, so an id from 2^31 up reads only through NSNumber.
+            guard let monitor = property("DisplayAttributes")?["ProductAttributes"] as? [String: Any] else { continue }
+            let id = { (key: String) in (monitor[key] as? NSNumber)?.uint32Value }
+            guard id("LegacyManufacturerID") == vendor, id("ProductID") == product,
                   let width = (property("IOMFBMaxSrcPixels")?["MaxSrcRectWidthForPipe"] as? [Int])?.first, width > 0 else { continue }
-            widths.append(width)
+            widths.append((width, id("SerialNumber") == serial))
         }
-        return min(widths.min() ?? DisplayScaleMath.maxBackingWidth, DisplayScaleMath.maxBackingWidth)
+        let mine = widths.filter(\.mine)
+        return min((mine.isEmpty ? widths : mine).map(\.width).min() ?? DisplayScaleMath.maxBackingWidth, DisplayScaleMath.maxBackingWidth)
     }
 
     private static func math(_ mode: CGDisplayMode) -> DisplayScaleMath.Mode {

@@ -291,9 +291,9 @@ import AppKit
             guard !settled.contains(display), attempts[display, default: 0] < 3 else { continue }
             settled.insert(display)
             let wanted = scaler.percent ?? monitor.stored ?? monitor.current
-            // A saved size this port can't show sharply, say 125 % on a 5120-pixel pipe, becomes the nearest one it can.
+            // A saved size this port can't show sharply, say 125 % on a 5120-pixel pipe, becomes the nearest one it can, the smaller of two as near.
             let target = monitor.steps.contains(wanted) || wanted == monitor.current
-                ? wanted : monitor.steps.filter { $0 != 100 }.min { abs($0 - wanted) < abs($1 - wanted) } ?? wanted
+                ? wanted : monitor.steps.min { abs($0 - wanted) < abs($1 - wanted) } ?? wanted
             guard target != monitor.current || !scaler.holds, monitor.steps.contains(target) else { continue }
             busy = monitor.id
             forgive(allBut: display, mirrors: !scaler.changed)
